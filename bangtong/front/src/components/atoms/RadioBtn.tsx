@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 interface RadioBtnProps {
-  location: string;
+  location: string; // 편의점, 마트, 병원 등 해당 장소의 편의시설 이름
 }
 
 const RadioBtn: React.FC<RadioBtnProps> = ({location}) => {

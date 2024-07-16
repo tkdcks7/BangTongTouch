@@ -1,8 +1,8 @@
 import React from 'react';
 
 interface ChatMsgBoxProps {
-  message: string;
-  date: string;
+  message: string;  // 채팅 메시지 내용
+  date: string;     // 날짜, 시간
 }
 
 const ChatMsgBox: React.FC<ChatMsgBoxProps> = ({message, date}) => {

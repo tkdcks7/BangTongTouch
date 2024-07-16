@@ -1,16 +1,15 @@
 import React from 'react';
 
 interface IconBtnProps {
-  imgSrc: string;
+  imgSrc: string; // 아이콘의 이미지 경로
+  size: number;   // 버튼 사이즈 (정사각형 가로x세로 동일)
 }
 
-const IconBtn: React.FC<IconBtnProps> = ({imgSrc}) => {
+const IconBtn: React.FC<IconBtnProps> = ({imgSrc, size}) => {
   return (
-    <div className="w-10 h-10">
-      <button className="bg-white-500 hover:bg-gray-400 text-white font-bold rounded">
-        <img src={imgSrc} alt="아이콘 이미지" />
-      </button>
-    </div>
+    <button className="rounded">
+      <img src={imgSrc} alt="아이콘 이미지" width={size} height={size} />
+    </button>
   );
 }
 

@@ -21,7 +21,7 @@ const InputBar: React.FC<InputProps> = ({
 
   const inputClasses = `
     ${sizeClasses[size]}
-${id === "" ? "text-black" : id === "e" ? "text-text-red-500" : "text-white bg-lime-500"}
+${id === "" ? "text-black" : id === "e" ? "text-text-red-500" : "text-black bg-white"}
     focus:outline-none
     pr-1
   `;

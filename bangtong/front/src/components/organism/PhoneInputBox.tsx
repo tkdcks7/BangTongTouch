@@ -1,6 +1,7 @@
 import { InputHTMLAttributes } from "react";
 import InputBar from "../atoms/InputBar";
 import IconBtn from "../atoms/IconBtn";
+import DropDown from "../molecules/DropDown";
 
 // 아이콘
 import Cancel from "../../assets/CancelCircle.png"
@@ -29,7 +30,7 @@ import Send from "../../assets/Send.png"
 
  */
 
-interface InputProps
+interface PhoneInputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   helperText?: string;
   error?: boolean;
@@ -37,7 +38,7 @@ interface InputProps
   buttonType?: string;  // cancel, check, dropdown, send
 }
 
-const InputBox: React.FC<InputProps> = ({
+const PhoneInputBox: React.FC<PhoneInputProps> = ({
   helperText,
   error = false,
   placeholder,
@@ -76,21 +77,24 @@ ${id === "" ? "focus:ring-lime-500" : ""}
   }
 
   return (
-    <div style={inputStyle}>
-      <div className={baseInputClasses}>
-        <InputBar
-          placeholder={placeholder}
-          size={size}
-          type={type}
-          id={id}
-          width={width}
-          height={height}
-        />
-        <IconBtn 
-          imgSrc={whatBtn}
-          size={20}
-        />
-      </div>
+      <div style={inputStyle}>
+        <div className={baseInputClasses}>
+          <div className="me-3">
+            <DropDown />
+          </div>
+          <InputBar
+            placeholder={placeholder}
+            size={size}
+            type={type}
+            id={id}
+            width={width}
+            height={height}
+          />
+          <IconBtn 
+            imgSrc={whatBtn}
+            size={20}
+          />
+        </div>
       {helperText && (
         <p
           className={`mt-1 text-sm ${error ? "text-red-500" : "text-gray-500"}`}
@@ -102,4 +106,4 @@ ${id === "" ? "focus:ring-lime-500" : ""}
   );
 };
 
-export default InputBox;
+export default PhoneInputBox;
