@@ -1,6 +1,6 @@
-package com.jisang.bangtong.comment.repository;
+package com.jisang.bangtong.repository.comment;
 
-import com.jisang.bangtong.comment.Comment;
+import com.jisang.bangtong.model.comment.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

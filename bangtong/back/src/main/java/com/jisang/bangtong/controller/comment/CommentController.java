@@ -1,7 +1,7 @@
-package com.jisang.bangtong.comment.controller;
+package com.jisang.bangtong.controller.comment;
 
-import com.jisang.bangtong.comment.Comment;
-import com.jisang.bangtong.comment.service.CommentService;
+import com.jisang.bangtong.model.comment.Comment;
+import com.jisang.bangtong.service.comment.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,4 +1,4 @@
-package com.jisang.bangtong.comment;
+package com.jisang.bangtong.model.comment;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
