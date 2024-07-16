@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class BoardServiceImpl implements BoardService {
 
-  @Autowired
-  BoardRepositoryImpl boardRepository;
-
+  BoardRepository boardRepository;
 
   @Override
   public void save(Board board) {
