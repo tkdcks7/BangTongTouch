@@ -38,7 +38,8 @@ public class BoardController {
   }
 
   @PutMapping("/modify/{boardId}")
-  public ResponseEntity<Object> modify(@PathVariable("boardId") long boardId, @RequestBody Board board) {
+  public ResponseEntity<Object> modify(@PathVariable("boardId") long boardId,
+      @RequestBody Board board) {
     log.info("modify board: {}", board);
     Optional<Board> existingBoard = boardService.findById(boardId);
     if (existingBoard.isPresent()) {
@@ -88,11 +89,11 @@ public class BoardController {
   }
 
   @GetMapping("/list/{category}")
-  public ResponseEntity<Object> getList(@PathVariable("category") String category, Map<String, Integer> map) {
-
+  public ResponseEntity<Object> getList(@PathVariable("category") String category,
+      Map<String, Integer> map) {
+    return null;
 
   }
-
 
 
 }
