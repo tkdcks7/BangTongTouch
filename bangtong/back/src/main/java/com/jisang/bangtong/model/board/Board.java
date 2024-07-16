@@ -1,4 +1,4 @@
-package com.jisang.bangtong.board.dto;
+package com.jisang.bangtong.model.board;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
-@NoArgsConstructor
-@RequiredArgsConstructor
 public class Board {
 
   @Id
@@ -19,12 +17,19 @@ public class Board {
   private String boardTitle;
   private String boardContent;
   private long boardWriter;
+
   private boolean boardIsBanned;
   private int boardCategory;
+
+  private boolean boardIsDelete;
+
 
     /* TODO Region 클레스 생성후 1:다 연결 생성
     @OneToMany
     @JoinColumn("region_id")
     private Region
      */
+
+
+
 }

@@ -1,6 +1,7 @@
-package com.jisang.bangtong.board.service;
+package com.jisang.bangtong.service.board;
 
-import com.jisang.bangtong.board.dto.Board;
+
+import com.jisang.bangtong.model.board.Board;
 import java.util.List;
 import java.util.Optional;
 

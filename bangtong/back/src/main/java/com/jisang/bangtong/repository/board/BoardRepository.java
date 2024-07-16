@@ -1,8 +1,10 @@
-package com.jisang.bangtong.board.repository;
+package com.jisang.bangtong.repository.board;
 
-import com.jisang.bangtong.board.dto.Board;
+
+import com.jisang.bangtong.model.board.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
+
 
 }
