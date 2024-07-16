@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -87,12 +92,38 @@ public class BoardController {
     }
   }
 
-  @GetMapping("/list/{category}")
-  public ResponseEntity<Object> getList(@PathVariable("category") String category, Map<String, Integer> map) {
-
-
+  @GetMapping("/list/{category}/{pageNo}/{size}")
+  public ResponseEntity<Object> getList(@PathVariable(value = "category", required = false) Integer category,
+      @PathVariable(value = "pageNo", required = false) Integer pageNo,
+      @PathVariable(value = "size", required = false) Integer size) {
+        if (category == null) {
+          category = 0;  // 기본값 설정
+        }
+        if (pageNo == null) {
+          pageNo = 0;  // 기본값 설정
+        }
+        if (size == null) {
+          size = 10;  // 기본값 설정
+        }
+      Pageable pageable = PageRequest.of(pageNo, size, Sort.by("boardDate"));
+      Page<Board> boardPage = boardService.getBoardsByCategory(category, pageable);
+      return ResponseEntity.ok(boardPage);
   }
 
+  @GetMapping("/search/{category}/{pageNo}/{size}/{region}/{keyword}")
+  public ResponseEntity<Object> getSearch(@PathVariable(required = false) Integer category,
+      @PathVariable(value = "pageNo", required = false) Integer pageNo, @PathVariable(value="size") Integer size, @PathVariable String region, @PathVariable(required = false) String keyword) {
+    if (category == null) {
+      category = 0;  // 기본값 설정
+    }
+    if (pageNo == null) {
+      pageNo = 0;  // 기본값 설정
+    }
+    if (size == null) {
+      size = 10;  // 기본값 설정
+    }
+    Pageable pageable = PageRequest.of(pageNo, size, Sort.by("boardDate"));
 
-
+    return null;
+  }
 }
