@@ -5,9 +5,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Data
@@ -20,5 +24,56 @@ public class Product {
   private long productId;
 
   @Column(columnDefinition = "ENUM('원룸', '투룸+', '오피스텔', '빌라', '아파트')")
-  private ProductType type;
+  private ProductType productType;
+
+// TODO: region FK 불러오기
+
+  @Column(nullable = false, length = 50)
+  private String productAddress;
+
+  @Column(nullable = false)
+  private int productDeposit;
+
+  @Column(nullable = false)
+  private int productRent;
+
+  @Column(nullable = false)
+  private int productMaintenance;
+
+  @Column(nullable = false, length = 200)
+  private String productMaintenanceInfo;
+
+  @Column(columnDefinition = "boolean default false")
+  private boolean productIsRentSupportable;
+
+  @Column(columnDefinition = "boolean default false")
+  private boolean productIsFurnitureSupportable;
+
+  @Column(nullable = false)
+  private float productSquare;
+
+  @Column(nullable = false)
+  private int productRoom;
+
+  @Column(nullable = false, columnDefinition = "bit(7)")
+  private int productOption;
+
+  private String productAdditionalOption;
+
+  @Column(columnDefinition = "boolean default false")
+  private boolean productIsBanned;
+
+  @Column(columnDefinition = "boolean default false")
+  private boolean productIsDeleted;
+
+  @Temporal(value = TemporalType.TIMESTAMP)
+  @CreationTimestamp
+  private Date productPostDate;
+
+  @Column(nullable = false)
+  private Date productStartDate;
+
+  @Column(nullable = false)
+  private Date productEndDate;
+
 }
