@@ -5,7 +5,6 @@ import TextBox from "../atoms/TextBox";
 import InputBox from "../molecules/InputBox";
 import PhoneInputBox from "../organism/PhoneInputBox";
 import Btn from "../atoms/Btn";
-import InputBar from "../atoms/InputBar";
 
 const SignupPage: React.FC = () => {
   return (

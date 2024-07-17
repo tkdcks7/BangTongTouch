@@ -1,5 +1,4 @@
 import { InputHTMLAttributes } from "react";
-import InputBar from "../atoms/InputBar";
 import IconBtn from "../atoms/IconBtn";
 import DropDown from "../molecules/DropDown";
 
