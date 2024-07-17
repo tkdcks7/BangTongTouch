@@ -1,13 +1,12 @@
-import { InputHTMLAttributes } from "react";
-import InputBar from "../atoms/InputBar";
+import React, { useState, InputHTMLAttributes } from "react";
 import IconBtn from "../atoms/IconBtn";
 
 // 아이콘
-import Cancel from "../../assets/CancelCircle.png"
-import RedCancel from "../../assets/RedCancelCircle.png"
-import Check from "../../assets/CheckCircle.png"
-import DropDownIcon from "../../assets/DropDownIcon.png"
-import Send from "../../assets/Send.png"
+import Cancel from "../../assets/CancelCircle.png";
+import RedCancel from "../../assets/RedCancelCircle.png";
+import Check from "../../assets/CheckCircle.png";
+import DropDownIcon from "../../assets/DropDownIcon.png";
+import Send from "../../assets/Send.png";
 
 /**
  * 검증 오류가 발생하였을 경우 id 값을 "e" 검증이 되었을 경우 "q", 기본 상태 "" 처럼 빈 값 string 변수로 전달
@@ -34,36 +33,42 @@ interface InputProps
   helperText?: string;
   error?: boolean;
   size?: "small" | "medium" | "large";
-  buttonType?: string;  // cancel, check, dropdown, send
+  buttonType?: "cancel" | "check" | "dropdown" | "send"; // cancel, check, dropdown, send
 }
 
 const InputBox: React.FC<InputProps> = ({
   helperText,
   error = false,
   placeholder,
-  buttonType,
-  size,
+  buttonType = "cancel",
+  size = "medium",
   type,
-  id,
-  width,
-  height,
+  id = "",
+  width = 400,
+  height = 50,
   ...props
 }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleFocus = () => {
+    if (id === "") setIsFocused(true);
+  };
+  const handleBlur = () => setIsFocused(false);
+
   const errorClasses =
     "border-red-500 focus:border-red-500 focus:ring-red-500 text-red-600 focus:text-red-500";
-  const qualifiedClasses =
-    "border-lime-500 bg-lime-500 text-white focus:text-white";
+  const qualifiedClasses = "border-lime-500 text-white focus:text-white";
 
-  const baseInputClasses = `flex items-center mt-1 px-3 py-2 bg-white border-2 border-gray-300 block rounded-full
-${id === "" ? "focus:ring-lime-500" : ""}
+  const baseInputClasses = `flex items-center mt-1 px-3 py-2 ${id === "q" ? "bg-lime-500" : "bg-white"} border-2 border-gray-300 block rounded-full
+    ${isFocused ? "ring-4 ring-lime-500" : ""}
     ${id === "e" ? errorClasses : ""}
-    ${id === "q" ? qualifiedClasses : ""}}`;
-  
+    ${id === "q" ? qualifiedClasses : ""}`;
+
   const inputStyle: React.CSSProperties = {};
   if (width) inputStyle.width = width;
   if (height) inputStyle.height = height;
 
-  let whatBtn = '';
+  let whatBtn = "";
 
   if (buttonType === "cancel") {
     whatBtn = Cancel;
@@ -74,22 +79,35 @@ ${id === "" ? "focus:ring-lime-500" : ""}
   } else {
     whatBtn = Send;
   }
+  const inputStyle2: React.CSSProperties = {};
+  inputStyle2.width = "95%";
+  inputStyle2.height = "90%";
+  const sizeClasses = {
+    small: "text-sm",
+    medium: "text-base",
+    large: "text-lg",
+  };
+  const inputClasses = `
+    ${sizeClasses[size]}
+    ${id === "" ? "text-black" : id === "e" ? "text-text-red-500" : "text-white bg-lime-500"}
+    focus:outline-none
+    pr-1
+  `;
 
   return (
     <div style={inputStyle}>
       <div className={baseInputClasses}>
-        <InputBar
+        <input
+          style={inputStyle2}
           placeholder={placeholder}
-          size={size}
+          className={inputClasses}
+          {...props}
           type={type}
-          id={id}
-          width={width}
-          height={height}
+          required
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
-        <IconBtn 
-          imgSrc={whatBtn}
-          size={20}
-        />
+        <IconBtn imgSrc={whatBtn} size={20} />
       </div>
       {helperText && (
         <p

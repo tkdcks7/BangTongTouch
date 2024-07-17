@@ -4,11 +4,11 @@ import IconBtn from "../atoms/IconBtn";
 import DropDown from "../molecules/DropDown";
 
 // 아이콘
-import Cancel from "../../assets/CancelCircle.png"
-import RedCancel from "../../assets/RedCancelCircle.png"
-import Check from "../../assets/CheckCircle.png"
-import DropDownIcon from "../../assets/DropDownIcon.png"
-import Send from "../../assets/Send.png"
+import Cancel from "../../assets/CancelCircle.png";
+import RedCancel from "../../assets/RedCancelCircle.png";
+import Check from "../../assets/CheckCircle.png";
+import DropDownIcon from "../../assets/DropDownIcon.png";
+import Send from "../../assets/Send.png";
 
 /**
  * 검증 오류가 발생하였을 경우 id 값을 "e" 검증이 되었을 경우 "q", 기본 상태 "" 처럼 빈 값 string 변수로 전달
@@ -35,7 +35,7 @@ interface PhoneInputProps
   helperText?: string;
   error?: boolean;
   size?: "small" | "medium" | "large";
-  buttonType?: string;  // cancel, check, dropdown, send
+  buttonType?: string; // cancel, check, dropdown, send
 }
 
 const PhoneInputBox: React.FC<PhoneInputProps> = ({
@@ -43,11 +43,11 @@ const PhoneInputBox: React.FC<PhoneInputProps> = ({
   error = false,
   placeholder,
   buttonType,
-  size,
+  size = "medium",
   type,
-  id,
-  width,
-  height,
+  id = "",
+  width = 400,
+  height = 50,
   ...props
 }) => {
   const errorClasses =
@@ -55,16 +55,16 @@ const PhoneInputBox: React.FC<PhoneInputProps> = ({
   const qualifiedClasses =
     "border-lime-500 bg-lime-500 text-white focus:text-white";
 
-  const baseInputClasses = `flex items-center mt-1 px-3 py-2 bg-white border-2 border-gray-300 block rounded-full
+  const baseInputClasses = `flex items-center px-2 bg-white border-2 border-gray-300 block rounded-full
 ${id === "" ? "focus:ring-lime-500" : ""}
     ${id === "e" ? errorClasses : ""}
     ${id === "q" ? qualifiedClasses : ""}}`;
-  
+
   const inputStyle: React.CSSProperties = {};
   if (width) inputStyle.width = width;
   if (height) inputStyle.height = height;
 
-  let whatBtn = '';
+  let whatBtn = "";
 
   if (buttonType === "cancel") {
     whatBtn = Cancel;
@@ -75,26 +75,38 @@ ${id === "" ? "focus:ring-lime-500" : ""}
   } else {
     whatBtn = Send;
   }
+  const inputStyle2: React.CSSProperties = {};
+  inputStyle2.width = "100%";
+  inputStyle2.height = "90%";
+
+  const sizeClasses = {
+    small: "text-sm",
+    medium: "text-base",
+    large: "text-lg",
+  };
+
+  const inputClasses = `
+    ${sizeClasses[size]}
+    ${id === "" ? "text-black" : id === "e" ? "text-text-red-500" : "text-white bg-lime-500"}
+    focus:outline-none
+    pr-1
+  `;
 
   return (
-      <div style={inputStyle}>
-        <div className={baseInputClasses}>
-          <div className="me-3">
-            <DropDown />
-          </div>
-          <InputBar
-            placeholder={placeholder}
-            size={size}
-            type={type}
-            id={id}
-            width={width}
-            height={height}
-          />
-          <IconBtn 
-            imgSrc={whatBtn}
-            size={20}
-          />
+    <div style={inputStyle}>
+      <div className={baseInputClasses} style={inputStyle2}>
+        <div className="me-3">
+          <DropDown />
         </div>
+        <input
+          style={inputStyle2}
+          className={inputClasses}
+          {...props}
+          type={type}
+          required
+        />
+        <IconBtn imgSrc={whatBtn} size={20} />
+      </div>
       {helperText && (
         <p
           className={`mt-1 text-sm ${error ? "text-red-500" : "text-gray-500"}`}
