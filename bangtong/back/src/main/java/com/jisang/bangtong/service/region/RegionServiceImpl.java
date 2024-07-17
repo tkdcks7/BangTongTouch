@@ -1,5 +1,6 @@
 package com.jisang.bangtong.service.region;
 
+import com.jisang.bangtong.dto.region.RegionSidoDto;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.repository.region.RegionRepository;
 import java.util.List;
@@ -13,8 +14,8 @@ public class RegionServiceImpl implements RegionService{
   private RegionRepository regionRepository;
 
   @Override
-  public List<Region> searchCity() {
-    return List.of();
+  public List<RegionSidoDto> searchCity() {
+    return regionRepository.searchCity();
   }
 
   @Override
