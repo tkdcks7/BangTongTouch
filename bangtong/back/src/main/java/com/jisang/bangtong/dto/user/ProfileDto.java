@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class ProfileDto {
-    private Integer userId;
+    private Long userId;
     private String mediaPath;
     private String userNickname;
+
 }

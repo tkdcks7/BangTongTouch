@@ -1,5 +1,6 @@
 package com.jisang.bangtong.model.user;
 
+import com.jisang.bangtong.model.product.ProductType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +13,6 @@ import java.util.Date;
 @Entity
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,8 +62,11 @@ public class User {
     @Column(length = 37)
     private String userRefreshToken;
 
-//    @Enumerated
-//    @Column(nullable = false)
-//    private SsoType userSso;
+    public void setMediaPath(String mediaPath) {
+    }
+
+    @Column(columnDefinition = "ENUM('kakao', 'naver', 'google')")
+    private SsoType ssoType;
+
 
 }

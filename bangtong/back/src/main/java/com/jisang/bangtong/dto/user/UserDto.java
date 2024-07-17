@@ -1,8 +1,11 @@
 package com.jisang.bangtong.dto.user;
 
+import com.jisang.bangtong.model.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Optional;
 
 @Data
 @AllArgsConstructor
@@ -19,5 +22,11 @@ public class UserDto {
     private Integer gender;
     private Boolean isBanned;
     private String password;
+
+    public UserDto(Optional<User> user) {
+    }
+
+    public Long getUserId() {
+    }
 }
 
