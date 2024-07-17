@@ -1,4 +1,4 @@
-package com.jisang.bangtong.model.common;
+package com.jisang.bangtong.dto.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,8 +24,8 @@ public class ResponseDto<T> {
 
   public static <T> ResponseDto<T> res(final String message, final T t) {
     return ResponseDto.<T>builder()
-        .responseData(t)
         .message(message)
+        .responseData(t)
         .build();
   }
 
