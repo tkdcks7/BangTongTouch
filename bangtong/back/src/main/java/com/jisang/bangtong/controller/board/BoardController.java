@@ -43,7 +43,8 @@ public class BoardController {
   }
 
   @PutMapping("/modify/{boardId}")
-  public ResponseEntity<Object> modify(@PathVariable("boardId") long boardId, @RequestBody Board board) {
+  public ResponseEntity<Object> modify(@PathVariable("boardId") long boardId,
+      @RequestBody Board board) {
     log.info("modify board: {}", board);
     Optional<Board> existingBoard = boardService.findById(boardId);
     if (existingBoard.isPresent()) {
@@ -96,18 +97,18 @@ public class BoardController {
   public ResponseEntity<Object> getList(@PathVariable(value = "category", required = false) Integer category,
       @PathVariable(value = "pageNo", required = false) Integer pageNo,
       @PathVariable(value = "size", required = false) Integer size) {
-        if (category == null) {
-          category = 0;  // 기본값 설정
-        }
-        if (pageNo == null) {
-          pageNo = 0;  // 기본값 설정
-        }
-        if (size == null) {
-          size = 10;  // 기본값 설정
-        }
-      Pageable pageable = PageRequest.of(pageNo, size, Sort.by("boardDate"));
-      Page<Board> boardPage = boardService.getBoardsByCategory(category, pageable);
-      return ResponseEntity.ok(boardPage);
+    if (category == null) {
+      category = 0;  // 기본값 설정
+    }
+    if (pageNo == null) {
+      pageNo = 0;  // 기본값 설정
+    }
+    if (size == null) {
+      size = 10;  // 기본값 설정
+    }
+    Pageable pageable = PageRequest.of(pageNo, size, Sort.by("boardDate"));
+    Page<Board> boardPage = boardService.getBoardsByCategory(category, pageable);
+    return ResponseEntity.ok(boardPage);
   }
 
   @GetMapping("/search/{category}/{pageNo}/{size}/{region}/{keyword}")

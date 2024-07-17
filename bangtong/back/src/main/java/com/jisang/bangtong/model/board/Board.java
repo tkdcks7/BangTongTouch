@@ -27,10 +27,7 @@ public class Board {
   private Date boardDate = new Date();  // 현재 시간을 기본값으로 설정
 
   @Column(nullable = false)
-  private boolean boardIsBanned = false;  // 기본값을 코드에서 직접 설정
-
-  @Column(nullable = false)
-  private int boardCategory = 0;  // 기본값을 코드에서 직접 설정
+  private boolean boardIsBanned = false;  // 기본값을 코드에서 직접 설
 
   @Column(nullable = false)
   private boolean boardIsDelete = false;  // 기본값을 코드에서 직접 설정
