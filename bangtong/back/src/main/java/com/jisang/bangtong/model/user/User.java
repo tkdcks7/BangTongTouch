@@ -1,9 +1,13 @@
-package com.jisang.bangtong.user;
+package com.jisang.bangtong.model.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.Date;
 
 @Entity
 @Data
@@ -29,24 +33,27 @@ public class User {
     @Column(nullable = false, length = 13)
     private String userPhone;
 
-//    TODO: ColumnDefault(now())
-//    private String userRegisterDate;
+    @Column(nullable = false)
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private Date userRegisterDate;
+
     @Column(nullable = false, length = 27)
     private String userSalt;
 
     @Column(nullable = false, length = 10)
     private String userNickname;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean userIsAdmin;
 
     @Column(nullable = false)
     private Integer userGender;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean userIsDelete;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "boolean default false")
     private Boolean userIsBanned;
 
     @Column(nullable = false, length = 256)
@@ -55,8 +62,8 @@ public class User {
     @Column(length = 37)
     private String userRefreshToken;
 
-    @Enumerated
-    @Column(nullable = false)
-    private UserUserSso userSso;
+//    @Enumerated
+//    @Column(nullable = false)
+//    private SsoType userSso;
 
 }
