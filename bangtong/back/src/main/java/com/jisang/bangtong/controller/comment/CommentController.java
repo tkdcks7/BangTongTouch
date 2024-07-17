@@ -1,7 +1,7 @@
 package com.jisang.bangtong.controller.comment;
 
 import com.jisang.bangtong.dto.comment.CommentDto;
-import com.jisang.bangtong.model.common.ResponseDto;
+import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.service.comment.CommentService;
 import java.util.List;
 import java.util.Map;

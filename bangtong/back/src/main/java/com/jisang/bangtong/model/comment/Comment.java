@@ -55,6 +55,6 @@ public class Comment {
   private Date commentDate;
 
   @Column(columnDefinition = "boolean default false")
-  private Boolean commentIsDeleted;
+  private boolean commentIsDeleted;
 
 }
