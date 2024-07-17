@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 // 컴포넌트 불러오기
 import TextBox from '../atoms/TextBox';
@@ -42,27 +43,29 @@ const LoginPage: React.FC = () => {
       <div>
         <InputBox 
           placeholder='이메일 (아이디)'  
+          buttonType='cancel'
           size='large'
           type='email'
           width={400}
         />
         <InputBox 
           placeholder='비밀번호'  
+          buttonType='cancel'
           size='large'
           type='password'
           width={400}
         />
         <div className='flex justify-between text-sm text-lime-500'>
-          <a href="/">
+          <Link to="/user/FindSelectPage">
             <TextBox 
               text='아이디/비밀번호 찾기'
             />
-          </a>
-          <a href="/">
+          </Link>
+          <Link to="/user/register">
             <TextBox 
               text='회원가입'
             />
-          </a>
+          </Link>
         </div>
         <div className='flex justify-center mt-3'>
           <div className='mx-2'>

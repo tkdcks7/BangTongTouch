@@ -6,8 +6,11 @@ interface IconBtnProps {
 }
 
 const IconBtn: React.FC<IconBtnProps> = ({imgSrc, size}) => {
+  const buttonStyle: React.CSSProperties = {
+    flexShrink: 0   // 축소되는 것 방지
+  }
   return (
-    <button className="rounded">
+    <button className="rounded" style={buttonStyle}>
       <img src={imgSrc} alt="아이콘 이미지" width={size} height={size} />
     </button>
   );
