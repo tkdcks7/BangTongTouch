@@ -23,10 +23,10 @@ DROP TABLE IF EXISTS `region`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `region` (
-  `region_id` text,
-  `region_sido` text,
-  `region_gugun` text,
-  `region_dong` text
+  `region_id` varchar(11),
+  `region_sido` varchar(7),
+  `region_gugun` varchar(10),
+  `region_dong` varchar(10)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

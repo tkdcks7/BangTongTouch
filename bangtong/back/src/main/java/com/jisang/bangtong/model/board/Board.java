@@ -1,7 +1,9 @@
 package com.jisang.bangtong.model.board;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jisang.bangtong.model.region.Region;
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
@@ -26,11 +28,11 @@ public class Board {
   @Temporal(TemporalType.TIMESTAMP)
   private Date boardDate = new Date();  // 현재 시간을 기본값으로 설정
 
-  @Column(nullable = false)
-  private boolean boardIsBanned = false;  // 기본값을 코드에서 직접 설
+  @Column(nullable = false, columnDefinition = "tinyint(1) default 0")
+  private boolean boardIsBanned;  // 기본값을 코드에서 직접 설
 
-  @Column(nullable = false)
-  private boolean boardIsDelete = false;  // 기본값을 코드에서 직접 설정
+  @Column(nullable = false, columnDefinition = "tinyint(1) default 0")
+  private boolean boardIsDelete;  // 기본값을 코드에서 직접 설정
 
   @Column(nullable = false)
   private int boardHit = 0;  // 기본값을 코드에서 직접 설정
@@ -38,9 +40,15 @@ public class Board {
   @Column(nullable = false)
   private int boardScore = 0;
 
-  // TODO: Region 클래스 생성 후 관계 설정
-  // @ManyToOne
-  // private Region boardRegion;
+   //TODO: Region 클래스 생성 후 관계 설정
+   @ManyToOne
+   @JoinColumn(name="region_id", nullable=false)
+   private Region boardRegion;
+
+   //TODO: Media 클래스 생성 후 관계 설정
+//  @OneToMany
+//  @JoinColumn(name="media_id", nullable = true)
+//  private List<Media> boardMedia;
 
   // TODO: User 클래스 생성 후 관계 설정
   // @ManyToOne

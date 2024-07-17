@@ -107,7 +107,7 @@ public class BoardController {
       size = 10;  // 기본값 설정
     }
     Pageable pageable = PageRequest.of(pageNo, size, Sort.by("boardDate"));
-    Page<Board> boardPage = boardService.getBoardsByCategory(category, pageable);
+    Page<Board> boardPage = boardService.getBoards(pageable);
     return ResponseEntity.ok(boardPage);
   }
 

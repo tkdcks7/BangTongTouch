@@ -17,7 +17,7 @@ public interface BoardService {
 
   void delete(long id);
 
-  Page<Board> getBoardsByCategory(int category,Pageable pageable);
+  Page<Board> getBoards(Pageable pageable);
 
-  public Page<Board> getBoardsByCategoryAndTitle(int category, String keyword, Pageable pageable);
+  public Page<Board> getBoardsByTitle(String keyword, Pageable pageable);
 }

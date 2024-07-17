@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
-  Page<Board> findByBoardCategoryAndBoardTitleContainingOrderByBoardDateDesc(int category, String title, Pageable pageable);
-  Page<Board> findByBoardCategoryOrderByBoardDateDesc(int category, Pageable pageable);
+  Page<Board> findByBoardTitleContainingOrderByBoardDateDesc(String title, Pageable pageable);
+  Page<Board> findByOrderByBoardDateDesc(Pageable pageable);
 }
