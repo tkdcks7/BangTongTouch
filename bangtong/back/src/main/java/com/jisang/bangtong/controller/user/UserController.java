@@ -1,5 +1,6 @@
 package com.jisang.bangtong.controller.user;
 
+<<<<<<< Updated upstream
 import com.jisang.bangtong.dto.user.ProfileDto;
 import com.jisang.bangtong.dto.user.UserDto;
 import com.jisang.bangtong.service.user.UserService;
@@ -51,3 +52,17 @@ public class UserController {
         return null;
     }
 }
+=======
+import com.jisang.bangtong.service.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+}
+>>>>>>> Stashed changes

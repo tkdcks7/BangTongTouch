@@ -1,5 +1,6 @@
 package com.jisang.bangtong.service.user;
 
+<<<<<<< Updated upstream
 import com.jisang.bangtong.dto.user.ProfileDto;
 import com.jisang.bangtong.dto.user.UserDto;
 import com.jisang.bangtong.model.user.User;
@@ -66,4 +67,10 @@ public class UserService {
         user.setUserPhone(updateUserDto.getPhone());
         user.setUserPassword(updateUserDto.getPassword());
     }
+=======
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserService {
+>>>>>>> Stashed changes
 }

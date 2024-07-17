@@ -1,11 +1,18 @@
 package com.jisang.bangtong.model.user;
 
+<<<<<<< Updated upstream
 import com.jisang.bangtong.model.product.ProductType;
+=======
+import com.jisang.bangtong.user.UserUserSso;
+>>>>>>> Stashed changes
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+<<<<<<< Updated upstream
 import org.hibernate.annotations.ColumnDefault;
+=======
+>>>>>>> Stashed changes
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
@@ -62,11 +69,17 @@ public class User {
     @Column(length = 37)
     private String userRefreshToken;
 
+<<<<<<< Updated upstream
     public void setMediaPath(String mediaPath) {
     }
 
     @Column(columnDefinition = "ENUM('kakao', 'naver', 'google')")
     private SsoType ssoType;
 
+=======
+    @Enumerated
+    @Column(nullable = false)
+    private SsoType userSso;
+>>>>>>> Stashed changes
 
 }
