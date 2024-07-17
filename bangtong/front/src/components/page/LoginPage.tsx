@@ -6,6 +6,8 @@ import TextBox from '../atoms/TextBox';
 import InputBox from '../molecules/InputBox';
 import IconBtn from '../atoms/IconBtn';
 import Btn from '../atoms/Btn';
+import MNavBar from '../organism/MNavBar';
+import MMenuBar from '../organism/MMenuBar';
 
 // 이미지 소스
 import Google from '../../assets/GoogleSocial.png'
@@ -35,12 +37,14 @@ import Naver from '../../assets/NaverSocial.png'
 const LoginPage: React.FC = () => {
   return (
     <div className='h-screen flex flex-col items-center justify-center'>
-      <div className='text-3xl font-bold m-6'>
+      <MMenuBar />
+      <div className='font-bold m-6'>
         <TextBox 
           text='로그인'
+          size='3xl'
         />
       </div>
-      <div>
+      <form className='mb-20'>
         <InputBox 
           placeholder='이메일 (아이디)'  
           buttonType='cancel'
@@ -94,7 +98,8 @@ const LoginPage: React.FC = () => {
             textColor='white'
           />
         </div>
-      </div>
+      </form>
+      <MNavBar />
     </div>
   );
 }

@@ -60,7 +60,7 @@ const InputBox: React.FC<InputProps> = ({
   const qualifiedClasses = "border-lime-500 text-white focus:text-white";
 
   const baseInputClasses = `flex items-center mt-1 px-3 py-2 ${id === "q" ? "bg-lime-500" : "bg-white"} border-2 border-gray-300 block rounded-full
-    ${isFocused ? "ring-4 ring-lime-500" : ""}
+    ${isFocused ? "ring-1 ring-lime-500" : ""}
     ${id === "e" ? errorClasses : ""}
     ${id === "q" ? qualifiedClasses : ""}`;
 
