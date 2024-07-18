@@ -49,7 +49,7 @@ public class SecurityConfig {
             .requestMatchers("/products").hasAnyRole("USER", "ADMIN")
             .requestMatchers("/comments").hasRole("USER")
             .requestMatchers("/users").authenticated()
-            .requestMatchers("/notices", "/contact", "/register").permitAll())
+            .anyRequest().permitAll())
         .formLogin(formLogin -> formLogin.defaultSuccessUrl("https://www.naver.com/",
             true))
         .httpBasic(Customizer.withDefaults());

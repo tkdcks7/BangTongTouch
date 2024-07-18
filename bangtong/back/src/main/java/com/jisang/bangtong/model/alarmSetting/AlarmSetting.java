@@ -2,10 +2,14 @@ package com.jisang.bangtong.model.alarmSetting;
 
 import com.jisang.bangtong.dto.alarmsetting.AlarmSettingDto;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AlarmSetting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

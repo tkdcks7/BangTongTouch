@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface AlarmSettingRepository extends JpaRepository<AlarmSetting, Long> {
     Optional<AlarmSetting> findByUserId(Long userId);
+    Optional<AlarmSetting> findByAlarmPhoneChat(boolean alarmPhoneChat);
 }

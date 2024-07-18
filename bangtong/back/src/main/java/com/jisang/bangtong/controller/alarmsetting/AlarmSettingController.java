@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/alarms")
 @RequiredArgsConstructor
@@ -25,11 +27,19 @@ public class AlarmSettingController {
         log.info("asklml");
     }
 
+    // 알리 권한 설정
     @PostMapping("/setting/modify/{userId}")
     public ResponseEntity<ResponseDto<Void>> updatealarmsetting(@PathVariable("userId") Long userId, @RequestBody AlarmSettingDto settingDto) {
         userId = 1L;
         System.out.println("업데이트");
         alarmSettingService.updateAlarmSetting(userId, settingDto);
         return ResponseEntity.ok(ResponseDto.res("SUCCESS"));
+    }
+
+    // 알림 권한 조회
+    @GetMapping("/setting/{userID}")
+    private ResponseEntity<ResponseDto<List<AlarmSettingDto>>> alarmAuthorize(@PathVariable long userId) {
+        List<AlarmSettingDto> settingList = alarmSettingService.alarmAuthorize(userId);
+        return ResponseEntity.ok(ResponseDto.res("SUCCESS", settingList));
     }
 }
