@@ -10,24 +10,45 @@ import DropDown from "../molecules/DropDown";
 import { redirect } from "react-router-dom";
 
 const SignupPage: React.FC = () => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState<string>("");
   const [socialNumber, setSocialNumber] = useState("");
   const [phone, setPhone] = useState("");
   const [certificationNumber, setCertificationNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordVerification, setPasswordVerification] = useState("");
-  const [motionValue, setMotionValue] = useState<number>(0);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [passwordVerification, setPasswordVerification] = useState<string>("");
   const signUpVariants = {
     inital: {
-      y: motionValue,
+      y: 0,
     },
     target: {
-      y: motionValue - 20,
+      y: -10,
     },
   };
 
   const handleSignUp = (e: any): void => {
+    if (name === "") {
+      alert("이름을 입력해주세요");
+      return;
+    }
+    console.log(email.includes("@"));
+    if (socialNumber.length < 7) {
+      alert("올바른 주민번호를 입력해주세요");
+      return;
+    }
+    if (email === "" && email.includes("@") === false) {
+      alert("올바른 이메일을 입력해주세요");
+      return;
+    }
+    if (password === "") {
+      alert("올바른 비밀번호를 입력해주세요");
+      return;
+    }
+    if (password !== passwordVerification) {
+      alert("비밀번호가 다릅니다. 다시 입력해주세요");
+      return;
+    }
+
     const formData: FormData = new FormData(); // formData 인스턴스 생성
     const birthYear: string = socialNumber.slice(0, 6); // 생일은 주민번호 앞자리를 자름
     const gender: number = Number(socialNumber[6]) % 2; // 성별은 주민번호 뒷자리 첫 자를 숫자로 변환 후 2로 나눈 나머지를 반환. 추후 프로필수정에서 수정
@@ -52,6 +73,7 @@ const SignupPage: React.FC = () => {
         console.log("성공적으로 전송됐습니다.", response.data)
       ) // 확인용. refactoring 시 지울 것
       .catch((error) => console.log("전송 실패"));
+    alert("회원가입이 완료되었습니다!");
     redirect("/user/login");
   };
   return (
@@ -67,17 +89,12 @@ const SignupPage: React.FC = () => {
       className="h-screen flex flex-col items-center justify-center"
     >
       <div className="text-3xl font-bold m-6">
-        <TextBox 
-          text="회원가입" 
-          size="2xl"
-        />
+        <TextBox text="회원가입" size="2xl" />
       </div>
       <form
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            setMotionValue(motionValue - 20);
             e.preventDefault();
-            console.log("sdaf");
           }
         }}
       >
@@ -86,7 +103,7 @@ const SignupPage: React.FC = () => {
           buttonType="cancel"
           placeholder="이름"
           size="large"
-          type="email"
+          type="string"
           width={"70vw"}
           height={50}
           value={name}
@@ -95,24 +112,32 @@ const SignupPage: React.FC = () => {
           }}
         />
         <InputBox
-          placeholder="주민등록번호"
+          placeholder="주민등록번호 뒷자리 첫 번째 숫자까지"
           buttonType="cancel"
           size="large"
-          type="password"
+          type="number"
           width={"70vw"}
           value={socialNumber}
-          onChange={(e) => setSocialNumber(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value.length < 8) {
+              setSocialNumber(e.target.value);
+            }
+          }}
         />
-        <div className="flex items-center" style={{width: '70vw'}}>
+        <div className="flex items-center" style={{ width: "70vw" }}>
           <DropDown />
           <InputBox
-            placeholder="인증번호 입력"
+            placeholder="전화번호 - 없이 숫자만 입력"
             buttonType="send"
             size="large"
             width={"100%"}
-            type="text"
-            value={certificationNumber}
-            onChange={(e) => setCertificationNumber(e.target.value)}
+            type="number"
+            value={phone}
+            onChange={(e) => {
+              if (e.target.value.length < 12) {
+                setPhone(e.target.value);
+              }
+            }}
           />
         </div>
         <InputBox
@@ -132,7 +157,6 @@ const SignupPage: React.FC = () => {
           width={"70vw"}
           value={email}
           onChange={(e) => {
-            console.log(email);
             setEmail(e.target.value);
           }}
         />
@@ -141,6 +165,7 @@ const SignupPage: React.FC = () => {
           buttonType="cancel"
           size="large"
           type="password"
+          maxLength={20}
           width={"70vw"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -149,6 +174,7 @@ const SignupPage: React.FC = () => {
           placeholder="비밀번호 확인"
           buttonType="cancel"
           size="large"
+          maxLength={20}
           type="password"
           width={"70vw"}
           id={
@@ -159,7 +185,6 @@ const SignupPage: React.FC = () => {
         />
         <div className="flex justify-center mt-20">
           <Btn
-            type="submit"
             text="다음"
             backgroundColor="lime-500"
             textColor="white"
