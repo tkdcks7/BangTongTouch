@@ -34,6 +34,7 @@ interface InputProps
   error?: boolean;
   size?: "small" | "medium" | "large";
   buttonType?: "cancel" | "check" | "dropdown" | "send"; // cancel, check, dropdown, send
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
 const InputBox: React.FC<InputProps> = ({
@@ -46,6 +47,8 @@ const InputBox: React.FC<InputProps> = ({
   id = "",
   width = 400,
   height = 50,
+  onChange,
+  value,
   ...props
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -106,6 +109,8 @@ const InputBox: React.FC<InputProps> = ({
           required
           onFocus={handleFocus}
           onBlur={handleBlur}
+          value={value}
+          onChange={onChange}
         />
         <IconBtn imgSrc={whatBtn} size={20} />
       </div>

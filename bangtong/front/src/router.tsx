@@ -17,6 +17,7 @@ const Router: React.FC = () => {
       <Route path='/user/FindSelectPage' element={<FindSelectPage />} />
       <Route path='/user/IdFindPage' element={<IdFindPage />} />
       <Route path='/user/PwFindPage' element={<PwFindPage />} />
+      {/* <Route path='/community' element={<CommunityPage />} /> */}
     {/* <Route path='/' element={<Layout />}>
     이 사이에 Nav가 포함돼있는 기타 페이지를 작성하면 됩니다.
     </Route> */}
