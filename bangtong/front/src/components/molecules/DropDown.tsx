@@ -43,5 +43,3 @@ export default function DropDown() {
     </Menu>
   );
 }
-
-export default DropDown;
