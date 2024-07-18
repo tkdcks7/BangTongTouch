@@ -37,7 +37,6 @@ import Naver from '../../assets/NaverSocial.png'
 const LoginPage: React.FC = () => {
   return (
     <div className='h-screen flex flex-col items-center justify-center'>
-      <MMenuBar />
       <div className='font-bold m-6'>
         <TextBox 
           text='로그인'
@@ -50,14 +49,14 @@ const LoginPage: React.FC = () => {
           buttonType='cancel'
           size='large'
           type='email'
-          width={400}
+          width={'70vw'}
         />
         <InputBox 
           placeholder='비밀번호'  
           buttonType='cancel'
           size='large'
           type='password'
-          width={400}
+          width={'70vw'}
         />
         <div className='flex justify-between text-sm text-lime-500'>
           <Link to="/user/FindSelectPage">
@@ -99,7 +98,6 @@ const LoginPage: React.FC = () => {
           />
         </div>
       </form>
-      <MNavBar />
     </div>
   );
 }

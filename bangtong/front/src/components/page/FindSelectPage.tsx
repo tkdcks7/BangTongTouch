@@ -13,6 +13,7 @@ const FindSelectPage
       <div className='text-3xl font-bold m-6'>
         <TextBox 
           text='아이디/비밀번호 찾기'
+          size='2xl'
         />
       </div>
       <div className='flex justify-center mt-5'>

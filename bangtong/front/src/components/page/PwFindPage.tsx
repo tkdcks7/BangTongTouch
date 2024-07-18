@@ -12,6 +12,7 @@ const PwFindPage: React.FC = () => {
       <div className='text-3xl font-bold m-6'>
         <TextBox 
           text='비밀번호 찾기'
+          size='2xl'
         />
       </div>
       <div>
@@ -20,14 +21,14 @@ const PwFindPage: React.FC = () => {
           buttonType='cancel'
           size='large'
           type='email'
-          width={400}
+          width={'70vw'}
         />
         <InputBox 
           placeholder='핸드폰 번호'  
           buttonType='cancel'
           size='large'
           type='email'
-          width={400}
+          width={'70vw'}
         />
         <div className='flex justify-center mt-10'>
           <Btn 

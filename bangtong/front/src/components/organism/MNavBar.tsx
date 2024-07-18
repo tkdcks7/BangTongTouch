@@ -13,7 +13,7 @@ import Community from '../../assets/Community.png'
 
 const MNavBar: React.FC = () => {
   return (
-    <div className='flex justify-around w-screen absolute bottom-0 left-0 bg-lime-500 p-2'>
+    <div className='flex justify-around w-screen fixed bottom-0 left-0 bg-lime-500 p-2 pb-5'>
       <button className='w-14'>
         <IconBtn 
           imgSrc={Home}

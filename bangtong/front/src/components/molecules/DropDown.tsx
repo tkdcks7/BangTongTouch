@@ -1,11 +1,20 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
-export default function DropDown() {
+interface DropDownProps {
+  width?: string
+}
+
+const DropDown: React.FC<DropDownProps> = ({
+  width
+}) => {
+  const MenuBtnStyle: React.CSSProperties = {};
+  if (width) MenuBtnStyle.width = width;
+
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <MenuButton className="flex text-nowrap w-full justify-center rounded-full bg-white px-3 py-1 text-center text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+        <MenuButton style={MenuBtnStyle} className="flex text-nowrap w-full justify-center rounded-full bg-white px-3 py-2 text-center text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
           통신사
           <ChevronDownIcon
             aria-hidden="true"
@@ -56,3 +65,5 @@ export default function DropDown() {
     </Menu>
   );
 }
+
+export default DropDown;

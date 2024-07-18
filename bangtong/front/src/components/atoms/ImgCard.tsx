@@ -1,5 +1,5 @@
 import React, { ImgHTMLAttributes, PropsWithChildren } from 'react';
-import defaultHomeImage from '../assets/defaulthome.png';
+import defaultHomeImage from '../../assets/defaulthome.png';
 
 interface ImgCardProps {
   src?: string;
