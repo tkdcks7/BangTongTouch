@@ -1,4 +1,8 @@
-import React, { useState, InputHTMLAttributes } from "react";
+import React, {
+  useState,
+  InputHTMLAttributes,
+  ButtonHTMLAttributes,
+} from "react";
 import IconBtn from "../atoms/IconBtn";
 
 // 아이콘
@@ -100,15 +104,14 @@ const InputBox: React.FC<InputProps> = ({
     pr-1
   `;
 
-
   // x 아이콘을 클릭 시 해당 input의 value를 빈 문자열로 초기화
   const handleIconClick = () => {
     if (setValue) {
-      setValue('');
+      setValue("");
     }
     if (onChange) {
       const event = {
-        target: { value: '' },
+        target: { value: "" },
       } as React.ChangeEvent<HTMLInputElement>;
       onChange(event);
     }
@@ -128,9 +131,10 @@ const InputBox: React.FC<InputProps> = ({
           onBlur={handleBlur}
           value={value}
           onChange={(e) => {
-            // if (setValue) {
-            //   setValue(e.target.value);
-            // } GPT는 이 부분이 필요하다고 하는데, 굳이 필요한지는 잘 모르겠음.
+            e.preventDefault();
+            if (setValue) {
+              setValue(e.target.value);
+            }
             if (onChange) onChange(e);
           }}
         />

@@ -27,7 +27,7 @@ export default function DropDown() {
       >
         <div className="py-1">
           {callCompanyList.map((item) => (
-            <MenuItem>
+            <MenuItem key={item}>
               <button
                 className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 w-20"
                 onClick={(e) => {
