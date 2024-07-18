@@ -6,11 +6,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class QuerydslConfig{
-
+public class QuerydslConfig {
 
   @Bean
   public JPAQueryFactory jpaQueryFactory(EntityManager entityManager) {
     return new JPAQueryFactory(entityManager);
   }
+
 }
