@@ -74,7 +74,7 @@ const LoginPage: React.FC = () => {
           buttonType='cancel'
           size='large'
           type='email'
-          width={400}
+          width={"70vw"}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -83,7 +83,7 @@ const LoginPage: React.FC = () => {
           buttonType='cancel'
           size='large'
           type='password'
-          width={400}
+          width={"70vw"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
