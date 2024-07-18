@@ -42,7 +42,7 @@ public class Board {
 
    //TODO: Region 클래스 생성 후 관계 설정
    @ManyToOne
-   @JoinColumn(name="region_id", nullable=false)
+   @JoinColumn(name="region_id")
    private Region boardRegion;
 
    //TODO: Media 클래스 생성 후 관계 설정

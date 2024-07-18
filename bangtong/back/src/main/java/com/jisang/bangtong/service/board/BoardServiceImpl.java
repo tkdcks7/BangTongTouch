@@ -35,12 +35,10 @@ public class BoardServiceImpl implements BoardService {
     boardRepository.deleteById(id);
   }
 
-  public Page<Board> getBoards(Pageable pageable) {
-    return boardRepository.findByOrderByBoardDateDesc(pageable);
+  @Override
+  public Page<Board> getBoards(Pageable pageable, String region, String keyword){
+    return boardRepository.getBoards(pageable, region, keyword);
   }
 
-  public Page<Board> getBoardsByTitle(String keyword, Pageable pageable) {
-    return boardRepository.findByBoardTitleContainingOrderByBoardDateDesc(keyword, pageable);
-  }
 
 }

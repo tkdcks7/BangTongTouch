@@ -93,13 +93,11 @@ public class BoardController {
     }
   }
 
-  @GetMapping("/list/{category}/{pageNo}/{size}")
-  public ResponseEntity<Object> getList(@PathVariable(value = "category", required = false) Integer category,
+  @GetMapping("/list/{region}/{pageNo}/{size}/{keyword}")
+  public ResponseEntity<Object> getList(@PathVariable(value = "region", required = false) String region,
       @PathVariable(value = "pageNo", required = false) Integer pageNo,
-      @PathVariable(value = "size", required = false) Integer size) {
-    if (category == null) {
-      category = 0;  // 기본값 설정
-    }
+      @PathVariable(value = "size", required = false) Integer size,@PathVariable String keyword) {
+
     if (pageNo == null) {
       pageNo = 0;  // 기본값 설정
     }
@@ -107,24 +105,21 @@ public class BoardController {
       size = 10;  // 기본값 설정
     }
     Pageable pageable = PageRequest.of(pageNo, size, Sort.by("boardDate"));
-    Page<Board> boardPage = boardService.getBoards(pageable);
+    Page<Board> boardPage = boardService.getBoards(pageable, region, keyword);
     return ResponseEntity.ok(boardPage);
   }
 
-  @GetMapping("/search/{category}/{pageNo}/{size}/{region}/{keyword}")
-  public ResponseEntity<Object> getSearch(@PathVariable(required = false) Integer category,
-      @PathVariable(value = "pageNo", required = false) Integer pageNo, @PathVariable(value="size") Integer size, @PathVariable String region, @PathVariable(required = false) String keyword) {
-    if (category == null) {
-      category = 0;  // 기본값 설정
-    }
-    if (pageNo == null) {
-      pageNo = 0;  // 기본값 설정
-    }
-    if (size == null) {
-      size = 10;  // 기본값 설정
-    }
-    Pageable pageable = PageRequest.of(pageNo, size, Sort.by("boardDate"));
-
-    return null;
-  }
+//  @GetMapping("/search/{region}/{pageNo}/{size}/{keyword}")
+//  public ResponseEntity<Object> getSearch(
+//      @PathVariable(value = "pageNo", required = false) Integer pageNo, @PathVariable(value="size") Integer size, @PathVariable String region, @PathVariable(required = false) String keyword) {
+//    if (pageNo == null) {
+//      pageNo = 0;  // 기본값 설정
+//    }
+//    if (size == null) {
+//      size = 10;  // 기본값 설정
+//    }
+//    Pageable pageable = PageRequest.of(pageNo, size, Sort.by("boardDate"));
+//    Page<Board> boards = boardService.get
+//    return null;
+//  }
 }
