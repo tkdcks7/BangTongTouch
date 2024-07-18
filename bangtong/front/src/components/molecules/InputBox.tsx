@@ -35,6 +35,8 @@ interface InputProps
   size?: "small" | "medium" | "large";
   buttonType?: "cancel" | "check" | "dropdown" | "send"; // cancel, check, dropdown, send
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  value?: string;
+  setValue?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const InputBox: React.FC<InputProps> = ({
@@ -49,6 +51,7 @@ const InputBox: React.FC<InputProps> = ({
   height = 50,
   onChange,
   value,
+  setValue,
   ...props
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -97,6 +100,20 @@ const InputBox: React.FC<InputProps> = ({
     pr-1
   `;
 
+
+  // x 아이콘을 클릭 시 해당 input의 value를 빈 문자열로 초기화
+  const handleIconClick = () => {
+    if (setValue) {
+      setValue('');
+    }
+    if (onChange) {
+      const event = {
+        target: { value: '' },
+      } as React.ChangeEvent<HTMLInputElement>;
+      onChange(event);
+    }
+  };
+
   return (
     <div style={inputStyle}>
       <div className={baseInputClasses}>
@@ -110,9 +127,14 @@ const InputBox: React.FC<InputProps> = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
           value={value}
-          onChange={onChange}
+          onChange={(e) => {
+            // if (setValue) {
+            //   setValue(e.target.value);
+            // } GPT는 이 부분이 필요하다고 하는데, 굳이 필요한지는 잘 모르겠음.
+            if (onChange) onChange(e);
+          }}
         />
-        <IconBtn imgSrc={whatBtn} size={20} />
+        <IconBtn imgSrc={whatBtn} size={20} onClick={handleIconClick} />
       </div>
       {helperText && (
         <p
