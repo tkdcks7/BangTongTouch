@@ -1,9 +1,6 @@
-import React, {
-  useState,
-  InputHTMLAttributes,
-  ButtonHTMLAttributes,
-} from "react";
+import { InputHTMLAttributes, useState } from "react";
 import IconBtn from "../atoms/IconBtn";
+import DropDown from "../molecules/DropDown";
 
 // 아이콘
 import Cancel from "../../assets/CancelCircle.png";
@@ -32,30 +29,24 @@ import Send from "../../assets/Send.png";
 
  */
 
-interface InputProps
+interface PhoneInputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   helperText?: string;
   error?: boolean;
   size?: "small" | "medium" | "large";
-  buttonType?: "cancel" | "check" | "dropdown" | "send"; // cancel, check, dropdown, send
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  value?: string;
-  setValue?: React.Dispatch<React.SetStateAction<string>>;
+  buttonType?: string; // cancel, check, dropdown, send
 }
 
-const InputBox: React.FC<InputProps> = ({
+const PhoneInputBox: React.FC<PhoneInputProps> = ({
   helperText,
   error = false,
   placeholder,
-  buttonType = "cancel",
+  buttonType,
   size = "medium",
   type,
   id = "",
   width = 400,
   height = 50,
-  onChange,
-  value,
-  setValue,
   ...props
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -67,12 +58,13 @@ const InputBox: React.FC<InputProps> = ({
 
   const errorClasses =
     "border-red-500 focus:border-red-500 focus:ring-red-500 text-red-600 focus:text-red-500";
-  const qualifiedClasses = "border-lime-500 text-white focus:text-white";
+  const qualifiedClasses =
+    "border-lime-500 bg-lime-500 text-white focus:text-white";
 
-  const baseInputClasses = `flex items-center mt-1 px-3 py-2 ${id === "q" ? "bg-lime-500" : "bg-white"} border-2 border-gray-300 block rounded-full
-    ${isFocused ? "ring-1 ring-lime-500" : ""}
+  const baseInputClasses = `flex items-center px-2 ${id === "q" ? "bg-lime-500" : "bg-white"} bg-white border-2 border-gray-300 block rounded-full
+${isFocused ? "ring-1 ring-lime-500" : ""}
     ${id === "e" ? errorClasses : ""}
-    ${id === "q" ? qualifiedClasses : ""}`;
+    ${id === "q" ? qualifiedClasses : ""}}`;
 
   const inputStyle: React.CSSProperties = {};
   if (width) inputStyle.width = width;
@@ -90,13 +82,15 @@ const InputBox: React.FC<InputProps> = ({
     whatBtn = Send;
   }
   const inputStyle2: React.CSSProperties = {};
-  inputStyle2.width = "95%";
+  inputStyle2.width = "100%";
   inputStyle2.height = "90%";
+
   const sizeClasses = {
     small: "text-sm",
     medium: "text-base",
     large: "text-lg",
   };
+
   const inputClasses = `
     ${sizeClasses[size]}
     ${id === "" ? "text-black" : id === "e" ? "text-text-red-500" : "text-white bg-lime-500"}
@@ -104,41 +98,28 @@ const InputBox: React.FC<InputProps> = ({
     pr-1
   `;
 
-  // x 아이콘을 클릭 시 해당 input의 value를 빈 문자열로 초기화
-  const handleIconClick = () => {
-    if (setValue) {
-      setValue("");
-    }
-    if (onChange) {
-      const event = {
-        target: { value: "" },
-      } as React.ChangeEvent<HTMLInputElement>;
-      onChange(event);
-    }
-  };
-
   return (
     <div style={inputStyle}>
-      <div className={baseInputClasses}>
+      <div className={baseInputClasses} style={inputStyle2}>
+        <div className="me-3">
+          <DropDown />
+        </div>
         <input
           style={inputStyle2}
-          placeholder={placeholder}
           className={inputClasses}
           {...props}
           type={type}
           required
           onFocus={handleFocus}
           onBlur={handleBlur}
-          value={value}
-          onChange={(e) => {
+        />
+        <IconBtn
+          imgSrc={whatBtn}
+          size={20}
+          onClick={(e) => {
             e.preventDefault();
-            if (setValue) {
-              setValue(e.target.value);
-            }
-            if (onChange) onChange(e);
           }}
         />
-        <IconBtn imgSrc={whatBtn} size={20} onClick={handleIconClick} />
       </div>
       {helperText && (
         <p
@@ -151,4 +132,5 @@ const InputBox: React.FC<InputProps> = ({
   );
 };
 
-export default InputBox;
+export default PhoneInputBox;
+

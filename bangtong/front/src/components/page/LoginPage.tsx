@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 // 컴포넌트 불러오기
 import TextBox from '../atoms/TextBox';
@@ -35,6 +36,30 @@ import Naver from '../../assets/NaverSocial.png'
  */
 
 const LoginPage: React.FC = () => {
+  const [ email, setEmail ] = useState('')
+  const [ password, setPassword ] = useState('')
+
+  interface LoginInfo {
+    email: string;
+    password: string;
+  }
+
+  const handleLogIn = (e:any):void => {
+    e.preventDefault();
+    const payload:LoginInfo = {
+      "email": email,
+      "password": password
+    }
+    console.log(`payload = ${payload}`)
+    console.log(`email = ${payload["email"]}`)
+    axios({
+      method: 'POST',
+      url: 'http://127.0.0.1:8080/user/login/',
+      data: payload
+    })
+    .then(response => console.log(response.data, '성공적으로 전송됨'))
+    .catch(error => console.log('전송 실패', error))
+  }
   return (
     <div className='h-screen flex flex-col items-center justify-center'>
       <div className='font-bold m-6'>
@@ -49,14 +74,18 @@ const LoginPage: React.FC = () => {
           buttonType='cancel'
           size='large'
           type='email'
-          width={'70vw'}
+          width={400}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <InputBox 
           placeholder='비밀번호'  
           buttonType='cancel'
           size='large'
           type='password'
-          width={'70vw'}
+          width={400}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <div className='flex justify-between text-sm text-lime-500'>
           <Link to="/user/FindSelectPage">
@@ -95,6 +124,7 @@ const LoginPage: React.FC = () => {
             text='로그인'
             backgroundColor='lime-500'
             textColor='white'
+            onClick={handleLogIn}
           />
         </div>
       </form>
