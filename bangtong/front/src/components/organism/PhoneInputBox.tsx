@@ -1,4 +1,4 @@
-import { InputHTMLAttributes } from "react";
+import { InputHTMLAttributes, useState } from "react";
 import IconBtn from "../atoms/IconBtn";
 import DropDown from "../molecules/DropDown";
 
@@ -49,13 +49,20 @@ const PhoneInputBox: React.FC<PhoneInputProps> = ({
   height = 50,
   ...props
 }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleFocus = () => {
+    if (id === "") setIsFocused(true);
+  };
+  const handleBlur = () => setIsFocused(false);
+
   const errorClasses =
     "border-red-500 focus:border-red-500 focus:ring-red-500 text-red-600 focus:text-red-500";
   const qualifiedClasses =
     "border-lime-500 bg-lime-500 text-white focus:text-white";
 
-  const baseInputClasses = `flex items-center px-2 bg-white border-2 border-gray-300 block rounded-full
-${id === "" ? "focus:ring-lime-500" : ""}
+  const baseInputClasses = `flex items-center px-2 ${id === "q" ? "bg-lime-500" : "bg-white"} bg-white border-2 border-gray-300 block rounded-full
+${isFocused ? "ring-1 ring-lime-500" : ""}
     ${id === "e" ? errorClasses : ""}
     ${id === "q" ? qualifiedClasses : ""}}`;
 
@@ -103,8 +110,16 @@ ${id === "" ? "focus:ring-lime-500" : ""}
           {...props}
           type={type}
           required
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
-        <IconBtn imgSrc={whatBtn} size={20} />
+        <IconBtn
+          imgSrc={whatBtn}
+          size={20}
+          onClick={(e) => {
+            e.preventDefault();
+          }}
+        />
       </div>
       {helperText && (
         <p
