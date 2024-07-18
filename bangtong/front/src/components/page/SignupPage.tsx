@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import TextBox from "../atoms/TextBox";
 import InputBox from "../molecules/InputBox";
 import Btn from "../atoms/Btn";
+import DropDown from "../molecules/DropDown";
 import { redirect } from "react-router-dom";
 
 const SignupPage: React.FC = () => {
@@ -86,7 +87,7 @@ const SignupPage: React.FC = () => {
           placeholder="이름"
           size="large"
           type="email"
-          width={400}
+          width={"70vw"}
           height={50}
           value={name}
           onChange={(e) => {
@@ -98,25 +99,28 @@ const SignupPage: React.FC = () => {
           buttonType="cancel"
           size="large"
           type="password"
-          width={400}
+          width={"70vw"}
           value={socialNumber}
           onChange={(e) => setSocialNumber(e.target.value)}
         />
-        <PhoneInputBox
-          placeholder="휴대폰 번호"
-          buttonType="cancel"
-          size="large"
-          type="number"
-          width={400}
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
+        <div className="flex items-center" style={{width: '70vw'}}>
+          <DropDown />
+          <InputBox
+            placeholder="인증번호 입력"
+            buttonType="send"
+            size="large"
+            width={"100%"}
+            type="text"
+            value={certificationNumber}
+            onChange={(e) => setCertificationNumber(e.target.value)}
+          />
+        </div>
         <InputBox
           placeholder="인증번호 입력"
           buttonType="send"
           size="large"
           type="text"
-          width={400}
+          width={"70vw"}
           value={certificationNumber}
           onChange={(e) => setCertificationNumber(e.target.value)}
         />
@@ -125,7 +129,7 @@ const SignupPage: React.FC = () => {
           buttonType="cancel"
           size="large"
           type="email"
-          width={400}
+          width={"70vw"}
           value={email}
           onChange={(e) => {
             console.log(email);
@@ -137,7 +141,7 @@ const SignupPage: React.FC = () => {
           buttonType="cancel"
           size="large"
           type="password"
-          width={400}
+          width={"70vw"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -146,7 +150,7 @@ const SignupPage: React.FC = () => {
           buttonType="cancel"
           size="large"
           type="password"
-          width={400}
+          width={"70vw"}
           id={
             password === "" ? "" : passwordVerification === password ? "q" : "e"
           }
