@@ -2,6 +2,7 @@ package com.jisang.bangtong.repository.region;
 
 import static com.jisang.bangtong.model.region.QRegion.region;
 
+import com.jisang.bangtong.dto.region.RegionDongDto;
 import com.jisang.bangtong.dto.region.RegionGugunDto;
 import com.jisang.bangtong.dto.region.RegionSidoDto;
 import com.jisang.bangtong.model.region.QRegion;
@@ -19,7 +20,7 @@ public class RegionRepositoryCustomImpl implements RegionRepositoryCustom {
   private JPAQueryFactory queryFactory;
 
   @Override
-  public List<RegionSidoDto> searchCity() {
+  public List<RegionSidoDto> searchSido() {
     QRegion qRegion = region;
 
     return queryFactory
@@ -33,7 +34,7 @@ public class RegionRepositoryCustomImpl implements RegionRepositoryCustom {
   }
 
   @Override
-  public List<RegionGugunDto> searchSido(String sido) {
+  public List<RegionGugunDto> searchGugun(String sido) {
     List<RegionGugunDto> results = queryFactory
         .select(Projections.constructor(RegionGugunDto.class, region.regionId.substring(0,5).as("regionId"), region.regionGugun))
         .from(region)
@@ -47,7 +48,15 @@ public class RegionRepositoryCustomImpl implements RegionRepositoryCustom {
   }
 
   @Override
-  public List<Region> searchArea(String area) {
-    return List.of();
+  public List<RegionDongDto> searchDong(String gugun) {
+    List<RegionDongDto> results= queryFactory
+        .select(Projections.constructor(RegionDongDto.class, region.regionId.as("regionId"), region.regionDong))
+        .from(region)
+        .where(region.regionId.substring(0,5).eq(gugun)
+            .and(region.regionId.substring(6,9).ne("000")))
+        .groupBy(region.regionId.substring(0,8), region.regionDong)
+        .distinct()
+        .fetch();
+    return results;
   }
 }
