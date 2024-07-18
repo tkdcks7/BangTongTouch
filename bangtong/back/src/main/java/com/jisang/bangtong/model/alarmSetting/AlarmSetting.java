@@ -11,7 +11,8 @@ public class AlarmSetting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long alarmId;
 
-//    TODO: userID
+    @Column
+    private Long userId = 1L;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean alarmPhoneChat;
