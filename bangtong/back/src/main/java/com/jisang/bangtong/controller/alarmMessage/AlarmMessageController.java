@@ -1,11 +1,8 @@
 package com.jisang.bangtong.controller.alarmMessage;
 
 import com.jisang.bangtong.dto.alarmMessage.AlarmMessageDto;
-import com.jisang.bangtong.dto.alarmsetting.AlarmSettingDto;
 import com.jisang.bangtong.dto.common.ResponseDto;
-import com.jisang.bangtong.model.alarmSetting.AlarmSetting;
 import com.jisang.bangtong.service.alarmMessage.AlarmMessageService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/alarms")
-@RequiredArgsConstructor
-public class AlarmMessageContoller {
+public class AlarmMessageController {
     @Autowired
     private AlarmMessageService alarmMessageService;
 
@@ -26,5 +22,20 @@ public class AlarmMessageContoller {
         return ResponseEntity.ok(ResponseDto.res("SUCCESS", messageList));
     }
 
+    // 알림 삭제
+    @DeleteMapping("/delete/{alarmMessageId}")
+    public ResponseEntity<ResponseDto<Void>> deleteAlarm(@PathVariable long alarmMessageId) {
+        alarmMessageService.deleteAlarm(alarmMessageId);
+
+        return ResponseEntity.ok(ResponseDto.res("SUCCESS"));
+    }
+
+    // 알림 생성
+    @PostMapping
+    public ResponseDto<Void> createAlarm(@RequestBody AlarmMessageDto alarmMessageDto) {
+        alarmMessageService.createAlarm(alarmMessageDto);
+
+        return ResponseDto.res("SUCCESS");
+    }
 
 }

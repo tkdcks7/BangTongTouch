@@ -11,7 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class AlarmMessageDto {
     private Long alarmMessageId;
-    private Integer userId;
+    private Long userId;
     private Date alarmMessageDate;
     private String alarmMessage;
 }

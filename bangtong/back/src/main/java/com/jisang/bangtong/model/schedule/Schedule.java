@@ -1,5 +1,4 @@
-package com.jisang.bangtong.model.alarmMessage;
-
+package com.jisang.bangtong.model.schedule;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,19 +12,22 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlarmMessage {
+public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long alarmMessageId;
+    private Long scheduleId;
 
-    //    TODO: 받는 사람 ID 참조
-    private Long userId;
+//    TODO: 채팅방 ID
 
     @Temporal(value = TemporalType.TIMESTAMP)
     @CreationTimestamp
     @Column(nullable = false)
-    private Date alarmMessageDate;
+    private Date scheduleDate;
 
-    @Column(nullable = false, length = 100)
-    private String alarmMessage;
+    @Temporal(value = TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    @Column(nullable = false)
+    private Date scheduleCreatedAt;
+
+
 }

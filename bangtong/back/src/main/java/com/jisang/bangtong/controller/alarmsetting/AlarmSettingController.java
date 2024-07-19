@@ -27,7 +27,7 @@ public class AlarmSettingController {
         log.info("asklml");
     }
 
-    // 알리 권한 설정
+    // 알림 권한 설정
     @PostMapping("/setting/modify/{userId}")
     public ResponseEntity<ResponseDto<Void>> updatealarmsetting(@PathVariable("userId") Long userId, @RequestBody AlarmSettingDto settingDto) {
         userId = 1L;

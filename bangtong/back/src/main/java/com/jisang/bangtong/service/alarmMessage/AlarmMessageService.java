@@ -1,11 +1,8 @@
 package com.jisang.bangtong.service.alarmMessage;
 
 import com.jisang.bangtong.dto.alarmMessage.AlarmMessageDto;
-import com.jisang.bangtong.dto.alarmsetting.AlarmSettingDto;
 import com.jisang.bangtong.model.alarmMessage.AlarmMessage;
-import com.jisang.bangtong.model.alarmSetting.AlarmSetting;
 import com.jisang.bangtong.repository.alarmMessage.AlarmMessageRepository;
-import com.jisang.bangtong.repository.alarmsetting.AlarmSettingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +13,7 @@ import java.util.List;
 public class AlarmMessageService {
 
     @Autowired
-    AlarmMessageRepository alarmMessageRepository;
+    private AlarmMessageRepository alarmMessageRepository;
 
     // 알림 목록 조회
     public List<AlarmMessageDto> alarmList(long userId) {
@@ -31,5 +28,19 @@ public class AlarmMessageService {
             resultDto.add(dto);
         }
         return resultDto;
+    }
+
+    // 알림 삭제
+    public void deleteAlarm(long alarmMessageId) {
+        alarmMessageRepository.deleteById(alarmMessageId);
+//        alarmMessageRepository.deleteAlarm(alarmMessageId);
+    }
+
+    // 알림 생성
+    public void createAlarm(AlarmMessageDto alarmMessageDto) {
+        AlarmMessage alarmMessage = new AlarmMessage();
+        alarmMessage.setUserId(alarmMessageDto.getAlarmMessageId());
+        alarmMessage.setAlarmMessage(alarmMessageDto.getAlarmMessage());
+        alarmMessageRepository.save(alarmMessage);
     }
 }
