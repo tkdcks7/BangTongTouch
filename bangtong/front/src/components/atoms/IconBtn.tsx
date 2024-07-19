@@ -11,7 +11,11 @@ const IconBtn: React.FC<IconBtnProps> = ({ imgSrc, size, ...props }) => {
     flexShrink: 0, // 축소되는 것 방지
   };
   return (
-    <div className="rounded" style={buttonStyle} {...props}>
+    <div
+      className="rounded hover:cursor-pointer"
+      style={buttonStyle}
+      {...props}
+    >
       <img src={imgSrc} alt="아이콘 이미지" width={size} height={size} />
     </div>
   );
