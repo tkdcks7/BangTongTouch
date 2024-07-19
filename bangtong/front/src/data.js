@@ -1,6 +1,7 @@
-const content = [
+export const contents = [
   {
     "boardId": 25,
+    "boardWriter": "저자입니다",
     "boardTitle": "타이틀입니다",
     "boardContent": "내용입니다",
     "boardDate": "2024-07-18 06:02:24.164",
@@ -12,6 +13,7 @@ const content = [
   },
   {
       "boardId": 24,
+      "boardWriter": "저자입니다",
       "boardTitle": "타이틀입니다",
       "boardContent": "내용입니다",
       "boardDate": "2024-07-18 06:02:07.039",
@@ -28,6 +30,7 @@ const content = [
   },
   {
       "boardId": 23,
+      "boardWriter": "저자입니다",
       "boardTitle": "타이틀입니다",
       "boardContent": "내용입니다",
       "boardDate": "2024-07-18 06:01:58.338",
@@ -39,6 +42,7 @@ const content = [
   },
   {
       "boardId": 22,
+      "boardWriter": "저자입니다",
       "boardTitle": "타이틀입니다",
       "boardContent": "내용입니다",
       "boardDate": "2024-07-18 05:46:14.165",
@@ -50,6 +54,7 @@ const content = [
   },
   {
       "boardId": 21,
+      "boardWriter": "저자입니다",
       "boardTitle": "타이틀입니다",
       "boardContent": "내용입니다",
       "boardDate": "2024-07-18 05:46:07.683",
@@ -66,6 +71,7 @@ const content = [
   },
   {
       "boardId": 20,
+      "boardWriter": "저자입니다",
       "boardTitle": "타이틀입니다",
       "boardContent": "내용입니다",
       "boardDate": "2024-07-18 05:40:20.557",
@@ -82,6 +88,7 @@ const content = [
   },
   {
       "boardId": 19,
+      "boardWriter": "저자입니다",
       "boardTitle": "타이틀입니다",
       "boardContent": "내용입니다",
       "boardDate": "2024-07-18 05:39:49.158",
@@ -93,6 +100,7 @@ const content = [
   },
   {
       "boardId": 18,
+      "boardWriter": "저자입니다",
       "boardTitle": "타이틀입니다",
       "boardContent": "내용입니다",
       "boardDate": "2024-07-18 05:34:45.333",
@@ -109,6 +117,7 @@ const content = [
   },
   {
       "boardId": 17,
+      "boardWriter": "저자입니다",
       "boardTitle": "타이틀입니다",
       "boardContent": "내용입니다",
       "boardDate": "2024-07-18 05:34:01.800",
@@ -125,6 +134,7 @@ const content = [
   },
   {
       "boardId": 16,
+      "boardWriter": "저자입니다",
       "boardTitle": "타이틀입니다",
       "boardContent": "내용입니다",
       "boardDate": "2024-07-18 05:33:39.845",
@@ -133,5 +143,190 @@ const content = [
       "boardHit": 0,
       "boardScore": 0,
       "boardRegion": null
-  }
+  },
+  {
+    "boardId": 15,
+    "boardWriter": "저자입니다",
+    "boardTitle": "타이틀입니다",
+    "boardContent": "내용입니다",
+    "boardDate": "2024-07-18 05:33:08.694",
+    "boardIsBanned": false,
+    "boardIsDelete": false,
+    "boardHit": 0,
+    "boardScore": 0,
+    "boardRegion": null
+  },
+  {
+      "boardId": 14,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀입니다",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 05:32:42.404",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+      "boardId": 13,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀입니다",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 05:29:44.452",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+      "boardId": 12,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀입니다",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 05:29:14.037",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+      "boardId": 11,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀입니다",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 05:26:42.897",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+      "boardId": 10,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀입니다",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 05:25:19.814",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+      "boardId": 9,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀입니다",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 05:24:47.252",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+      "boardId": 8,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀입니다",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 05:24:16.137",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+      "boardId": 7,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀입니다",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 05:22:37.065",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+      "boardId": 6,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀 수정",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 05:15:55.591",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": {
+          "regionId": "11110111",
+          "regionSido": "서울특별시",
+          "regionGugun": "종로구",
+          "regionDong": "옥인동"
+      }
+  },
+  {
+      "boardId": 5,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀입니다",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 04:56:18.933",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+      "boardId": 4,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀입니다",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 04:54:36.719",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+      "boardId": 3,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀 수정",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 04:54:18.012",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+      "boardId": 2,
+      "boardWriter": "저자입니다",
+      "boardTitle": "타이틀입니다",
+      "boardContent": "내용입니다",
+      "boardDate": "2024-07-18 04:53:40.737",
+      "boardIsBanned": false,
+      "boardIsDelete": false,
+      "boardHit": 0,
+      "boardScore": 0,
+      "boardRegion": null
+  },
+  {
+    "boardId": 1,
+    "boardWriter": "저자입니다",
+    "boardTitle": "타이틀입니다",
+    "boardContent": "내용입니다",
+    "boardDate": "2024-07-18 04:53:40.737",
+    "boardIsBanned": false,
+    "boardIsDelete": false,
+    "boardHit": 0,
+    "boardScore": 0,
+    "boardRegion": null
+  },
 ]

@@ -6,7 +6,7 @@ import ChatCard from "../molecules/ChatCard";
 
 const ChatBox: React.FC = () => {
     return (
-      <div className="mx-10 mt-5">
+      <div className="mt-5">
         <div className="mb-3">
           <TextBox 
             text="새로운 연락이 도착했어요!"

@@ -7,8 +7,6 @@ import TextBox from '../atoms/TextBox';
 import InputBox from '../molecules/InputBox';
 import IconBtn from '../atoms/IconBtn';
 import Btn from '../atoms/Btn';
-import MNavBar from '../organism/MNavBar';
-import MMenuBar from '../organism/MMenuBar';
 
 // 이미지 소스
 import Google from '../../assets/GoogleSocial.png'
@@ -91,11 +89,13 @@ const LoginPage: React.FC = () => {
           <Link to="/user/FindSelectPage">
             <TextBox 
               text='아이디/비밀번호 찾기'
+              color='lime-500'
             />
           </Link>
           <Link to="/user/register">
             <TextBox 
               text='회원가입'
+              color='lime-500'
             />
           </Link>
         </div>
