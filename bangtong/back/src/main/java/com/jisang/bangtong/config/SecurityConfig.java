@@ -1,13 +1,16 @@
 package com.jisang.bangtong.config;
 
+import com.jisang.bangtong.filter.CsrfCookieFilter;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
@@ -22,15 +25,16 @@ public class SecurityConfig {
     CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
     csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName("_csrf");
 
-    http.cors(cors -> corsConfigurationSource())
-        .csrf(csrf -> {
+    http.securityContext(httpSecuritySecurityContextConfigurer -> {
+          httpSecuritySecurityContextConfigurer.requireExplicitSave(false);
+        }).sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(
+            (SessionCreationPolicy.ALWAYS))).cors(cors -> corsConfigurationSource()).csrf(csrf -> {
           csrf.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
               .ignoringRequestMatchers("/users/**");
           csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-        })
-        .authorizeHttpRequests(
-            (requests) -> requests.requestMatchers("/boards/**").authenticated()
-                .requestMatchers("/comments/**").hasRole("admin").anyRequest().permitAll());
+        }).addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+        .authorizeHttpRequests((requests) -> requests.requestMatchers("/boards/**").authenticated()
+            .requestMatchers("/comments/**").hasRole("admin").anyRequest().permitAll());
     http.formLogin(Customizer.withDefaults());
     http.httpBasic(Customizer.withDefaults());
 

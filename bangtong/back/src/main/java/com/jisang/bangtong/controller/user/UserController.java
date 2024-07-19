@@ -3,7 +3,9 @@ package com.jisang.bangtong.controller.user;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.service.user.UserService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +31,17 @@ public class UserController {
     userService.register(user);
 
     return ResponseDto.res("success", user);
+  }
+
+  @RequestMapping("/user")
+  public User getUserDetailsAfterLogin(Authentication authentication) {
+    List<User> users = userService.getUserDetailsAfterLogin(authentication);
+
+    if (!users.isEmpty()) {
+      return users.get(0);
+    } else {
+      return null;
+    }
   }
 
   @DeleteMapping("/delete/{userId}")
