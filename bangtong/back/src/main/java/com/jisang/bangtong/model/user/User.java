@@ -1,5 +1,6 @@
 package com.jisang.bangtong.model.user;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +12,6 @@ import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Data
@@ -40,8 +40,10 @@ public class User {
   @Column(nullable = false, length = 13)
   private String userPhone;
 
-  @Column(columnDefinition = "timestamp default current_timestamp() not null")
-  private Date userRegisterDate;
+  @Column(nullable = false)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date userRegisterDate = new Date();
 
   @Column(nullable = false, length = 20)
   private String userNickname;
