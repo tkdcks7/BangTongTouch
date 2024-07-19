@@ -1,37 +1,61 @@
 import { create } from "zustand";
 
-// Claude를 통해 생성한 스크립트. 참고용입니다.
-interface SignUpInputState {
+// UserDto 를 바탕으로 Interface 생성
+interface User {
+  id: number;
+  email: string;
+  profileImage: string | null;
   name: string;
-  residentNumber: string;
-  isValidPhone: boolean;
-  emailAddress: string;
-  pass: string;
-  pass2: string;
+  nickname: string;
+  birthYear: string;
+  phone: string;
+  registerDate: string;
+  gender: number;
+  token: string;
+  setInfoUpdate: (data: any) => void;
+  setToken: (token: string) => void;
 }
 
-interface SignUpInputActions {
-  setName: (name: string) => void;
-  setResidentNumber: (residentNumber: string) => void;
-  setIsValidPhone: (isValidPhone: boolean) => void;
-  setEmailAddress: (emailAddress: string) => void;
-  setPass: (pass: string) => void;
-  setPass2: (pass2: string) => void;
-}
-
-type SignUpInputStore = SignUpInputState & SignUpInputActions;
-
-export const useSignUpInputStore = create<SignUpInputStore>((set) => ({
+// 유저 정보 및 유저정보 업데이트, 토큰 업데이트 setter 선언
+const useUserStore = create<User>((set) => ({
+  id: 0,
+  email: "",
+  profileImage: null,
   name: "",
-  residentNumber: "",
-  isValidPhone: false,
-  emailAddress: "",
-  pass: "",
-  pass2: "",
-  setName: (name: string) => set({ name }),
-  setResidentNumber: (residentNumber: string) => set({ residentNumber }),
-  setIsValidPhone: (isValidPhone: boolean) => set({ isValidPhone }),
-  setEmailAddress: (emailAddress: string) => set({ emailAddress }),
-  setPass: (pass: string) => set({ pass }),
-  setPass2: (pass2: string) => set({ pass2 }),
+  nickname: "",
+  birthYear: "",
+  phone: "",
+  registerDate: "",
+  gender: 0,
+  token: "",
+  // 유저 정보 업데이트 setter
+  setInfoUpdate: ({
+    id,
+    email,
+    profileImage,
+    name,
+    nickname,
+    birthYear,
+    phone,
+    registerDate,
+    gender,
+  }) => {
+    set(() => ({
+      id,
+      email,
+      profileImage,
+      name,
+      nickname,
+      birthYear,
+      phone,
+      registerDate,
+      gender,
+    }));
+  },
+  // 토큰 업데이트 setter
+  setToken: (token) => {
+    set(() => ({ token }));
+  },
 }));
+
+export default useUserStore;
