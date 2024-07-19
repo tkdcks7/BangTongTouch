@@ -23,14 +23,17 @@ public class SecurityConfig {
     csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName("_csrf");
 
     http.cors(cors -> corsConfigurationSource())
-        .csrf(csrf -> {
-          csrf.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-              .ignoringRequestMatchers("/users/**");
-          csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-        })
+//        .csrf(csrf -> {
+//          csrf.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+//              .ignoringRequestMatchers("/users/**");
+//          csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+//        })
+        .csrf().disable()
         .authorizeHttpRequests(
-            (requests) -> requests.requestMatchers("/boards/**").authenticated()
-                .requestMatchers("/comments/**").hasRole("admin").anyRequest().permitAll());
+            (requests) -> requests.
+            //    requestMatchers("/boards/**").authenticated()
+            //    .requestMatchers("/comments/**").hasRole("admin").
+                anyRequest().permitAll());
     http.formLogin(Customizer.withDefaults());
     http.httpBasic(Customizer.withDefaults());
 

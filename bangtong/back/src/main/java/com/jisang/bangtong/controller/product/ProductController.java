@@ -1,10 +1,12 @@
 package com.jisang.bangtong.controller.product;
 
 import com.jisang.bangtong.dto.common.ResponseDto;
+import com.jisang.bangtong.dto.product.ProductSearchDto;
 import com.jisang.bangtong.dto.product.ProductUpdateDto;
 import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.service.product.ProductService;
 import com.jisang.bangtong.service.product.ProductServiceImpl;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,6 +74,13 @@ public class ProductController {
     Product product = productService.getProduct(productId);
     product.setProductIsDeleted(true);
     productService.update(product);
+    return new ResponseDto<>(SUCCESS);
+  }
+
+  @PostMapping("/search")
+  public ResponseDto<List<Product>> search(@RequestBody ProductSearchDto productSearchDto){
+
+
     return new ResponseDto<>(SUCCESS);
   }
 }
