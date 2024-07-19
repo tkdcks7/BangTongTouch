@@ -15,7 +15,7 @@ public class Board {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long boardId;
+  private Long boardId;
 
   @Column(nullable = false, length = 50)
   private String boardTitle;
@@ -42,7 +42,7 @@ public class Board {
 
    //TODO: Region 클래스 생성 후 관계 설정
    @ManyToOne
-   @JoinColumn(name="region_id")
+   @JoinColumn(name="regionId", foreignKey = @ForeignKey(name = "fk_board_region"))
    private Region boardRegion;
 
    //TODO: Media 클래스 생성 후 관계 설정

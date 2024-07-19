@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Region {
 
   @Id
-  @Column(length=13)
+  @Column(length=9)
   String regionId;
 
   @Column(nullable = false, length=7)
