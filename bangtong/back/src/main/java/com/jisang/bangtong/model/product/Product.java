@@ -1,5 +1,6 @@
 package com.jisang.bangtong.model.product;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -55,8 +56,8 @@ public class Product {
   @Column(nullable = false)
   private int productRoom;
 
-  @Column(nullable = false, columnDefinition = "bit(7)")
-  private int productOption;
+  @Column(nullable = false, length = 7)
+  private String productOption;
 
   private String productAdditionalOption;
 
@@ -66,13 +67,18 @@ public class Product {
   @Column(columnDefinition = "boolean default false")
   private boolean productIsDeleted;
 
-  @Temporal(value = TemporalType.TIMESTAMP)
+  @Temporal(TemporalType.TIMESTAMP)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
   @CreationTimestamp
   private Date productPostDate;
 
+  @Temporal(TemporalType.DATE)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   @Column(nullable = false)
   private Date productStartDate;
 
+  @Temporal(TemporalType.DATE)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   @Column(nullable = false)
   private Date productEndDate;
 

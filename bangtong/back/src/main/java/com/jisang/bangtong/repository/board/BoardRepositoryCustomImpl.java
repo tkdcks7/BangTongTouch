@@ -5,6 +5,7 @@ import com.jisang.bangtong.model.board.Board;
 import com.jisang.bangtong.model.board.QBoard;
 import com.jisang.bangtong.model.region.QRegion;
 import com.jisang.bangtong.model.region.Region;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -31,14 +32,22 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
     QBoard board = QBoard.board;
     QRegion region = QRegion.region;
 
+    BooleanBuilder builder = new BooleanBuilder();
+    builder.and(board.boardIsDelete.isFalse());
+
+    if (boardSearchDto.getRegionId() != null) {
+      builder.and(region.regionId.substring(0, 8).eq(boardSearchDto.getRegionId()));
+    }
+
+    if (boardSearchDto.getKeyword() != null) {
+      builder.and(board.boardTitle.contains(boardSearchDto.getKeyword()));
+    }
+
     JPQLQuery<Board> query = queryFactory
         .selectFrom(board)
-        .leftJoin(board.boardRegion, region)
+        .leftJoin(board.boardRegion, region).on(board.boardRegion.regionId.eq(region.regionId))
         .where(
-            board.boardIsDelete.isFalse(),
-            (boardSearchDto.getRegionId() != null ? region.regionId.substring(0, 8).eq(boardSearchDto.getRegionId()) : null),
-            (boardSearchDto.getKeyword() != null ? board.boardTitle.contains(boardSearchDto.getKeyword()) : null)
-
+            builder
         );
     long total = query.fetchCount();
     List<Board> contents = query
