@@ -112,10 +112,16 @@ const LoginPage: React.FC = () => {
         />
         <div className="flex justify-between text-sm text-lime-500">
           <Link to="/user/FindSelectPage">
-            <TextBox text="아이디/비밀번호 찾기" />
+            <TextBox 
+              text='아이디/비밀번호 찾기'
+              color='lime-500'
+            />
           </Link>
           <Link to="/user/register">
-            <TextBox text="회원가입" />
+            <TextBox 
+              text='회원가입'
+              color='lime-500'
+            />
           </Link>
         </div>
         <div className="flex justify-center mt-3">

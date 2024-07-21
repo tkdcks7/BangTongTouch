@@ -9,7 +9,9 @@ const Layout: React.FC = () => {
   return (
     <div className='flex-row items-center justify-center'>
       <MMenuBar />
-      <Outlet />
+      <div className="flex flex-col items-center mx-10 mb-10">
+        <Outlet />
+      </div>
       <div className='h-20' />
       <MNavBar />
     </div>

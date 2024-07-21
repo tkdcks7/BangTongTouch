@@ -11,6 +11,7 @@ import RedCancel from "../../assets/RedCancelCircle.png";
 import Check from "../../assets/CheckCircle.png";
 import DropDownIcon from "../../assets/DropDownIcon.png";
 import Send from "../../assets/Send.png";
+import Search from "../../assets/Search.png"
 
 /**
  * 검증 오류가 발생하였을 경우 id 값을 "e" 검증이 되었을 경우 "q", 기본 상태 "" 처럼 빈 값 string 변수로 전달
@@ -37,7 +38,7 @@ interface InputProps
   helperText?: string;
   error?: boolean;
   size?: "small" | "medium" | "large";
-  buttonType?: "cancel" | "check" | "dropdown" | "send"; // cancel, check, dropdown, send
+  buttonType?: "cancel" | "check" | "dropdown" | "send" | "search"; // cancel, check, dropdown, send, search
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   value?: string;
   setValue?: React.Dispatch<React.SetStateAction<string>>;
@@ -86,9 +87,12 @@ const InputBox: React.FC<InputProps> = ({
     whatBtn = Check;
   } else if (buttonType === "dropdown") {
     whatBtn = DropDownIcon;
-  } else {
+  } else if (buttonType === "send") {
     whatBtn = Send;
+  } else if (buttonType === "search") {
+    whatBtn = Search;
   }
+  
   const inputStyle2: React.CSSProperties = {};
   inputStyle2.width = "95%";
   inputStyle2.height = "90%";
