@@ -1,9 +1,11 @@
 package com.jisang.bangtong.config;
 
+import com.jisang.bangtong.model.common.Authority;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,15 +37,22 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
       User user = users.get(0);
 
       if (passwordEncoder.matches(password, user.getUserPassword())) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(
-            new SimpleGrantedAuthority(user.isUserIsAdmin() ? "admin" : "user"));
-
-        return new UsernamePasswordAuthenticationToken(username, password, authorities);
+        return new UsernamePasswordAuthenticationToken(username, password,
+            getGrantedAuthorities(user.getAuthorities()));
       } else {
         throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
       }
     }
+  }
+
+  private List<GrantedAuthority> getGrantedAuthorities(Set<Authority> authorities) {
+    List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+
+    for (Authority authority : authorities) {
+      grantedAuthorities.add(new SimpleGrantedAuthority(authority.getName()));
+    }
+
+    return grantedAuthorities;
   }
 
   @Override

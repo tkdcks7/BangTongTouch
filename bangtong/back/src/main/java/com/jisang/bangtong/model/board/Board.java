@@ -2,11 +2,19 @@ package com.jisang.bangtong.model.board;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jisang.bangtong.model.region.Region;
-import jakarta.persistence.*;
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import java.util.Date;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.Date;
 
 @Data
 @Entity
@@ -40,12 +48,12 @@ public class Board {
   @Column(nullable = false)
   private int boardScore = 0;
 
-   //TODO: Region 클래스 생성 후 관계 설정
-   @ManyToOne
-   @JoinColumn(name="regionId", foreignKey = @ForeignKey(name = "fk_board_region"))
-   private Region boardRegion;
+  //TODO: Region 클래스 생성 후 관계 설정
+  @ManyToOne
+  @JoinColumn(name = "regionId", foreignKey = @ForeignKey(name = "fk_board_region"))
+  private Region boardRegion;
 
-   //TODO: Media 클래스 생성 후 관계 설정
+  //TODO: Media 클래스 생성 후 관계 설정
 //  @OneToMany
 //  @JoinColumn(name="media_id", nullable = true)
 //  private List<Media> boardMedia;
@@ -53,4 +61,5 @@ public class Board {
   // TODO: User 클래스 생성 후 관계 설정
   // @ManyToOne
   // private User boardWriter;
+
 }
