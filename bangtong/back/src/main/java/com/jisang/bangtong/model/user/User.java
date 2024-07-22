@@ -19,7 +19,6 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Data
@@ -76,6 +75,7 @@ public class User {
   @Column(columnDefinition = "boolean default false")
   private boolean userIsBanned;
 
-  private String activeToken;
+  private String userActiveToken;
+  private String userRefreshToken;
 
 }

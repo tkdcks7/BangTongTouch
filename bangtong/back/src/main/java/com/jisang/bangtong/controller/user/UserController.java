@@ -1,11 +1,15 @@
 package com.jisang.bangtong.controller.user;
 
 import com.jisang.bangtong.dto.common.ResponseDto;
+import com.jisang.bangtong.dto.user.LoginRequestDTO;
+import com.jisang.bangtong.dto.user.LoginResponseDTO;
+import com.jisang.bangtong.model.common.SecurityConstants;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.service.user.UserService;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
 
   @Autowired
@@ -39,15 +44,12 @@ public class UserController {
     return ResponseDto.res("success");
   }
 
-  @RequestMapping("/user")
-  public User getUserDetailsAfterLogin(Authentication authentication) {
-    List<User> users = userService.findByEmail(authentication.getName());
+  @PostMapping("/login")
+  public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest) {
+    String token = userService.login(loginRequest);
 
-    if (!users.isEmpty()) {
-      return users.get(0);
-    } else {
-      return null;
-    }
+    return ResponseEntity.status(HttpStatus.OK).header(SecurityConstants.JWT_HEADER, token)
+        .body(new LoginResponseDTO(HttpStatus.OK.getReasonPhrase(), token));
   }
 
 }
