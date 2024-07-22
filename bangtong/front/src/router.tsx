@@ -10,6 +10,7 @@ import MainPage from './components/page/MainPage';
 import CommunityPage from './components/page/CommunityPage';
 import CommunityMain from './components/organism/CommunityMain';
 import CommunityDetail from './components/organism/CommunityDetail';
+import CommunityCreate from './components/organism/CommunityCreate';
 
 // 로그인페이지와 회원가입페이지는 Nav가 없기 때문에 Layout 밖에 선언함
 const Router: React.FC = () => {
@@ -26,6 +27,7 @@ const Router: React.FC = () => {
         <Route path='boards' element={<CommunityPage />}>
           <Route path='' element={<CommunityMain />} />
           <Route path=':id' element={<CommunityDetail />} />
+          <Route path='write' element={<CommunityCreate />} />
         </Route>
       </Route>
     </Routes>
