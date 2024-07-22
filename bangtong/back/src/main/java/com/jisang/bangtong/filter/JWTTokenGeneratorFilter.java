@@ -20,25 +20,26 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-public class JwtTokenGeneratorFilter extends OncePerRequestFilter {
+@Slf4j
+public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    if (authentication != null) {
+    if (null != authentication) {
       SecretKey key = Keys.hmacShaKeyFor(
           SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
 
-      String jwt = Jwts.builder()
-          .issuer("bangtong")
-          .subject(authentication.getName())
+      String jwt = Jwts.builder().issuer("bangtong").subject("JWT Token")
           .claim("username", authentication.getName())
           .claim("authorities", populateAuthorities(authentication.getAuthorities()))
           .issuedAt(new Date())
           .expiration(new Date((new Date()).getTime() + 30000000))
           .signWith(key).compact();
+
+      log.info("jwt: {}", jwt);
 
       response.setHeader(SecurityConstants.JWT_HEADER, jwt);
     }
@@ -51,10 +52,10 @@ public class JwtTokenGeneratorFilter extends OncePerRequestFilter {
     return !request.getServletPath().equals("/users/user");
   }
 
-  private String populateAuthorities(Collection<? extends GrantedAuthority> authorities) {
+  private String populateAuthorities(Collection<? extends GrantedAuthority> collection) {
     Set<String> authoritiesSet = new HashSet<>();
 
-    for (GrantedAuthority authority : authorities) {
+    for (GrantedAuthority authority : collection) {
       authoritiesSet.add(authority.getAuthority());
     }
 

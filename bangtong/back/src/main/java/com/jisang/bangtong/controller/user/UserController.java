@@ -4,12 +4,10 @@ import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.service.user.UserService;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,21 +33,21 @@ public class UserController {
     return ResponseDto.res("success", user);
   }
 
+  @DeleteMapping("/delete/{userId}")
+  public ResponseDto<Void> delete(@PathVariable Long userId) {
+    userService.delete(userId);
+    return ResponseDto.res("success");
+  }
+
   @RequestMapping("/user")
   public User getUserDetailsAfterLogin(Authentication authentication) {
-    List<User> users = userService.getUserDetailsAfterLogin(authentication);
+    List<User> users = userService.findByEmail(authentication.getName());
 
     if (!users.isEmpty()) {
       return users.get(0);
     } else {
       return null;
     }
-  }
-
-  @DeleteMapping("/delete/{userId}")
-  public ResponseDto<Void> delete(@PathVariable Long userId) {
-    userService.delete(userId);
-    return ResponseDto.res("success");
   }
 
 }

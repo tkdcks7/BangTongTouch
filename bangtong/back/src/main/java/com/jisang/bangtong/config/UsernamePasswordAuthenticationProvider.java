@@ -6,7 +6,8 @@ import com.jisang.bangtong.repository.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,11 +19,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
+@Slf4j
 public class UsernamePasswordAuthenticationProvider implements AuthenticationProvider {
 
-  @Autowired
   private UserRepository userRepository;
-  @Autowired
   private PasswordEncoder passwordEncoder;
 
   @Override
