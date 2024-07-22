@@ -2,9 +2,13 @@ package com.jisang.bangtong.controller.board;
 
 import com.jisang.bangtong.dto.board.BoardSearchDto;
 import com.jisang.bangtong.model.board.Board;
+import com.jisang.bangtong.model.comment.Comment;
 import com.jisang.bangtong.model.region.Region;
+import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.board.BoardService;
+import com.jisang.bangtong.service.user.UserService;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +18,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,9 +40,18 @@ public class BoardController {
   @Autowired
   private BoardService boardService;
 
-  @PostMapping({"/write/{regionId}", "/write"})
-  public ResponseEntity<Object> write(@RequestBody Board board, @PathVariable(required = false) String regionId) {
-    log.info("write board: {}, {}", board, regionId);
+  @Autowired
+  private UserRepository userRepository;
+
+  @PostMapping(value = {"/write/{regionId}", "/write"}, consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Object> write(@RequestBody Map<String, String> map, @PathVariable(required = false) String regionId) {
+    Board board = new Board();
+    board.setBoardContent(map.get("boardContent"));
+    Long userId = Long.parseLong(map.get("boardWriter"));
+    board.setBoardWriter(userRepository.findById(userId).get());
+    board.setBoardTitle(map.get("boardTitle"));
+    log.info("write board: {}, {}, {}", board, regionId);
+
     boardService.save(board, regionId); // BoardService의 save 메서드 호출
     Map<String, Object> response = new HashMap<>();
     response.put("status", 200);
@@ -84,9 +100,11 @@ public class BoardController {
   @GetMapping("/{boardId}")
   public ResponseEntity<Object> get(@PathVariable("boardId") long boardId) {
     log.info("get board: {}", boardId);
-    Optional<Board> board = boardService.findById(boardId);
+    Optional<Board> board = boardService.getBoardCommentParentIsNull(boardId);
     Map<String, Object> response = new HashMap<>();
-    if (board.isPresent()) {
+    log.info("{}", board.get());
+    if (board != null) {
+      //boardReturn.setCommentList(boardService.getCommentsByBoardId(boardId));
       response.put("status", 200);
       response.put("message", "SUCCESS");
       response.put("board", board.get());

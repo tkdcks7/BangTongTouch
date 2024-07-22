@@ -2,9 +2,11 @@ package com.jisang.bangtong.controller.comment;
 
 import com.jisang.bangtong.dto.comment.CommentDto;
 import com.jisang.bangtong.dto.common.ResponseDto;
+import com.jisang.bangtong.model.comment.Comment;
 import com.jisang.bangtong.service.comment.CommentService;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/comments")
 public class CommentController {
@@ -31,6 +34,7 @@ public class CommentController {
   @PostMapping("/{boardId}/write")
   public ResponseEntity<ResponseDto<Void>> writeComment(@PathVariable long boardId,
       @RequestBody CommentDto commentDto) {
+    log.info("comment write {}, {}", commentDto, boardId);
     commentService.writeComment(boardId, commentDto);
 
     return ResponseEntity.ok(ResponseDto.res(SUCCESS));
@@ -53,16 +57,17 @@ public class CommentController {
   @DeleteMapping("/delete/{commentId}")
   public ResponseEntity<ResponseDto<Void>> deleteComment(@PathVariable long commentId) {
     commentService.deleteComment(commentId);
-
     return ResponseEntity.ok(ResponseDto.res(SUCCESS));
   }
 
   //  댓글 목록 조회
   //  TODO: parent의 답댓글 list 관리
   @GetMapping("/{boardId}")
-  public ResponseEntity<ResponseDto<List<CommentDto>>> getComments(@PathVariable long boardId) {
-    List<CommentDto> dtos = commentService.getComments(boardId);
+  public ResponseEntity<ResponseDto<List<Comment>>> getComments(@PathVariable long boardId) {
+    List<Comment> dtos = commentService.getComments(boardId);
 
     return ResponseEntity.ok(ResponseDto.res(SUCCESS, dtos));
   }
+
+
 }

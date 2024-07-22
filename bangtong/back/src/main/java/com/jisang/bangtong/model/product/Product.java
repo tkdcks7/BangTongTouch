@@ -82,4 +82,9 @@ public class Product {
   @Column(nullable = false)
   private Date productEndDate;
 
+  @Column
+  private double lat; // 위도
+
+  @Column
+  private double lng; //경도
 }
