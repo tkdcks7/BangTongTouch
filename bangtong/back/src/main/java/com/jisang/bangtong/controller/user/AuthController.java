@@ -2,34 +2,36 @@ package com.jisang.bangtong.controller.user;
 
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.user.JwtResponse;
-import com.jisang.bangtong.repository.user.AuthenticationService;
-import com.jisang.bangtong.util.JwtTokenUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.jisang.bangtong.service.user.AuthenticationService;
+import com.jisang.bangtong.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class AuthController {
 
   private final AuthenticationService authenticationService;
-  private final JwtTokenUtil jwtTokenUtil;
-
-  @Autowired
-  public AuthController(AuthenticationService authenticationService, JwtTokenUtil jwtTokenUtil) {
-    this.authenticationService = authenticationService;
-    this.jwtTokenUtil = jwtTokenUtil;
-  }
+  private final JwtUtil jwtUtil;
 
   @PostMapping("/login")
-  public ResponseDto<JwtResponse> createAuthenticationToken(
+  public ResponseEntity<ResponseDto<JwtResponse>> createAuthenticationToken(
       @RequestParam("username") String username,
       @RequestParam("password") String password) {
     Authentication authentication = authenticationService.authenticate(username, password);
-    final String token = jwtTokenUtil.generateToken(authentication.getName());
+    final String token = jwtUtil.generateAccessToken(username,
+        authentication.getAuthorities().toString());
 
-    return ResponseDto.res("success", new JwtResponse(token));
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Authorization", "Bearer " + token);
+
+    return ResponseEntity.ok().headers(headers)
+        .body(ResponseDto.res("success", new JwtResponse(token)));
   }
 
 }

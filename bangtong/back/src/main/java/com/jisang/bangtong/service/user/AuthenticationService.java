@@ -1,4 +1,4 @@
-package com.jisang.bangtong.repository.user;
+package com.jisang.bangtong.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +23,7 @@ public class AuthenticationService {
     );
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
+
     return authentication;
   }
 

@@ -76,4 +76,6 @@ public class User {
   @Column(columnDefinition = "boolean default false")
   private boolean userIsBanned;
 
+  private String activeToken;
+
 }

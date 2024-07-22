@@ -11,5 +11,6 @@ public class SecurityConstants {
       Dpa11MlIkkCAJkEF1gWC0A==
       """;
   public static final String JWT_HEADER = "Authorization";
+  public static final long JWT_EXPIRATION = 860000;
 
 }

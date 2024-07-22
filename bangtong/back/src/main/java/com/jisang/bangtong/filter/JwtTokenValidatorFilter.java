@@ -1,6 +1,6 @@
 package com.jisang.bangtong.filter;
 
-import com.jisang.bangtong.util.JwtTokenUtil;
+import com.jisang.bangtong.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
-  private JwtTokenUtil jwtTokenUtil;
+  private JwtUtil jwtTokenUtil;
   private UserDetailsService userDetailsService;
 
   @Override
@@ -35,8 +35,11 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
     if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
       jwtToken = requestTokenHeader.substring(7);
+      logger.info("jwtToken = " + jwtToken);
+
       try {
-        username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+        username = jwtTokenUtil.getEmailFromToken(jwtToken);
+        logger.info("username : " + username);
       } catch (IllegalArgumentException e) {
         logger.error("Unable to get JWT Token");
       } catch (ExpiredJwtException e) {
@@ -49,7 +52,7 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
       UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-      if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+      if (jwtTokenUtil.isTokenValid(jwtToken)) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
             userDetails, null, userDetails.getAuthorities());
         usernamePasswordAuthenticationToken
