@@ -1,6 +1,12 @@
 package com.jisang.bangtong.model.comment;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.jisang.bangtong.model.board.Board;
+import com.jisang.bangtong.model.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,20 +40,25 @@ public class Comment {
   private Long commentId;
 
   @ManyToOne
-  @JoinColumn(name = "boardId", foreignKey = @ForeignKey(name = "fk_board_comment"))
+  @JoinColumn(name = "boardId", foreignKey = @ForeignKey(name = "fk_comment_board"))
+  @JsonIgnore
   private Board board;
 
   @Column(nullable = false, length = 1024)
   private String commentContent;
 
-  @Column(nullable = false)
-  private Long commentWriterId;
+  @ManyToOne
+  @JoinColumn(name="user_id", foreignKey = @ForeignKey(name="fk_comment_user"))
+  private User commentUser;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "comment_parent_id", nullable = true, foreignKey = @ForeignKey(name = "fk_comment_comment"))
+  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "commentId")
+  @JsonBackReference
   private Comment commentParent;
 
-  @OneToMany(mappedBy = "commentParent")
+  @OneToMany(mappedBy = "commentParent", fetch = FetchType.LAZY)
+  @JsonManagedReference
   private List<Comment> comments = new ArrayList<>();
 
   @Temporal(value = TemporalType.TIMESTAMP)

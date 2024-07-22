@@ -3,6 +3,7 @@ package com.jisang.bangtong.service.board;
 import com.jisang.bangtong.dto.board.BoardSearchDto;
 import com.jisang.bangtong.model.board.Board;
 import com.jisang.bangtong.repository.board.BoardRepository;
+import com.jisang.bangtong.repository.comment.CommentRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Service;
 public class BoardServiceImpl implements BoardService {
 
   @Autowired
-  BoardRepository boardRepository;
+  private BoardRepository boardRepository;
+  @Autowired
+  private CommentRepository commentRepository;
 
   @Transactional
   @Override
@@ -25,6 +28,7 @@ public class BoardServiceImpl implements BoardService {
 
   @Override
   public Optional<Board> findById(long id) {
+
     return boardRepository.findById(id);
   }
 
@@ -41,6 +45,14 @@ public class BoardServiceImpl implements BoardService {
   @Override
   public Page<Board> getBoards(Pageable pageable, BoardSearchDto boardSearchDto){
     return boardRepository.getBoards(pageable, boardSearchDto);
+
+  }
+  public Optional<Board> getBoardCommentParentIsNull(Long boardId) {
+    Optional<Board> result = boardRepository.findById(boardId);
+    if(result.isPresent()){
+      result.get().setBoardComment(commentRepository.getCommentIsParentNull(boardId));
+    }
+    return result;
   }
 
 
