@@ -330,3 +330,157 @@ export const contents = [
     "boardRegion": null
   },
 ]
+
+export const products = [
+    {
+        "message": "success",
+        "data": {
+            "productId": 1,
+            "productType": "ONEROOM",
+            "productAddress": "147-51",
+            "productDeposit": 1000,
+            "productRent": 20,
+            "productMaintenance": 20,
+            "productMaintenanceInfo": "수도세 포함, 전기세 미포함",
+            "productIsRentSupportable": true,
+            "productIsFurnitureSupportable": true,
+            "productSquare": 44.55,
+            "productRoom": 2,
+            "productOption": "1111111",
+            "productAdditionalOption": "전자레인지",
+            "productIsBanned": false,
+            "productIsDeleted": false,
+            "productPostDate": "2024-07-19 04:01:15.256",
+            "productStartDate": "2024-08-01",
+            "productEndDate": "2024-12-30",
+            "boardRegion": {
+                "regionId": "1111010900",
+                "regionSido": "서울특별시",
+                "regionGugun": "종로구",
+                "regionDong": "누상동"
+            }
+        },
+        "status": "OK"
+    },
+    {
+        "message": "success",
+        "data": {
+            "productId": 2,
+            "productType": "ONEROOM",
+            "productAddress": "147-51",
+            "productDeposit": 500,
+            "productRent": 30,
+            "productMaintenance": 20,
+            "productMaintenanceInfo": "수도세 포함, 전기세 미포함",
+            "productIsRentSupportable": true,
+            "productIsFurnitureSupportable": true,
+            "productSquare": 44.55,
+            "productRoom": 2,
+            "productOption": "1111111",
+            "productAdditionalOption": "전자레인지",
+            "productIsBanned": false,
+            "productIsDeleted": false,
+            "productPostDate": "2024-07-19 04:01:15.256",
+            "productStartDate": "2024-08-01",
+            "productEndDate": "2024-12-30",
+            "boardRegion": {
+                "regionId": "1111010900",
+                "regionSido": "대구광역시",
+                "regionGugun": "달서구",
+                "regionDong": "진천동"
+            }
+        },
+        "status": "OK"
+    },    
+    {
+        "message": "success",
+        "data": {
+            "productId": 3,
+            "productType": "OPISTEL",
+            "productAddress": "147-51",
+            "productDeposit": 300,
+            "productRent": 100,
+            "productMaintenance": 20,
+            "productMaintenanceInfo": "수도세 포함, 전기세 미포함",
+            "productIsRentSupportable": true,
+            "productIsFurnitureSupportable": true,
+            "productSquare": 44.55,
+            "productRoom": 2,
+            "productOption": "1111111",
+            "productAdditionalOption": "전자레인지",
+            "productIsBanned": false,
+            "productIsDeleted": false,
+            "productPostDate": "2024-07-19 04:01:15.256",
+            "productStartDate": "2024-08-01",
+            "productEndDate": "2024-12-30",
+            "boardRegion": {
+                "regionId": "1111010900",
+                "regionSido": "경상북도",
+                "regionGugun": "구미시",
+                "regionDong": "황상동"
+            }
+        },
+        "status": "OK"
+    },    
+    {
+        "message": "success",
+        "data": {
+            "productId": 4,
+            "productType": "TWOROOM",
+            "productAddress": "147-51",
+            "productDeposit": 1000,
+            "productRent": 10,
+            "productMaintenance": 20,
+            "productMaintenanceInfo": "수도세 포함, 전기세 미포함",
+            "productIsRentSupportable": true,
+            "productIsFurnitureSupportable": true,
+            "productSquare": 44.55,
+            "productRoom": 2,
+            "productOption": "1111111",
+            "productAdditionalOption": "전자레인지",
+            "productIsBanned": false,
+            "productIsDeleted": false,
+            "productPostDate": "2024-07-19 04:01:15.256",
+            "productStartDate": "2024-08-01",
+            "productEndDate": "2024-12-30",
+            "boardRegion": {
+                "regionId": "1111010900",
+                "regionSido": "경기도",
+                "regionGugun": "파주시",
+                "regionDong": "야당동"
+            }
+        },
+        "status": "OK"
+    },    
+    {
+        "message": "success",
+        "data": {
+            "productId": 5,
+            "productType": "ONEROOM",
+            "productAddress": "147-51",
+            "productDeposit": 1000,
+            "productRent": 5,
+            "productMaintenance": 20,
+            "productMaintenanceInfo": "수도세 포함, 전기세 미포함",
+            "productIsRentSupportable": true,
+            "productIsFurnitureSupportable": true,
+            "productSquare": 44.55,
+            "productRoom": 2,
+            "productOption": "1111111",
+            "productAdditionalOption": "전자레인지",
+            "productIsBanned": false,
+            "productIsDeleted": false,
+            "productPostDate": "2024-07-19 04:01:15.256",
+            "productStartDate": "2024-08-01",
+            "productEndDate": "2024-12-30",
+            "boardRegion": {
+                "regionId": "1111010900",
+                "regionSido": "대구광역시",
+                "regionGugun": "중구",
+                "regionDong": "교동"
+            }
+        },
+        "status": "OK"
+    },
+
+]

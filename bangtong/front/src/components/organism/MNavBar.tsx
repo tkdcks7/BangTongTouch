@@ -26,7 +26,7 @@ const MNavBar: React.FC = () => {
           size='sm'
         />
       </Link>
-      <Link to="/map" className='w-14 flex flex-col items-center'>
+      <Link to="/products" className='w-14 flex flex-col items-center'>
         <IconBtn 
           imgSrc={MapPin}
           size={20}

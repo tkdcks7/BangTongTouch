@@ -4,6 +4,12 @@ import React from "react";
 import MultiBtn from "../molecules/MultiBtn";
 import ContentTable from "../molecules/ContentTable";
 import InputBox from "../molecules/InputBox";
+import IconBtn from "../atoms/IconBtn";
+import ImgBox from "../atoms/ImgBox";
+
+// 이미지 소스
+import Pencle from "../../assets/Pencel.png"
+import { Link } from "react-router-dom";
 
 const CommunityMain: React.FC = () => {
   return (
@@ -20,6 +26,17 @@ const CommunityMain: React.FC = () => {
         <MultiBtn />
       </div>
       <ContentTable />
+      <div className="w-full p-2 mt-5 flex justify-end">
+        <Link 
+          className="bg-yellow-300 p-2 rounded-xl"
+          to={'write'}
+        >
+          <IconBtn 
+            imgSrc={Pencle}
+            size={40}
+          />
+        </Link>
+      </div>
     </div> 
   )
 };

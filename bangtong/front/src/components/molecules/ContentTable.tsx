@@ -1,6 +1,9 @@
 import React from "react";
-import { useState } from "react";
+
+// 게시글 데이터
 import { contents } from "../../data.js";
+
+// 컴포넌트
 import Post from "../atoms/Post";
 
 const ContentTable: React.FC = () => {

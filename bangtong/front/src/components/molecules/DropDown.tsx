@@ -41,7 +41,7 @@ const DropDown: React.FC<DropDownProps>= ({
           {callCompanyList.map((item) => (
             <MenuItem key={item}>
               <button
-                className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 w-20"
+                className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 w-full"
                 onClick={(e) => {
                   handleSetCallCompany(item);
                 }}
