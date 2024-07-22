@@ -1,12 +1,12 @@
 package com.jisang.bangtong.service.product;
 
-import com.jisang.bangtong.repository.product.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.jisang.bangtong.dto.product.ProductUpdateDto;
+import com.jisang.bangtong.model.product.Product;
 
-@Service
-public class ProductService {
+public interface ProductService {
 
-  @Autowired
-  private ProductRepository productRepository;
+  void upload(Product product);
+  void update(Product product);
+  Product getProduct(long productId);
+
 }

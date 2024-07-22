@@ -1,5 +1,6 @@
 package com.jisang.bangtong.filter;
 
+import com.jisang.bangtong.model.common.SecurityConstants;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
@@ -8,56 +9,50 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+@Slf4j
 public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
-
-  @Value("${jwt.key}")
-  private String KEY;
-  @Value("${jwt.header}")
-  private String HEADER;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (null != authentication) {
-      SecretKey key = Keys.hmacShaKeyFor(
-          KEY.getBytes(StandardCharsets.UTF_8));
+
+    if (authentication != null) {
+      Environment env = getEnvironment();
+
+      String secret = env.getProperty(SecurityConstants.JWT_SECRET_KEY,
+          SecurityConstants.JWT_SECRET_DEFAULT_VALUE);
+      SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+
       String jwt = Jwts.builder().issuer("bangtong").subject("JWT Token")
           .claim("username", authentication.getName())
-          .claim("authorities", populateAuthorities(authentication.getAuthorities()))
+          .claim("authorities", authentication.getAuthorities().stream().map(
+              GrantedAuthority::getAuthority).collect(Collectors.joining(",")))
           .issuedAt(new Date())
           .expiration(new Date((new Date()).getTime() + 30000000))
-          .signWith(key).compact();
-      response.setHeader(HEADER, jwt);
+          .signWith(secretKey).compact();
+
+      log.info("generated JWT token: {}", jwt);
+
+      response.setHeader(SecurityConstants.JWT_HEADER, jwt);
     }
 
     filterChain.doFilter(request, response);
   }
 
   @Override
-  protected boolean shouldNotFilter(HttpServletRequest request) {
-    return !request.getServletPath().equals("/users");
-  }
-
-  private String populateAuthorities(Collection<? extends GrantedAuthority> collection) {
-    Set<String> authoritiesSet = new HashSet<>();
-
-    for (GrantedAuthority authority : collection) {
-      authoritiesSet.add(authority.getAuthority());
-    }
-    
-    return String.join(",", authoritiesSet);
+  protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    return !request.getServletPath().equals("/users/user");
   }
 
 }
