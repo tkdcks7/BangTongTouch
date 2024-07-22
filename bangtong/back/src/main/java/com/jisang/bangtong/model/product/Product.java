@@ -1,11 +1,18 @@
 package com.jisang.bangtong.model.product;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jisang.bangtong.model.region.Region;
+import com.jisang.bangtong.model.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.util.Date;
@@ -28,6 +35,13 @@ public class Product {
   private ProductType productType;
 
 // TODO: region FK 불러오기
+  @OneToOne
+  @JoinColumn(name = "regionId", foreignKey = @ForeignKey(name = "fk_product_region"))
+  private Region region;
+
+  @ManyToOne
+  @JoinColumn(name="userId", foreignKey = @ForeignKey(name="fk_product_user"))
+  private User user;
 
   @Column(nullable = false, length = 50)
   private String productAddress;
