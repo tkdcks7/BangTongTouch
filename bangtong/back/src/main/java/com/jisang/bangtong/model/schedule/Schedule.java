@@ -18,6 +18,8 @@ public class Schedule {
     private Long scheduleId;
 
 //    TODO: 채팅방 ID
+    @Column(nullable = false)
+    private Long chatroomId = 1L;
 
     @Temporal(value = TemporalType.TIMESTAMP)
     @CreationTimestamp

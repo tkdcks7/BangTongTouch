@@ -33,7 +33,6 @@ public class AlarmMessageService {
     // 알림 삭제
     public void deleteAlarm(long alarmMessageId) {
         alarmMessageRepository.deleteById(alarmMessageId);
-//        alarmMessageRepository.deleteAlarm(alarmMessageId);
     }
 
     // 알림 생성

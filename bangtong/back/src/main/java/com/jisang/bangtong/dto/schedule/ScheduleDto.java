@@ -4,15 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ScheduleDto {
     private Long scheduleId;
     private Long chatroomId;
-    private Data scheduleDate;
-    private Data scheduleCreatedAt;
-    private Long seller;
-    private Long buyer;
-
+    private Date scheduleDate;
 }
