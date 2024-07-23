@@ -7,6 +7,7 @@ import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.interest.InterestRepository;
 import com.jisang.bangtong.repository.product.ProductRepository;
 import com.jisang.bangtong.repository.user.UserRepository;
+import java.util.List;
 import java.util.Optional;
 import javax.swing.text.html.Option;
 import lombok.extern.slf4j.Slf4j;
@@ -51,4 +52,17 @@ public class InterestServiceImpl implements InterestService{
       throw new RuntimeException("user or product not found");
     }
   }
+
+  @Override
+  public void delete(InterestDto interestDto) {
+    log.info("delete 실행 {}", interestDto);
+    interestRepository.deleteByUserIdAndProductId(interestDto.getUserId(), interestDto.getProductId());
+  }
+
+  @Override
+  public Optional<List<Interest>> getList(Long userId){
+    log.info("Interest ServiceImpl getList 실행");
+    return interestRepository.findAllByUser_UserId(userId);
+  }
+
 }
