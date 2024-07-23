@@ -1,6 +1,8 @@
 package com.jisang.bangtong.model.product;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.model.user.User;
 import jakarta.persistence.Column;
