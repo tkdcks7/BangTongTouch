@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -15,13 +16,18 @@ public class ScheduleService {
     @Autowired
     private ScheduleRepository scheduleRepository;
 
+//    //    예약 생성
+//    public void createSchedule(Date scheduleDate) {
+//        Schedule schedule = new Schedule();
+//        schedule.setScheduleDate(scheduleDate);
+//        scheduleRepository.save(schedule);
+//    }
 
     //예약 생성
     public void createSchedule(ScheduleDto scheduleDto) {
         Schedule schedule = new Schedule();
         schedule.setScheduleDate(scheduleDto.getScheduleDate());
         scheduleRepository.save(schedule);
-
     }
 
     //예약 삭제

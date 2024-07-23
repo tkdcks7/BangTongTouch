@@ -17,12 +17,10 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
 
-//    TODO: 채팅방 ID
+    //    TODO: 채팅방 ID
     @Column(nullable = false)
     private Long chatroomId = 1L;
 
-    @Temporal(value = TemporalType.TIMESTAMP)
-    @CreationTimestamp
     @Column(nullable = false)
     private Date scheduleDate;
 

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/schedules")
@@ -23,6 +25,9 @@ public class ScheduleController {
     public ResponseDto<Void> createSchedule(@RequestBody ScheduleDto scheduleDto) {
         scheduleService.createSchedule(scheduleDto);
 
+//        Date scheduleDate = map.get("scheduleDate");
+//        scheduleService.createSchedule(scheduleDate);
+//
         return ResponseDto.res("SUCCESS");
     }
 
