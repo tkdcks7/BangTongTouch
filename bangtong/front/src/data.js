@@ -482,5 +482,22 @@ export const products = [
         },
         "status": "OK"
     },
+]
 
+export const users = [
+    {
+        "userId": 1,
+        "userName": "관리자",
+        "userEmail": "admin",
+        "userPassword": "$2a$10$MNNHcEgr87FToesQypInQOAtJmNmX8TqwNQYJ1wMbvRl5i.XcXeOm",
+        "userBirthYear": 1998,
+        "userPhone": "010",
+        "userRegisterDate": "2024-07-19 13:41:30.857",
+        "userNickname": "어드민",
+        "userGender": 0,
+        "userSso": "NAVER",
+        "userIsAdmin": true,
+        "userIsDeleted": false,
+        "userIsBanned": false
+    }
 ]
