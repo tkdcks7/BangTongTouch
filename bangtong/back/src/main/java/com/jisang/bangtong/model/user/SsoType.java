@@ -6,7 +6,8 @@ import com.jisang.bangtong.converter.IEnum;
 public enum SsoType implements IEnum<String> {
   GOOGLE("google"),
   KAKAO("kakao"),
-  NAVER("naver");
+  NAVER("naver"),
+  NA("na");
 
   private final String value;
 

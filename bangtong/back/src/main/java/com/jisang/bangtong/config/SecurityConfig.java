@@ -1,18 +1,29 @@
 package com.jisang.bangtong.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
+import com.jisang.bangtong.exceptionhandling.BasicAuthenticationEntryPoint;
+import com.jisang.bangtong.exceptionhandling.CustomAccessDeniedHandler;
+import com.jisang.bangtong.filter.CsrfCookieFilter;
+import com.jisang.bangtong.filter.JWTTokenGeneratorFilter;
+import com.jisang.bangtong.filter.JWTTokenValidatorFilter;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
@@ -20,47 +31,59 @@ public class SecurityConfig {
   @Bean
   SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
     CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
-    csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName("_csrf");
 
-    http.cors(cors -> corsConfigurationSource())
-//        .csrf(csrf -> {
-//          csrf.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-//              .ignoringRequestMatchers("/users/**");
-//          csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-//        })
-        .csrf().disable()
+    http.sessionManagement(
+            sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .cors(corsConfig -> corsConfig.configurationSource(request -> {
+          CorsConfiguration config = new CorsConfiguration();
+
+          config.setAllowedOrigins(List.of("*"));
+          config.setAllowedMethods(List.of("*"));
+          config.setAllowCredentials(true);
+          config.setAllowedHeaders(List.of("*"));
+          config.setExposedHeaders(List.of("Authorization"));
+          config.setMaxAge(3600L);
+
+          return config;
+        })).csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+            .ignoringRequestMatchers(
+            //    "/users/register", "/users/login"
+                "/**"
+            )
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+        .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+        .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
+        .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
+        .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // Only HTTP
         .authorizeHttpRequests(
-            (requests) -> requests.
-            //    requestMatchers("/boards/**").authenticated()
-            //    .requestMatchers("/comments/**").hasRole("admin").
-                anyRequest().permitAll());
-    http.formLogin(Customizer.withDefaults());
-    http.httpBasic(Customizer.withDefaults());
+            (requests) -> requests.requestMatchers("/boards/**", "/regions/**").authenticated()
+                .anyRequest().permitAll()).formLogin(withDefaults())
+        .httpBasic(hbc -> hbc.authenticationEntryPoint(new BasicAuthenticationEntryPoint()))
+        .exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 
     return http.build();
   }
 
   @Bean
   public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
+    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
   }
 
   @Bean
-  public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration config = new CorsConfiguration();
+  public CompromisedPasswordChecker compromisedPasswordChecker() {
+    return new HaveIBeenPwnedRestApiPasswordChecker();
+  }
 
-    config.setAllowCredentials(true);
-    config.setAllowedOrigins(List.of("http://localhost"));
-    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
-    config.setAllowedHeaders(List.of("*"));
-    config.setExposedHeaders(List.of("*"));
-    config.setMaxAge(3600L);
+  @Bean
+  public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
+      PasswordEncoder passwordEncoder) {
+    UsernamePasswordAuthenticationProvider authenticationProvider = new UsernamePasswordAuthenticationProvider(
+        userDetailsService, passwordEncoder);
 
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    ProviderManager providerManager = new ProviderManager(authenticationProvider);
+    providerManager.setEraseCredentialsAfterAuthentication(false);
 
-    source.registerCorsConfiguration("/**", config);
-
-    return source;
+    return providerManager;
   }
 
 }

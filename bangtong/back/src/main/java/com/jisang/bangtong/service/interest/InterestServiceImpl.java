@@ -30,18 +30,22 @@ public class InterestServiceImpl implements InterestService{
   @Override
   public void add(InterestDto interestDto){
     log.info("add 시작");
-    log.info("interestDto: {}", interestDto);
+    //log.info("interestDto: {}", interestDto);
     Interest interest = new Interest();
+    
+    //user 객체 얻기
     Optional<User> user = userRepository.findById(interestDto.getUserId());
     user.ifPresent(value -> log.info("user{}", value));
-
+    
+    //product 객체 얻기
     Optional<Product> product = productRepository.findById(interestDto.getProductId());
-    log.info("product{}", product);
-    if(//user.isPresent() &&
+    product.ifPresent(value-> log.info("product{}", value));
+    
+    if(user.isPresent() &&
      product.isPresent()){
-      //interest.setUser(user.get());
+      interest.setUser(user.get());
       interest.setProduct(product.get());
-     // interestRepository.save(interest);
+      interestRepository.save(interest);
     }
     else{
       throw new RuntimeException("user or product not found");
