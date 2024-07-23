@@ -6,34 +6,41 @@ import React from "react";
  */
 
 interface ChildProps {
-  comment_id: string;
+  commentId: number;
+  userName: string;
   content: string;
-  date: number;
+  date: string;
 }
 
-const SubComment: React.FC<ChildProps> = ({ comment_id, content, date }) => {
+const SubComment: React.FC<ChildProps> = ({
+  commentId,
+  userName,
+  content,
+  date,
+}) => {
   return (
     <div className="flex pl-4 py-0.5">
       <div className="flex text-xl items-center justify-center pr-2">
         <div>┖</div>
       </div>
-      <div className="w-full">
-        <div className="text-lg">{comment_id}</div>
-        <div className="text-base">{content}</div>
-        <div className="text-sm">{formatTimestamp(date)}</div>
+      <div className="flex w-full">
+        <div className="flex-initial text-sm w-12">{userName}</div>
+        <div className="flex-1 text-base break-words overflow-hidden whitespace-pre-wrap">
+          {content}
+        </div>
+        <div className="flex-initial text-xs w-16">{formatTimestamp(date)}</div>
       </div>
     </div>
   );
 };
-function formatTimestamp(timestamp: number): string {
+function formatTimestamp(timestamp: string): string {
   const date = new Date(timestamp);
 
-  const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   const hours = String(date.getHours()).padStart(2, "0");
   const minutes = String(date.getMinutes()).padStart(2, "0");
 
-  return `${year}.${month}.${day}. ${hours}:${minutes}`;
+  return `${month}.${day}. ${hours}:${minutes}`;
 }
 export default SubComment;
