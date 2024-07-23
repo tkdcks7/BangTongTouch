@@ -23,6 +23,10 @@ import ProductPage from './components/page/ProductPage';
 import ProductList from './components/molecules/ProductList';
 import ProductDetail from './components/organism/ProductDetail';
 
+// 마이방통
+import ProfilePage from './components/page/ProfilePage';
+import ProfileMain from './components/organism/ProfileMain';
+
 // 로그인페이지와 회원가입페이지는 Nav가 없기 때문에 Layout 밖에 선언함
 const Router: React.FC = () => {
   return (
@@ -43,6 +47,9 @@ const Router: React.FC = () => {
         <Route path='products' element={<ProductPage />}>
           <Route path='' element={<ProductList />}/>
           <Route path=':id' element={<ProductDetail />}/>
+        </Route>
+        <Route path='profile/:id' element={<ProfilePage />}>
+          <Route path='' element={<ProfileMain />} />
         </Route>
       </Route>
     </Routes>

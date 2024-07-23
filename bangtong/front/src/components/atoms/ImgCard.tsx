@@ -18,7 +18,7 @@ const ImgCard: React.FC<ImgCardProps> = ({
         event.currentTarget.src = defaultHomeImage;
       }
   return (
-    <div className={`${borderRadius} ${width} ${height} bg-yellow-400`}>
+    <div className={`${borderRadius} ${width} ${height}`}>
         <img src={src} className="object-fill" alt="대체 이미지" onError={handleImageError} />
     </div>
   );
