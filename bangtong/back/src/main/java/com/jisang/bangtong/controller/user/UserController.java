@@ -31,6 +31,9 @@ public class UserController {
   @PostMapping("/register")
   public ResponseDto<User> register(@RequestBody User user) {
     String password = passwordEncoder.encode(user.getUserPassword());
+
+    log.info("password: {}", password);
+
     user.setUserPassword(password);
 
     userService.register(user);
@@ -41,6 +44,7 @@ public class UserController {
   @DeleteMapping("/delete/{userId}")
   public ResponseDto<Void> delete(@PathVariable Long userId) {
     userService.delete(userId);
+    
     return ResponseDto.res("success");
   }
 

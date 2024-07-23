@@ -45,18 +45,16 @@ public class SecurityConfig {
           config.setMaxAge(3600L);
 
           return config;
-        }))
-        .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+        })).csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
             .ignoringRequestMatchers("/users/register", "/users/login")
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
         .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
         .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
         .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
         .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // Only HTTP
-        .authorizeHttpRequests((requests) -> requests
-            .requestMatchers("/boards/**", "/regions/**").authenticated()
-            .anyRequest().permitAll())
-        .formLogin(withDefaults())
+        .authorizeHttpRequests(
+            (requests) -> requests.requestMatchers("/boards/**", "/regions/**").authenticated()
+                .anyRequest().permitAll()).formLogin(withDefaults())
         .httpBasic(hbc -> hbc.authenticationEntryPoint(new BasicAuthenticationEntryPoint()))
         .exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 
@@ -76,8 +74,8 @@ public class SecurityConfig {
   @Bean
   public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
       PasswordEncoder passwordEncoder) {
-    UsernamePasswordAuthenticationProvider authenticationProvider =
-        new UsernamePasswordAuthenticationProvider(userDetailsService, passwordEncoder);
+    UsernamePasswordAuthenticationProvider authenticationProvider = new UsernamePasswordAuthenticationProvider(
+        userDetailsService, passwordEncoder);
 
     ProviderManager providerManager = new ProviderManager(authenticationProvider);
     providerManager.setEraseCredentialsAfterAuthentication(false);

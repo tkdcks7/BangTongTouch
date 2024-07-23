@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import lombok.AllArgsConstructor;
-import org.springframework.core.env.Environment;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,11 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserService {
 
   private UserRepository userRepository;
   private final AuthenticationManager authenticationManager;
-  private final Environment env;
 
   public void register(User user) {
     userRepository.save(user);
@@ -43,22 +43,22 @@ public class UserService {
     Authentication authenticationResponse = authenticationManager.authenticate(authentication);
 
     if (authenticationResponse != null && authenticationResponse.isAuthenticated()) {
-      if (env != null) {
-        String email = authenticationResponse.getName();
-        User user = userRepository.findByUserEmail(email).get();
+      String email = authenticationResponse.getName();
+      User user = userRepository.findByUserEmail(email).orElse(null);
+
+      if (user != null) {
         token = user.getUserActiveToken();
 
         if (token == null) {
-          String secret = env.getProperty(SecurityConstants.JWT_SECRET_KEY,
-              SecurityConstants.JWT_SECRET_DEFAULT_VALUE);
+          String secret = SecurityConstants.JWT_SECRET_DEFAULT_VALUE;
           SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
           token = Jwts.builder().issuer("bangtong").subject("JWT Token")
               .claim("username", authenticationResponse.getName()).claim("authorities",
                   authenticationResponse.getAuthorities().stream()
                       .map(GrantedAuthority::getAuthority).collect(Collectors.joining(",")))
-              .issuedAt(new java.util.Date())
-              .expiration(new java.util.Date((new java.util.Date()).getTime() + 30000000))
+              .issuedAt(new java.util.Date()).expiration(new java.util.Date(
+                  (new java.util.Date()).getTime() + SecurityConstants.JWT_EXPIRES_IN))
               .signWith(secretKey).compact();
 
           user.setUserActiveToken(token);

@@ -75,7 +75,9 @@ public class User {
   @Column(columnDefinition = "boolean default false")
   private boolean userIsBanned;
 
+  @Column(length = 512)
   private String userActiveToken;
+  @Column(length = 512)
   private String userRefreshToken;
 
 }
