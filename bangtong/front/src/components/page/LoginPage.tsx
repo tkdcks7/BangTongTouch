@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Params, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 
 // 컴포넌트 불러오기
@@ -41,6 +41,35 @@ const LoginPage: React.FC = () => {
   interface LoginInfo {
     email: string;
     password: string;
+  }
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const code = searchParams.get("code");
+  const stateCode = searchParams.get("state");
+  console.log("check" + code);
+  console.log("state:" + stateCode);
+
+  if (stateCode === "1234") {
+    const formData: FormData = new FormData();
+    formData.append("grant_type", "code");
+    formData.append("client_id", process.env.REACT_APP_CLIENT_ID_NAVER + "");
+    formData.append(
+      "client_secret",
+      process.env.REACT_APP_CLIENT_SECRET_NAVER + ""
+    );
+    formData.append("code", code + "");
+    formData.append("state", stateCode);
+    axios({
+      method: "POST",
+      url: "https://nid.naver.com/oauth2.0/token",
+      data: formData,
+    })
+      .then((response) => {
+        console.log(response.data, " 성공적");
+      })
+      .catch((error) => console.log("전송 실패", error));
   }
 
   const handleLogIn = (e: any): void => {
@@ -112,16 +141,10 @@ const LoginPage: React.FC = () => {
         />
         <div className="flex justify-between text-sm text-lime-500">
           <Link to="/user/FindSelectPage">
-            <TextBox 
-              text='아이디/비밀번호 찾기'
-              color='lime-500'
-            />
+            <TextBox text="아이디/비밀번호 찾기" color="lime-500" />
           </Link>
           <Link to="/user/register">
-            <TextBox 
-              text='회원가입'
-              color='lime-500'
-            />
+            <TextBox text="회원가입" color="lime-500" />
           </Link>
         </div>
         <div className="flex justify-center mt-3">
