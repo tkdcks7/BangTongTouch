@@ -36,11 +36,11 @@ public class Product {
 
 // TODO: region FK 불러오기
   @OneToOne
-  @JoinColumn(name = "regionId", foreignKey = @ForeignKey(name = "fk_product_region"))
+  @JoinColumn(name = "regionId", foreignKey = @ForeignKey(name = "fk_product_region"), nullable = false)
   private Region region;
 
   @ManyToOne
-  @JoinColumn(name="userId", foreignKey = @ForeignKey(name="fk_product_user"))
+  @JoinColumn(name="userId", foreignKey = @ForeignKey(name="fk_product_user"), nullable = false)
   private User user;
 
   @Column(nullable = false, length = 50)
@@ -96,9 +96,12 @@ public class Product {
   @Column(nullable = false)
   private Date productEndDate;
 
-  @Column
+  @Column(nullable=false)
   private double lat; // 위도
 
-  @Column
+  @Column(nullable = false)
   private double lng; //경도
+
+  @Column(nullable=false)
+  private double productScore=0.0;
 }

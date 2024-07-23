@@ -43,9 +43,6 @@ public class Board {
   @Column(nullable = false)
   private int boardHit = 0;  // 기본값을 코드에서 직접 설정
 
-  @Column(nullable = false)
-  private int boardScore = 0;
-
    //TODO: Region 클래스 생성 후 관계 설정
    @ManyToOne
    @JoinColumn(name="regionId", foreignKey = @ForeignKey(name = "fk_board_region"))

@@ -79,8 +79,7 @@ public class ProductController {
 
   @PostMapping("/search")
   public ResponseDto<List<Product>> search(@RequestBody ProductSearchDto productSearchDto){
-
-
-    return new ResponseDto<>(SUCCESS);
+    List<Product> searchList = productService.searchList(productSearchDto);
+    return new ResponseDto<>(SUCCESS, searchList);
   }
 }
