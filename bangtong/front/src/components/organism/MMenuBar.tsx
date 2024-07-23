@@ -5,11 +5,11 @@ import IconBtn from '../atoms/IconBtn';
 
 // 이미지 소스
 import Bell from '../../assets/Bell.png'
-import Settings from '../../assets/Settings.png'
+import Menu from '../../assets/Menu.png'
 
 const MMenuBar: React.FC = () => {
   return (
-    <div className='flex justify-end w-screen p-2'>
+    <div className='flex justify-end items-center w-screen p-2'>
       <div className='mx-3'>
         <IconBtn 
           imgSrc={Bell}
@@ -18,7 +18,7 @@ const MMenuBar: React.FC = () => {
       </div>
       <div className='mx-3'>
         <IconBtn 
-          imgSrc={Settings}
+          imgSrc={Menu}
           size={30}
         />
       </div>

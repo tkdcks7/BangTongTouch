@@ -33,7 +33,7 @@ const CommunityMain: React.FC = () => {
         >
           <IconBtn 
             imgSrc={Pencle}
-            size={40}
+            size={30}
           />
         </Link>
       </div>
