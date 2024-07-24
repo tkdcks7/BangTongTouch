@@ -43,7 +43,7 @@ public class SecurityConfig {
         .cors(corsConfig -> corsConfig.configurationSource(request -> {
           CorsConfiguration config = new CorsConfiguration();
 
-          config.setAllowedOrigins(List.of("*"));
+          config.setAllowedOriginPatterns(List.of("*"));
           config.setAllowedMethods(List.of("*"));
           config.setAllowCredentials(true);
           config.setAllowedHeaders(List.of("*"));
@@ -53,7 +53,7 @@ public class SecurityConfig {
           return config;
         })).csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
             .ignoringRequestMatchers(
-            //    "/users/register", "/users/login"
+                //    "/users/register", "/users/login"
                 "/**"
             )
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
