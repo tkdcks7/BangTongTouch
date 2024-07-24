@@ -12,7 +12,7 @@ public class ResponseDto<T> {
 
   private final HttpStatus STATUS = HttpStatus.OK;
   private String message;
-  private T responseData;
+  private T data;
 
   public ResponseDto(final String message) {
     this.message = message;
@@ -23,10 +23,7 @@ public class ResponseDto<T> {
   }
 
   public static <T> ResponseDto<T> res(final String message, final T t) {
-    return ResponseDto.<T>builder()
-        .message(message)
-        .responseData(t)
-        .build();
+    return ResponseDto.<T>builder().message(message).data(t).build();
   }
 
 }
