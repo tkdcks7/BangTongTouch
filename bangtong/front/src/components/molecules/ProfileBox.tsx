@@ -13,9 +13,7 @@ interface ProfileProps {
 const ProfileBox: React.FC<ProfileProps> = ({userNickname}) => {
   return (
     <div className="w-full flex justify-center items-center">
-      <div id="profilePhoto" className="me-16">
-        <img src={defaultprofile} alt="프로필 사진" width={100} height={100} className="rounded-full"/>
-      </div>
+      <img src={defaultprofile} alt="프로필 사진" width={100} height={100} className="rounded-full me-10"/>
       <div id="profileName" className="flex flex-col items-center">
         <p className="font-bold my-3 text-nowrap">{userNickname}님 안녕하세요</p>
         <div className="mb-3">
