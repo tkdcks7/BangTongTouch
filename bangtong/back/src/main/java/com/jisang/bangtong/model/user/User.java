@@ -60,7 +60,7 @@ public class User {
   private int userGender;
 
   @Column(columnDefinition = "ENUM('google', 'kakao', 'naver', 'na')")
-  private SsoType userSso;
+  private ProviderType userProvider;
 
   @Column(columnDefinition = "boolean default false")
   private boolean userIsAdmin;

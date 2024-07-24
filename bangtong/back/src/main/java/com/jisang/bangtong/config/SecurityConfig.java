@@ -7,6 +7,7 @@ import com.jisang.bangtong.exceptionhandling.CustomAccessDeniedHandler;
 import com.jisang.bangtong.filter.CsrfCookieFilter;
 import com.jisang.bangtong.filter.JWTTokenValidatorFilter;
 import com.jisang.bangtong.repository.user.UserRepository;
+import com.jisang.bangtong.service.user.OAuth2UserServiceImpl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +31,7 @@ import org.springframework.web.cors.CorsConfiguration;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+  private final OAuth2UserServiceImpl oAuth2UserService;
   private final UserRepository userRepository;
 
   @Bean
@@ -60,6 +62,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             (requests) -> requests.requestMatchers("/regions/**").authenticated()
                 .anyRequest().permitAll()).formLogin(withDefaults())
+        .oauth2Login(
+            oauth -> oauth.defaultSuccessUrl("/users/test", true)
+                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService)))
         .httpBasic(hbc -> hbc.authenticationEntryPoint(new BasicAuthenticationEntryPoint()))
         .exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 
