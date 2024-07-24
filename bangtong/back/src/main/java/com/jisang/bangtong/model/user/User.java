@@ -76,8 +76,6 @@ public class User {
   private boolean userIsBanned;
 
   @Column(length = 512)
-  private String userActiveToken;
-  @Column(length = 512)
   private String userRefreshToken;
 
 }

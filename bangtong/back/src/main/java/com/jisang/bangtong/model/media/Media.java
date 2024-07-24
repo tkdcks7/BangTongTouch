@@ -1,0 +1,21 @@
+package com.jisang.bangtong.model.media;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+
+@Data
+@Entity
+public class Media {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  Long mediaId;
+
+  @Column(nullable = false, length=100)
+  String mediaPath;
+}

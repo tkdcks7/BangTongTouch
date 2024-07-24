@@ -111,6 +111,16 @@
       <artifactId>querydsl-core</artifactId>
       <version>5.0.0</version>
     </dependency>
+    <!--웹 소켓을 위한 디펜던시 추가-->
+    <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
+      <version>3.3.1</version>
+    </dependency>
+
+    <!--웹 소켓을 위한 디펜던시 추가 끝-->
+
   </dependencies>
 
   <build>

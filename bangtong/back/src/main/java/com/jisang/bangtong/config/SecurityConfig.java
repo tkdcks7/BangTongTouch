@@ -5,9 +5,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import com.jisang.bangtong.exceptionhandling.BasicAuthenticationEntryPoint;
 import com.jisang.bangtong.exceptionhandling.CustomAccessDeniedHandler;
 import com.jisang.bangtong.filter.CsrfCookieFilter;
-import com.jisang.bangtong.filter.JWTTokenGeneratorFilter;
 import com.jisang.bangtong.filter.JWTTokenValidatorFilter;
+import com.jisang.bangtong.repository.user.UserRepository;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +27,10 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+  private final UserRepository userRepository;
 
   @Bean
   SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -52,11 +56,12 @@ public class SecurityConfig {
             )
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
         .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-        .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-        .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
-        .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure()) // Only HTTP
+        .addFilterBefore(new JWTTokenValidatorFilter(userRepository),
+            BasicAuthenticationFilter.class)
+//        .addFilterAfter(new JWTTokenGeneratorFilter(), JWTTokenValidatorFilter.class)
+        .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
         .authorizeHttpRequests(
-            (requests) -> requests.requestMatchers("/boards/**", "/regions/**").authenticated()
+            (requests) -> requests.requestMatchers("/regions/**").authenticated()
                 .anyRequest().permitAll()).formLogin(withDefaults())
         .httpBasic(hbc -> hbc.authenticationEntryPoint(new BasicAuthenticationEntryPoint()))
         .exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
