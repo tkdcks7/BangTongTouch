@@ -1,8 +1,6 @@
-import React from "react";
-import { Params, useParams } from "react-router-dom";
-
-// 데이터
-import { products } from "../../data";
+import React, { useEffect, useRef, useState } from "react";
+import { Params, useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
 // 컴포넌트
 import ImgCarousel from "../molecules/ImgCarousel";
@@ -13,63 +11,74 @@ import ProductAdditionalOptions from "../molecules/ProductAdditionalOptions";
 import LocationAround from "../molecules/LocationAround";
 
 const ProductDetail: React.FC = () => {
+  let { id }: any = useParams(); // 상품 번호
+  const [productInfo, setProductInfo] = useState({
+    productId: 1,
+    productType: "ONEROOM",
+    productAddress: "147-51",
+    productDeposit: 10,
+    productRent: 2000,
+    productMaintenance: 5,
+    productMaintenanceInfo: "수도세 포함, 전기세 미포함",
+    productIsRentSupportable: true,
+    productIsFurnitureSupportable: true,
+    productSquare: 44.55,
+    productRoom: 2,
+    productOption: "1111111",
+    productAdditionalOption: [
+      "원하시는 추가 옵션이 있다면 문의 부탁드립니다.",
+      "없으면 주지마세요",
+    ],
+    productIsBanned: false,
+    productIsDeleted: false,
+    productPostDate: "2024-07-19 04:01:15.256",
+    productStartDate: "2024-08-01",
+    productEndDate: "2024-12-30",
+    boardRegion: {
+      regionId: "1111010900",
+      regionSido: "서울특별시",
+      regionGugun: "종로구",
+      regionDong: "누상동",
+    },
+  });
 
-  let {id} = useParams<{id: string}>(); // 상품 번호
+  const navigate = useNavigate();
 
-  // id가 undefined인 경우
-  if (id === undefined) {
-    return <p>잘못된 접근입니다.</p>;
-  }
+  // 백엔드에서 상세 페이지 정보 받아오기
+  useEffect(() => {
+    if (id !== undefined && !isNaN(id)) {
+      axios({
+        method: "GET",
+        url: `http://127.0.0.1:8080/products/${id}`,
+        headers: {},
+      })
+        .then((response) => {
+          setProductInfo({ ...response.data });
+        })
+        .catch((err) => console.log("Detail page 호출 실패", err));
+    } else {
+      navigate("/products");
+    }
+  }, []);
 
-  // productId가 id인 게시글 찾기
-  const product = products.find(obj => obj.data.productId === parseInt(id as string, 10))
+  // 일자를 파싱하는 함수
+  const timeParser = (time: string): number[] => {
+    return time.split("-").map((el) => Number(el));
+  };
 
-  // 계약 시작일의 년도, 월 찾기
-  const startDate = product?.data?.productStartDate;
+  // 계약일, 계약종료일을 연월일로 반환
+  const [startYear, startMonth, startDay] = timeParser(
+    productInfo.productStartDate
+  );
+  const [endYear, endMonth, endDay] = timeParser(productInfo.productEndDate);
 
-  // 계약 종료일의 년도, 월 찾기
-  const endDate = product?.data?.productEndDate;
+  const remainMonth = (endYear - startYear) * 12 + (endMonth - startMonth);
 
-  let startYear = 0
-  let startMonth = 0
-  let startDay = 0
-
-  let endYear = 0
-  let endMonth = 0
-  let endDay = 0
-
-  if (startDate) {
-    const startParts = startDate.split("-")
-
-    startYear = parseInt(startParts[0]);
-    startMonth = parseInt(startParts[1]);
-    startDay = parseInt(startParts[2]);
-  } else {
-    console.log("startDate is undefined");
-  }
-
-  if (endDate) {
-    const endParts = endDate.split("-")
-
-    endYear = parseInt(endParts[0]);
-    endMonth = parseInt(endParts[1]);
-    endDay = parseInt(endParts[2]);
-  } else {
-    console.log("endDate is undefined");
-  }
-
-  let remainPeriod = endMonth - startMonth;
-
-  // 남은 계약기간 추출
-  if (endYear - startYear > 0) {
-    remainPeriod += 12 * (endYear - startYear)
-  }
-  
   // 비트마스킹된 기본옵션들 뽑아오기
-  const options = product?.data.productOption as string
+  const options: string = productInfo.productOption;
 
   // 문자열 리스트로 들어오는 추가옵션 받아오기
-  const additionalOption = product?.data.productAdditionalOption
+  const additionalOption: string[] = productInfo.productAdditionalOption;
 
   return (
     <div>
@@ -85,16 +94,16 @@ const ProductDetail: React.FC = () => {
           <h2 className="text-2xl font-black">기본정보</h2>
           <div className="mt-5">
             <div className="flex justify-between font-bold border-b-2 border-gray mb-2">
-              <p>월세</p>
-              <p>{`${product?.data.productDeposit} / ${product?.data.productRent}`}</p>
+              <p>월세 / 보증금 (만)</p>
+              <p>{`${productInfo.productDeposit} / ${productInfo.productRent}`}</p>
             </div>
             <div className="flex justify-between font-bold border-b-2 border-gray mb-2">
-              <p>관리비</p>
-              <p>{`${product?.data.productMaintenance}`}</p>
+              <p>관리비 (만)</p>
+              <p>{`${productInfo.productMaintenance}`}</p>
             </div>
             <div className="flex justify-between font-bold border-b-2 border-gray mb-2">
               <p>승계 기간 (남은 계약기간)</p>
-              <p>{`${remainPeriod}개월`}</p>
+              <p>{`${remainMonth}개월`}</p>
             </div>
             <div className="flex justify-between font-bold border-b-2 border-gray mb-2">
               <p>입주 가능일</p>
@@ -109,13 +118,11 @@ const ProductDetail: React.FC = () => {
         {/* 구분선 */}
         <Devider />
         {/* 옵션 */}
-        <ProductOptions 
-          options={options}
-        />
+        <ProductOptions options={options} />
         {/* 구분선 */}
         <Devider />
         {/* 추가옵션 */}
-        <ProductAdditionalOptions 
+        <ProductAdditionalOptions
           additionalOptions={additionalOption as Array<string>}
         />
         {/* 구분선 */}
@@ -123,7 +130,7 @@ const ProductDetail: React.FC = () => {
         <LocationAround />
       </div>
     </div>
-  )
+  );
 };
 
 export default ProductDetail;
