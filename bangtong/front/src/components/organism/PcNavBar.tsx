@@ -6,7 +6,8 @@ import IconBtn from "../atoms/IconBtn";
 import Btn from "../atoms/Btn";
 
 // 이미지 소스
-import Bell from "../../assets/Bell.png";
+import Bell from '../../assets/Bell.png' 
+import Logo from '../../assets/Logo.png'
 
 // Store
 import useUserStore from "../../store/userStore";
@@ -15,11 +16,9 @@ const PcNavBar: React.FC = () => {
   const { id } = useUserStore();
 
   return (
-    <div className="flex justify-between w-full bg-white p-5 mb-10">
-      <Link to="/" className="text-start">
-        <h1 className="font-extrabold text-4xl text-lime-600 text-nowrap">
-          방통터치
-        </h1>
+    <div className='flex justify-between w-full bg-white p-5 mb-10'>
+      <Link to="/" className='text-start'>
+        <img src={Logo} alt="로고" width={150}/>
       </Link>
       <div className="flex items-center justify-between">
         <NavLink
@@ -61,6 +60,7 @@ const PcNavBar: React.FC = () => {
         <div className="mx-7">
           <IconBtn imgSrc={Bell} size={30} />
         </div>
+
         {/* 로그인 되면 로그아웃 버튼이 뜨도록 */}
         <div className="mx-1">
           {id ? (

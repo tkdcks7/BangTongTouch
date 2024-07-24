@@ -22,6 +22,7 @@ import CommunityCreate from './components/organism/CommunityCreate';
 import ProductPage from './components/page/ProductPage';
 import ProductList from './components/molecules/ProductList';
 import ProductDetail from './components/organism/ProductDetail';
+import ProductUpload from './components/organism/ProductUpload';
 
 // 마이방통
 import ProfilePage from './components/page/ProfilePage';
@@ -47,6 +48,7 @@ const Router: React.FC = () => {
         <Route path='products' element={<ProductPage />}>
           <Route path='' element={<ProductList />}/>
           <Route path=':id' element={<ProductDetail />}/>
+          <Route path='upload' element={<ProductUpload />}/>
         </Route>
         <Route path='profile/:id' element={<ProfilePage />}>
           <Route path='' element={<ProfileMain />} />

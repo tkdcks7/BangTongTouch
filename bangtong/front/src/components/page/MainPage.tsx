@@ -7,9 +7,9 @@ import TextBox from "../atoms/TextBox";
 
 const MainPage: React.FC = () => {
   return (
-    <div>
+    <div className="lg:w-4/5">
       <TextBox 
-        text="방통터치"
+        text="방통터치 메인"
         color="lime-500"
         size="3xl"
         weight="bold"
