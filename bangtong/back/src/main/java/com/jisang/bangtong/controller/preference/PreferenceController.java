@@ -18,8 +18,8 @@ public class PreferenceController {
 
     // 선호 설정 등록
     @PostMapping("/add/{userId}")
-    public ResponseDto<Void> preferenceAdd(@PathVariable long userId, @RequestBody PreferenceDto preferenceDto) {
-        preferenceService.preferenceAdd(preferenceDto);
+    public ResponseDto<Void> addPreference(@PathVariable long userId, @RequestBody PreferenceDto preferenceDto) {
+        preferenceService.addPreference(preferenceDto);
         return ResponseDto.res(SUCCESS);
     }
 }

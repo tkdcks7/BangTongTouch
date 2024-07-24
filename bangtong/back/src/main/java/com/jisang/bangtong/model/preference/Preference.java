@@ -1,11 +1,11 @@
 package com.jisang.bangtong.model.preference;
 
+import com.jisang.bangtong.model.region.Region;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.swing.plaf.synth.Region;
 import java.util.Date;
 
 @Entity
