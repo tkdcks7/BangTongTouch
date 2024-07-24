@@ -8,7 +8,7 @@ import IconBtn from "../atoms/IconBtn";
 import ImgBox from "../atoms/ImgBox";
 
 // 이미지 소스
-import Pencle from "../../assets/Pencel.png"
+import Pencil from "../../assets/Pencil.png"
 import { Link } from "react-router-dom";
 
 const CommunityMain: React.FC = () => {
@@ -32,7 +32,7 @@ const CommunityMain: React.FC = () => {
           to={'write'}
         >
           <IconBtn 
-            imgSrc={Pencle}
+            imgSrc={Pencil}
             size={30}
           />
         </Link>

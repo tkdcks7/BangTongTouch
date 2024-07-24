@@ -48,7 +48,7 @@ const InputBox: React.FC<InputProps> = ({
   helperText,
   error = false,
   placeholder,
-  buttonType = "cancel",
+  buttonType,
   size = "medium",
   type,
   id = "",
@@ -142,7 +142,7 @@ const InputBox: React.FC<InputProps> = ({
             if (onChange) onChange(e);
           }}
         />
-        <IconBtn imgSrc={whatBtn} size={20} onClick={handleIconClick} />
+        <IconBtn className={whatBtn? '' : 'hidden'} imgSrc={whatBtn} size={20} onClick={handleIconClick} />
       </div>
       {helperText && (
         <p
