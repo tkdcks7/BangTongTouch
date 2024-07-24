@@ -52,7 +52,10 @@ public class SecurityConfig {
 
           return config;
         })).csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-            .ignoringRequestMatchers("/users/register", "/users/login")
+            .ignoringRequestMatchers(
+            //    "/users/register", "/users/login"
+                "/**"
+            )
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
         .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
         .addFilterBefore(new JWTTokenValidatorFilter(userRepository),

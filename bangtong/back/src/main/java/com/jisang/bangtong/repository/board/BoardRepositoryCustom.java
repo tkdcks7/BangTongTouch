@@ -9,4 +9,5 @@ public interface BoardRepositoryCustom {
   Page<Board> getBoards(Pageable pageable, BoardSearchDto boardSearchDto);
   void writeBoard(Board board, String regionId);
   void delete(long boardId);
+
 }
