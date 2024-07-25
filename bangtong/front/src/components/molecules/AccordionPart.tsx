@@ -22,11 +22,11 @@ const AccordionPart: React.FC<AccordionItemProps> = ({ header, ...rest }) => (
         />
       </>
     )}
-    className="border-b"
+    className="border border-black rounded-xl mb-2"
     style={{ width: "80vw" }}
     buttonProps={{
       className: ({ isEnter }) =>
-        `flex w-full p-4 text-left hover:bg-slate-100 ${
+        `flex items-center w-full p-4 text-left hover:bg-slate-100 rounded-xl ${
           isEnter ? "bg-slate-200" : ""
         }`,
     }}

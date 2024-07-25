@@ -9,7 +9,7 @@ const ProductPage: React.FC = () => {
   return (
     <div className="w-full mx-3 mb-3">
       <Link to="/products">
-        <TextBox 
+        <TextBox
           text="방통 터치하기"
           color="lime-500"
           size="3xl"
@@ -18,7 +18,7 @@ const ProductPage: React.FC = () => {
       </Link>
       <Outlet />
     </div>
-  )
+  );
 };
 
 export default ProductPage;

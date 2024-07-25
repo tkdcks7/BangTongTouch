@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import SearchMap from "../molecules/SearchMap";
+import React, { useEffect, useState } from "react";
+import SearchMap from "./SearchMap";
 
 interface Pos {
   lat: number;
   lng: number;
 }
 
-const MapTestPage: React.FC = () => {
+const ProductMap: React.FC = () => {
   const [positionLoaded, setPositionLoaded] = useState<boolean>(false);
   const [basePosition, setBasePosition] = useState<Pos>({ lat: 0, lng: 0 });
   useEffect(() => {
@@ -27,7 +27,7 @@ const MapTestPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full">
+    <div>
       {positionLoaded ? (
         <SearchMap basePos={basePosition} flag={false} />
       ) : null}
@@ -35,4 +35,4 @@ const MapTestPage: React.FC = () => {
   );
 };
 
-export default MapTestPage;
+export default ProductMap;

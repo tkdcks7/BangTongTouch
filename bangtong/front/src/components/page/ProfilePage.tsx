@@ -13,7 +13,7 @@ const ProfilePage: React.FC = () => {
   let {id} = useParams<{id: string}>(); // 유저 번호
 
   // id가 undefined인 경우
-  if (id == undefined) {
+  if (id === undefined) {
     return <p>잘못된 접근입니다.</p>
   }
 

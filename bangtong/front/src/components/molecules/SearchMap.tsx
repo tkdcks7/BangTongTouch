@@ -3,6 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import { Link } from "react-router-dom";
 
+// 이미지 소스
+import MapProduct from "../../assets/MapProduct.png"; // 매물
+import MapConvStore from "../../assets/MapConvStore.png"; // 편의점
+import MapBusStation from "../../assets/MapBusStation.png"; // 버스정류장
+import MapBank from "../../assets/MapBank.png"; // 은행
+import MapLaundry from "../../assets/MapLaundry.png"; // 세탁소
+import MapGym from "../../assets/MapGym.png"; // 헬스장
+
 interface MapProps {
   basePos: Pos; // 초기 위치(매물 좌표 or 사용자의 위치)
   flag: boolean; // 검색 페이지 일 경우 false, 상세 페이지 일 경우 true
@@ -45,27 +53,27 @@ const SearchMap: React.FC<MapProps> = ({ basePos, flag }) => {
   const subMarkerDatas: Array<SubMarkerData> = [
     {
       category: "편의점",
-      src: "https://cdn-icons-png.flaticon.com/512/7561/7561255.png",
+      src: `${MapConvStore}`,
       type: "0203046",
     },
     {
       category: "버스정류장",
-      src: "https://cdn-icons-png.flaticon.com/512/0/622.png",
+      src: `${MapBusStation}`,
       type: "040300201",
     },
     {
       category: "은행",
-      src: "https://e7.pngegg.com/pngimages/11/622/png-clipart-computer-icons-bank-money-map-sign-bank-heart-logo.png",
+      src: `${MapBank}`,
       type: "0203105",
     },
     {
       category: "세탁",
-      src: "https://e7.pngegg.com/pngimages/11/622/png-clipart-computer-icons-bank-money-map-sign-bank-heart-logo.png",
+      src: `${MapLaundry}`,
       type: "020317401030",
     },
     {
       category: "헬스",
-      src: "https://e7.pngegg.com/pngimages/11/622/png-clipart-computer-icons-bank-money-map-sign-bank-heart-logo.png",
+      src: `${MapGym}`,
       type: "020316403020",
     },
   ];
@@ -204,8 +212,8 @@ const SearchMap: React.FC<MapProps> = ({ basePos, flag }) => {
                             max-height: none; 
                             -webkit-user-select: none; 
                             position: absolute; 
-                            width: 50px; 
-                            height: 30px; 
+                            width: 30px; 
+                            height: 40px; 
                             left: 0; 
                             top: 0;
                           "
@@ -230,6 +238,30 @@ const SearchMap: React.FC<MapProps> = ({ basePos, flag }) => {
         const marker = new naver.maps.Marker({
           position: new naver.maps.LatLng(data.lat, data.lng),
           map: map,
+          icon: {
+            content: `
+                <img 
+                  src=${MapProduct}
+                  alt="맵 마커" 
+                  style="
+                    margin: 0; 
+                    padding: 0; 
+                    border: 0; 
+                    display: block; 
+                    max-width: none; 
+                    max-height: none; 
+                    -webkit-user-select: none; 
+                    position: absolute; 
+                    width: 30px; 
+                    height: 40px; 
+                    left: 0; 
+                    top: 0;
+                  "
+                />
+              `,
+            size: new naver.maps.Size(30, 20),
+            anchor: new naver.maps.Point(11, 35),
+          },
         });
         naver.maps.Event.addListener(marker, "click", () => {
           openModal(markerDatas[i].title);
@@ -297,7 +329,7 @@ const SearchMap: React.FC<MapProps> = ({ basePos, flag }) => {
   }, []);
 
   return (
-    <div>
+    <>
       <Modal
         style={customStyles}
         isOpen={modalIsOpen}
@@ -321,8 +353,8 @@ const SearchMap: React.FC<MapProps> = ({ basePos, flag }) => {
       >
         {selectedSubModalData}
       </Modal>
-      <div ref={mapElement} style={{ width: "100%", height: "100vh" }} />
-    </div>
+      <div ref={mapElement} style={{ width: "100%", height: "65vh" }} />
+    </>
   );
 };
 
