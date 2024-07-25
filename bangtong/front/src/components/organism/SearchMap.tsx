@@ -1,16 +1,25 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
+import { Link } from "react-router-dom";
 
 interface MarkerData {
+  productId: number;
   lat: number;
   lng: number;
-  info: number;
+  title: number;
+  src: string;
 }
 
-interface subMarkerData {
+interface SubMarkerData {
   category: string;
   src: string;
+  type: string;
+}
+
+interface Pos {
+  lat: number;
+  lng: number;
 }
 
 Modal.setAppElement("#root");
@@ -19,24 +28,41 @@ const SearchMap: React.FC = () => {
   const mapElement = useRef<HTMLDivElement>(null);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [selectedMarkerData, setSelectedMarkerData] = useState<MarkerData>();
-
   const [subModalIsOpen, setSubModalIsOpen] = useState(false);
   const [selectedSubModalData, setSelectedSubModalData] = useState<string>("");
+  const [zoomLevel, setZoomLevel] = useState<number>(13);
+  let map: any;
+  let markers: naver.maps.Marker[] = [];
 
-  const posRef = useRef({ lat: 37.5666103, lng: 126.9783882 });
+  const posRef = useRef<Pos>({ lat: 0, lng: 0 });
+  const [isPositionInitialized, setIsPositionInitialized] = useState(false);
+
   const markerDatas: Array<MarkerData> = [];
-  const subMarkerDatas: Array<subMarkerData> = [
+  const subMarkerDatas: Array<SubMarkerData> = [
     {
       category: "편의점",
       src: "https://cdn-icons-png.flaticon.com/512/7561/7561255.png",
+      type: "0203046",
     },
     {
       category: "버스정류장",
       src: "https://cdn-icons-png.flaticon.com/512/0/622.png",
+      type: "040300201",
     },
     {
       category: "은행",
       src: "https://e7.pngegg.com/pngimages/11/622/png-clipart-computer-icons-bank-money-map-sign-bank-heart-logo.png",
+      type: "0203105",
+    },
+    {
+      category: "세탁",
+      src: "https://e7.pngegg.com/pngimages/11/622/png-clipart-computer-icons-bank-money-map-sign-bank-heart-logo.png",
+      type: "020317401030",
+    },
+    {
+      category: "헬스",
+      src: "https://e7.pngegg.com/pngimages/11/622/png-clipart-computer-icons-bank-money-map-sign-bank-heart-logo.png",
+      type: "020316403020",
     },
   ];
 
@@ -52,6 +78,7 @@ const SearchMap: React.FC = () => {
       maxWidth: "600px",
     },
   };
+
   const customStyles2 = {
     content: {
       top: "50%",
@@ -65,10 +92,11 @@ const SearchMap: React.FC = () => {
     },
   };
 
-  const openModal = (info: number) => {
-    setSelectedMarkerData(markerDatas[info]);
+  const openModal = (title: number) => {
+    setSelectedMarkerData(markerDatas[title]);
     setIsOpen(true);
   };
+
   const closeModal = () => {
     setSelectedMarkerData(undefined);
     setIsOpen(false);
@@ -88,8 +116,11 @@ const SearchMap: React.FC = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          posRef.current.lat = position.coords.latitude;
-          posRef.current.lng = position.coords.longitude;
+          posRef.current = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          setIsPositionInitialized(true);
         },
         () => {
           console.log("error occured");
@@ -118,34 +149,35 @@ const SearchMap: React.FC = () => {
     return { lat, lng };
   }
 
-  positionInit();
-
   useEffect(() => {
-    function initMap() {
-      if (!mapElement.current) return;
+    positionInit();
+  }, []);
 
-      const mapOptions = {
-        center: new naver.maps.LatLng(posRef.current.lat, posRef.current.lng),
-        zoom: 10,
-      };
-
-      const map = new naver.maps.Map(mapElement.current, mapOptions);
-
-      for (let i = 1; i < 10; i++) {
+  function markerRender() {
+    function drawMarker() {
+      if (!map) return;
+      console.log(1);
+      markerDatas.length = 0;
+      console.log(markerDatas.length);
+      for (let i = 0; i < 10; i++) {
         markerDatas.push({
+          productId: i,
           lat: Math.random() * 2 + 35,
           lng: Math.random() * 3 + 126,
-          info: i,
+          title: i,
+          src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
         });
       }
-
       markerDatas.push({
+        productId: 10,
         lat: posRef.current.lat,
         lng: posRef.current.lng,
-        info: 10,
+        title: 10,
+        src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
       });
-
-      const markers = [];
+      if (markers) {
+        markers.forEach((marker) => marker.setMap(null));
+      }
 
       const southWest = toEPSG3857(
         posRef.current.lat - 0.01,
@@ -160,9 +192,10 @@ const SearchMap: React.FC = () => {
       for (let i = 0; i < subMarkerDatas.length; i++) {
         axios({
           method: "GET",
-          url: `req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=10&page=1&query=${subMarkerDatas[i].category}&type=place&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
+          url: `req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=10&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
         })
           .then((response) => {
+            console.log(response.data.response.result.items);
             for (
               let j = 0;
               j < response.data.response.result.items.length;
@@ -177,25 +210,25 @@ const SearchMap: React.FC = () => {
                 map: map,
                 icon: {
                   content: `
-                    <img 
-                      src=${subMarkerDatas[i].src}
-                      alt="${subMarkerDatas[i].category}" 
-                      style="
-                        margin: 0; 
-                        padding: 0; 
-                        border: 0; 
-                        display: block; 
-                        max-width: none; 
-                        max-height: none; 
-                        -webkit-user-select: none; 
-                        position: absolute; 
-                        width: 50px; 
-                        height: 30px; 
-                        left: 0; 
-                        top: 0;
-                      "
-                    />
-                  `,
+                      <img 
+                        src=${subMarkerDatas[i].src}
+                        alt="${subMarkerDatas[i].category}" 
+                        style="
+                          margin: 0; 
+                          padding: 0; 
+                          border: 0; 
+                          display: block; 
+                          max-width: none; 
+                          max-height: none; 
+                          -webkit-user-select: none; 
+                          position: absolute; 
+                          width: 50px; 
+                          height: 30px; 
+                          left: 0; 
+                          top: 0;
+                        "
+                      />
+                    `,
                   size: new naver.maps.Size(30, 20),
                   anchor: new naver.maps.Point(11, 35),
                 },
@@ -203,6 +236,7 @@ const SearchMap: React.FC = () => {
               naver.maps.Event.addListener(marker, "click", () => {
                 openSubModal(response.data.response.result.items[j].title);
               });
+              markers.push(marker);
             }
           })
           .catch((error) => console.log("전송 실패", error));
@@ -215,17 +249,53 @@ const SearchMap: React.FC = () => {
           map: map,
         });
         naver.maps.Event.addListener(marker, "click", () => {
-          openModal(markerDatas[i].info);
+          openModal(markerDatas[i].title);
         });
-
         markers.push(marker);
       }
-      // naver.maps.Event.addListener(map, "dragend", () => {
-      //   const center = map.getCenter();
-      //   posRef.current.lat = center.y;
-      //   posRef.current.lng = center.x;
-      //   console.log(posRef.current.lat + " " + posRef.current.lng);
-      // });
+
+      function redrawing() {
+        const center = map.getCenter();
+        posRef.current = { lat: center.lat(), lng: center.lng() };
+        markers.forEach((marker) => marker.setMap(null));
+        markers = [];
+        drawMarker();
+        console.log(posRef.current.lat + " " + posRef.current.lng);
+      }
+      if (naver.maps.Event.hasListener(map, "dragend")) return;
+      console.log("dfa");
+      naver.maps.Event.addListener(map, "dragend", redrawing);
+    }
+    const script = document.createElement("script");
+    script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.REACT_APP_CLIENT_ID_NAVER_MAP}&submodules=geocoder`;
+    script.async = true;
+    script.onload = () => {
+      drawMarker();
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      script.removeEventListener("load", markerRender);
+      document.head.removeChild(script);
+    };
+  }
+
+  function mapRender() {
+    if (!isPositionInitialized) return;
+
+    function initMap() {
+      if (!mapElement.current) return;
+
+      const mapOptions = {
+        center: new naver.maps.LatLng(posRef.current.lat, posRef.current.lng),
+        zoom: zoomLevel,
+      };
+      map = new naver.maps.Map(mapElement.current, mapOptions);
+      naver.maps.Event.addListener(map, "zoom_changed", (zoom) => {
+        setZoomLevel(zoom);
+      });
+
+      markerRender();
     }
 
     const script = document.createElement("script");
@@ -240,7 +310,11 @@ const SearchMap: React.FC = () => {
       script.removeEventListener("load", initMap);
       document.head.removeChild(script);
     };
-  }, [posRef.current]);
+  }
+
+  useEffect(() => {
+    mapRender();
+  }, [isPositionInitialized]);
 
   return (
     <div>
@@ -250,12 +324,14 @@ const SearchMap: React.FC = () => {
         onRequestClose={closeModal}
         contentLabel="Marker Info Modal"
       >
-        <div>{selectedMarkerData?.info}</div>
+        <img src={selectedMarkerData?.src} />
+        <div>{selectedMarkerData?.title}</div>
         <div>{selectedMarkerData?.lat}</div>
         <div>{selectedMarkerData?.lng}</div>
         <div>
-          <button>a</button>
-          <button>b</button>
+          <Link to={`/products/${selectedMarkerData?.productId}`}>
+            <button>자세히 보기</button>
+          </Link>
         </div>
       </Modal>
       <Modal
