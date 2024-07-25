@@ -17,8 +17,8 @@ public class PreferenceDto {
     private String regionAddress;
     private Integer preferenceDeposit;
     private Integer preferenceRent;
-    private Integer preferenceType;
-    private Integer preferenceInfra;
+    private String preferenceType;
+    private String preferenceInfra;
     private Date preferenceStartDate;
     private Date preferenceEndDate;
 }

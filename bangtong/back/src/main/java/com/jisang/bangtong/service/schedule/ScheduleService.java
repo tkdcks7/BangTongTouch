@@ -69,6 +69,7 @@ public class ScheduleService {
         return dto;
     }
 
+    // 예약 편집
     public ScheduleDto editSchedule(long scheduleId, ScheduleDto scheduleDto) {
         Schedule exisistingSchedule = scheduleRepository.findByScheduleId(scheduleId);
 

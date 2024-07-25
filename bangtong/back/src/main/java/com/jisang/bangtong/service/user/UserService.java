@@ -46,25 +46,6 @@ public class UserService {
       String email = authenticationResponse.getName();
       User user = userRepository.findByUserEmail(email).orElse(null);
 
-      if (user != null) {
-        token = user.getUserActiveToken();
-
-        if (token == null) {
-          String secret = SecurityConstants.JWT_SECRET_DEFAULT_VALUE;
-          SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-
-          token = Jwts.builder().issuer("bangtong").subject("JWT Token")
-              .claim("username", authenticationResponse.getName()).claim("authorities",
-                  authenticationResponse.getAuthorities().stream()
-                      .map(GrantedAuthority::getAuthority).collect(Collectors.joining(",")))
-              .issuedAt(new java.util.Date()).expiration(new java.util.Date(
-                  (new java.util.Date()).getTime() + SecurityConstants.JWT_EXPIRES_IN))
-              .signWith(secretKey).compact();
-
-          user.setUserActiveToken(token);
-          userRepository.save(user);
-        }
-      }
     }
 
     return token;

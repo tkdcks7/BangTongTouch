@@ -17,6 +17,7 @@ import jakarta.persistence.TemporalType;
 import java.util.Date;
 import java.util.Set;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +25,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class User {
 
   @Id
@@ -32,23 +34,19 @@ public class User {
 
 //  TODO: media_id FK 불러오기
 
-  @Column(nullable = false, length = 8)
-  private String userName;
-
   @Column(nullable = false, length = 40)
   private String userEmail;
 
-  @Column(nullable = false, length = 256)
+  @Column(length = 256)
   @JsonProperty(access = Access.WRITE_ONLY)
   private String userPassword;
 
-  @Column(nullable = false)
   private int userBirthYear;
 
-  @Column(nullable = false, length = 13)
+  @Column(length = 13)
   private String userPhone;
 
-  @Column(nullable = false)
+  @Column
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
   @Temporal(TemporalType.TIMESTAMP)
   private Date userRegisterDate = new Date();
@@ -56,11 +54,11 @@ public class User {
   @Column(nullable = false, length = 20)
   private String userNickname;
 
-  @Column(nullable = false, columnDefinition = "tinyint(2)")
+  @Column(columnDefinition = "tinyint(2)")
   private int userGender;
 
-  @Column(columnDefinition = "ENUM('google', 'kakao', 'naver', 'na')")
-  private SsoType userSso;
+  @Column(length = 6)
+  private String userProvider;
 
   @Column(columnDefinition = "boolean default false")
   private boolean userIsAdmin;
@@ -75,9 +73,12 @@ public class User {
   @Column(columnDefinition = "boolean default false")
   private boolean userIsBanned;
 
-  @Column(length = 512)
-  private String userActiveToken;
-  @Column(length = 512)
-  private String userRefreshToken;
+
+  public User updateUser(String userNickname, String userEmail) {
+    this.userNickname = userNickname;
+    this.userEmail = userEmail;
+
+    return this;
+  }
 
 }

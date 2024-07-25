@@ -11,17 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Region {
 
-  @Id
-  @Column(length=9)
-  String regionId;
+    @Id
+    @Column(length = 9)
+    String regionId;
 
-  @Column(nullable = false, length=7)
-  String regionSido;
+    @Column(nullable = false, length = 7)
+    String regionSido;
 
-  @Column(nullable = false, length=10)
-  String regionGugun;
+    @Column(nullable = false, length = 10)
+    String regionGugun;
 
-  @Column(nullable = false, length=10)
-  String regionDong;
+    @Column(nullable = false, length = 10)
+    String regionDong;
 
 }

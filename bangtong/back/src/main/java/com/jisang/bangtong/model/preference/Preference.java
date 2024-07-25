@@ -22,7 +22,7 @@ public class Preference {
 
     //TODO
     @Column(nullable = false)
-    private Long userId = 1L;
+    private Long userId = 2L;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "region_id")
@@ -34,11 +34,11 @@ public class Preference {
     @Column
     private int preferenceRent;
 
-    @Column(columnDefinition = "bit(5)")
-    private int preferenceType;
+    @Column(length = 5)
+    private String preferenceType;
 
-    @Column(columnDefinition = "but(8)")
-    private int preferenceInfra;
+    @Column(length = 8)
+    private String preferenceInfra;
 
     @Column(nullable = false)
     private Date preferenceStartDate;
