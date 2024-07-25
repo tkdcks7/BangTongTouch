@@ -2,9 +2,13 @@ import React from "react";
 
 // 컴포넌트
 import ProfileMenu from "../molecules/ProfileMenu";
+import ProfileBox from "../molecules/ProfileBox";
+import { useParams } from "react-router-dom";
+
+// 데이터
+import { users } from "../../data";
 
 const ProfileMain: React.FC = () => {
-<<<<<<< HEAD
   let { id } = useParams<{ id: string }>(); // 유저 번호
 
   // id가 undefined인 경우
@@ -21,12 +25,9 @@ const ProfileMain: React.FC = () => {
   return (
     <div>
       <ProfileBox userNickname={userNickname as string} />
-=======
-
-  return (
-    <div>
-      <h2 className="w-full text-xl text-left mt-5 text-lime-500 font-bold">나의 거래</h2>
->>>>>>> ea3457fc8c9c4f41abc41d546f5c912b0dec54b0
+      <h2 className="w-full text-xl text-left mt-5 text-lime-500 font-bold">
+        나의 거래
+      </h2>
       <ProfileMenu />
     </div>
   );
