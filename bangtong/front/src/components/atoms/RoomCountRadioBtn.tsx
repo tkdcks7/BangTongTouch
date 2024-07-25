@@ -1,16 +1,35 @@
 import React from "react";
 
-interface InputProps {
+interface RadioBtnProps {
   text: string;
+  name: string;
+  id: string;
+  value: string;
+  onChange?: (e: any) => void;
 }
 
-const RoomCountRadioBtn: React.FC<InputProps> = ({ text, ...props }) => {
+const RoomCountRadioBtn: React.FC<RadioBtnProps> = ({
+  text,
+  name,
+  id,
+  value,
+  onChange,
+
+  ...props
+}) => {
   return (
-    <label>
-      <input type="radio" name="room-type" id="one" value='one-room' className="me-1 ms-3"/>
+    <label htmlFor={id}>
+      <input
+        type="radio"
+        className="me-1 ms-3"
+        name={name}
+        id={id}
+        value={value}
+        onChange={onChange}
+      />
       {text}
     </label>
-  )
-}
+  );
+};
 
 export default RoomCountRadioBtn;
