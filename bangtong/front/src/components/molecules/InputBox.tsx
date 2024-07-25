@@ -11,7 +11,7 @@ import RedCancel from "../../assets/RedCancelCircle.png";
 import Check from "../../assets/CheckCircle.png";
 import DropDownIcon from "../../assets/DropDownIcon.png";
 import Send from "../../assets/Send.png";
-import Search from "../../assets/Search.png"
+import Search from "../../assets/Search.png";
 
 /**
  * 검증 오류가 발생하였을 경우 id 값을 "e" 검증이 되었을 경우 "q", 기본 상태 "" 처럼 빈 값 string 변수로 전달
@@ -42,6 +42,7 @@ interface InputProps
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   value?: string;
   setValue?: React.Dispatch<React.SetStateAction<string>>;
+  onIconClick?: React.MouseEventHandler;
 }
 
 const InputBox: React.FC<InputProps> = ({
@@ -57,6 +58,7 @@ const InputBox: React.FC<InputProps> = ({
   onChange,
   value,
   setValue,
+  onIconClick,
   ...props
 }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -92,7 +94,7 @@ const InputBox: React.FC<InputProps> = ({
   } else if (buttonType === "search") {
     whatBtn = Search;
   }
-  
+
   const inputStyle2: React.CSSProperties = {};
   inputStyle2.width = "95%";
   inputStyle2.height = "90%";
@@ -142,7 +144,12 @@ const InputBox: React.FC<InputProps> = ({
             if (onChange) onChange(e);
           }}
         />
-        <IconBtn className={whatBtn? '' : 'hidden'} imgSrc={whatBtn} size={20} onClick={handleIconClick} />
+        <IconBtn
+          className={whatBtn ? "" : "hidden"}
+          imgSrc={whatBtn}
+          size={20}
+          onIconClick={onIconClick}
+        />
       </div>
       {helperText && (
         <p
