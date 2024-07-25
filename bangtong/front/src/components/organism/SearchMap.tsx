@@ -3,6 +3,11 @@ import { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import { Link } from "react-router-dom";
 
+interface MapProps {
+  basePos: Pos; // 초기 위치(매물 좌표 or 사용자의 위치)
+  flag: boolean; // 검색 페이지 일 경우 false, 상세 페이지 일 경우 true
+}
+
 interface MarkerData {
   productId: number;
   lat: number;
@@ -24,7 +29,7 @@ interface Pos {
 
 Modal.setAppElement("#root");
 
-const SearchMap: React.FC = () => {
+const SearchMap: React.FC<MapProps> = ({ basePos, flag }) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [selectedMarkerData, setSelectedMarkerData] = useState<MarkerData>();
@@ -34,8 +39,7 @@ const SearchMap: React.FC = () => {
   let map: any;
   let markers: naver.maps.Marker[] = [];
 
-  const posRef = useRef<Pos>({ lat: 0, lng: 0 });
-  const [isPositionInitialized, setIsPositionInitialized] = useState(false);
+  const posRef = useRef<Pos>({ lat: basePos.lat, lng: basePos.lng });
 
   const markerDatas: Array<MarkerData> = [];
   const subMarkerDatas: Array<SubMarkerData> = [
@@ -112,23 +116,6 @@ const SearchMap: React.FC = () => {
     setSubModalIsOpen(false);
   };
 
-  function positionInit() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          posRef.current = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          setIsPositionInitialized(true);
-        },
-        () => {
-          console.log("error occured");
-        }
-      );
-    }
-  }
-
   function toEPSG3857(lat: number, lng: number): { x: number; y: number } {
     const R = 20037508.34; // 지구의 반지름 (미터 단위)
 
@@ -149,34 +136,28 @@ const SearchMap: React.FC = () => {
     return { lat, lng };
   }
 
-  useEffect(() => {
-    positionInit();
-  }, []);
-
   function markerRender() {
     function drawMarker() {
       if (!map) return;
-      console.log(1);
       markerDatas.length = 0;
-      console.log(markerDatas.length);
-      for (let i = 0; i < 10; i++) {
+      if (flag) {
         markerDatas.push({
-          productId: i,
-          lat: Math.random() * 2 + 35,
-          lng: Math.random() * 3 + 126,
-          title: i,
+          productId: 0,
+          lat: basePos.lat,
+          lng: basePos.lng,
+          title: 0,
           src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
         });
-      }
-      markerDatas.push({
-        productId: 10,
-        lat: posRef.current.lat,
-        lng: posRef.current.lng,
-        title: 10,
-        src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
-      });
-      if (markers) {
-        markers.forEach((marker) => marker.setMap(null));
+      } else {
+        for (let i = 0; i < 10; i++) {
+          markerDatas.push({
+            productId: i,
+            lat: Math.random() * 2 + 35,
+            lng: Math.random() * 3 + 126,
+            title: i,
+            src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
+          });
+        }
       }
 
       const southWest = toEPSG3857(
@@ -195,48 +176,50 @@ const SearchMap: React.FC = () => {
           url: `req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=10&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
         })
           .then((response) => {
-            console.log(response.data.response.result.items);
-            for (
-              let j = 0;
-              j < response.data.response.result.items.length;
-              j++
-            ) {
-              const result = fromEPSG3857(
-                response.data.response.result.items[j].point.x,
-                response.data.response.result.items[j].point.y
-              );
-              const marker = new naver.maps.Marker({
-                position: new naver.maps.LatLng(result.lat, result.lng),
-                map: map,
-                icon: {
-                  content: `
-                      <img 
-                        src=${subMarkerDatas[i].src}
-                        alt="${subMarkerDatas[i].category}" 
-                        style="
-                          margin: 0; 
-                          padding: 0; 
-                          border: 0; 
-                          display: block; 
-                          max-width: none; 
-                          max-height: none; 
-                          -webkit-user-select: none; 
-                          position: absolute; 
-                          width: 50px; 
-                          height: 30px; 
-                          left: 0; 
-                          top: 0;
-                        "
-                      />
-                    `,
-                  size: new naver.maps.Size(30, 20),
-                  anchor: new naver.maps.Point(11, 35),
-                },
-              });
-              naver.maps.Event.addListener(marker, "click", () => {
-                openSubModal(response.data.response.result.items[j].title);
-              });
-              markers.push(marker);
+            if (response.data.response.result.items) {
+              console.log(response.data.response.result.items);
+              for (
+                let j = 0;
+                j < response.data.response.result.items.length;
+                j++
+              ) {
+                const result = fromEPSG3857(
+                  response.data.response.result.items[j].point.x,
+                  response.data.response.result.items[j].point.y
+                );
+                const marker = new naver.maps.Marker({
+                  position: new naver.maps.LatLng(result.lat, result.lng),
+                  map: map,
+                  icon: {
+                    content: `
+                        <img 
+                          src=${subMarkerDatas[i].src}
+                          alt="${subMarkerDatas[i].category}" 
+                          style="
+                            margin: 0; 
+                            padding: 0; 
+                            border: 0; 
+                            display: block; 
+                            max-width: none; 
+                            max-height: none; 
+                            -webkit-user-select: none; 
+                            position: absolute; 
+                            width: 50px; 
+                            height: 30px; 
+                            left: 0; 
+                            top: 0;
+                          "
+                        />
+                      `,
+                    size: new naver.maps.Size(30, 20),
+                    anchor: new naver.maps.Point(11, 35),
+                  },
+                });
+                naver.maps.Event.addListener(marker, "click", () => {
+                  openSubModal(response.data.response.result.items[j].title);
+                });
+                markers.push(marker);
+              }
             }
           })
           .catch((error) => console.log("전송 실패", error));
@@ -254,18 +237,10 @@ const SearchMap: React.FC = () => {
         markers.push(marker);
       }
 
-      function redrawing() {
-        const center = map.getCenter();
-        posRef.current = { lat: center.lat(), lng: center.lng() };
-        markers.forEach((marker) => marker.setMap(null));
-        markers = [];
-        drawMarker();
-        console.log(posRef.current.lat + " " + posRef.current.lng);
-      }
       if (naver.maps.Event.hasListener(map, "dragend")) return;
-      console.log("dfa");
       naver.maps.Event.addListener(map, "dragend", redrawing);
     }
+
     const script = document.createElement("script");
     script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.REACT_APP_CLIENT_ID_NAVER_MAP}&submodules=geocoder`;
     script.async = true;
@@ -273,7 +248,14 @@ const SearchMap: React.FC = () => {
       drawMarker();
     };
     document.head.appendChild(script);
-
+    function redrawing() {
+      const center = map.getCenter();
+      posRef.current = { lat: center.lat(), lng: center.lng() };
+      markers.forEach((marker) => marker.setMap(null));
+      markers = [];
+      drawMarker();
+      console.log(posRef.current.lat + " " + posRef.current.lng);
+    }
     return () => {
       script.removeEventListener("load", markerRender);
       document.head.removeChild(script);
@@ -281,8 +263,6 @@ const SearchMap: React.FC = () => {
   }
 
   function mapRender() {
-    if (!isPositionInitialized) return;
-
     function initMap() {
       if (!mapElement.current) return;
 
@@ -314,7 +294,7 @@ const SearchMap: React.FC = () => {
 
   useEffect(() => {
     mapRender();
-  }, [isPositionInitialized]);
+  }, []);
 
   return (
     <div>
