@@ -66,7 +66,7 @@ const PcNavBar: React.FC = () => {
           {id ? (
             <Btn text="로그아웃" backgroundColor="red-400" />
           ) : (
-            <Btn text="로그인" backgroundColor="yellow-400" />
+            <Btn text="로그인" backgroundColor="yellow-300" />
           )}
         </div>
       </div>
