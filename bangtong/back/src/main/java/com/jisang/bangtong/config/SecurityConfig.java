@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -28,6 +29,7 @@ import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableWebSecurity
 public class SecurityConfig {
 
   private final UserRepository userRepository;
@@ -41,9 +43,9 @@ public class SecurityConfig {
         .cors(corsConfig -> corsConfig.configurationSource(request -> {
           CorsConfiguration config = new CorsConfiguration();
 
-          config.setAllowedOrigins(List.of("*"));
-          config.setAllowedMethods(List.of("*"));
+          config.setAllowedOriginPatterns(List.of("*"));
           config.setAllowCredentials(true);
+          config.setAllowedMethods(List.of("*"));
           config.setAllowedHeaders(List.of("*"));
           config.setExposedHeaders(List.of("Authorization"));
           config.setMaxAge(3600L);
@@ -90,5 +92,18 @@ public class SecurityConfig {
 
     return providerManager;
   }
+
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers("/ws/**").permitAll() // WebSocket 엔드포인트에 대한 접근을 허용
+            .anyRequest().authenticated() // 다른 모든 요청은 인증 요구됨
+        )
+        .csrf(csrf -> csrf.disable()); // WebSocket을 사용할 때는 CSRF 보호를 비활성화해야 함.
+
+    return http.build();
+  }
+
 
 }

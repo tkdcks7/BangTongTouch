@@ -4,6 +4,7 @@ import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.chat.Chat;
 import com.jisang.bangtong.service.chat.ChatService;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class ChatController {
   }
 
   @PostMapping("/save")
-  public ResponseDto<Void> sendMessage(@RequestBody Chat chat) {
+  public ResponseDto<Void> sendMessage(@RequestBody Map<String, Object> chat) {
     chatService.send(chat);
     return ResponseDto.res(SUCCESS);
   }
