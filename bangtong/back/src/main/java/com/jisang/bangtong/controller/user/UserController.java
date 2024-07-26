@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +28,11 @@ public class UserController {
 
   private UserService userService;
   private PasswordEncoder passwordEncoder;
+
+  @GetMapping("/test")
+  public ResponseDto<Void> test() {
+    return ResponseDto.res("oauth test success");
+  }
 
   @PostMapping("/register")
   public ResponseDto<User> register(@RequestBody User user) {

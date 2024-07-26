@@ -1,4 +1,4 @@
-package com.jisang.bangtong.config;
+package com.jisang.bangtong.service.user;
 
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.user.UserRepository;

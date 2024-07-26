@@ -53,7 +53,7 @@ public class SecurityConfig {
           return config;
         })).csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
             .ignoringRequestMatchers(
-            //    "/users/register", "/users/login"
+                //    "/users/register", "/users/login"
                 "/**"
             )
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))

@@ -45,7 +45,7 @@ public class User {
 
   @Column(length = 13)
   private String userPhone;
-  
+
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
   @Temporal(TemporalType.TIMESTAMP)
   private Date userRegisterDate = new Date();
@@ -71,9 +71,6 @@ public class User {
 
   @Column(columnDefinition = "boolean default false")
   private boolean userIsBanned;
-
-  @Column(length = 512)
-  private String userRefreshToken;
 
   public User updateUser(String userNickname, String userEmail) {
     this.userNickname = userNickname;
