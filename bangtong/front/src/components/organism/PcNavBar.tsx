@@ -8,7 +8,7 @@ import Btn from "../atoms/Btn";
 
 // 이미지 소스
 import Bell from "../../assets/Bell.png";
-import Logo from "../../assets/Logo.png";
+import Logo from "../../assets/GreenLogo.png";
 
 // Store
 import useUserStore from "../../store/userStore";

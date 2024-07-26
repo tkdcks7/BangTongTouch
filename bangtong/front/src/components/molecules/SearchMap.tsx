@@ -14,6 +14,9 @@ import MapGym from "../../assets/MapGym.png"; // 헬스장
 interface MapProps {
   basePos: Pos; // 초기 위치(매물 좌표 or 사용자의 위치)
   flag: boolean; // 검색 페이지 일 경우 false, 상세 페이지 일 경우 true
+  width?: string;
+  height?: string;
+  cssClasses?: string;
 }
 
 interface MarkerData {
@@ -37,7 +40,13 @@ interface Pos {
 
 Modal.setAppElement("#root");
 
-const SearchMap: React.FC<MapProps> = ({ basePos, flag }) => {
+const SearchMap: React.FC<MapProps> = ({
+  basePos,
+  flag,
+  width = "100%",
+  height = "60vh",
+  cssClasses,
+}) => {
   const mapElement = useRef<HTMLDivElement>(null);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [selectedMarkerData, setSelectedMarkerData] = useState<MarkerData>();
@@ -181,7 +190,7 @@ const SearchMap: React.FC<MapProps> = ({ basePos, flag }) => {
       for (let i = 0; i < subMarkerDatas.length; i++) {
         axios({
           method: "GET",
-          url: `req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=10&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
+          url: `http://localhost:3000/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=10&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
         })
           .then((response) => {
             if (response.data.response.result.items) {
@@ -353,7 +362,11 @@ const SearchMap: React.FC<MapProps> = ({ basePos, flag }) => {
       >
         {selectedSubModalData}
       </Modal>
-      <div ref={mapElement} style={{ width: "100%", height: "65vh" }} />
+      <div
+        ref={mapElement}
+        style={{ width: width, height: height }}
+        className={cssClasses}
+      />
     </>
   );
 };

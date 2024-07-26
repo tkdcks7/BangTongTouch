@@ -28,7 +28,14 @@ const LocationAround: React.FC = () => {
     <div>
       <h1 className="text-2xl font-black">주변 편의시설</h1>
       <div className="mt-5">
-        {isDataLoaded ? <SearchMap flag={true} basePos={basePosition} /> : null}
+        {isDataLoaded ? (
+          <SearchMap
+            flag={true}
+            basePos={basePosition}
+            height="30vh"
+            cssClasses="rounded-xl"
+          />
+        ) : null}
       </div>
     </div>
   );

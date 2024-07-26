@@ -10,17 +10,16 @@ import FindSelectPage from "./components/page/FindSelectPage"; // 아이디, 비
 // 메인
 import MainPage from "./components/page/MainPage"; // 메인 페이지
 
-// 커뮤니티
-import CommunityPage from "./components/page/CommunityPage"; // 페이지
-import CommunityMain from "./components/organism/CommunityMain"; // 커뮤니티 메인(목록)창
-import CommunityDetail from "./components/organism/CommunityDetail"; // 글 상세
-import CommunityCreate from "./components/organism/CommunityCreate"; // 글 쓰기
-
 // 매물
 import ProductPage from "./components/page/ProductPage"; // 페이지
 import ProductList from "./components/molecules/ProductList"; // 매물 리스트
 import ProductDetail from "./components/organism/ProductDetail"; // 매물 상세
 import ProductUpload from "./components/organism/ProductUpload"; // 매물 업로드
+
+// 채팅
+import ChattingPage from "./components/page/ChattingPage"; // 페이지
+import ChatMain from "./components/organism/ChatMain"; // 채팅 목록
+import ChatDetail from "./components/organism/ChatDetail"; // 채팅창
 
 // 마이방통
 import ProfilePage from "./components/page/ProfilePage"; // 페이지
@@ -29,8 +28,13 @@ import ProfileUpdate from "./components/organism/ProfileUpdate"; // 회원 정�
 import ProfilePwConfirm from "./components/molecules/ProfilePwConfirm"; // 비밀번호 확인
 import ProfileEdit from "./components/molecules/ProfileEdit"; // 회원정보 수정
 import ProfileNotification from "./components/organism/ProfilNotification"; // 알림 권한 설정
-import MapTestPage from "./components/page/MapTestPage";
 import ProductMapBox from "./components/organism/ProductMapBox";
+
+// 커뮤니티
+import CommunityPage from "./components/page/CommunityPage"; // 페이지
+import CommunityMain from "./components/organism/CommunityMain"; // 커뮤니티 메인(목록)창
+import CommunityDetail from "./components/organism/CommunityDetail"; // 글 상세
+import CommunityCreate from "./components/organism/CommunityCreate"; // 글 쓰기
 
 // 로그인페이지, 회원가입페이지, 아이디, 비밀번호 찾기는 Nav가 없기 때문에 Layout 밖에 선언함
 const Router: React.FC = () => {
@@ -47,19 +51,18 @@ const Router: React.FC = () => {
           {/* 메인 페이지 */}
           <Route path="" element={<MainPage />} />
 
-          {/* 커뮤니티 페이지 */}
-          <Route path="boards" element={<CommunityPage />}>
-            <Route path="" element={<CommunityMain />} />
-            <Route path=":id" element={<CommunityDetail />} />
-            <Route path="write" element={<CommunityCreate />} />
-          </Route>
-
           {/* 상품(매물) 페이지 */}
           <Route path="products" element={<ProductPage />}>
             <Route path="" element={<ProductMapBox />} />
             <Route path="list" element={<ProductList />} />
             <Route path=":id" element={<ProductDetail />} />
             <Route path="upload" element={<ProductUpload />} />
+          </Route>
+
+          {/* 채팅 페이지 */}
+          <Route path="chats" element={<ChattingPage />}>
+            <Route path="" element={<ChatMain />} />
+            <Route path=":id" element={<ChatDetail />} />
           </Route>
 
           {/* 마이페이지 */}
@@ -70,6 +73,13 @@ const Router: React.FC = () => {
               <Route path="confirmed" element={<ProfileEdit />} />
             </Route>
             <Route path="notification" element={<ProfileNotification />} />
+          </Route>
+
+          {/* 커뮤니티 페이지 */}
+          <Route path="boards" element={<CommunityPage />}>
+            <Route path="" element={<CommunityMain />} />
+            <Route path=":id" element={<CommunityDetail />} />
+            <Route path="write" element={<CommunityCreate />} />
           </Route>
         </Route>
       </Routes>

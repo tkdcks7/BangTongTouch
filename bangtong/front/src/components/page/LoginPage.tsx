@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, Params, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 
 // 컴포넌트 불러오기
@@ -7,8 +7,6 @@ import TextBox from "../atoms/TextBox";
 import InputBox from "../molecules/InputBox";
 import IconBtn from "../atoms/IconBtn";
 import Btn from "../atoms/Btn";
-import MNavBar from "../organism/MNavBar";
-import MMenuBar from "../organism/MMenuBar";
 
 // 이미지 소스
 import Google from "../../assets/GoogleSocial.png";
