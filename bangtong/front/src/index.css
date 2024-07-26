@@ -37,7 +37,6 @@
   src: url("./fonts/Roboto-Thin.ttf") format("truetype");
 }
 
-
 /* Roboto 이텔릭체 */
 @font-face {
   font-family: "Roboto";
@@ -74,7 +73,6 @@
   src: url("./fonts/Roboto-ThinItalic.ttf") format("truetype");
 }
 
-
 /* 한글 평창체 */
 @font-face {
   font-family: "PyeoungChang";
@@ -83,5 +81,5 @@
 }
 
 body {
-  font-family: "Roboto", "PyeoungChang";
+  font-family: "PyeoungChang";
 }

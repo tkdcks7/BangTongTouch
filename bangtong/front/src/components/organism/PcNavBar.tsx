@@ -6,8 +6,8 @@ import IconBtn from "../atoms/IconBtn";
 import Btn from "../atoms/Btn";
 
 // 이미지 소스
-import Bell from '../../assets/Bell.png' 
-import Logo from '../../assets/Logo.png'
+import Bell from "../../assets/Bell.png";
+import Logo from "../../assets/GreenLogo.png";
 
 // Store
 import useUserStore from "../../store/userStore";
@@ -16,9 +16,9 @@ const PcNavBar: React.FC = () => {
   const { id } = useUserStore();
 
   return (
-    <div className='flex justify-between w-full bg-white p-5 mb-10'>
-      <Link to="/" className='text-start'>
-        <img src={Logo} alt="로고" width={150}/>
+    <div className="flex justify-between w-full bg-white p-5 mb-10">
+      <Link to="/" className="text-start">
+        <img src={Logo} alt="로고" width={150} />
       </Link>
       <div className="flex items-center justify-between">
         <NavLink
