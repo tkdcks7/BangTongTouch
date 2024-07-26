@@ -21,7 +21,7 @@ public class ReportController {
     private final String SERVER_ERROR = "server_error";
 
     // 신고 전송
-    @PostMapping("/{reportTypeID}/{userId")
+    @PostMapping("/{reportTypeID}/{userId}")
     public ResponseDto<Void> manageReport(@PathVariable int reportTypeID, @PathVariable User user) {
         reportService.manageReport(reportTypeID, user);
         return ResponseDto.res(SUCCESS);

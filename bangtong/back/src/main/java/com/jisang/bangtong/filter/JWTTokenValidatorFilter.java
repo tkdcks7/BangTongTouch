@@ -1,6 +1,7 @@
 package com.jisang.bangtong.filter;
 
-import com.jisang.bangtong.model.common.SecurityConstants;
+import com.jisang.bangtong.constants.SecurityConstants;
+import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.user.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,7 +14,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,8 +24,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
-  @Autowired
-  private UserRepository userRepository;
+  private final UserRepository userRepository;
+
+  public JWTTokenValidatorFilter(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -44,12 +47,18 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         String username = String.valueOf(claims.get("username"));
         String authorities = String.valueOf(claims.get("authorities"));
 
+        User user = userRepository.findByUserEmail(username).orElse(null);
+
+        if (user == null) {
+          throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
+        }
+
         Authentication authentication = new UsernamePasswordAuthenticationToken(username, null,
             AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-      } catch (Exception exception) {
-        throw new BadCredentialsException("유효하지 않은 토큰입니다.");
+      } catch (Exception e) {
+        throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
       }
     }
 
