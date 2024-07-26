@@ -23,7 +23,7 @@ public class Report {
 
 //    TODO: 신고 유형 ID
     @Column(nullable = false)
-    private int reportTypeID;
+    private int reportTypeId;
 
     @Column(length = 100)
     private String reportContent;

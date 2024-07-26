@@ -14,6 +14,6 @@ public class ReportType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int reportTypeId;
 
-    @Column(nullable = false, length = 7)
+    @Column(nullable = false, length = 13)
     private String reportTypeTitle;
 }
