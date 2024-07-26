@@ -3,6 +3,8 @@ package com.jisang.bangtong.repository.board;
 import com.jisang.bangtong.dto.board.BoardSearchDto;
 import com.jisang.bangtong.model.board.Board;
 import com.jisang.bangtong.model.board.QBoard;
+import com.jisang.bangtong.model.comment.Comment;
+import com.jisang.bangtong.model.comment.QComment;
 import com.jisang.bangtong.model.region.QRegion;
 import com.jisang.bangtong.model.region.Region;
 import com.querydsl.core.BooleanBuilder;
@@ -86,4 +88,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
         .where(board.boardId.eq(boardId))
         .execute();
   }
+
+
+
 }

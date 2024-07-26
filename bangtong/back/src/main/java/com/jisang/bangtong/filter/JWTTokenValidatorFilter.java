@@ -1,6 +1,8 @@
 package com.jisang.bangtong.filter;
 
-import com.jisang.bangtong.model.common.SecurityConstants;
+import com.jisang.bangtong.constants.SecurityConstants;
+import com.jisang.bangtong.model.user.User;
+import com.jisang.bangtong.repository.user.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -12,7 +14,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
+  private final UserRepository userRepository;
+
+  public JWTTokenValidatorFilter(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
@@ -32,25 +39,26 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
       String token = header.substring(7);
 
       try {
-        Environment env = getEnvironment();
-
-        String secret = env.getProperty(SecurityConstants.JWT_SECRET_KEY,
-            SecurityConstants.JWT_SECRET_DEFAULT_VALUE);
+        String secret = SecurityConstants.JWT_SECRET_DEFAULT_VALUE;
         SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-
         Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
             .getPayload();
+
         String username = String.valueOf(claims.get("username"));
         String authorities = String.valueOf(claims.get("authorities"));
 
-        log.info("username, authorities: {}, {}", username, authorities);
+        User user = userRepository.findByUserEmail(username).orElse(null);
+
+        if (user == null) {
+          throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
+        }
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(username, null,
             AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-      } catch (Exception exception) {
-        throw new BadCredentialsException("유효하지 않은 토큰입니다.");
+      } catch (Exception e) {
+        throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
       }
     }
 
@@ -59,7 +67,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-    return request.getServletPath().equals("/user");
+    return request.getServletPath().equals("/users/user");
   }
 
 }
