@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // 컴포넌트 불러오기
 import IconBtn from "../atoms/IconBtn";
@@ -14,7 +15,23 @@ import useUserStore from "../../store/userStore";
 
 const PcNavBar: React.FC = () => {
   const { id } = useUserStore();
+  const navigate = useNavigate();
 
+  // login 페이지로 이동하는 함수
+  const handleLogInBtnClick = (e: any) => {
+    navigate("/user/login");
+  };
+
+  // logout 실행 함수
+  const handleLogOutBtnClick = (e: any) => {
+    axios({
+      method: "PUT",
+      url: `${process.env.REACT_APP_BACKEND_URL}/users/logout`,
+      headers: {},
+    })
+      .then((response) => console.log(response.data))
+      .catch((err) => console.log(err));
+  };
   return (
     <div className="flex justify-between w-full bg-white p-5 mb-10">
       <Link to="/" className="text-start">
@@ -64,9 +81,17 @@ const PcNavBar: React.FC = () => {
         {/* 로그인 되면 로그아웃 버튼이 뜨도록 */}
         <div className="mx-1">
           {id ? (
-            <Btn text="로그아웃" backgroundColor="red-400" />
+            <Btn
+              text="로그아웃"
+              backgroundColor="red-400"
+              onClick={handleLogOutBtnClick}
+            />
           ) : (
-            <Btn text="로그인" backgroundColor="yellow-300" />
+            <Btn
+              text="로그인"
+              backgroundColor="yellow-300"
+              onClick={handleLogInBtnClick}
+            />
           )}
         </div>
       </div>
