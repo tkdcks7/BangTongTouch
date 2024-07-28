@@ -43,7 +43,7 @@ public class Product {
   private ProductType productType;
 
 // TODO: region FK 불러오기
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne
   @JoinColumn(name = "regionId", foreignKey = @ForeignKey(name = "fk_product_region"), nullable = false)
   private Region region;
 

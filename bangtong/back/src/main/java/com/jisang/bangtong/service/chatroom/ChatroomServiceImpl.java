@@ -1,19 +1,25 @@
 package com.jisang.bangtong.service.chatroom;
 
+import com.jisang.bangtong.dto.chat.ChatReturnDto;
 import com.jisang.bangtong.dto.chatroom.ChatroomDto;
+import com.jisang.bangtong.dto.chatroom.ChatroomExitDto;
 import com.jisang.bangtong.dto.chatroom.ChatroomReturnDto;
+import com.jisang.bangtong.model.chat.Chat;
 import com.jisang.bangtong.model.chatroom.Chatroom;
 import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.chatroom.ChatroomRepository;
 import com.jisang.bangtong.repository.product.ProductRepository;
 import com.jisang.bangtong.repository.user.UserRepository;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class ChatroomServiceImpl implements ChatroomService {
 
@@ -30,43 +36,78 @@ public class ChatroomServiceImpl implements ChatroomService {
   public void createChatroom(ChatroomDto roomName){
     Chatroom chatroom = new Chatroom();
     chatroom.setChatroomTitle(roomName.getTitle());
-    Optional<User> user1 = userRepository.findById(roomName.getUser1Id());
-    Optional<User> user2 = userRepository.findById(roomName.getUser2Id());
+    Optional<User> maker = userRepository.findById(roomName.getMaker());
+    Optional<User> participant = userRepository.findById(roomName.getParticipant());
     Optional<Product> product = productRepository.findById(roomName.getProductId());
 
-    user1.ifPresent(chatroom::setUser1);
-    user2.ifPresent(chatroom::setUser2);
+    maker.ifPresent(chatroom::setMaker);
+    participant.ifPresent(chatroom::setParticipant);
     product.ifPresent(chatroom::setProduct);
     chatroomRepository.save(chatroom);
   }
 
-  public void endChatroom(Long chatroomIId){
-    Optional<Chatroom> chatroom = chatroomRepository.findById(chatroomIId);
+  public void exitChatroom(Long chatroomId, Long userId){
+    Optional<Chatroom> chatroom = chatroomRepository.findById(chatroomId);
     if(chatroom.isPresent()){
       Chatroom chatroomGet = chatroom.get();
-      chatroomGet.setChatrootIsEnded(true);
-      chatroomRepository.save(chatroom.get());
+
+      if (chatroomGet.getMaker().getUserId().equals(userId)) {
+        chatroomGet.setChatroomMakerIsOut(true);
+      }
+
+      if (chatroomGet.getParticipant().getUserId().equals(userId)) {
+        chatroomGet.setChatRoomParticipantIsOut(true);
+      }
+
+      chatroomRepository.save(chatroomGet);
     }
   }
 
   @Override
   public List<ChatroomReturnDto> getChatroom(Long userId) {
-    Optional<List<Chatroom>> chatrooms = chatroomRepository.getChatroom(userId);
+    log.info("chatroomServiceImpl getChatroom 실행");
+    List<Chatroom> chatrooms = chatroomRepository.getChatroom(userId).orElse(new ArrayList<>());
     List<ChatroomReturnDto> chatroomReturnDtos = new ArrayList<>();
-    for(Chatroom chatroom : chatrooms.get()){
+    log.info("TestSuccess {}", chatrooms);
+    for(Chatroom chatroom : chatrooms){
       ChatroomReturnDto chatroomReturnDto = new ChatroomReturnDto();
       chatroomReturnDto.setChatroomId(chatroom.getChatroomId());
       chatroomReturnDto.setProduct(chatroom.getProduct());
       chatroomReturnDto.setChatroomCreatedAt(chatroom.getChatroomCreatedAt());
-      if(chatroom.getUser1().getUserId().equals(userId)){
-        chatroomReturnDto.setUser(chatroom.getUser1());
+      if(chatroom.getMaker().getUserId().equals(userId)){
+        chatroomReturnDto.setUser(chatroom.getMaker());
       }
-      if(chatroom.getUser2().getUserId().equals(userId)){
-        chatroomReturnDto.setUser(chatroom.getUser2());
+      if(chatroom.getParticipant().getUserId().equals(userId)){
+        chatroomReturnDto.setUser(chatroom.getParticipant());
       }
+      log.info("test {}", chatroomReturnDto);
       chatroomReturnDtos.add(chatroomReturnDto);
     }
     return chatroomReturnDtos;
+  }
+
+  @Override
+  public List<ChatReturnDto> getChats(Long chatroomId) {
+    log.info("ChatroomServiceImpl. getChats 시작");
+    List<ChatReturnDto> chatReturnDtos = new ArrayList<>();
+    List<Chat> ret;
+    try{
+      ret = chatroomRepository.getChats(chatroomId);
+      log.info("TestSuccess {}", ret.size());
+      for(Chat chat : ret){
+        ChatReturnDto chatReturnDto = new ChatReturnDto();
+        chatReturnDto.setChatContent(chat.getChatContent());
+        chatReturnDto.setChatTime(chat.getChatTime());
+        chatReturnDto.setReceiver(chat.getReceiver());
+        chatReturnDto.setSender(chat.getSender());
+        chatReturnDtos.add(chatReturnDto);
+      }
+    }
+    catch (RuntimeException e){
+        log.error(e.getMessage());
+    }
+
+    return chatReturnDtos;
   }
 
 }

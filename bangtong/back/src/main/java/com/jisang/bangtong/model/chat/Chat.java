@@ -31,11 +31,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class Chat {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   Long chatId;
 
   @ManyToOne
-  @JoinColumn(name="chatrootId", foreignKey = @ForeignKey(name="fk_chat_chatroom"))
+  @JoinColumn(name="chatroomId", foreignKey = @ForeignKey(name="fk_chat_chatroom"), nullable = false)
   Chatroom chatRoom;
 
   @Column(length=1000, nullable = false)

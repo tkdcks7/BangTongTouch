@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface ChatService {
 
-  void send(Map<String, Object> chat);
+  Chat send(Map<String, Object> chat);
 
   List<Chat> getMessagesByRoom(Long roomId);
 }

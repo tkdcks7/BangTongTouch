@@ -38,13 +38,13 @@ public class Chatroom {
   @ManyToOne
   Product product;
 
-  @JoinColumn(name="user1Id", foreignKey = @ForeignKey(name="fk_chatroom_user"))
+  @JoinColumn(name="makerId", foreignKey = @ForeignKey(name="fk_chatroom_user"))
   @ManyToOne
-  User user1;
+  User Maker;
 
-  @JoinColumn(name = "user2Id")
+  @JoinColumn(name = "participantId")
   @ManyToOne
-  User user2;
+  User Participant;
 
   @Column(nullable = false)
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -52,6 +52,9 @@ public class Chatroom {
   Date chatroomCreatedAt = new Date();
 
   @Column
-  boolean chatrootIsEnded;
+  boolean chatroomMakerIsOut;
+
+  @Column
+  boolean chatRoomParticipantIsOut;
 
 }

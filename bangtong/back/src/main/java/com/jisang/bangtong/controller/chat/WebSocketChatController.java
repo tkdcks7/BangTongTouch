@@ -43,12 +43,13 @@ public class WebSocketChatController {
 //  }
   public ResponseDto<String> greeting(@RequestBody Map<String, Object> message) throws Exception {
     Map<String, Object> obj = (Map<String, Object>) message.get("chat");
+
     log.info("{}", obj);
 
     chatService.send(obj);
 
     return new ResponseDto<>("SUCCESS",
-        HtmlUtils.htmlEscape(message.toString()));
+        HtmlUtils.htmlEscape(obj.toString()));
   }
 
 }

@@ -1,6 +1,8 @@
 package com.jisang.bangtong.controller.chatroom;
 
+import com.jisang.bangtong.dto.chat.ChatReturnDto;
 import com.jisang.bangtong.dto.chatroom.ChatroomDto;
+import com.jisang.bangtong.dto.chatroom.ChatroomExitDto;
 import com.jisang.bangtong.dto.chatroom.ChatroomReturnDto;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.chatroom.Chatroom;
@@ -33,15 +35,25 @@ public class ChatroomController {
     return ResponseDto.res(SUCCESS);
   }
 
-  @PutMapping("/end/{chattoomId}")
-  public ResponseDto<Void> end(@PathVariable Long chattoomId) {
-    chatroomService.endChatroom(chattoomId);
+  @PutMapping("/end/{chattoomId}/{userId}")
+  public ResponseDto<Void> end(@PathVariable Long chattoomId, @PathVariable Long userId) {
+    chatroomService.exitChatroom(chattoomId, userId);
     return ResponseDto.res(SUCCESS);
   }
 
   @GetMapping("/{userId}")
   public ResponseDto<List<ChatroomReturnDto>> getrooms(@PathVariable Long userId) {
+    log.info("{}", userId);
     List<ChatroomReturnDto>chatroomReturnDtoList = chatroomService.getChatroom(userId);
+    log.info("List 출력 {}", chatroomReturnDtoList);
     return ResponseDto.res(SUCCESS, chatroomReturnDtoList);
+  }
+
+  @GetMapping("/chat/{chatroomId}")
+  public ResponseDto<List<ChatReturnDto>> getChats(@PathVariable Long chatroomId){
+    log.info("{}", chatroomId);
+    List<ChatReturnDto> chatReturnDtoList =  chatroomService.getChats(chatroomId);
+    log.info("getChats: {}", chatReturnDtoList);
+    return ResponseDto.res(SUCCESS, chatReturnDtoList);
   }
 }
