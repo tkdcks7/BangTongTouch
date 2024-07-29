@@ -3,6 +3,7 @@ import React from "react";
 // 컴포넌트
 import RollBackBtn from "../atoms/RollBackBtn";
 import ChatMsgBox from "../atoms/ChatMsgBox";
+import ChatAdditionalBar from "./ChatAdditionalBar";
 
 // 이미지 소스
 import defaultProfile from "../../assets/defaultprofile.jpg";
@@ -23,7 +24,7 @@ const ChatDetail: React.FC = () => {
       <div className="mt-10">
         <InputBox placeholder="채팅 입력" width={"auto"} buttonType="send" />
       </div>
-      <button className="p-2 px-4 bg-yellow-400 rounded-full">+</button>
+      <ChatAdditionalBar />
     </div>
   );
 };
