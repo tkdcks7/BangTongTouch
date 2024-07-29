@@ -11,7 +11,7 @@ import { MailFilled, PhoneFilled } from "@ant-design/icons";
 
 const PcFooter: React.FC = () => {
   return (
-    <div className="bg-lime-800 text-white p-5">
+    <div className="bg-lime-800 text-white p-5 text-gray-300">
       <div className="grid grid-cols-4 gap-4 px-10">
         <div>
           <p className="text-xl font-bold my-3">Link</p>
@@ -49,7 +49,7 @@ const PcFooter: React.FC = () => {
           </div>
         </div>
         <div>
-          <p className="text-xl font-bold my-3">Tech</p>
+          <p className="text-xl font-bold my-3">Tech Skills</p>
           <div className="flex flex-wrap">
             <StackIcon className="w-10 m-2" name="reactjs" grayscale />
             <StackIcon className="w-10 m-2" name="typescript" grayscale />
