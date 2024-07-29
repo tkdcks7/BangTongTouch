@@ -1,7 +1,7 @@
 import React from "react";
 
 interface Props {
-  additionalOptions: Array<string>;
+  additionalOptions: Array<any>;
 }
 
 const ProductAdditionalOptions: React.FC<Props> = ({ additionalOptions }) => {
@@ -9,11 +9,15 @@ const ProductAdditionalOptions: React.FC<Props> = ({ additionalOptions }) => {
     <React.Fragment>
       <h1 className="text-2xl font-black">추가옵션 (구매가능)</h1>
       <div className="flex flex-wrap text-center mt-5">
-        {additionalOptions.map((item) => (
-          <div className="m-2">
-            <p>{item}</p>
-          </div>
-        ))}
+        {additionalOptions.length > 0 ? (
+          additionalOptions.map((item: any) => (
+            <div className="m-2">
+              <p>{item}</p>
+            </div>
+          ))
+        ) : (
+          <p>추가 옵션이 없습니다.</p>
+        )}
       </div>
     </React.Fragment>
   );

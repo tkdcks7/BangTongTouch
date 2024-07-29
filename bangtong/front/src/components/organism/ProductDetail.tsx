@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Params, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import useUserStore from "../../store/userStore";
 
 // 컴포넌트
 import ImgCarousel from "../molecules/ImgCarousel";
@@ -11,8 +12,8 @@ import ProductAdditionalOptions from "../molecules/ProductAdditionalOptions";
 import LocationAround from "../molecules/LocationAround";
 
 const ProductDetail: React.FC = () => {
-  let { id }: any = useParams(); // 상품 번호
-  const [productInfo, setProductInfo] = useState({
+  // 기본값 선언
+  const tempObj = {
     productId: 1,
     productType: "ONEROOM",
     productAddress: "147-51",
@@ -25,10 +26,7 @@ const ProductDetail: React.FC = () => {
     productSquare: 44.55,
     productRoom: 2,
     productOption: "1111111",
-    productAdditionalOption: [
-      "원하시는 추가 옵션이 있다면 문의 부탁드립니다.",
-      "없으면 주지마세요",
-    ],
+    productAdditionalOption: [],
     productIsBanned: false,
     productIsDeleted: false,
     productPostDate: "2024-07-19 04:01:15.256",
@@ -40,29 +38,87 @@ const ProductDetail: React.FC = () => {
       regionGugun: "종로구",
       regionDong: "누상동",
     },
-  });
-
+  };
+  let { id }: any = useParams(); // 상품 번호
   const navigate = useNavigate();
+  const userId: number = useUserStore().id;
+
+  // 로딩과 에러를 처리하는 state
+  const [loading, setLoading] = useState(true);
+  const [connectionFailed, setConnectionFailed] = useState(false);
+
+  // state와 초기값 선언. 나중에 null, 0 혹은 빈 문자열로 바꿀거임.
+  const [productInfo, setProductInfo] = useState(tempObj);
 
   // 백엔드에서 상세 페이지 정보 받아오기
   useEffect(() => {
-    if (id !== undefined && !isNaN(id)) {
-      axios({
-        method: "GET",
-        url: `http://127.0.0.1:8080/products/${id}`,
-        headers: {},
-      })
-        .then((response) => {
-          setProductInfo({ ...response.data });
-        })
-        .catch((err) => console.log("Detail page 호출 실패", err));
-    } else {
-      navigate("/products");
-    }
-  }, []);
+    const fetchData = async () => {
+      try {
+        const response = await axios({
+          method: "POST",
+          url: `${process.env.BACKEND_URL}/products/${id}`,
+          headers: {},
+        });
+        // status code가 200번으로 유지돼서 설정했는데, 이후 변경할 것.
+        if (response.config.data) {
+          setProductInfo(response.data);
+        } else {
+          setConnectionFailed(true);
+          // navigate("/products");
+        }
+      } catch (err) {
+        console.log(err);
+        setConnectionFailed(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [id]);
+
+  // 수정 페이지(작성 페이지에서 기본값이 다 설정된 페이지?)로 이동
+  // Dto 때문에 userId를 비교하는 로직을 작성 못함.
+  // const handleToUpdate = (): void => {
+  //   if (productInfo.userId === userId) {
+  //     navigate(`/products/update/${id}`)
+  //   }
+  // }
+
+  // 매물 게시글 삭제 함수
+  // const handleDelete = (): void => {
+  //   if (productInfo.userId === userId) {
+  //     axios({
+  //       method: "DELETE",
+  //       url: `${process.env.BACKEND_URL}/products/delete/${id}`,
+  //       headers: {},
+  //     })
+  //       .then((response) => {
+  //         console.log(response);
+  //         navigate("/product");  // 삭제 후 페이지 이동
+  //       })
+  //       .catch((err) => console.log(err));
+  //   }
+  // };
+
+  // 관심 매물 등록(좋아요). 관심매물 좋아요 상태도 같이 보내줄 것.
+  const handleLike = (): void => {
+    axios({
+      method: "POST",
+      url: `${process.env.BACKEND_URL}/interests/add`,
+      headers: {},
+    }).then((response) => {
+      if ("등록여부") {
+        console.log("관심 매물로 등록/취소됐습니다.");
+      }
+      console.log("관심 매물로 등록/취소됐습니다.");
+    });
+  };
 
   // 일자를 파싱하는 함수
   const timeParser = (time: string): number[] => {
+    if (!time) {
+      return [0, 0, 0];
+    }
     return time.split("-").map((el) => Number(el));
   };
 
@@ -75,10 +131,13 @@ const ProductDetail: React.FC = () => {
   const remainMonth = (endYear - startYear) * 12 + (endMonth - startMonth);
 
   // 비트마스킹된 기본옵션들 뽑아오기
-  const options: string = productInfo.productOption;
+  const options: string = productInfo.productOption || "";
 
   // 문자열 리스트로 들어오는 추가옵션 받아오기
-  const additionalOption: string[] = productInfo.productAdditionalOption;
+  const additionalOption: string[] = productInfo.productAdditionalOption || [];
+
+  if (loading) return <div>Loading...</div>;
+  // if (connectionFailed) return <div>데이터를 불러오는 데 실패했습니다.</div>;
 
   return (
     <div>
