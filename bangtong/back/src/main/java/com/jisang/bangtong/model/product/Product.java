@@ -111,6 +111,13 @@ public class Product {
   @Column(nullable = false)
   private double lng; //경도
 
+  @Column(length = 100)
+  private String productAddressDetail;    //몇동 몇호
+
+  @OneToMany
+  @JoinColumn(name="mediaId")
+  private List<Media> productMedia;
+
   @Column(nullable=false)
   private double productScore=0.0;
 }

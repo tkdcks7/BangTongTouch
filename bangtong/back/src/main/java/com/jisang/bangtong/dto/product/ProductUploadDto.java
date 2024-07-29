@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @RequiredArgsConstructor
@@ -47,5 +48,5 @@ public class ProductUploadDto {
   private double lat; // 위도
   private double lng; //경도
   private double productScore=0.0;
-  List<Media> mediaList;
+  List<MultipartFile> mediaList;
 }
