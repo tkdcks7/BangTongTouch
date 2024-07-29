@@ -38,6 +38,7 @@ const ImgCarousel: React.FC<imgSrcProps> = ({ imgSrcArray }) => {
         return (
           <div>
             <img
+              key={img}
               src={img}
               alt="1"
               style={{ width: "100%", height: "30vh" }}
