@@ -6,6 +6,7 @@ import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.chat.Chat;
 import com.jisang.bangtong.service.chat.ChatService;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 
 @RestController
@@ -41,12 +44,12 @@ public class WebSocketChatController {
 //    return new ResponseDto<>("SUCCESS",
 //        HtmlUtils.htmlEscape(message));
 //  }
-  public ResponseDto<String> greeting(@RequestBody Map<String, Object> message) throws Exception {
+  public ResponseDto<String> greeting(@RequestBody Map<String, Object> message, @RequestPart List<MultipartFile> chatMedia) throws Exception {
     Map<String, Object> obj = (Map<String, Object>) message.get("chat");
 
     log.info("{}", obj);
 
-    chatService.send(obj);
+    chatService.send(obj, chatMedia);
 
     return new ResponseDto<>("SUCCESS",
         HtmlUtils.htmlEscape(obj.toString()));

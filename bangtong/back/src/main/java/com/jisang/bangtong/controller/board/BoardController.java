@@ -1,14 +1,17 @@
 package com.jisang.bangtong.controller.board;
 
 import com.jisang.bangtong.dto.board.BoardSearchDto;
+import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.board.Board;
 import com.jisang.bangtong.model.comment.Comment;
+import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.board.BoardService;
 import com.jisang.bangtong.service.common.FileService;
 import com.jisang.bangtong.service.user.UserService;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,28 +54,18 @@ public class BoardController {
   private FileService fileService;
 
   @PostMapping(value = {"/write/{regionId}", "/write"})
-  public ResponseEntity<Object> write(@RequestPart Map<String, Object> map, @RequestPart List<MultipartFile> boardMedia ,@PathVariable(required = false) String regionId) {
-    log.info("boardWrite 실행 {}", map);
+  public ResponseDto<Void> write(@RequestBody Map<String, String> boardDto, @PathVariable(required = false) String regionId) {
+    log.info("boardWrite 실행 {}", boardDto);
     Board board = new Board();
-    board.setBoardContent(map.get("boardContent").toString());
-    Long userId = Long.parseLong(map.get("boardWriter").toString());
+    board.setBoardContent(boardDto.get("boardContent"));
+    Long userId = Long.parseLong(boardDto.get("boardWriter"));
     board.setBoardWriter(userRepository.findById(userId).get());
-    board.setBoardTitle(map.get("boardTitle").toString());
-    try {
-      fileService.upload(boardMedia);
-    } catch (IOException e) {
-      log.info(e.getMessage());
-      throw new RuntimeException("파일을 저장할 수 없습니다.");
-    }
-
+    board.setBoardTitle(boardDto.get("boardTitle"));
     log.info("write board: {}, {}, {}", board, regionId);
 
     boardService.save(board, regionId); // BoardService의 save 메서드 호출
-    Map<String, Object> response = new HashMap<>();
-    response.put("status", 200);
-    response.put("message", "SUCCESS");
-    response.put("board", board);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+
+    return ResponseDto.res("success");
   }
 
   @PutMapping("/modify/{boardId}")

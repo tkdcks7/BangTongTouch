@@ -12,7 +12,8 @@ pipeline {
                     sh '''
                         ssh ubuntu@i11d206.p.ssafy.io "
                             cd S11P12D206
-                            sudo git pull origin master
+                            git pull origin master
+                            echo "git pull origin master 완료"
                             docker compose up -d --build
                         "
                     '''

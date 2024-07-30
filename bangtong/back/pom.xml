@@ -106,11 +106,6 @@
       <version>5.0.0</version>
       <classifier>jakarta</classifier>
     </dependency>
-    <dependency>
-      <groupId>com.querydsl</groupId>
-      <artifactId>querydsl-core</artifactId>
-      <version>5.0.0</version>
-    </dependency>
     <!--웹 소켓을 위한 디펜던시 추가-->
     <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket -->
     <dependency>
@@ -119,7 +114,6 @@
       <version>3.3.1</version>
     </dependency>
 
-    <!--웹 소켓을 위한 디펜던시 추가 끝-->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-oauth2-client</artifactId>
@@ -127,6 +121,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+    <!--웹 소켓을 위한 디펜던시 추가 끝-->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-client</artifactId>
     </dependency>
     <!--S3를 위한 디펜던시 추가-->
     <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-aws -->
