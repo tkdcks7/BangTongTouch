@@ -12,6 +12,7 @@ interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   hoverTextColor?: string; // 호버 시 텍스트 색
   borderColor?: string; // 버튼 테두리 색
   borderRadius?: string; // 버튼 테두리 둥글기
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 // 버튼 컴포넌트
@@ -21,18 +22,19 @@ const Btn: React.FC<PropsWithChildren<IButtonProps>> = ({
   text, // text 내용
   backgroundColor, // 버튼색
   borderColor,
-  borderRadius = 'rounded-full', // 기본 테두리 둥글기
+  borderRadius = 'full', // 기본 테두리 둥글기
   hoverBackgroundColor, // hover
   hoverTextColor,
   textColor,
   textSize = 'text-base', // 기본 텍스트 크기
   children,
+  onClick,
   ...props
 }) => {
   return (
     <button
-      className={`text-center font-bold tracking-wider shadow ${width} ${height} bg-${backgroundColor} ${borderColor} ${borderRadius} ${hoverBackgroundColor} ${hoverTextColor} text-${textColor} ${textSize}`}
-      {...props}
+      className={`text-center font-bold tracking-wider shadow ${width} ${height} bg-${backgroundColor} ${borderColor} rounded-${borderRadius} ${hoverBackgroundColor} ${hoverTextColor} text-${textColor} ${textSize}`}
+      {...props} onClick={onClick}
     >
       {text}
       {children}

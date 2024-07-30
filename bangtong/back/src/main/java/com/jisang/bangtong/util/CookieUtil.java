@@ -13,6 +13,8 @@ public class CookieUtil {
     Cookie cookie = new Cookie(CookieConstants.COOKIE_NAME, value);
     cookie.setPath("/");
     cookie.setHttpOnly(true);
+//    https
+//    cookie.setSecure(true);
     cookie.setMaxAge(CookieConstants.COOKIE_MAX_AGE);
 
     response.addCookie(cookie);
@@ -26,7 +28,7 @@ public class CookieUtil {
         if (cookie.getName().equals(CookieConstants.COOKIE_NAME)) {
           cookie.setMaxAge(0);
           response.addCookie(cookie);
-          
+
           break;
         }
       }
