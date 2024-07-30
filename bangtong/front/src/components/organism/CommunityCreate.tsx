@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Params, redirect, useNavigate, useParams } from "react-router-dom";
 import { contents } from "../../data";
 
@@ -10,11 +10,27 @@ import RollBackBtn from "../atoms/RollBackBtn";
 // 이미지 소스
 import Clip from "../../assets/Clip.png";
 import TextEditor from "../molecules/TextEditor";
+import axios, { HttpStatusCode } from "axios";
+import { getCookie } from "../../utils/cookie";
 
 const CommunityCreate: React.FC = () => {
   const [textEditorValue, setTextEditorValue] = useState("");
   const [titleValue, setTitleValue] = useState("");
+  const clientPosition = useRef<string>("");
   const navigate = useNavigate();
+  // useEffect(()=>{
+  //   if(navigator.geolocation){
+  //     navigator.geolocation.getCurrentPosition((position)=>{
+  //       axios({
+  //         method: "GET",
+  //         url: `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${'position.coords.lat'+','+}&orders=admcode&output=json`,
+  //       })
+  //         .then((response) => {
+  //         })
+  //         .catch((error) => console.log("전송 실패", error));
+  //     }, ()=>{});
+  //   }
+  // },[]);
   const redirectToBoards = () => {
     navigate("../");
   };
@@ -24,9 +40,9 @@ const CommunityCreate: React.FC = () => {
         <RollBackBtn />
       </div>
       <form className="rounded-lg">
-        <div className="bg-green-color flex justify-between p-2 rounded-t-lg">
+        <div className="bg-lime-500 flex justify-between p-2 rounded-t-lg">
           <input
-            className="bg-transparent w-full focus:outline-none text-white"
+            className="bg-transparent w-full focus:outline-none text-white placeholder:text-white"
             type="text"
             value={titleValue}
             onChange={(e) => setTitleValue(e.target.value)}
@@ -55,8 +71,24 @@ const CommunityCreate: React.FC = () => {
                 return;
               }
               alert("글이 등록되었습니다.");
-              console.log(textEditorValue);
-              redirectToBoards();
+              const data = new FormData();
+              data.append("boardTitle", titleValue);
+              data.append("boardContent", textEditorValue);
+              data.append("boardWriter", "1");
+
+              axios({
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                url: `${process.env.REACT_APP_BACKEND_URL}/boards/write`,
+                data: data,
+              })
+                .then((response) => {
+                  if (response.status === HttpStatusCode.Ok) redirectToBoards();
+                  else alert("오류가 발생하였습니다.");
+                })
+                .catch((error) => console.log("전송 실패", error));
             }}
           >
             작성하기

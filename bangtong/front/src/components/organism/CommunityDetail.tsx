@@ -1,19 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Params, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { contents } from "../../data";
 import { resData } from "../../resData";
 import axios from "axios";
+// import { sanitize } from "dompurify";
 
 // 컴포넌트
-import IconBtn from "../atoms/IconBtn";
 import RollBackBtn from "../atoms/RollBackBtn";
 import Comment from "../atoms/Comment";
 
 // Store
 import useUserStore from "../../store/userStore";
-
-// 이미지 소스
-import ArrowBack from "../../assets/ArrowBack.png";
 
 const CommunityDetail: React.FC = () => {
   let { id } = useParams<{ id: string }>(); // 게시물 번호
@@ -69,6 +66,7 @@ const CommunityDetail: React.FC = () => {
   // commentIsDeleted: false,
 
   const [board, setBoard] = useState(boardInit);
+  const [boardContent, setBoardContent] = useState<string>("");
   const [comments, setComments] = useState<any[]>([]);
   const commentRef = useRef<string>("");
 
@@ -89,7 +87,7 @@ const CommunityDetail: React.FC = () => {
   const handleCommentGet = (id: number) => {
     axios({
       method: "POST",
-      url: `http://127.0.0.1:8080/comments/${id}`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/comments/${id}`,
       headers: {},
     }).then((response) => setComments([...response.data.comment]));
   };
@@ -102,7 +100,7 @@ const CommunityDetail: React.FC = () => {
   ) => {
     axios({
       method: "POST",
-      url: `http://127.0.0.1:8080/comments/${boardId}/write`,
+      url: `${process.env.REACT_APP_BACKEND_URL}comments/${boardId}/write`,
       headers: {},
       data: {
         content,
@@ -133,10 +131,20 @@ const CommunityDetail: React.FC = () => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `http://127.0.0.1:8080/boards/${id}`,
-      headers: {},
+      url: `${process.env.REACT_APP_BACKEND_URL}/boards/${id}`,
     })
       .then((response) => {
+        console.log(response.data.board.boardContent);
+        setBoardContent(response.data.board.boardContent);
+        const contentDiv = document.body.querySelector(".board-content");
+        console.log(contentDiv);
+        if (
+          contentDiv !== null &&
+          response.data.board.boardContent !== undefined
+        ) {
+          console.log(contentDiv);
+          contentDiv.appendChild(response.data.board.boardContent);
+        }
         setBoard({ ...response.data.board });
       })
       .catch((err) => console.log(err));
@@ -146,6 +154,7 @@ const CommunityDetail: React.FC = () => {
   const item = contents.find(
     (obj) => obj.boardId === parseInt(id as string, 10)
   );
+  const sanitizedData = () => ({ __html: boardContent });
 
   return (
     <div>
@@ -158,7 +167,9 @@ const CommunityDetail: React.FC = () => {
               <span className="pe-2">{board.boardWriter.userName}</span>|
               <span className="ps-2">{board.boardDate}</span>
             </div>
-            <div className="mt-5">{item.boardContent}</div>
+            <div className="mt-5 board-content">
+              <div dangerouslySetInnerHTML={sanitizedData()} />
+            </div>
             <div>
               <div className="mt-10 w-full bg-lime-400 p-3">댓글 목록</div>
               {/* resData 부분을 comments로 바꿔주면 된다. */}
