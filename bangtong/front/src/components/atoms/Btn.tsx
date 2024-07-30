@@ -21,7 +21,7 @@ const Btn: React.FC<PropsWithChildren<IButtonProps>> = ({
   text, // text 내용
   backgroundColor, // 버튼색
   borderColor,
-  borderRadius = 'rounded-full', // 기본 테두리 둥글기
+  borderRadius = 'full', // 기본 테두리 둥글기
   hoverBackgroundColor, // hover
   hoverTextColor,
   textColor,
@@ -31,8 +31,13 @@ const Btn: React.FC<PropsWithChildren<IButtonProps>> = ({
 }) => {
   return (
     <button
+<<<<<<< HEAD
       className={`text-center font-bold tracking-wider shadow ${width} ${height} bg-${backgroundColor} ${borderColor} ${borderRadius} ${hoverBackgroundColor} ${hoverTextColor} text-${textColor} ${textSize}`}
       {...props}
+=======
+      className={`text-center font-bold tracking-wider shadow ${width} ${height} bg-${backgroundColor} ${borderColor} rounded-${borderRadius} ${hoverBackgroundColor} ${hoverTextColor} text-${textColor} ${textSize}`}
+      {...props} onClick={onClick}
+>>>>>>> dev_front_components
     >
       {text}
       {children}
