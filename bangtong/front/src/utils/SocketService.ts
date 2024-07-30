@@ -6,7 +6,8 @@ class SocketService {
 
   constructor() {
     this.client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/signaling"),
+      webSocketFactory: () =>
+        new SockJS("http://i11d206.p.ssafy.io/:8080/signaling"),
       onConnect: () => {
         console.log("Socket Connected");
       },
