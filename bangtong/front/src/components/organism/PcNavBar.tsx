@@ -79,7 +79,7 @@ const PcNavBar: React.FC = () => {
         >
           신통방톡
         </NavLink>
-        <div className="mx-7">
+        <div className="flex items-center justify-center mx-3 w-10 h-10">
           <IconBtn imgSrc={Bell} size={30} />
         </div>
 

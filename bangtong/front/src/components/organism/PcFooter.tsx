@@ -11,7 +11,7 @@ import { MailFilled, PhoneFilled } from "@ant-design/icons";
 
 const PcFooter: React.FC = () => {
   return (
-    <div className="bg-lime-800 text-white p-5 text-gray-300">
+    <div className="border-t border-gray-300 p-5 bg-gray-50 text-lime-700">
       <div className="grid grid-cols-4 gap-4 px-10">
         <div>
           <p className="text-xl font-bold my-3">Link</p>
@@ -30,12 +30,15 @@ const PcFooter: React.FC = () => {
         </div>
         <div>
           <p className="text-xl font-bold my-3">Founders</p>
+          <p className="font-semibold my-2">Team Leader</p>
           <p>정지원</p>
+          <p className="font-semibold my-2">Front-end Team</p>
           <p>강상찬</p>
-          <p>민서령</p>
-          <p>황준</p>
-          <p>박병우</p>
           <p>김재혁</p>
+          <p>황준</p>
+          <p className="font-semibold my-2">Back-end Team</p>
+          <p>민서령</p>
+          <p>박병우</p>
         </div>
         <div>
           <p className="text-xl font-bold my-3">Contact Us</p>
