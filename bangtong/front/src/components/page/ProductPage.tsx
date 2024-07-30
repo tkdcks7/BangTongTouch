@@ -17,12 +17,7 @@ const ProductPage: React.FC = () => {
           weight="bold"
         />
       </Link>
-      <div className="flex items-center justify-center">
-        <div className="hidden md:block">
-          <FilterBox />
-        </div>
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 };
