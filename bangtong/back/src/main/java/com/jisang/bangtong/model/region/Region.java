@@ -3,12 +3,15 @@ package com.jisang.bangtong.model.region;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
-@NoArgsConstructor
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class Region {
 
   @Id

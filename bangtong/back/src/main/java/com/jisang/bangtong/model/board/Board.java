@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.jisang.bangtong.model.comment.Comment;
+import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.model.user.User;
 import jakarta.persistence.*;
@@ -25,7 +26,7 @@ public class Board {
   @Column(nullable = false, length = 50)
   private String boardTitle;
 
-  @Column(nullable = false, length = 1024)
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String boardContent;
 
   @Column(nullable = false)
@@ -54,11 +55,6 @@ public class Board {
   @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "commentId")
   @JsonManagedReference
   private List<Comment> boardComment;
-
-  //TODO: Media 클래스 생성 후 관계 설정
-//  @OneToMany
-//  @JoinColumn(name="media_id", nullable = true)
-//  private List<Media> boardMedia;
 
   // TODO: User 클래스 생성 후 관계 설정
   @ManyToOne

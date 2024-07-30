@@ -1,12 +1,17 @@
 package com.jisang.bangtong.controller.board;
 
 import com.jisang.bangtong.dto.board.BoardSearchDto;
+import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.board.Board;
 import com.jisang.bangtong.model.comment.Comment;
+import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.board.BoardService;
+import com.jisang.bangtong.service.common.FileService;
 import com.jisang.bangtong.service.user.UserService;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +35,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -43,21 +50,22 @@ public class BoardController {
   @Autowired
   private UserRepository userRepository;
 
-  @PostMapping(value = {"/write/{regionId}", "/write"}, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> write(@RequestBody Map<String, String> map, @PathVariable(required = false) String regionId) {
+  @Autowired
+  private FileService fileService;
+
+  @PostMapping(value = {"/write/{regionId}", "/write"})
+  public ResponseDto<Void> write(@RequestBody Map<String, String> boardDto, @PathVariable(required = false) String regionId) {
+    log.info("boardWrite 실행 {}", boardDto);
     Board board = new Board();
-    board.setBoardContent(map.get("boardContent"));
-    Long userId = Long.parseLong(map.get("boardWriter"));
+    board.setBoardContent(boardDto.get("boardContent"));
+    Long userId = Long.parseLong(boardDto.get("boardWriter"));
     board.setBoardWriter(userRepository.findById(userId).get());
-    board.setBoardTitle(map.get("boardTitle"));
+    board.setBoardTitle(boardDto.get("boardTitle"));
     log.info("write board: {}, {}, {}", board, regionId);
 
     boardService.save(board, regionId); // BoardService의 save 메서드 호출
-    Map<String, Object> response = new HashMap<>();
-    response.put("status", 200);
-    response.put("message", "SUCCESS");
-    response.put("board", board);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+
+    return ResponseDto.res("success");
   }
 
   @PutMapping("/modify/{boardId}")

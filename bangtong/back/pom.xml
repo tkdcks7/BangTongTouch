@@ -106,13 +106,14 @@
       <version>5.0.0</version>
       <classifier>jakarta</classifier>
     </dependency>
-    <!--
+    <!--웹 소켓을 위한 디펜던시 추가-->
+    <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket -->
     <dependency>
-      <groupId>com.querydsl</groupId>
-      <artifactId>querydsl-core</artifactId>
-      <version>5.0.0</version>
-      </dependency>
-    -->
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-websocket</artifactId>
+      <version>3.3.1</version>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-oauth2-client</artifactId>
@@ -121,6 +122,20 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-redis</artifactId>
     </dependency>
+    <!--웹 소켓을 위한 디펜던시 추가 끝-->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-client</artifactId>
+    </dependency>
+    <!--S3를 위한 디펜던시 추가-->
+    <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-aws -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-aws</artifactId>
+      <version>2.2.6.RELEASE</version>
+    </dependency>
+    <!--추가 끝 -->
+
   </dependencies>
 
   <build>
@@ -148,7 +163,7 @@
               <goal>process</goal>
             </goals>
             <configuration>
-              <outputDirectory>target/generated-sources/annotations</outputDirectory>
+              <outputDirectory>target/generated-sources/java</outputDirectory>
               <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
             </configuration>
           </execution>

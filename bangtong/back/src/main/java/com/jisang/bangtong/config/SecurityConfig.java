@@ -63,7 +63,8 @@ public class SecurityConfig {
 //        .addFilterAfter(new JWTTokenGeneratorFilter(), JWTTokenValidatorFilter.class)
         .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
         .authorizeHttpRequests(
-            (requests) -> requests.anyRequest().permitAll()).formLogin(withDefaults())
+            (requests) -> requests.requestMatchers("/regions/**").authenticated()
+                .anyRequest().permitAll()).formLogin(withDefaults())
         .oauth2Login(
             oauth -> oauth.defaultSuccessUrl("/users/test", true)
                 .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService)))

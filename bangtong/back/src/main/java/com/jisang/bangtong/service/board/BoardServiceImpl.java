@@ -7,12 +7,14 @@ import com.jisang.bangtong.repository.comment.CommentRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class BoardServiceImpl implements BoardService {
 
   @Autowired
@@ -23,6 +25,7 @@ public class BoardServiceImpl implements BoardService {
   @Transactional
   @Override
   public void save(Board board, String regionId) {
+    log.info("save board {}", board);
     boardRepository.writeBoard(board, regionId);
   }
 
