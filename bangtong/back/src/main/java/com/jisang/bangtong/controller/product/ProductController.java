@@ -3,10 +3,14 @@ package com.jisang.bangtong.controller.product;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.dto.product.ProductSearchDto;
 import com.jisang.bangtong.dto.product.ProductUpdateDto;
+import com.jisang.bangtong.dto.product.ProductUploadDto;
 import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.service.product.ProductService;
 import com.jisang.bangtong.service.product.ProductServiceImpl;
+import com.jisang.bangtong.service.region.RegionService;
+import com.jisang.bangtong.service.user.UserService;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,9 +37,11 @@ public class ProductController {
   //  매물 업로드
   //  TODO: Multipart 처리
   @PostMapping("/upload")
-  public ResponseDto<Void> upload(@RequestBody Product product) {
-    log.info("product upload 실행 {}", product);
-    productService.upload(product);
+  public ResponseDto<Void> upload(@RequestBody ProductUploadDto productUploadDto) {
+
+    log.info("product upload 실행 {}", productUploadDto);
+
+    productService.upload(productUploadDto);
 
     return new ResponseDto<>(SUCCESS);
   }

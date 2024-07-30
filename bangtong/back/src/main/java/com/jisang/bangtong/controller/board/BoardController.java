@@ -6,7 +6,9 @@ import com.jisang.bangtong.model.comment.Comment;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.board.BoardService;
+import com.jisang.bangtong.service.common.FileService;
 import com.jisang.bangtong.service.user.UserService;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -43,13 +47,24 @@ public class BoardController {
   @Autowired
   private UserRepository userRepository;
 
-  @PostMapping(value = {"/write/{regionId}", "/write"}, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> write(@RequestBody Map<String, String> map, @PathVariable(required = false) String regionId) {
+  @Autowired
+  private FileService fileService;
+
+  @PostMapping(value = {"/write/{regionId}", "/write"})
+  public ResponseEntity<Object> write(@RequestPart Map<String, Object> map, @RequestPart List<MultipartFile> boardMedia ,@PathVariable(required = false) String regionId) {
+    log.info("boardWrite 실행 {}", map);
     Board board = new Board();
-    board.setBoardContent(map.get("boardContent"));
-    Long userId = Long.parseLong(map.get("boardWriter"));
+    board.setBoardContent(map.get("boardContent").toString());
+    Long userId = Long.parseLong(map.get("boardWriter").toString());
     board.setBoardWriter(userRepository.findById(userId).get());
-    board.setBoardTitle(map.get("boardTitle"));
+    board.setBoardTitle(map.get("boardTitle").toString());
+    try {
+      fileService.upload(boardMedia);
+    } catch (IOException e) {
+      log.info(e.getMessage());
+      throw new RuntimeException("파일을 저장할 수 없습니다.");
+    }
+
     log.info("write board: {}, {}, {}", board, regionId);
 
     boardService.save(board, regionId); // BoardService의 save 메서드 호출
