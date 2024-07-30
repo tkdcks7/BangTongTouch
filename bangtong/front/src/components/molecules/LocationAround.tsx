@@ -32,7 +32,6 @@ const LocationAround: React.FC = () => {
           <SearchMap
             flag={true}
             basePos={basePosition}
-            height="30vh"
             cssClasses="rounded-xl"
           />
         ) : null}

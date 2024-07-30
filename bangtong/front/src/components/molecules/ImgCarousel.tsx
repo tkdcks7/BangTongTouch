@@ -1,9 +1,17 @@
 import React from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { Carousel, ConfigProvider } from "antd";
 import Room1 from "../../assets/Room1.jpg";
 import Room2 from "../../assets/Room2.jpg";
 import Room3 from "../../assets/Room3.jpg";
+
+const contentStyle: React.CSSProperties = {
+  margin: 0,
+  height: "160px",
+  color: "#fff",
+  lineHeight: "160px",
+  textAlign: "center",
+  background: "#364d79",
+};
 
 interface imgSrcProps {
   //imgCarousel props 로 이미지 src 배열 전달
@@ -21,33 +29,33 @@ const ImgCarousel: React.FC<imgSrcProps> = ({ imgSrcArray }) => {
     imgSrc.push(Room2);
     imgSrc.push(Room3);
   }
+
   return (
-    <Carousel
-      showArrows={true}
-      showThumbs={false}
-      infiniteLoop={true}
-      autoPlay={true}
-      interval={5000}
-      showStatus={false}
-      showIndicators={false}
-      stopOnHover={true}
-      swipeable={true}
-      dynamicHeight={true}
+    <ConfigProvider
+      theme={{
+        components: {
+          Carousel: {
+            arrowOffset: 20,
+            arrowSize: 30,
+          },
+        },
+      }}
     >
-      {imgSrc.map((img) => {
-        return (
-          <div>
-            <img
-              key={img}
-              src={img}
-              alt="1"
-              style={{ width: "100%", height: "30vh" }}
-              className="rounded-2xl"
-            />
-          </div>
-        );
-      })}
-    </Carousel>
+      <Carousel arrows autoplay draggable adaptiveHeight>
+        {imgSrc.map((img) => {
+          return (
+            <div>
+              <img
+                key={img}
+                src={img}
+                alt="1"
+                className="rounded-xl h-60 md:h-80 w-full"
+              />
+            </div>
+          );
+        })}
+      </Carousel>
+    </ConfigProvider>
   );
 };
 

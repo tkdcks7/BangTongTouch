@@ -4,11 +4,12 @@ import { Link } from "react-router-dom";
 
 // 컴포넌트
 import TextBox from "../atoms/TextBox";
+import FilterBox from "../organism/FilterBox";
 
 const ProductPage: React.FC = () => {
   return (
     <div className="w-full mx-3 mb-3">
-      <Link to="/products">
+      <Link to="/products" className="md:hidden">
         <TextBox
           text="방통 터치하기"
           color="lime-500"
@@ -16,7 +17,12 @@ const ProductPage: React.FC = () => {
           weight="bold"
         />
       </Link>
-      <Outlet />
+      <div className="flex items-center justify-center">
+        <div className="hidden md:block">
+          <FilterBox />
+        </div>
+        <Outlet />
+      </div>
     </div>
   );
 };

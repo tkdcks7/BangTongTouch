@@ -17,6 +17,11 @@ const PcNavBar: React.FC = () => {
   const { id } = useUserStore();
   const navigate = useNavigate();
 
+  // signup 페이지로 이동하는 함수
+  const handleSignUpBtnClick = (e: any) => {
+    navigate("/user/register");
+  };
+
   // login 페이지로 이동하는 함수
   const handleLogInBtnClick = (e: any) => {
     navigate("/user/login");
@@ -76,6 +81,14 @@ const PcNavBar: React.FC = () => {
         </NavLink>
         <div className="mx-7">
           <IconBtn imgSrc={Bell} size={30} />
+        </div>
+
+        <div className="mx-1">
+          <Btn
+            text="회원가입"
+            backgroundColor="lime-500"
+            onClick={handleSignUpBtnClick}
+          />
         </div>
 
         {/* 로그인 되면 로그아웃 버튼이 뜨도록 */}

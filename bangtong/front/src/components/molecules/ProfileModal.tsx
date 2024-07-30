@@ -42,8 +42,8 @@ const ProfileModal: React.FC = () => {
         onRequestClose={closeModal}
         contentLabel="선택된 선호 조건"
       >
-        <div className="font-semibold">
-          <div className="flex">
+        <div className="font-semibold w-60">
+          <div className="flex justify-center">
             <CheckOutlined />
             <h2 className="text-lime-500 font-bold ml-3">선택된 선호 조건</h2>
           </div>

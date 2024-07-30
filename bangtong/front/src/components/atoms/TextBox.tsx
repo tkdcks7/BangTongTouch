@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface TextBoxProps {
   text: string; // 들어갈 텍스트
@@ -8,16 +8,17 @@ interface TextBoxProps {
 }
 
 const TextBox: React.FC<TextBoxProps> = ({
-  text, 
-  size="sm",
-  color="black",
-  weight="normal"
+  text,
+  size = "sm",
+  color = "black",
+  weight = "normal",
+  ...props
 }) => {
   return (
     <div className={`text-${size} text-${color} font-${weight}`}>
       <p>{text}</p>
     </div>
   );
-}
+};
 
 export default TextBox;

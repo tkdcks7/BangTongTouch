@@ -6,7 +6,11 @@ interface Pos {
   lng: number;
 }
 
-const ProductMap: React.FC = () => {
+interface MapProps {
+  height?: string;
+}
+
+const ProductMap: React.FC<MapProps> = ({ height }) => {
   const [positionLoaded, setPositionLoaded] = useState<boolean>(false);
   const [basePosition, setBasePosition] = useState<Pos>({ lat: 0, lng: 0 });
   useEffect(() => {
@@ -29,7 +33,7 @@ const ProductMap: React.FC = () => {
   return (
     <div>
       {positionLoaded ? (
-        <SearchMap basePos={basePosition} flag={false} />
+        <SearchMap basePos={basePosition} flag={false} height="100vh" />
       ) : null}
     </div>
   );
