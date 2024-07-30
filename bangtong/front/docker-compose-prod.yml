@@ -8,4 +8,4 @@ services:
         - REACT_APP_NAME=bangtong
         - REACT_APP_TITLE=방통터치
     ports:
-      - 8000:80
+      - 80:80
