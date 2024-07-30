@@ -7,6 +7,7 @@ import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ public class UserController {
     return ResponseDto.res("oauth test success");
   }
 
+  //  회원가입 (일반)
   @PostMapping("/register")
   public ResponseDto<User> register(@RequestBody User user) {
     String password = passwordEncoder.encode(user.getUserPassword());
@@ -44,6 +46,7 @@ public class UserController {
     return ResponseDto.res("success", user);
   }
 
+  //  회원탈퇴
   @DeleteMapping("/delete")
   public ResponseDto<Void> delete() {
     Long userId = 0L;
@@ -52,17 +55,22 @@ public class UserController {
     return ResponseDto.res("success");
   }
 
+  //  로그인 (일반)
   @PostMapping("/login")
   public ResponseEntity<ResponseDto<Void>> login(@RequestBody LoginRequestDTO loginRequest) {
-    String accessToken = userService.login(loginRequest);
+    Map<String, String> tokens = userService.login(loginRequest);
+    String accessToken = tokens.get("access_token");
+    String refreshToken = tokens.get("refresh_token");
 
     return ResponseEntity.status(HttpStatus.OK).header(SecurityConstants.JWT_HEADER, accessToken)
         .body(ResponseDto.res(accessToken));
   }
 
+  //  로그아웃
   @PutMapping("/logout")
   public ResponseDto<Void> logout(HttpServletRequest request, HttpServletResponse response) {
     userService.logout(request, response);
+
     return ResponseDto.res("success");
   }
 

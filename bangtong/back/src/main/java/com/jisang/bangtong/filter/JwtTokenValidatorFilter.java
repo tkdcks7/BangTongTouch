@@ -3,16 +3,13 @@ package com.jisang.bangtong.filter;
 import com.jisang.bangtong.constants.SecurityConstants;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.user.UserRepository;
+import com.jisang.bangtong.util.JwtUtil;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,12 +19,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
-public class JWTTokenValidatorFilter extends OncePerRequestFilter {
+public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
   private final UserRepository userRepository;
+  private final JwtUtil jwtUtil;
 
-  public JWTTokenValidatorFilter(UserRepository userRepository) {
+  public JwtTokenValidatorFilter(UserRepository userRepository, JwtUtil jwtUtil) {
     this.userRepository = userRepository;
+    this.jwtUtil = jwtUtil;
   }
 
   @Override
@@ -39,10 +38,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
       String token = header.substring(7);
 
       try {
-        String secret = SecurityConstants.JWT_SECRET_DEFAULT_VALUE;
-        SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token)
-            .getPayload();
+        Claims claims = jwtUtil.parseToken(token);
 
         String username = String.valueOf(claims.get("username"));
         String authorities = String.valueOf(claims.get("authorities"));

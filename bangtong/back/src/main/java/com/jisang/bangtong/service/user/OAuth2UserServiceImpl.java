@@ -51,7 +51,7 @@ public class OAuth2UserServiceImpl implements OAuth2UserService<OAuth2UserReques
   public void updateOrSaveUser(UserDto userDto) {
     User user = userRepository.findUserByUserEmailAndUserProvider(userDto.getEmail(),
             userDto.getProvider())
-        .map(value -> value.updateUser(userDto.getNickname(), userDto.getProvider()))
+        .map(value -> value.updateUser(userDto.getNickname(), userDto.getEmail()))
         .orElse(userDto.toEntity());
 
     if (user.getUserRegisterDate() == null) {
