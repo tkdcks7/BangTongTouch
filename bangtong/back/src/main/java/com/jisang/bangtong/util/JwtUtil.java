@@ -49,14 +49,12 @@ public class JwtUtil {
         .compact();
   }
 
-  public String parseToken(String token) {
-    Claims claims = Jwts.parser()
+  public Claims parseToken(String token) {
+    return Jwts.parser()
         .verifyWith(secretKey)
         .build()
         .parseSignedClaims(token)
         .getPayload();
-
-    return claims.getSubject();
   }
 
 }

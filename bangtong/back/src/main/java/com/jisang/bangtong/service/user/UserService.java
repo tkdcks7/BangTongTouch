@@ -8,6 +8,8 @@ import com.jisang.bangtong.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,20 +36,25 @@ public class UserService {
   }
 
   @Transactional
-  public String login(LoginRequestDTO loginRequest) {
+  public Map<String, String> login(LoginRequestDTO loginRequest) {
     Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(
         loginRequest.username(), loginRequest.password());
     Authentication authenticationResponse = authenticationManager.authenticate(authentication);
 
-    String accessToken = "";
+    Map<String, String> tokens = new HashMap<>();
     Date currentDate = new Date();
 
     if (authenticationResponse != null && authenticationResponse.isAuthenticated()) {
       String email = authenticationResponse.getName();
       User user = userRepository.findByUserEmail(email).orElse(null);
+
+      tokens.put("accessToken",
+          jwtUtil.generateAccessToken(user, authenticationResponse, currentDate));
+      tokens.put("refreshToken",
+          jwtUtil.generateRefreshToken(user, authenticationResponse, currentDate));
     }
 
-    return accessToken;
+    return tokens;
   }
 
   public void logout(HttpServletRequest request, HttpServletResponse response) {

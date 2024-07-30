@@ -1,4 +1,0 @@
-services:
-  bangtong-front:
-    build:
-      context: .

@@ -113,7 +113,7 @@
       <artifactId>spring-boot-starter-websocket</artifactId>
       <version>3.3.1</version>
     </dependency>
-
+    <!--웹 소켓을 위한 디펜던시 추가 끝-->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-oauth2-client</artifactId>
@@ -121,11 +121,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-redis</artifactId>
-    </dependency>
-    <!--웹 소켓을 위한 디펜던시 추가 끝-->
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-oauth2-client</artifactId>
     </dependency>
     <!--S3를 위한 디펜던시 추가-->
     <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-aws -->
@@ -163,7 +158,7 @@
               <goal>process</goal>
             </goals>
             <configuration>
-              <outputDirectory>target/generated-sources/java</outputDirectory>
+              <outputDirectory>target/generated-sources/annotations</outputDirectory>
               <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
             </configuration>
           </execution>
