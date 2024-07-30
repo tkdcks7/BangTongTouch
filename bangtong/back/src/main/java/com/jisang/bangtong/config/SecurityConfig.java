@@ -2,7 +2,6 @@ package com.jisang.bangtong.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import com.jisang.bangtong.controller.common.OAuth2SuccessHandler;
 import com.jisang.bangtong.exceptionhandling.BasicAuthenticationEntryPoint;
 import com.jisang.bangtong.exceptionhandling.CustomAccessDeniedHandler;
 import com.jisang.bangtong.filter.CsrfCookieFilter;
@@ -17,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -35,8 +33,6 @@ public class SecurityConfig {
 
   private final OAuth2UserServiceImpl oAuth2UserService;
   private final UserRepository userRepository;
-  private final JwtUtil jwtUtil;
-  private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
   @Bean
   SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -69,8 +65,7 @@ public class SecurityConfig {
             (requests) -> requests.anyRequest().permitAll()).formLogin(withDefaults())
         .oauth2Login(
             oauth -> oauth.defaultSuccessUrl("/users/test", true)
-                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-                .successHandler(oAuth2SuccessHandler))
+                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService)))
         .httpBasic(hbc -> hbc.authenticationEntryPoint(new BasicAuthenticationEntryPoint()))
         .exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 

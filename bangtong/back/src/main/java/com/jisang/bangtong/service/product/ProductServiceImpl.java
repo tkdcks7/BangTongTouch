@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProductServiceImpl implements ProductService{
@@ -33,7 +34,7 @@ public class ProductServiceImpl implements ProductService{
 
   @Transactional
   @Override
-  public void upload(ProductUploadDto productUploadDto) {
+  public void upload(ProductUploadDto productUploadDto, List<MultipartFile> productMedia) {
     Product product = new Product();
     product.setProductType(productUploadDto.getProductType());
     product.setRegion(regionRepository.findById(productUploadDto.getRegionId()).get());
@@ -51,9 +52,8 @@ public class ProductServiceImpl implements ProductService{
     product.setProductEndDate(productUploadDto.getProductEndDate());
     product.setLat(productUploadDto.getLat());
     product.setLng(productUploadDto.getLng());
-
     try {
-      List<Media> fileList= fileService.upload(productUploadDto.getMediaList());
+      List<Media> fileList= fileService.upload(productMedia);
       product.setProductMedia(fileList);
     } catch (IOException e) {
       throw new RuntimeException("파일을 저장할 수 없습니다");

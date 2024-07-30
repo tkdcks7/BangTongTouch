@@ -2,11 +2,14 @@ package com.jisang.bangtong.service.chat;
 
 import com.jisang.bangtong.model.chat.Chat;
 import com.jisang.bangtong.model.chatroom.Chatroom;
+import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.chat.ChatRepository;
 import com.jisang.bangtong.repository.chatroom.ChatroomRepository;
 import com.jisang.bangtong.repository.user.UserRepository;
+import com.jisang.bangtong.service.common.FileService;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +17,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
@@ -28,11 +32,14 @@ public class ChatServiceImpl implements ChatService {
   @Autowired
   ChatroomRepository chatroomRepository;
 
+  @Autowired
+  FileService fileService;
+
   List<Chat> chats = new ArrayList<>();
 
   @Override
   @Transactional
-  public Chat send(Map<String, Object> chatDto) {
+  public Chat send(Map<String, Object> chatDto, List<MultipartFile> files) {
     log.info("ChatService Impl {}", chatDto);
 
     Chat chat = new Chat();
@@ -50,6 +57,14 @@ public class ChatServiceImpl implements ChatService {
     }else{
       chat.setReceiver(receiver);
       chat.setSender(sender);
+    }
+    if(files != null && !files.isEmpty()) {
+      try {
+        List<Media> fileList= fileService.upload(files);
+        chat.setMediaList(fileList);
+      } catch (IOException e) {
+        throw new RuntimeException("파일을 저장할 수 없습니다");
+      }
     }
     //chatroom 가져오기
     Long chatRoomId = Long.parseLong(chatDto.get("chatRoom").toString());
