@@ -1,28 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
 // 컴포넌트
 import InputBox from "../molecules/InputBox";
-import DropDown from "../molecules/DropDown";
 import Attachment from "../atoms/Attachment";
 import Btn from "../atoms/Btn";
 import OptionBtnGroup from "../molecules/OptionBtnGroup";
 import RadioGroup from "../molecules/RadioGroup";
 import Datepicker from "react-tailwindcss-datepicker";
 import useProductOptionStore from "../../store/productStore";
-
-interface ProductOption {
-  풀옵션: boolean;
-  가스레인지: boolean;
-  냉장고: boolean;
-  세탁기: boolean;
-  에어컨: boolean;
-  전자레인지: boolean;
-  침대: boolean;
-  티비: boolean;
-}
 
 const ProductUpload: React.FC = () => {
   let { id }: any = useParams(); // 상품 번호. 있으면 update, 없으면 create
@@ -156,11 +144,11 @@ const ProductUpload: React.FC = () => {
   //   productIsSupportable: Boolean,
   //   productIsFurnitureSupportable: Boolean,
   //   productAdditionalOption: String,
-  //   productPostDate: String,
-  //   productIsDeleted: Boolean,
-  //   productIsBanned: Boolean,
   //   productStartDate: String,
   //   productEndDate: String
+  //   productPostDate: String,
+  //   productIsBanned: Boolean,
+  //   productIsDeleted: Boolean,
 
   // 추가 옵션 등록 함수
   const handleFurnitureAppend = (e: any) => {
@@ -230,6 +218,28 @@ const ProductUpload: React.FC = () => {
       .then((response) => console.log(response, "detailPage로 이동합니다."))
       .catch((err) => console.log(err));
   };
+
+  // type이 number인 input에서 우측에 상하조절 화살표가 나오지 않게 하는 설정
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+  
+        /* Firefox */
+        input[type='number'] {
+          -moz-appearance: textfield;
+        }
+      `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   return (
     <div className="mt-5">
