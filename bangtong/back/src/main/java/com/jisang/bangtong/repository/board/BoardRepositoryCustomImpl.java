@@ -9,6 +9,7 @@ import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.media.QMedia;
 import com.jisang.bangtong.model.region.QRegion;
 import com.jisang.bangtong.model.region.Region;
+import com.jisang.bangtong.model.user.QUser;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -35,6 +36,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
   public Page<Board> getBoards(Pageable pageable, BoardSearchDto boardSearchDto){
     QBoard board = QBoard.board;
     QRegion region = QRegion.region;
+    QUser user = QUser.user;
 
     BooleanBuilder builder = new BooleanBuilder();
     builder.and(board.boardIsDelete.isFalse());

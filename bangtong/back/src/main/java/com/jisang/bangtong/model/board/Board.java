@@ -26,7 +26,7 @@ public class Board {
   @Column(nullable = false, length = 50)
   private String boardTitle;
 
-  @Column(nullable = false, columnDefinition = "TEXT")
+  @Column(nullable = false, columnDefinition = "LONGTEXT")
   private String boardContent;
 
   @Column(nullable = false)
@@ -59,7 +59,6 @@ public class Board {
   // TODO: User 클래스 생성 후 관계 설정
   @ManyToOne
   @JoinColumn(name="user_id", foreignKey = @ForeignKey(name= "fk_board_user"))
-  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "userId")
   @JsonManagedReference
   private User boardWriter;
 }
