@@ -1,7 +1,7 @@
 package com.jisang.bangtong.dto.comment;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.jisang.bangtong.dto.user.UserCommentReturnDto;
+import com.jisang.bangtong.dto.user.IUser;
 import java.util.Date;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -13,11 +13,11 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class CommentReturnDto {
+public class IComment {
   Long commentId;
-  UserCommentReturnDto userCommentReturnDto;
+  IUser IUser;
   String content;
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
-  Date createAt;
-  List<SubCommentDto> subcomments;
+  Date commentDate;
+  List<ISubComment> subcomments;
 }
