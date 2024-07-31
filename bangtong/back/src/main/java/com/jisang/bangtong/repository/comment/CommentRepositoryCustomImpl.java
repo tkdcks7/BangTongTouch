@@ -1,5 +1,7 @@
 package com.jisang.bangtong.repository.comment;
 
+import static com.querydsl.jpa.JPAExpressions.selectFrom;
+
 import com.jisang.bangtong.model.comment.Comment;
 import com.jisang.bangtong.model.comment.QComment;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -29,5 +31,15 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom{
             .and(qComment.board.boardId.eq(boardId)))
         .fetch();
 
+  }
+
+  @Override
+  public List<Comment> findCommentsWithRepliesByBoardId(Long boardId) {
+    QComment comment = QComment.comment;
+
+    return
+        selectFrom(comment)
+        .where(comment.board.boardId.eq(boardId))
+        .fetch();
   }
 }
