@@ -12,28 +12,25 @@ import Clip from "../../assets/Clip.png";
 import TextEditor from "../molecules/TextEditor";
 import axios, { HttpStatusCode } from "axios";
 import { getCookie } from "../../utils/cookie";
+import { getUserAddressKr } from "../../utils/services";
 
 const CommunityCreate: React.FC = () => {
   const [textEditorValue, setTextEditorValue] = useState("");
   const [titleValue, setTitleValue] = useState("");
-  const clientPosition = useRef<string>("");
   const navigate = useNavigate();
-  // useEffect(()=>{
-  //   if(navigator.geolocation){
-  //     navigator.geolocation.getCurrentPosition((position)=>{
-  //       axios({
-  //         method: "GET",
-  //         url: `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${'position.coords.lat'+','+}&orders=admcode&output=json`,
-  //       })
-  //         .then((response) => {
-  //         })
-  //         .catch((error) => console.log("전송 실패", error));
-  //     }, ()=>{});
-  //   }
-  // },[]);
+
   const redirectToBoards = () => {
     navigate("../");
   };
+
+  useEffect(() => {
+    const getAddress = async () => {
+      const temp: any = await getUserAddressKr();
+      console.log(temp);
+    };
+    getAddress();
+  }, []);
+
   return (
     <div>
       <div className="mt-10">
