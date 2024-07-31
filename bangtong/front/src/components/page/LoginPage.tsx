@@ -114,11 +114,11 @@ const LoginPage: React.FC = () => {
     window.open(kakaotalkLoginUri, "_blank", "width=600,height=600");
   };
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
+    <div className="h-screen w-full flex flex-col items-center justify-center">
       <div className="font-bold m-6">
         <TextBox text="로그인" size="3xl" />
       </div>
-      <form className="mb-20">
+      <form className="mb-20 md:w-2/5">
         <InputBox
           placeholder="이메일 (아이디)"
           buttonType="cancel"

@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // 컴포넌트 불러오기
 import IconBtn from "../atoms/IconBtn";
 import Btn from "../atoms/Btn";
+import { Alert, Button } from "antd";
 
 // 이미지 소스
 import Bell from "../../assets/Bell.png";
@@ -16,6 +17,7 @@ import useUserStore from "../../store/userStore";
 const PcNavBar: React.FC = () => {
   const { id } = useUserStore();
   const navigate = useNavigate();
+  const [visible, setVisible] = useState(false);
 
   // signup 페이지로 이동하는 함수
   const handleSignUpBtnClick = (e: any) => {
@@ -37,6 +39,12 @@ const PcNavBar: React.FC = () => {
       .then((response) => console.log(response.data))
       .catch((err) => console.log(err));
   };
+
+  // Alert 표시하는 함수
+  const handleVisible = () => {
+    setVisible(!visible);
+  };
+
   return (
     <div className="flex justify-between w-full bg-white p-5 mb-10">
       <Link to="/" className="text-start">
@@ -61,12 +69,14 @@ const PcNavBar: React.FC = () => {
         >
           채팅
         </NavLink>
+
+        {/* 로그인 되어있으면 그 유저의 프로필로, 안되어있으면, 로그인 하도록 */}
         <NavLink
           className={({ isActive }) =>
             "text-lg mx-3 text-nowrap " +
             (isActive ? "text-black" : "text-gray-400")
           }
-          to="/profile"
+          to={`/profile/${id}`}
         >
           마이방통
         </NavLink>

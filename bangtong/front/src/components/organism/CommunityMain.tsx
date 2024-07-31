@@ -70,18 +70,16 @@ const CommunityMain: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="mt-5 w-full flex items-center justify-center">
-        <h2 className="me-5 text-3xl font-bold text-lime-500 hidden md:block text-nowrap">
-          구미시 신통방통
-        </h2>
-        <div className="w-full">
-          <InputBox
-            placeholder="게시글 검색"
-            buttonType="search"
-            width="100%"
-            height="100%"
-          />
-        </div>
+      <h2 className="my-5 text-4xl font-bold text-lime-500 hidden md:block text-nowrap">
+        <button className="text-yellow-400">구미시</button> 신통방통
+      </h2>
+      <div className="w-full md:w-4/5">
+        <InputBox
+          placeholder="게시글 검색"
+          buttonType="search"
+          width="100%"
+          height="100%"
+        />
       </div>
       <div className="my-5 md:w-full">
         <MultiBtn />
