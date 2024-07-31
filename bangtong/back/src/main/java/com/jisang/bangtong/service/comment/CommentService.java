@@ -99,19 +99,19 @@ public class CommentService {
 
   //  댓글 목록 조회
   public List<CommentReturnDto> getComments(long boardId) {
-    if(isValidBoard(boardId))
+    if(!isValidBoard(boardId))
       throw new NotFoundException("해당 board를 찾지 못했습니다.");
     List<Comment> comments = commentRepository.findCommentsWithRepliesByBoardId(boardId);
     List<CommentReturnDto> commentReturnDto = new ArrayList<>();
 
     for (Comment comment : comments) {
-        CommentReturnDto c = new CommentReturnDto();
+        CommentReturnDto c;
         User user = comment.getCommentUser();
         List<SubCommentDto> subComment = new ArrayList<>();
         for(Comment s : comment.getComments()){
           SubCommentDto subCommentDto = SubCommentDto.builder()
               .commentId(s.getCommentId())
-              .userCommentReturnDto(userCommentReturnDto(s.getCommentUser()))
+              .userCommentReturnDto(getuserCommentReturnDto(s.getCommentUser()))
               .content(s.getCommentContent())
               .createAt(s.getCommentDate())
               .isBanned(false)
@@ -120,10 +120,7 @@ public class CommentService {
         }
 
 
-        UserCommentReturnDto u = UserCommentReturnDto.builder()
-            .nickName(user.getUserNickname())
-            .isBanned(user.getUserIsBanned())
-            .build();
+        UserCommentReturnDto u = getuserCommentReturnDto(user);
         c = CommentReturnDto.builder().commentId(comment.getCommentId())
             .userCommentReturnDto(u)
             .content(comment.getCommentContent())
@@ -169,7 +166,7 @@ public class CommentService {
     return comment.getCommentUser().getUserId().equals(userId);
   }
 
-  private UserCommentReturnDto userCommentReturnDto(User user){
+  private UserCommentReturnDto getuserCommentReturnDto(User user){
     return UserCommentReturnDto.builder()
         .userId(user.getUserId())
         .isBanned(user.getUserIsBanned())

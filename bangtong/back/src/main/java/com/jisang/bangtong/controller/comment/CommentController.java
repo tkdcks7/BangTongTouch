@@ -64,10 +64,10 @@ public class CommentController {
   //  댓글 목록 조회
   //  TODO: parent의 답댓글 list 관리
   @GetMapping("/{boardId}")
-  public ResponseEntity<ResponseDto<List<CommentReturnDto>>> getComments(@PathVariable long boardId) {
+  public ResponseDto<List<CommentReturnDto>> getComments(@PathVariable long boardId) {
     List<CommentReturnDto> dtos = commentService.getComments(boardId);
-
-    return ResponseEntity.ok(ResponseDto.res(SUCCESS, dtos));
+    log.info("getComments {}", dtos);
+    return ResponseDto.res(SUCCESS, dtos);
   }
 
 
