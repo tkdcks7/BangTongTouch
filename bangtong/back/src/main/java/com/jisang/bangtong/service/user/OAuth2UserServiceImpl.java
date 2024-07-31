@@ -66,6 +66,7 @@ public class OAuth2UserServiceImpl implements OAuth2UserService<OAuth2UserReques
     Map<String, Object> attributesMap = new ConcurrentHashMap<>();
 
     attributesMap.put(userNameAttributeName, attributes.get(userNameAttributeName));
+    attributesMap.put("id", userDto.getId());
     attributesMap.put("provider", registrationId);
     attributesMap.put("nickname", userNameAttributeName);
     attributesMap.put("email", userDto.getEmail());

@@ -2,7 +2,7 @@ package com.jisang.bangtong.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import com.jisang.bangtong.controller.common.OAuth2SuccessHandler;
+import com.jisang.bangtong.handler.OAuth2SuccessHandler;
 import com.jisang.bangtong.exceptionhandling.BasicAuthenticationEntryPoint;
 import com.jisang.bangtong.exceptionhandling.CustomAccessDeniedHandler;
 import com.jisang.bangtong.filter.CsrfCookieFilter;
@@ -31,12 +31,14 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
   private final OAuth2UserServiceImpl oAuth2UserService;
   private final UserRepository userRepository;
   private final JwtUtil jwtUtil;
+  private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
   @Bean
   SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -68,8 +70,10 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             (requests) -> requests.anyRequest().permitAll()).formLogin(withDefaults())
         .oauth2Login(
-            oauth -> oauth.defaultSuccessUrl("/users/test", true)
-                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService)))
+            oauth -> oauth
+                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                .successHandler(oAuth2SuccessHandler))
+        .logout(logout -> logout.logoutSuccessUrl("/"))
         .httpBasic(hbc -> hbc.authenticationEntryPoint(new BasicAuthenticationEntryPoint()))
         .exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 
@@ -96,18 +100,6 @@ public class SecurityConfig {
     providerManager.setEraseCredentialsAfterAuthentication(false);
 
     return providerManager;
-  }
-
-  @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/ws/**").permitAll() // WebSocket 엔드포인트에 대한 접근을 허용
-            .anyRequest().authenticated() // 다른 모든 요청은 인증 요구됨
-        )
-        .csrf(csrf -> csrf.disable()); // WebSocket을 사용할 때는 CSRF 보호를 비활성화해야 함.
-
-    return http.build();
   }
 
 }
