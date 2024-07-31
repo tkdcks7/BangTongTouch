@@ -24,7 +24,7 @@ public class RegionRepositoryCustomImpl implements RegionRepositoryCustom {
 
     return queryFactory
         .select(Projections.constructor(RegionSidoDto.class,
-            qRegion.regionId.substring(0, 2).as("regionId"),
+            qRegion.regionId.substring(1, 2).as("regionId"),
             qRegion.regionSido))
         .from(qRegion)
         .groupBy(qRegion.regionId.substring(0, 2))
@@ -38,9 +38,9 @@ public class RegionRepositoryCustomImpl implements RegionRepositoryCustom {
         .select(Projections.constructor(RegionGugunDto.class,
             region.regionId.substring(0, 5).as("regionId"), region.regionGugun))
         .from(region)
-        .where(region.regionId.substring(0, 2).eq(sido)
-            .and(region.regionId.substring(2, 5).ne("000")))
-        .groupBy(region.regionId.substring(0, 5), region.regionGugun)
+        .where(region.regionId.substring(1, 2).eq(sido)
+            .and(region.regionId.substring(3, 3).ne("000")))
+        .groupBy(region.regionId.substring(1, 5), region.regionGugun)
         .distinct()
         .fetch();
 
@@ -54,8 +54,8 @@ public class RegionRepositoryCustomImpl implements RegionRepositoryCustom {
             region.regionDong))
         .from(region)
         .where(region.regionId.substring(0, 5).eq(gugun)
-            .and(region.regionId.substring(6, 9).ne("000")))
-        .groupBy(region.regionId.substring(0, 8), region.regionDong)
+            .and(region.regionId.substring(6, 3).ne("000")))
+        .groupBy(region.regionId.substring(1, 9), region.regionDong)
         .distinct()
         .fetch();
     return results;

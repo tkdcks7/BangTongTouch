@@ -10,12 +10,14 @@ import com.jisang.bangtong.repository.user.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@Builder
 public class CommentService {
 
   @Autowired
@@ -27,35 +29,37 @@ public class CommentService {
 
   //  댓글 작성
   public void writeComment(Long boardId, CommentDto commentDto) {
-    log.info("test");
-    Long commentPid = commentDto.getParentId();
+    log.info("Service: writeComment 시작");
 
-
-    Board board = boardRepository.findById(boardId).orElse(null);
-    log.info("comment {}", commentDto);
-    Comment comment = new Comment();
-
-    comment.setCommentContent(commentDto.getContent());
-
-    log.info("abc {}, {}", board, comment);
-    Optional<User> user = userRepository.findById(commentDto.getWriterId());
-    log.info("{} asdf", user.get());
-    if(user.isPresent()) {
-      User writer =user.get();
-      comment.setCommentUser(writer);
+    if(isCommentDtoNull(commentDto)){
+        throw new IllegalArgumentException("댓글 내용이 누락되었습니다.");
+    }
+    if(isValidBoard(boardId)){
+      throw new IllegalArgumentException("해당 게시글이 없습니다");
     }
 
-    log.info("abcdefg {}, {}", board, comment);
 
-    comment.setBoard(board);
+    Long commentPid = commentDto.getParentId();
+    Board board = boardRepository.findById(boardId).orElse(null);
 
-    Comment parent = null;
+    User user = userRepository.findById(commentDto.getWriterId()).orElse(null);
+    if(!isValidUser(user, commentDto.getWriterId())){
+      throw new IllegalArgumentException("댓글을 쓴 사용자가 다릅니다");
+    }
+    if(!isValidBoard(commentDto.getWriterId())){
+      throw new IllegalArgumentException("게시글이 유효하지 않습니다.");
+    }
+
+    Comment comment = new Comment();
+    Comment parent= null;
     if(commentPid != null)
       parent = commentRepository.findById(commentPid).orElse(null);
 
-    if(parent!=null) {
-      comment.setCommentParent(parent);
-    }
+    comment.setCommentContent(commentDto.getContent());
+    comment.setBoard(board);
+    comment.setCommentParent(parent);
+    comment.setCommentUser(user);
+
     commentRepository.save(comment);
   }
 
@@ -108,5 +112,24 @@ public class CommentService {
     }
 
     return comments;
+  }
+
+  private boolean isValidUser(User u, Long writeUserId){
+    if(u == null){
+      return false;
+    }
+    return u.getUserId().equals(writeUserId);
+  }
+  private boolean isValidBoard(Long boardId){
+    Board board = boardRepository.findById(boardId).orElse(null);
+    if(board == null){
+      return false;
+    }
+    return true;
+  }
+
+  private boolean isCommentDtoNull(CommentDto commentDto){
+    if(commentDto.getContent() == null) return true;
+    return false;
   }
 }

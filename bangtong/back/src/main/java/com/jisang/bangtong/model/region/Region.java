@@ -1,8 +1,10 @@
 package com.jisang.bangtong.model.region;
 
+import com.jisang.bangtong.dto.region.RegionSidoDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,15 +18,16 @@ public class Region {
 
   @Id
   @Column(length = 13)
-  String regionId;
+  private String regionId;
 
   @Column(nullable = false, length = 7)
-  String regionSido;
+  private String regionSido;
 
   @Column(nullable = false, length = 10)
-  String regionGugun;
+  private String regionGugun;
 
   @Column(nullable = false, length = 10)
-  String regionDong;
+  private String regionDong;
+  // equals 메소드 오버라이드
 
 }
