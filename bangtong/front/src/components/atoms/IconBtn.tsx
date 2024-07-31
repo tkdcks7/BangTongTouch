@@ -28,6 +28,7 @@ const IconBtn: React.FC<IconBtnProps> = ({
         width={size}
         height={size}
         onClick={onIconClick}
+        className="hover:cursor-pointer"
       />
     </div>
   );
