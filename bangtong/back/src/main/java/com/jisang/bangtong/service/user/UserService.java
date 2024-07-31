@@ -1,5 +1,6 @@
 package com.jisang.bangtong.service.user;
 
+import com.jisang.bangtong.constants.ResponseMessageConstants;
 import com.jisang.bangtong.constants.SecurityConstants;
 import com.jisang.bangtong.dto.user.LoginRequestDTO;
 import com.jisang.bangtong.model.user.User;
@@ -8,8 +9,6 @@ import com.jisang.bangtong.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,30 +30,40 @@ public class UserService {
     userRepository.save(user);
   }
 
-  public void delete(Long userId) {
-    userRepository.deleteById(userId);
+  public String delete(Long userId) {
+    User user = userRepository.findById(userId).orElse(null);
+
+    if (user == null) {
+      return ResponseMessageConstants.CLIENT_ERROR;
+    } else {
+      user.setUserIsDeleted(true);
+      userRepository.save(user);
+
+      return ResponseMessageConstants.SUCCESS;
+    }
   }
 
   @Transactional
-  public Map<String, String> login(LoginRequestDTO loginRequest) {
+  public String login(LoginRequestDTO loginRequest) {
     Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(
         loginRequest.username(), loginRequest.password());
     Authentication authenticationResponse = authenticationManager.authenticate(authentication);
 
-    Map<String, String> tokens = new HashMap<>();
+    String accessToken = "";
     Date currentDate = new Date();
 
     if (authenticationResponse != null && authenticationResponse.isAuthenticated()) {
       String email = authenticationResponse.getName();
       User user = userRepository.findByUserEmail(email).orElse(null);
 
-      tokens.put("accessToken",
-          jwtUtil.generateAccessToken(user, authenticationResponse, currentDate));
-      tokens.put("refreshToken",
-          jwtUtil.generateRefreshToken(user, authenticationResponse, currentDate));
+      accessToken = jwtUtil.generateAccessToken(user.getUserId(), user.getUserEmail(),
+          user.getUserNickname(), currentDate);
+      String refreshToken = jwtUtil.generateRefreshToken(user.getUserId(), user.getUserEmail(),
+          user.getUserNickname(),
+          currentDate);
     }
 
-    return tokens;
+    return accessToken;
   }
 
   public void logout(HttpServletRequest request, HttpServletResponse response) {
@@ -62,7 +71,7 @@ public class UserService {
   }
 
   public User getUser(Long userId) {
-    return null;
+    return userRepository.findById(userId).orElse(new User());
   }
 
 }

@@ -1,5 +1,6 @@
 package com.jisang.bangtong.controller.user;
 
+import com.jisang.bangtong.constants.ResponseMessageConstants;
 import com.jisang.bangtong.constants.SecurityConstants;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.dto.user.LoginRequestDTO;
@@ -43,27 +44,25 @@ public class UserController {
 
     userService.register(user);
 
-    return ResponseDto.res("success", user);
+    return ResponseDto.res(ResponseMessageConstants.SUCCESS, user);
   }
 
   //  회원탈퇴
   @DeleteMapping("/delete")
   public ResponseDto<Void> delete() {
-    Long userId = 0L;
-    userService.delete(userId);
+    Long userId = 1L;
+    String message = userService.delete(userId);
 
-    return ResponseDto.res("success");
+    return ResponseDto.res(message);
   }
 
   //  로그인 (일반)
   @PostMapping("/login")
   public ResponseEntity<ResponseDto<Void>> login(@RequestBody LoginRequestDTO loginRequest) {
-    Map<String, String> tokens = userService.login(loginRequest);
-    String accessToken = tokens.get("access_token");
-    String refreshToken = tokens.get("refresh_token");
+    String accessToken = userService.login(loginRequest);
 
     return ResponseEntity.status(HttpStatus.OK).header(SecurityConstants.JWT_HEADER, accessToken)
-        .body(ResponseDto.res(accessToken));
+        .body(ResponseDto.res(ResponseMessageConstants.SUCCESS));
   }
 
   //  로그아웃
@@ -71,7 +70,7 @@ public class UserController {
   public ResponseDto<Void> logout(HttpServletRequest request, HttpServletResponse response) {
     userService.logout(request, response);
 
-    return ResponseDto.res("success");
+    return ResponseDto.res(ResponseMessageConstants.SUCCESS);
   }
 
 }

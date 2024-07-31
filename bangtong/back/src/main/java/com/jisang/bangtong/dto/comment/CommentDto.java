@@ -1,20 +1,17 @@
 package com.jisang.bangtong.dto.comment;
 
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.Singular;
 
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class CommentDto {
-
-  private Long id;
-  private Long writerId;
-  private String nickname;
+  @Size(min = 1, max = 500)
   private String content;
-  private Date date;
   private Long parentId;
-
 }

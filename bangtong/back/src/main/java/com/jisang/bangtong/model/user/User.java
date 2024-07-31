@@ -72,6 +72,10 @@ public class User {
   @Column(columnDefinition = "boolean default false")
   private boolean userIsBanned;
 
+  public boolean getUserIsBanned() {
+    return userIsBanned;
+  }
+
   public User updateUser(String userNickname, String userEmail) {
     this.userNickname = userNickname;
     this.userEmail = userEmail;

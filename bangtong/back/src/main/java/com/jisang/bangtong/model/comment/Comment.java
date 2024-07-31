@@ -23,11 +23,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+@Builder
 @Entity
 @Data
 @NoArgsConstructor
@@ -67,5 +69,6 @@ public class Comment {
 
   @Column(columnDefinition = "boolean default false")
   private boolean commentIsDeleted;
+
 
 }
