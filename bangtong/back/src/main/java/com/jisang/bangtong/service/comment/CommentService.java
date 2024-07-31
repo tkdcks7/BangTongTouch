@@ -2,9 +2,9 @@ package com.jisang.bangtong.service.comment;
 
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.jisang.bangtong.dto.comment.CommentDto;
-import com.jisang.bangtong.dto.comment.CommentReturnDto;
-import com.jisang.bangtong.dto.comment.SubCommentDto;
-import com.jisang.bangtong.dto.user.UserCommentReturnDto;
+import com.jisang.bangtong.dto.comment.IComment;
+import com.jisang.bangtong.dto.comment.ISubComment;
+import com.jisang.bangtong.dto.user.IUser;
 import com.jisang.bangtong.model.board.Board;
 import com.jisang.bangtong.model.comment.Comment;
 import com.jisang.bangtong.model.user.User;
@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,39 +97,39 @@ public class CommentService {
   }
 
   //  댓글 목록 조회
-  public List<CommentReturnDto> getComments(long boardId) {
+  public List<IComment> getComments(long boardId) {
     if(!isValidBoard(boardId))
       throw new NotFoundException("해당 board를 찾지 못했습니다.");
     List<Comment> comments = commentRepository.findCommentsWithRepliesByBoardId(boardId);
-    List<CommentReturnDto> commentReturnDto = new ArrayList<>();
+    List<IComment> iComment = new ArrayList<>();
 
     for (Comment comment : comments) {
-        CommentReturnDto c;
+        IComment c;
         User user = comment.getCommentUser();
-        List<SubCommentDto> subComment = new ArrayList<>();
+        List<ISubComment> subComment = new ArrayList<>();
         for(Comment s : comment.getComments()){
-          SubCommentDto subCommentDto = SubCommentDto.builder()
+          ISubComment iSubComment = ISubComment.builder()
               .commentId(s.getCommentId())
-              .userCommentReturnDto(getuserCommentReturnDto(s.getCommentUser()))
+              .IUser(getuserCommentReturnDto(s.getCommentUser()))
               .content(s.getCommentContent())
-              .createAt(s.getCommentDate())
+              .commentDate(s.getCommentDate())
               .isBanned(false)
               .build();
-          subComment.add(subCommentDto);
+          subComment.add(iSubComment);
         }
 
 
-        UserCommentReturnDto u = getuserCommentReturnDto(user);
-        c = CommentReturnDto.builder().commentId(comment.getCommentId())
-            .userCommentReturnDto(u)
+        IUser u = getuserCommentReturnDto(user);
+        c = IComment.builder().commentId(comment.getCommentId())
+            .IUser(u)
             .content(comment.getCommentContent())
-                .createAt(comment.getCommentDate())
+                .commentDate(comment.getCommentDate())
                     .subcomments(subComment)
                         .build();
-        commentReturnDto.add(c);
+        iComment.add(c);
     }
 
-    return commentReturnDto;
+    return iComment;
   }
 
   private boolean isValidUser(User u){
@@ -166,11 +165,11 @@ public class CommentService {
     return comment.getCommentUser().getUserId().equals(userId);
   }
 
-  private UserCommentReturnDto getuserCommentReturnDto(User user){
-    return UserCommentReturnDto.builder()
+  private IUser getuserCommentReturnDto(User user){
+    return IUser.builder()
         .userId(user.getUserId())
         .isBanned(user.getUserIsBanned())
-        .nickName(user.getUserNickname())
+        .nickname(user.getUserNickname())
         .build();
   }
 }

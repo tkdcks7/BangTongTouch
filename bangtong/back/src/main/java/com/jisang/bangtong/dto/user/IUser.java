@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
-public class UserCommentReturnDto {
+public class IUser {
   Long userId;
-  String nickName;
+  String nickname;
   Boolean isBanned;
 }

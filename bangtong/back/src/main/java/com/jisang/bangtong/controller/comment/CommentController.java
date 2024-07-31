@@ -1,13 +1,11 @@
 package com.jisang.bangtong.controller.comment;
 
 import com.jisang.bangtong.dto.comment.CommentDto;
-import com.jisang.bangtong.dto.comment.CommentReturnDto;
+import com.jisang.bangtong.dto.comment.IComment;
 import com.jisang.bangtong.dto.common.ResponseDto;
-import com.jisang.bangtong.model.comment.Comment;
 import com.jisang.bangtong.service.comment.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -64,8 +62,8 @@ public class CommentController {
   //  댓글 목록 조회
   //  TODO: parent의 답댓글 list 관리
   @GetMapping("/{boardId}")
-  public ResponseDto<List<CommentReturnDto>> getComments(@PathVariable long boardId) {
-    List<CommentReturnDto> dtos = commentService.getComments(boardId);
+  public ResponseDto<List<IComment>> getComments(@PathVariable long boardId) {
+    List<IComment> dtos = commentService.getComments(boardId);
     log.info("getComments {}", dtos);
     return ResponseDto.res(SUCCESS, dtos);
   }
