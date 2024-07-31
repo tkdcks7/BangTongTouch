@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // 컴포넌트 불러오기
 import TextBox from "../atoms/TextBox";
 import InputBox from "../molecules/InputBox";
 import Btn from "../atoms/Btn";
 import DropDown from "../molecules/DropDown";
-import { redirect } from "react-router-dom";
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -17,14 +18,6 @@ const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordVerification, setPasswordVerification] = useState<string>("");
-  const signUpVariants = {
-    inital: {
-      y: 0,
-    },
-    target: {
-      y: -10,
-    },
-  };
 
   const handleSignUp = (e: any): void => {
     if (name === "") {
@@ -77,18 +70,8 @@ const SignupPage: React.FC = () => {
     redirect("/user/login");
   };
   return (
-    <motion.div
-      variants={signUpVariants}
-      initial="inital"
-      animate="target"
-      transition={{
-        ease: "easeInOut",
-        duration: 0.7,
-        repeatDelay: 3,
-      }}
-      className="h-screen flex flex-col items-center justify-center"
-    >
-      <div className="text-3xl font-bold m-6">
+    <>
+      <div className="text-3xl text-center font-bold m-6">
         <TextBox text="회원가입" size="2xl" />
       </div>
       <form
@@ -104,7 +87,6 @@ const SignupPage: React.FC = () => {
           placeholder="이름"
           size="large"
           type="string"
-          width={"70vw"}
           height={50}
           value={name}
           onChange={(e) => {
@@ -116,7 +98,6 @@ const SignupPage: React.FC = () => {
           buttonType="cancel"
           size="large"
           type="number"
-          width={"70vw"}
           value={socialNumber}
           onChange={(e) => {
             if (e.target.value.length < 8) {
@@ -124,13 +105,12 @@ const SignupPage: React.FC = () => {
             }
           }}
         />
-        <div className="flex items-center" style={{ width: "70vw" }}>
+        <div className="flex items-center">
           <DropDown />
           <InputBox
             placeholder="전화번호 - 없이 숫자만 입력"
             buttonType="send"
             size="large"
-            width={"100%"}
             type="number"
             value={phone}
             onChange={(e) => {
@@ -145,7 +125,6 @@ const SignupPage: React.FC = () => {
           buttonType="send"
           size="large"
           type="text"
-          width={"70vw"}
           value={certificationNumber}
           onChange={(e) => setCertificationNumber(e.target.value)}
         />
@@ -154,7 +133,6 @@ const SignupPage: React.FC = () => {
           buttonType="cancel"
           size="large"
           type="email"
-          width={"70vw"}
           value={email}
           onChange={(e) => {
             setEmail(e.target.value);
@@ -166,7 +144,6 @@ const SignupPage: React.FC = () => {
           size="large"
           type="password"
           maxLength={20}
-          width={"70vw"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -176,14 +153,16 @@ const SignupPage: React.FC = () => {
           size="large"
           maxLength={20}
           type="password"
-          width={"70vw"}
           id={
             password === "" ? "" : passwordVerification === password ? "q" : "e"
           }
           value={passwordVerification}
           onChange={(e) => setPasswordVerification(e.target.value)}
         />
-        <div className="flex justify-center mt-20">
+        <div className="text-lime-500 text-sm md:text-base mt-3 text-end">
+          <Link to={"/user/login"}>로그인 화면으로</Link>
+        </div>
+        <div className="flex justify-center mt-10">
           <Btn
             text="다음"
             backgroundColor="lime-500"
@@ -192,7 +171,7 @@ const SignupPage: React.FC = () => {
           />
         </div>
       </form>
-    </motion.div>
+    </>
   );
 };
 
