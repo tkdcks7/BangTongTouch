@@ -18,7 +18,7 @@ const Post: React.FC<PostsProps> = ({ id, title, writer, date }) => {
         {writer}
       </td>
       <td className="bg-gray-100 border-t-2 border-gray-200 p-2 text-center">
-        {date}
+        {date.slice(11, 16)}
       </td>
     </tr>
   );

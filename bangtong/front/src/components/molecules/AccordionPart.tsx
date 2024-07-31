@@ -23,7 +23,6 @@ const AccordionPart: React.FC<AccordionItemProps> = ({ header, ...rest }) => (
       </>
     )}
     className="border border-black rounded-xl mb-2"
-    style={{ width: "80vw" }}
     buttonProps={{
       className: ({ isEnter }) =>
         `flex items-center w-full p-4 text-left hover:bg-slate-100 rounded-xl ${
