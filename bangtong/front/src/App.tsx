@@ -5,7 +5,6 @@ import VideoChat from "./components/page/VideoChat";
 const App: React.FC = () => {
   return (
     <div>
-      <VideoChat roomId="test-1" />
       <Router />
     </div>
   );
