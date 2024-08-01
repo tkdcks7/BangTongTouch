@@ -44,25 +44,32 @@ public class CommentService {
     if(isCommentDtoNull(commentDto)){
       throw new IllegalArgumentException("댓글 내용이 누락되었습니다.");
     }
-    if(isValidParent(commentPid)){
+    if(!isValidParent(commentPid)){
       throw new NotFoundException("부모 댓글이 올바르지 않습니다");
     }
-    if(isValidBoard(boardId)){
+    if(!isValidBoard(boardId)){
       throw new NotFoundException("해당 게시글이 없습니다");
     }
     String token = jwtUtil.getAccessToken(request);
     Long userId = jwtUtil.getUserIdFromToken(token);
     User writer = userRepository.findById(userId).orElse(null);
+    Board boardFrom = boardRepository.findById(boardId).orElse(null);
     if(!isValidUser(writer)){
       throw new NotFoundException("작성자를 찾을 수 없습니다.");
     }
-
+    log.info("write : {}", writer);
     Comment comment = Comment.builder()
               .commentUser(writer)
-                  .commentContent(commentDto.getContent()).build();
+                  .commentContent(commentDto.getContent())
+        .board(boardFrom).build();
 
-    Comment parentComment= commentRepository.findById(commentPid).orElse(null);
-    comment.setCommentParent(parentComment);
+
+    if(commentPid != null) {
+      Comment parentComment = commentRepository.findById(commentPid).orElse(null);
+      comment.setCommentParent(parentComment);
+    }else{
+      comment.setCommentParent(null);
+    }
 
     commentRepository.save(comment);
   }
@@ -113,7 +120,6 @@ public class CommentService {
               .IUser(getuserCommentReturnDto(s.getCommentUser()))
               .content(s.getCommentContent())
               .commentDate(s.getCommentDate())
-              .isBanned(false)
               .build();
           subComment.add(iSubComment);
         }
@@ -155,7 +161,9 @@ public class CommentService {
     if(parentId == null){   //부모가 없을 수도 있으니까
       return true;
     }
+
     Comment comment = commentRepository.findById(parentId).orElse(null);
+    log.info("parent id {}, {}", parentId, comment);
     return comment != null;
   }
 
@@ -168,7 +176,7 @@ public class CommentService {
   private IUser getuserCommentReturnDto(User user){
     return IUser.builder()
         .userId(user.getUserId())
-        .isBanned(user.getUserIsBanned())
+        .isBanned(user.isUserIsBanned())
         .nickname(user.getUserNickname())
         .build();
   }
