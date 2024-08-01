@@ -3,17 +3,22 @@ package com.jisang.bangtong.service.user;
 import com.jisang.bangtong.constants.ResponseMessageConstants;
 import com.jisang.bangtong.constants.SecurityConstants;
 import com.jisang.bangtong.dto.user.LoginRequestDTO;
+import com.jisang.bangtong.dto.user.UserDto;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,25 +49,34 @@ public class UserService {
   }
 
   @Transactional
-  public String login(LoginRequestDTO loginRequest) {
+  public Map<String, Object> login(LoginRequestDTO loginRequest) {
     Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(
         loginRequest.username(), loginRequest.password());
     Authentication authenticationResponse = authenticationManager.authenticate(authentication);
 
     String accessToken = "";
+    UserDto userDto = new UserDto();
     Date currentDate = new Date();
 
     if (authenticationResponse != null && authenticationResponse.isAuthenticated()) {
       String email = authenticationResponse.getName();
       User user = userRepository.findByUserEmail(email).orElse(null);
+      String authorities = authenticationResponse.getAuthorities().stream()
+          .map(GrantedAuthority::getAuthority)
+          .collect(Collectors.joining(","));
 
-      accessToken = jwtUtil.generateAccessToken(user, authenticationResponse, currentDate);
-      String refreshToken = jwtUtil.generateRefreshToken(user, authenticationResponse, currentDate);
+      accessToken = jwtUtil.generateAccessToken(user, authorities, currentDate);
+      String refreshToken = jwtUtil.generateRefreshToken(user, authorities, currentDate);
+
+      userDto.setId(user.getUserId());
+      userDto.setNickname(user.getUserNickname());
     }
 
-    log.info("accessToken: {}", accessToken);
+    Map<String, Object> map = new HashMap<>();
+    map.put("accessToken", accessToken);
+    map.put("user", userDto);
 
-    return accessToken;
+    return map;
   }
 
   public void logout(HttpServletRequest request, HttpServletResponse response) {

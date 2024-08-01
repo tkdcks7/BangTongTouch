@@ -38,7 +38,6 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
       try {
         String email = jwtUtil.getUserEmailFromToken(token);
-        String nickname = jwtUtil.getUserNicknameFromToken(token);
         String authorities = jwtUtil.parseToken(token).get("authorities").toString();
 
         User user = userRepository.findByUserEmail(email).orElse(null);
