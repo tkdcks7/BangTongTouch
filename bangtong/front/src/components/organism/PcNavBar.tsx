@@ -15,7 +15,7 @@ import Logo from "../../assets/GreenLogo.png";
 import useUserStore from "../../store/userStore";
 
 const PcNavBar: React.FC = () => {
-  const { id } = useUserStore();
+  const { token, id, setLogOut } = useUserStore();
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
 
@@ -36,7 +36,10 @@ const PcNavBar: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/users/logout`,
       headers: {},
     })
-      .then((response) => console.log(response.data))
+      .then((response) => {
+        setLogOut(); // userInfo와 token을 초기화
+        navigate("/user/login");
+      })
       .catch((err) => console.log(err));
   };
 
@@ -44,6 +47,9 @@ const PcNavBar: React.FC = () => {
   const handleVisible = () => {
     setVisible(!visible);
   };
+
+  if (token) {
+  }
 
   return (
     <div className="flex justify-between items-center w-full bg-white p-5 mb-10">
@@ -93,28 +99,27 @@ const PcNavBar: React.FC = () => {
           <IconBtn imgSrc={Bell} size={30} />
         </div>
 
-        <div className="mx-1">
-          <Btn
-            text="회원가입"
-            backgroundColor="lime-500"
-            onClick={handleSignUpBtnClick}
-          />
-        </div>
-
         {/* 로그인 되면 로그아웃 버튼이 뜨도록 */}
         <div className="mx-1">
-          {id ? (
+          {id > 0 ? (
             <Btn
               text="로그아웃"
-              backgroundColor="red-400"
+              backgroundColor="bg-red-400"
               onClick={handleLogOutBtnClick}
             />
           ) : (
-            <Btn
-              text="로그인"
-              backgroundColor="yellow-300"
-              onClick={handleLogInBtnClick}
-            />
+            <>
+              <Btn
+                text="로그인"
+                backgroundColor="bg-lime-500"
+                onClick={handleLogInBtnClick}
+              />
+              <Btn
+                text="회원가입"
+                backgroundColor="bg-yellow-300"
+                onClick={() => navigate("")}
+              />
+            </>
           )}
         </div>
       </div>
