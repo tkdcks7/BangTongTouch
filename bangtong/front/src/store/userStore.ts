@@ -1,21 +1,16 @@
 import { create } from "zustand";
 import { persist, PersistOptions } from "zustand/middleware";
-import axios from "axios";
 
 // UserDto 를 바탕으로 Interface 생성
 interface User {
   id: number;
-  email: string;
+  email: string | null;
   profileImage: string | null;
-  name: string;
   nickname: string;
-  birthYear: string;
-  phone: string;
-  registerDate: string;
-  gender: number;
   token: string;
   setInfoUpdate: (data: any) => void;
   setToken: (token: string) => void;
+  setLogOut: () => void;
 }
 
 // 알람 설정 interface
@@ -31,52 +26,43 @@ interface UserAlarmSetting {
   ) => void;
 }
 
-const userPersistOptions: PersistOptions<User> = {
+// persist 사용 시 name과 저장 위치 설정
+const userPersistOptions = {
   name: "user-storage",
   getStorage: () => localStorage,
 };
 
 // 유저 정보 및 유저정보 업데이트, 토큰 업데이트 setter 선언
+// persist를 사용해 localStorage에 저장
 const useUserStore = create<User>()(
   persist(
     (set) => ({
       id: 0,
       email: "",
-      profileImage: null,
-      name: "",
+      profileImage: "",
       nickname: "",
-      birthYear: "",
-      phone: "",
-      registerDate: "",
-      gender: 0,
       token: "",
       // 유저 정보 업데이트 setter
-      setInfoUpdate: ({
-        id,
-        email,
-        profileImage,
-        name,
-        nickname,
-        birthYear,
-        phone,
-        registerDate,
-        gender,
-      }) => {
+      setInfoUpdate: ({ id, email, profileImage, nickname }) => {
         set(() => ({
           id,
           email,
           profileImage,
-          name,
           nickname,
-          birthYear,
-          phone,
-          registerDate,
-          gender,
         }));
       },
       // 토큰 업데이트 setter
       setToken: (token) => {
         set(() => ({ token }));
+      },
+      setLogOut: () => {
+        set(() => ({
+          id: 0,
+          email: "",
+          profileImage: "",
+          nickname: "",
+          token: "",
+        }));
       },
     }),
     userPersistOptions

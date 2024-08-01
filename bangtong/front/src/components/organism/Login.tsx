@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
+import useUserStore from "../../store/userStore";
 
 // 컴포넌트 불러오기
 import TextBox from "../atoms/TextBox";
@@ -36,27 +37,20 @@ import Naver from "../../assets/NaverSocial.png";
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const loginVariants = {
-    inital: {
-      y: 0,
-    },
-    target: {
-      y: -10,
-    },
-  };
+  const { token, setInfoUpdate, setToken } = useUserStore(); // store
+  const navigate = useNavigate();
 
   interface LoginInfo {
-    email: string;
+    username: string;
     password: string;
   }
 
+  // 소셜 로그인
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
 
   const code = searchParams.get("code");
   const stateCode = searchParams.get("state");
-  console.log("check" + code);
-  console.log("state:" + stateCode);
 
   if (stateCode === "1234") {
     const formData: FormData = new FormData();
@@ -79,22 +73,30 @@ const LoginPage: React.FC = () => {
       .catch((error) => console.log("전송 실패", error));
   }
 
+  // 일반 로그인함수
   const handleLogIn = (e: any): void => {
     e.preventDefault();
     const payload: LoginInfo = {
-      email: email,
+      username: email,
       password: password,
     };
-    console.log(`payload = ${payload}`);
-    console.log(`email = ${payload["email"]}`);
     axios({
       method: "POST",
-      url: "http://127.0.0.1:8080/user/login/",
+      url: `${process.env.REACT_APP_BACKEND_URL}/users/login`,
       data: payload,
     })
-      .then((response) => console.log(response.data, "성공적으로 전송됨"))
+      .then((response) => {
+        console.log(response, "response입니다.");
+        console.log(response.config.data, "성공적으로 전송됨");
+        console.log(response.headers);
+        setInfoUpdate(response.data.data);
+        setToken(response.headers.authorization);
+        navigate("../../");
+      })
       .catch((error) => console.log("전송 실패", error));
   };
+
+  // 네이버 로그인 함수
   const handleNaverLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_NAVER;
     const redirectUri = encodeURIComponent(
@@ -105,6 +107,7 @@ const LoginPage: React.FC = () => {
     window.open(naverLoginUri, "_blank", "width=600,height=600");
   };
 
+  // 구글 로그인 함수
   const handleGoogleLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_GOOGLE;
     const redirectUri = encodeURIComponent(
@@ -114,6 +117,7 @@ const LoginPage: React.FC = () => {
     window.open(googleLoginUri, "_blank", "width=600,height=600");
   };
 
+  // 카카오 로그인 함수
   const handleKakaotalkLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_KAKAOTALK;
     const redirectUri = encodeURIComponent(
