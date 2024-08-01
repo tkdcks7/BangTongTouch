@@ -8,6 +8,7 @@ import com.jisang.bangtong.dto.user.RegisterRequestDto;
 import com.jisang.bangtong.dto.user.UserDto;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.service.user.UserService;
+import com.jisang.bangtong.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class UserController {
 
+  private final JwtUtil jwtUtil;
   private UserService userService;
   private PasswordEncoder passwordEncoder;
 
@@ -42,8 +44,8 @@ public class UserController {
 
   //  회원탈퇴
   @DeleteMapping("/delete")
-  public ResponseDto<Void> delete() {
-    Long userId = 1L;
+  public ResponseDto<Void> delete(HttpServletRequest request) {
+    Long userId = jwtUtil.getUserIdFromToken(jwtUtil.getAccessToken(request));
     String message = userService.delete(userId);
 
     return ResponseDto.res(message);

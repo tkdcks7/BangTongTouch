@@ -1,4 +1,5 @@
 package com.jisang.bangtong.service.common;
+
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
@@ -39,30 +40,31 @@ public class FileServiceImpl implements FileService {
   private final AmazonS3 amazonS3;
   private final FileRepository fileRepository;
 
-  public List<Media> upload(List<MultipartFile> files) throws IOException{
+  public List<Media> upload(List<MultipartFile> files) throws IOException {
     log.info("file upload service 실행 {}", bucket);
 
     List<Media> list = new ArrayList<>();
 
-      files.forEach(file -> {
-        String fileName = makeFileName(file);
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(file.getContentType());
-        try(InputStream inputStream = file.getInputStream()){
-          amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata));
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-        Media media = new Media();
-        media.setMediaPath(fileName);
-        media = fileRepository.save(media);
-        //log.info("media info {}", media);
-        list.add(media);
-      });
-      return list;
+    files.forEach(file -> {
+      String fileName = makeFileName(file);
+      ObjectMetadata objectMetadata = new ObjectMetadata();
+      objectMetadata.setContentType(file.getContentType());
+      try (InputStream inputStream = file.getInputStream()) {
+        amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata));
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      Media media = new Media();
+      media.setMediaPath(fileName);
+      media = fileRepository.save(media);
+      //log.info("media info {}", media);
+      list.add(media);
+    });
+    return list;
 
   }
-  private String makeFileName(MultipartFile multipartFile){
+
+  private String makeFileName(MultipartFile multipartFile) {
     String originalName = multipartFile.getOriginalFilename();
     final String ext = originalName.substring(originalName.lastIndexOf("."));
     final String fileName = UUID.randomUUID().toString() + ext;
