@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 
 // 컴포넌트
 import TextBox from "../atoms/TextBox";
-import FilterBox from "../organism/FilterBox";
 
 const ProductPage: React.FC = () => {
   return (
@@ -17,12 +16,7 @@ const ProductPage: React.FC = () => {
           weight="bold"
         />
       </Link>
-      <div className="flex items-center justify-center">
-        <div className="hidden md:block">
-          <FilterBox />
-        </div>
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 };

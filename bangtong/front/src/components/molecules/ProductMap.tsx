@@ -33,7 +33,14 @@ const ProductMap: React.FC<MapProps> = ({ height }) => {
   return (
     <div>
       {positionLoaded ? (
-        <SearchMap basePos={basePosition} flag={false} height="100vh" />
+        <div>
+          <div className="lg:hidden">
+            <SearchMap basePos={basePosition} flag={false} height="60vh" />
+          </div>
+          <div className="hidden lg:block">
+            <SearchMap basePos={basePosition} flag={false} height="110vh" />
+          </div>
+        </div>
       ) : null}
     </div>
   );

@@ -13,7 +13,7 @@ const ProfileMain: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className="w-full">
       <h2 className="w-full text-xl text-left mt-5 text-lime-500 font-bold">
         나의 거래
       </h2>
