@@ -36,6 +36,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     User user = userRepository.findByUserEmail(email).orElse(null);
     String accessToken = jwtUtil.generateAccessToken(user, authorities, new Date());
+    String refreshToken = jwtUtil.generateRefreshToken(user, authorities, new Date());
+
+    user.setUserRefreshToken(refreshToken);
+    userRepository.saveAndFlush(user);
+
     String targetUrl = UriComponentsBuilder.fromUriString("/")
         .queryParam("access_token", accessToken).build().toUriString();
 
