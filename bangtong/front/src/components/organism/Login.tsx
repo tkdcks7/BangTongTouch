@@ -166,7 +166,7 @@ const LoginPage: React.FC = () => {
         <div className="flex justify-center mt-20">
           <Btn
             text="로그인"
-            backgroundColor="lime-500"
+            backgroundColor="bg-lime-500"
             textColor="white"
             onClick={handleLogIn}
           />

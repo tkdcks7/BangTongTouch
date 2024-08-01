@@ -33,7 +33,7 @@ const Btn: React.FC<PropsWithChildren<IButtonProps>> = ({
 }) => {
   return (
     <button
-      className={`text-center font-bold tracking-wider shadow ${width} ${height} bg-${backgroundColor} ${borderColor} rounded-${borderRadius} ${hoverBackgroundColor} ${hoverTextColor} text-${textColor} ${textSize}`}
+      className={`text-center font-bold tracking-wider shadow ${width} ${height} ${backgroundColor} ${borderColor} rounded-${borderRadius} ${hoverBackgroundColor} ${hoverTextColor} text-${textColor} ${textSize}`}
       {...props}
       onClick={onClick}
     >

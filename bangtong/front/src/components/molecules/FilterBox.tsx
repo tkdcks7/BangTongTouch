@@ -11,11 +11,6 @@ import { ConfigProvider, Modal } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { MapPinIcon } from "@heroicons/react/20/solid";
 
-interface DateValue {
-  startDate: string | null;
-  endDate: string | null;
-}
-
 const FilterBox: React.FC = () => {
   const [location, setLocation] = useState({ regionId: "", regionSido: "" });
   const [open, setOpen] = useState(false); // 지역 선택 모달
@@ -23,10 +18,6 @@ const FilterBox: React.FC = () => {
   const [regions, setRegions] = useState([]);
   const [rentalCost, setRentalCost] = useState([0, 0]); // 월세
   const [depositCost, setDepositCost] = useState([0, 0]); // 보증금
-  const [date, setDate] = useState<DateValue>({
-    startDate: null,
-    endDate: null,
-  });
 
   const showRegionModal = () => {
     setOpen(true);
@@ -64,24 +55,6 @@ const FilterBox: React.FC = () => {
 
   const handleDepositChange = (newData: number[]) => {
     setDepositCost(newData);
-  };
-
-  const handleDateChange = (
-    newValue: DateValueType | null,
-    e?: HTMLInputElement | null
-  ) => {
-    if (newValue) {
-      console.log("newValue:", newValue);
-      setDate({
-        startDate: newValue.startDate ? newValue.startDate.toString() : null,
-        endDate: newValue.endDate ? newValue.endDate.toString() : null,
-      });
-    } else {
-      setDate({
-        startDate: null,
-        endDate: null,
-      });
-    }
   };
 
   const homeCategory: string[] = [
@@ -176,16 +149,6 @@ const FilterBox: React.FC = () => {
         max={300}
         onDataChange={handleRentChange}
       />
-      <div className="mt-7 text-lime-600 font-bold">
-        <p>주거 희망 기간</p>
-        <div className="mt-3 border">
-          <Datepicker
-            value={date}
-            onChange={handleDateChange}
-            showShortcuts={true}
-          />
-        </div>
-      </div>
       <BtnGroup title="집 유형" itemsArray={homeCategory} />
       <BtnGroup title="편의시설" itemsArray={facilities} />
       <BtnGroup title="지원 여부" itemsArray={supportMenu} />

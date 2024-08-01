@@ -28,7 +28,11 @@ const PwFindPage: React.FC = () => {
           width={"70vw"}
         />
         <div className="flex justify-center mt-10">
-          <Btn text="인증하기" backgroundColor="yellow-300" textColor="white" />
+          <Btn
+            text="인증하기"
+            backgroundColor="bg-yellow-300"
+            textColor="white"
+          />
         </div>
       </div>
     </div>

@@ -109,16 +109,22 @@ const PcNavBar: React.FC = () => {
             />
           ) : (
             <>
-              <Btn
-                text="로그인"
-                backgroundColor="bg-lime-500"
-                onClick={handleLogInBtnClick}
-              />
-              <Btn
-                text="회원가입"
-                backgroundColor="bg-yellow-300"
-                onClick={() => navigate("")}
-              />
+              <div className="flex">
+                <div className="me-3">
+                  <Btn
+                    text="로그인"
+                    backgroundColor="bg-lime-500"
+                    onClick={handleLogInBtnClick}
+                  />
+                </div>
+                <div>
+                  <Btn
+                    text="회원가입"
+                    backgroundColor="bg-yellow-300"
+                    onClick={() => navigate("")}
+                  />
+                </div>
+              </div>
             </>
           )}
         </div>

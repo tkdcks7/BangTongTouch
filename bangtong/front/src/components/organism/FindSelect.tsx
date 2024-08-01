@@ -84,7 +84,7 @@ const FindSelectPage: React.FC = () => {
       <div className="flex justify-center mt-5">
         <Btn
           text="아이디 찾기"
-          backgroundColor="lime-500"
+          backgroundColor="bg-lime-500"
           textColor="white"
           onClick={handleIdFindBtnClick}
         />
@@ -107,7 +107,7 @@ const FindSelectPage: React.FC = () => {
         {/* input send가 안돼서 임시로 넣음. 구현되면 제거할 것 */}
         <Btn
           text="전송"
-          backgroundColor="lime-500"
+          backgroundColor="bg-lime-500"
           textColor="white"
           width="w-24"
           height="h-12"
@@ -125,7 +125,7 @@ const FindSelectPage: React.FC = () => {
       <div className="flex justify-center mt-5">
         <Btn
           text="비밀번호 찾기"
-          backgroundColor="yellow-300"
+          backgroundColor="bg-yellow-300"
           textColor="white"
           onClick={handlePwFindBtnClick}
         />
@@ -148,7 +148,7 @@ const FindSelectPage: React.FC = () => {
         {/* input send가 안돼서 임시로 넣음. 구현되면 제거할 것 */}
         <Btn
           text="전송"
-          backgroundColor="lime-500"
+          backgroundColor="bg-lime-500"
           textColor="white"
           width="w-24"
           height="h-12"
@@ -168,7 +168,7 @@ const FindSelectPage: React.FC = () => {
         {/* input send가 안돼서 임시로 넣음. 구현되면 제거할 것 */}
         <Btn
           text="인증번호 전송"
-          backgroundColor="lime-500"
+          backgroundColor="bg-lime-500"
           textColor="white"
           width="w-24"
           height="h-12"

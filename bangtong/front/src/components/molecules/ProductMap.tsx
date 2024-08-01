@@ -38,7 +38,7 @@ const ProductMap: React.FC<MapProps> = ({ height }) => {
             <SearchMap basePos={basePosition} flag={false} height="60vh" />
           </div>
           <div className="hidden lg:block">
-            <SearchMap basePos={basePosition} flag={false} height="100vh" />
+            <SearchMap basePos={basePosition} flag={false} height="110vh" />
           </div>
         </div>
       ) : null}

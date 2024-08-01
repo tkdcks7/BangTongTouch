@@ -363,7 +363,7 @@ const ProductUpload: React.FC = () => {
         <div className="text-center mt-5">
           <Btn
             text="등록하기"
-            backgroundColor="yellow-300"
+            backgroundColor="bg-yellow-300"
             height="h-10"
             onClick={handleUploadClick}
           />

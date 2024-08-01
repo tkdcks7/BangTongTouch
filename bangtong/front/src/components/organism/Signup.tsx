@@ -253,7 +253,7 @@ const SignupPage: React.FC = () => {
         <div className="flex justify-center mt-10">
           <Btn
             text="다음"
-            backgroundColor="lime-500"
+            backgroundColor="bg-lime-500"
             textColor="white"
             onClick={handleSignUp}
           />
