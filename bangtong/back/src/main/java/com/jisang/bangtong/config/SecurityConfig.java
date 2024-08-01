@@ -1,12 +1,10 @@
 package com.jisang.bangtong.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
-import com.jisang.bangtong.handler.OAuth2SuccessHandler;
 import com.jisang.bangtong.exceptionhandling.BasicAuthenticationEntryPoint;
 import com.jisang.bangtong.exceptionhandling.CustomAccessDeniedHandler;
 import com.jisang.bangtong.filter.CsrfCookieFilter;
 import com.jisang.bangtong.filter.JwtTokenValidatorFilter;
+import com.jisang.bangtong.handler.OAuth2SuccessHandler;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.user.OAuth2UserServiceImpl;
 import com.jisang.bangtong.util.JwtUtil;
@@ -17,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -57,7 +56,8 @@ public class SecurityConfig {
           config.setMaxAge(3600L);
 
           return config;
-        })).csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+        }))
+        .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
             .ignoringRequestMatchers(
                 //    "/users/register", "/users/login"
                 "/**"
@@ -68,7 +68,9 @@ public class SecurityConfig {
             BasicAuthenticationFilter.class)
         .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
         .authorizeHttpRequests(
-            (requests) -> requests.anyRequest().permitAll()).formLogin(withDefaults())
+            (requests) -> requests.requestMatchers("/comments/**").authenticated()
+                .anyRequest().permitAll())
+        .formLogin(Customizer.withDefaults())
         .oauth2Login(
             oauth -> oauth
                 .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))

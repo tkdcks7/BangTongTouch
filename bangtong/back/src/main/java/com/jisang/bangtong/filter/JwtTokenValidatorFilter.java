@@ -4,7 +4,6 @@ import com.jisang.bangtong.constants.SecurityConstants;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.util.JwtUtil;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,22 +37,23 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
       String token = header.substring(7);
 
       try {
-        Claims claims = jwtUtil.parseToken(token);
+        String email = jwtUtil.getUserEmailFromToken(token);
+        String nickname = jwtUtil.getUserNicknameFromToken(token);
+        String authorities = jwtUtil.parseToken(token).get("authorities").toString();
 
-        String username = String.valueOf(claims.get("username"));
-        String authorities = String.valueOf(claims.get("authorities"));
-
-        User user = userRepository.findByUserEmail(username).orElse(null);
+        User user = userRepository.findByUserEmail(email).orElse(null);
 
         if (user == null) {
+          log.error("user not found");
           throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
         }
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null,
+        Authentication authentication = new UsernamePasswordAuthenticationToken(email, null,
             AuthorityUtils.commaSeparatedStringToAuthorityList(authorities));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
       } catch (Exception e) {
+        log.error(e.getMessage());
         throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
       }
     }
