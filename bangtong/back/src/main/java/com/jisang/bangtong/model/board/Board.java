@@ -61,4 +61,20 @@ public class Board {
   @JoinColumn(name="user_id", foreignKey = @ForeignKey(name= "fk_board_user"))
   @JsonManagedReference
   private User boardWriter;
+
+  @Override
+  public String toString() {
+    return "Board{" +
+        "boardId=" + boardId +
+        ", boardTitle='" + boardTitle + '\'' +
+        //", boardContent='" + boardContent + '\'' +
+        ", boardDate=" + boardDate +
+        ", boardIsBanned=" + boardIsBanned +
+        ", boardIsDelete=" + boardIsDelete +
+        ", boardHit=" + boardHit +
+        ", boardScore=" + boardScore +
+        ", boardRegion=" + boardRegion +
+        ", boardWriter=" + boardWriter +
+        '}';
+  }
 }

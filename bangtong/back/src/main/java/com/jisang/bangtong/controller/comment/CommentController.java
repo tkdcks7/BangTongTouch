@@ -64,7 +64,7 @@ public class CommentController {
   @GetMapping("/{boardId}")
   public ResponseDto<List<IComment>> getComments(@PathVariable long boardId) {
     List<IComment> dtos = commentService.getComments(boardId);
-    log.info("getComments {}", dtos);
+    //log.info("getComments {}", dtos);
     return ResponseDto.res(SUCCESS, dtos);
   }
 
