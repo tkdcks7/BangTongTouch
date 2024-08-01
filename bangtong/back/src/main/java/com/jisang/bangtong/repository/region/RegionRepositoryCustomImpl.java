@@ -24,7 +24,7 @@ public class RegionRepositoryCustomImpl implements RegionRepositoryCustom {
 
     return queryFactory
         .select(Projections.constructor(RegionSidoDto.class,
-            qRegion.regionId.substring(1, 2).as("regionId"),
+            qRegion.regionId.substring(0, 2).as("regionId"),
             qRegion.regionSido))
         .from(qRegion)
         .groupBy(qRegion.regionId.substring(0, 2))
@@ -36,11 +36,11 @@ public class RegionRepositoryCustomImpl implements RegionRepositoryCustom {
   public List<RegionGugunDto> searchGugun(String sido) {
     List<RegionGugunDto> results = queryFactory
         .select(Projections.constructor(RegionGugunDto.class,
-            region.regionId.substring(0, 5).as("regionId"), region.regionGugun))
+            region.regionId.substring(0, 4).as("regionId"), region.regionGugun))
         .from(region)
-        .where(region.regionId.substring(1, 2).eq(sido)
-            .and(region.regionId.substring(3, 3).ne("000")))
-        .groupBy(region.regionId.substring(1, 5), region.regionGugun)
+        .where(region.regionId.substring(0, 2).eq(sido)
+            .and(region.regionId.substring(2, 4).ne("00")))
+        .groupBy(region.regionId.substring(0, 4), region.regionGugun)
         .distinct()
         .fetch();
 
@@ -53,9 +53,9 @@ public class RegionRepositoryCustomImpl implements RegionRepositoryCustom {
         .select(Projections.constructor(RegionDongDto.class, region.regionId.as("regionId"),
             region.regionDong))
         .from(region)
-        .where(region.regionId.substring(0, 5).eq(gugun)
-            .and(region.regionId.substring(6, 3).ne("000")))
-        .groupBy(region.regionId.substring(1, 9), region.regionDong)
+        .where(region.regionId.substring(0, 4).eq(gugun)
+            .and(region.regionId.substring(4).ne("000")))
+        .groupBy(region.regionId.substring(0), region.regionDong)
         .distinct()
         .fetch();
     return results;
