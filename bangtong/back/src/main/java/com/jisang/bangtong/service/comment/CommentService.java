@@ -50,19 +50,26 @@ public class CommentService {
     if(!isValidBoard(boardId)){
       throw new NotFoundException("해당 게시글이 없습니다");
     }
-//    String token = jwtUtil.getAccessToken(request);
-//    Long userId = jwtUtil.getUserIdFromToken(token);
-    User writer = userRepository.findById(1L).orElse(null);
+    String token = jwtUtil.getAccessToken(request);
+    Long userId = jwtUtil.getUserIdFromToken(token);
+    User writer = userRepository.findById(userId).orElse(null);
+    Board boardFrom = boardRepository.findById(boardId).orElse(null);
     if(!isValidUser(writer)){
       throw new NotFoundException("작성자를 찾을 수 없습니다.");
     }
-
+    log.info("write : {}", writer);
     Comment comment = Comment.builder()
               .commentUser(writer)
-                  .commentContent(commentDto.getContent()).build();
+                  .commentContent(commentDto.getContent())
+        .board(boardFrom).build();
 
-    Comment parentComment= commentRepository.findById(commentPid).orElse(null);
-    comment.setCommentParent(parentComment);
+
+    if(commentPid != null) {
+      Comment parentComment = commentRepository.findById(commentPid).orElse(null);
+      comment.setCommentParent(parentComment);
+    }else{
+      comment.setCommentParent(null);
+    }
 
     commentRepository.save(comment);
   }
@@ -169,7 +176,7 @@ public class CommentService {
   private IUser getuserCommentReturnDto(User user){
     return IUser.builder()
         .userId(user.getUserId())
-        .isBanned(user.getUserIsBanned())
+        .isBanned(user.isUserIsBanned())
         .nickname(user.getUserNickname())
         .build();
   }

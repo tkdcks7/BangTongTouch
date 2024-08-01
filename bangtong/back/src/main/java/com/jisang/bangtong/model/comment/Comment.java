@@ -43,8 +43,7 @@ public class Comment {
 
   @ManyToOne
   @JoinColumn(name = "boardId", foreignKey = @ForeignKey(name = "fk_comment_board"))
-  @JsonIgnore
-  @JsonBackReference
+  @JsonManagedReference
   private Board board;
 
   @Column(nullable = false, length = 1024)
