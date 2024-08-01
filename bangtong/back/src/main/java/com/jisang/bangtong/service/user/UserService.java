@@ -56,12 +56,11 @@ public class UserService {
       String email = authenticationResponse.getName();
       User user = userRepository.findByUserEmail(email).orElse(null);
 
-      accessToken = jwtUtil.generateAccessToken(user.getUserId(), user.getUserEmail(),
-          user.getUserNickname(), currentDate);
-      String refreshToken = jwtUtil.generateRefreshToken(user.getUserId(), user.getUserEmail(),
-          user.getUserNickname(),
-          currentDate);
+      accessToken = jwtUtil.generateAccessToken(user, authenticationResponse, currentDate);
+      String refreshToken = jwtUtil.generateRefreshToken(user, authenticationResponse, currentDate);
     }
+
+    log.info("accessToken: {}", accessToken);
 
     return accessToken;
   }
