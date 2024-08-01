@@ -28,7 +28,7 @@ const ProfilePage: React.FC = () => {
         </div>
       ) : (
         <div>
-          <h1 className="text-3xl text-red-400 font-bold my-40">
+          <h1 className="text-2xl md:text-3xl text-red-500 text-center font-bold my-40">
             로그인 후 이용가능합니다.
           </h1>
         </div>

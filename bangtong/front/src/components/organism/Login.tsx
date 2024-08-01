@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 // 컴포넌트 불러오기
 import TextBox from "../atoms/TextBox";
@@ -35,6 +36,14 @@ import Naver from "../../assets/NaverSocial.png";
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const loginVariants = {
+    inital: {
+      y: 0,
+    },
+    target: {
+      y: -10,
+    },
+  };
 
   interface LoginInfo {
     email: string;
@@ -114,17 +123,16 @@ const LoginPage: React.FC = () => {
     window.open(kakaotalkLoginUri, "_blank", "width=600,height=600");
   };
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center">
-      <div className="font-bold m-6">
-        <TextBox text="로그인" size="3xl" />
+    <>
+      <div className="font-bold m-6 text-center">
+        <TextBox text="로그인" size="2xl" />
       </div>
-      <form className="mb-20 md:w-2/5">
+      <form>
         <InputBox
           placeholder="이메일 (아이디)"
           buttonType="cancel"
           size="large"
           type="email"
-          width={"70vw"}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -133,17 +141,12 @@ const LoginPage: React.FC = () => {
           buttonType="cancel"
           size="large"
           type="password"
-          width={"70vw"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <div className="flex justify-between text-sm text-lime-500">
-          <Link to="/user/FindSelectPage">
-            <TextBox text="아이디/비밀번호 찾기" color="lime-500" />
-          </Link>
-          <Link to="/user/register">
-            <TextBox text="회원가입" color="lime-500" />
-          </Link>
+        <div className="flex justify-between text-sm md:text-base text-lime-500 mt-3">
+          <Link to="/user/FindSelectPage">아이디/비밀번호 찾기</Link>
+          <Link to="/user/register">회원가입</Link>
         </div>
         <div className="flex justify-center mt-3">
           <div className="mx-2">
@@ -165,7 +168,7 @@ const LoginPage: React.FC = () => {
           />
         </div>
       </form>
-    </div>
+    </>
   );
 };
 

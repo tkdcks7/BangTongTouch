@@ -2,10 +2,11 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 
-// 로그인, 회원가입
-import LoginPage from "./components/page/LoginPage"; // 로그인
-import SignupPage from "./components/page/SignupPage"; // 회원가입
-import FindSelectPage from "./components/page/FindSelectPage"; // 아이디, 비밀번호 찾기
+// 유저 페이지 (로그인, 회원가입 등)
+import UserPage from "./components/page/UserPage";
+import Login from "./components/organism/Login"; // 로그인
+import Signup from "./components/organism/Signup"; // 회원가입
+import FindSelect from "./components/organism/FindSelect"; // 아이디, 비밀번호 찾기
 
 // 메인
 import MainPage from "./components/page/MainPage"; // 메인 페이지
@@ -42,9 +43,11 @@ const Router: React.FC = () => {
     <BrowserRouter>
       <Routes>
         {/* 로그인, 회원가입, 아이디, 비밀번호 찾기 네비게이션바 X */}
-        <Route path="/user/login" element={<LoginPage />} />
-        <Route path="/user/register" element={<SignupPage />} />
-        <Route path="/user/FindSelectPage" element={<FindSelectPage />} />
+        <Route path="user" element={<UserPage />}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Signup />} />
+          <Route path="FindSelectPage" element={<FindSelect />} />
+        </Route>
 
         {/* 네비게이션바가 있는 페이지의 최상단 */}
         <Route path="/" element={<Layout />}>

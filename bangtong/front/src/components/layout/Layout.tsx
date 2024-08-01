@@ -10,17 +10,16 @@ import { Outlet } from "react-router-dom";
 
 const Layout: React.FC = () => {
   return (
-    <div className="flex-row items-center justify-center">
+    <div className="flex flex-col min-h-screen">
       <div className="md:hidden">
         <MMenuBar />
       </div>
       <div className="hidden md:block">
         <PcNavBar />
       </div>
-      <div className="flex flex-col items-center mx-10 mb-10 ">
+      <div className="flex flex-1 flex-col items-center mx-10 mb-10">
         <Outlet />
       </div>
-      <div className="h-20" />
       <div className="md:hidden">
         <MNavBar />
       </div>

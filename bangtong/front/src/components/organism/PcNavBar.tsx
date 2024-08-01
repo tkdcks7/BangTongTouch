@@ -46,9 +46,9 @@ const PcNavBar: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-between w-full bg-white p-5 mb-10">
+    <div className="flex justify-between items-center w-full bg-white p-5 mb-10">
       <Link to="/" className="text-start">
-        <img src={Logo} alt="로고" width={150} />
+        <img src={Logo} alt="로고" className="w-40" />
       </Link>
       <div className="flex items-center justify-between">
         <NavLink

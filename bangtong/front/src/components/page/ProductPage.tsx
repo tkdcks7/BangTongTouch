@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 
 // 컴포넌트
 import TextBox from "../atoms/TextBox";
-import FilterBox from "../organism/FilterBox";
 
 const ProductPage: React.FC = () => {
   return (

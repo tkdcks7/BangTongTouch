@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 // 컴포넌트 불러오기
@@ -77,8 +77,8 @@ const FindSelectPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
-      <div className="text-3xl font-bold m-6">
+    <>
+      <div className="text-3xl text-center font-bold m-6">
         <TextBox text="아이디/비밀번호 찾기" size="2xl" />
       </div>
       <div className="flex justify-center mt-5">
@@ -175,7 +175,11 @@ const FindSelectPage: React.FC = () => {
           onClick={verifyAuthHandler}
         />
       </div>
-    </div>
+
+      <div className="text-lime-500 text-sm md:text-base mt-3 text-center">
+        <Link to={"/user/login"}>로그인 화면으로</Link>
+      </div>
+    </>
   );
 };
 
