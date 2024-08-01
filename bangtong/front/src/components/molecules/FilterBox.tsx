@@ -4,19 +4,31 @@ import axios from "axios";
 // 컴포넌트
 import TextBtn from "../atoms/TextBtn";
 import BtnGroup from "../molecules/BtnGroup";
-import { Modal } from "antd";
+import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
+import { ConfigProvider, Modal } from "antd";
 
 // 이모티콘
 import { SearchOutlined } from "@ant-design/icons";
 import { MapPinIcon } from "@heroicons/react/20/solid";
 
+interface DateValue {
+  startDate: string | null;
+  endDate: string | null;
+}
+
 const FilterBox: React.FC = () => {
   const [location, setLocation] = useState({ regionId: "", regionSido: "" });
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); // 지역 선택 모달
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [regions, setRegions] = useState([]);
+  const [rentalCost, setRentalCost] = useState([0, 0]); // 월세
+  const [depositCost, setDepositCost] = useState([0, 0]); // 보증금
+  const [date, setDate] = useState<DateValue>({
+    startDate: null,
+    endDate: null,
+  });
 
-  const showModal = () => {
+  const showRegionModal = () => {
     setOpen(true);
 
     axios({
@@ -46,7 +58,33 @@ const FilterBox: React.FC = () => {
     setLocation(region);
   };
 
-  const homeCategory: Array<string> = [
+  const handleRentChange = (newData: number[]) => {
+    setRentalCost(newData);
+  };
+
+  const handleDepositChange = (newData: number[]) => {
+    setDepositCost(newData);
+  };
+
+  const handleDateChange = (
+    newValue: DateValueType | null,
+    e?: HTMLInputElement | null
+  ) => {
+    if (newValue) {
+      console.log("newValue:", newValue);
+      setDate({
+        startDate: newValue.startDate ? newValue.startDate.toString() : null,
+        endDate: newValue.endDate ? newValue.endDate.toString() : null,
+      });
+    } else {
+      setDate({
+        startDate: null,
+        endDate: null,
+      });
+    }
+  };
+
+  const homeCategory: string[] = [
     "원룸",
     "투룸+",
     "오피스텔",
@@ -54,7 +92,7 @@ const FilterBox: React.FC = () => {
     "아파트",
   ];
 
-  const facilities: Array<string> = [
+  const facilities: string[] = [
     "경찰서",
     "마트",
     "버스 정류장",
@@ -65,13 +103,22 @@ const FilterBox: React.FC = () => {
     "편의점",
   ];
 
-  const supportMenu: Array<string> = ["월세 지원", "가구도 승계"];
+  const supportMenu: string[] = ["월세 지원", "가구도 승계"];
+
+  // ant design 글로벌 디자인 토큰
+  const theme = {
+    token: {
+      colorBgTextHover: "#E9FFE7",
+      colorPrimary: "#129B07",
+      colorPrimaryBorder: "#129B07",
+    },
+  };
 
   return (
     <div className="w-80 px-5 py-10 border border-2 rounded-xl mr-5 shadow-md">
       <button
         className="w-full bg-lime-500 text-white p-2 rounded-full"
-        onClick={showModal}
+        onClick={showRegionModal}
       >
         {location.regionId ? (
           location.regionSido
@@ -82,26 +129,63 @@ const FilterBox: React.FC = () => {
           </div>
         )}
       </button>
-      <Modal
-        title="지역을 선택해주세요."
-        open={open}
-        onOk={handleOk}
-        confirmLoading={confirmLoading}
-        onCancel={handleCancel}
-      >
-        <div className="p-2 text-center">
-          {regions.map((region: { regionId: string; regionSido: string }) => (
-            <button
-              className={`p-2 border rounded-full m-1 ${location && location.regionSido === region.regionSido ? "border-lime-500 text-lime-500" : "border-gray-400 text-gray-400 hover:border-lime-500 hover:text-lime-500"}`}
-              onClick={() => handleBtnClick(region)}
-            >
-              {region.regionSido}
-            </button>
-          ))}
+      <ConfigProvider theme={theme}>
+        <Modal
+          title="지역을 선택해주세요."
+          open={open}
+          onOk={handleOk}
+          confirmLoading={confirmLoading}
+          onCancel={handleCancel}
+        >
+          <div className="p-2 text-center">
+            {regions.map((region: { regionId: string; regionSido: string }) => (
+              <button
+                key={region.regionId}
+                className={`p-2 border rounded-full m-1 ${
+                  location && location.regionSido === region.regionSido
+                    ? "border-lime-500 text-lime-500"
+                    : "border-gray-400 text-gray-400 hover:border-lime-500 hover:text-lime-500"
+                }`}
+                onClick={() => handleBtnClick(region)}
+              >
+                {region.regionSido}
+              </button>
+            ))}
+          </div>
+        </Modal>
+      </ConfigProvider>
+      <TextBtn
+        title="보증금"
+        text={
+          depositCost[0] || depositCost[1]
+            ? `${depositCost[0]}만~${depositCost[1]}만`
+            : "클릭하여 가격 설정"
+        }
+        min={0}
+        max={3000}
+        onDataChange={handleDepositChange}
+      />
+      <TextBtn
+        title="월세 (관리비 포함)"
+        text={
+          rentalCost[0] || rentalCost[1]
+            ? `${rentalCost[0]}만~${rentalCost[1]}만`
+            : "클릭하여 가격 설정"
+        }
+        min={0}
+        max={300}
+        onDataChange={handleRentChange}
+      />
+      <div className="mt-7 text-lime-600 font-bold">
+        <p>주거 희망 기간</p>
+        <div className="mt-3 border">
+          <Datepicker
+            value={date}
+            onChange={handleDateChange}
+            showShortcuts={true}
+          />
         </div>
-      </Modal>
-      <TextBtn title="보증금" text="100만~300만" />
-      <TextBtn title="월세 (관리비 포함)" text="20만~50만" />
+      </div>
       <BtnGroup title="집 유형" itemsArray={homeCategory} />
       <BtnGroup title="편의시설" itemsArray={facilities} />
       <BtnGroup title="지원 여부" itemsArray={supportMenu} />

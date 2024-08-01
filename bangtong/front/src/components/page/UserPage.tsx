@@ -25,7 +25,24 @@ const UserPage: React.FC = () => {
         </Link>
         <p className="text-lg">원룸 승계 중개 서비스</p>
       </div>
-      <div className="h-mvh px-10 flex items-center justify-center">
+      <motion.div
+        variants={{
+          initial: {
+            y: 0,
+          },
+          target: {
+            y: -20,
+          },
+        }}
+        initial="inital"
+        animate="target"
+        transition={{
+          ease: "easeInOut",
+          duration: 0.7,
+          repeatDelay: 3,
+        }}
+        className="h-mvh px-10 flex items-center justify-center"
+      >
         <div className="mr-20 lg:mr-40 hidden md:block w-96">
           <p className="text-xl lg:text-2xl font-bold mb-2 text-center text-nowrap">
             당신의 스마트한 승계를 돕습니다.
@@ -51,7 +68,7 @@ const UserPage: React.FC = () => {
             <Outlet />
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 };

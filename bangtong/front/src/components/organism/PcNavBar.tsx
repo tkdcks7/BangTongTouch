@@ -46,7 +46,7 @@ const PcNavBar: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-between items-center w-full bg-white p-5 mb-10">
+    <header className="flex justify-between items-center w-full bg-white p-5 mb-10">
       <Link to="/" className="text-start">
         <img src={Logo} alt="로고" className="w-40" />
       </Link>
@@ -118,7 +118,7 @@ const PcNavBar: React.FC = () => {
           )}
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 

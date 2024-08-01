@@ -11,7 +11,7 @@ export const getUserAddressKr = (): Promise<Array<string>> => {
             "X-NCP-APIGW-API-KEY":
               process.env.REACT_APP_CLIENT_SECRET_NAVER_MAP,
           },
-          url: `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=${position.coords.longitude},${position.coords.latitude}&orders=admcode&output=json`,
+          url: `/map-reversegeocode/v2/gc?coords=${position.coords.longitude},${position.coords.latitude}&orders=admcode&output=json`,
         })
           .then((response) => {
             const address: Array<string> = [];
