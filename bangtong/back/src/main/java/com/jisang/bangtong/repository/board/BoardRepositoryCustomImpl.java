@@ -1,6 +1,8 @@
 package com.jisang.bangtong.repository.board;
 
+import com.jisang.bangtong.dto.board.BoardReturnDto;
 import com.jisang.bangtong.dto.board.BoardSearchDto;
+import com.jisang.bangtong.dto.user.IUser;
 import com.jisang.bangtong.model.board.Board;
 import com.jisang.bangtong.model.board.QBoard;
 import com.jisang.bangtong.model.comment.Comment;
@@ -11,6 +13,7 @@ import com.jisang.bangtong.model.region.QRegion;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.model.user.QUser;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -33,7 +36,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
   }
 
   @Override
-  public Page<Board> getBoards(Pageable pageable, BoardSearchDto boardSearchDto){
+  public Page<BoardReturnDto> getBoards(Pageable pageable, BoardSearchDto boardSearchDto){
     QBoard board = QBoard.board;
     QRegion region = QRegion.region;
     QUser user = QUser.user;
@@ -42,21 +45,33 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
     builder.and(board.boardIsDelete.isFalse());
 
     if (boardSearchDto.getRegionId() != null) {
-      builder.and(region.regionId.substring(0, 8).eq(boardSearchDto.getRegionId()));
+      builder.and(region.regionId.eq(boardSearchDto.getRegionId()));
     }
 
     if (boardSearchDto.getKeyword() != null) {
       builder.and(board.boardTitle.contains(boardSearchDto.getKeyword()));
     }
 
-    JPQLQuery<Board> query = queryFactory
-        .selectFrom(board)
+    JPQLQuery<BoardReturnDto> query = queryFactory
+        .select(Projections.constructor(BoardReturnDto.class,
+            board.boardId,
+            board.boardTitle,
+            board.boardContent,
+            Projections.constructor(IUser.class,
+                user.userId,
+                user.userNickname,
+                user.userIsBanned
+            ), // IUser 생성자 제약조건
+            region, // Region도 추가
+            board.boardHit, // hit 필드 추가
+            board.boardDate // boardDate 필드 추가
+        ))
+        .from(board)
+        .leftJoin(board.boardWriter, user) // board.user와 사용자 연관관계 설정
         .leftJoin(board.boardRegion, region).on(board.boardRegion.regionId.eq(region.regionId))
-        .where(
-            builder
-        );
+        .where(builder);
     long total = query.fetchCount();
-    List<Board> contents = query
+    List<BoardReturnDto> contents = query
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
         .orderBy(board.boardDate.desc())
@@ -65,26 +80,9 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
   }
 
   @Override
-  public void writeBoard(Board board, String regionId) {
-    if (regionId == null) {
-      entityManager.persist(board);
-    } else {
-      QRegion qRegion = QRegion.region;
-
-      Region region = queryFactory
-          .selectFrom(qRegion)
-          .where(qRegion.regionId.eq(regionId))
-          .fetchOne();
-
-
-
-      if (region != null) {
-        board.setBoardRegion(region);
-      }
+  public void writeBoard(Board board) {
       entityManager.persist(board);
     }
-  }
-
   @Override
   @Transactional
   public void delete(long boardId) {
@@ -94,7 +92,5 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
         .where(board.boardId.eq(boardId))
         .execute();
   }
-
-
-
 }
+
