@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import { contents } from "../../data";
-import { resData } from "../../resData";
+import { redirect, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 // import { sanitize } from "dompurify";
 
@@ -12,176 +10,150 @@ import Comment from "../atoms/Comment";
 // Store
 import useUserStore from "../../store/userStore";
 
+interface IBoardContent {
+  boardId: number;
+  boardTitle: string;
+  boardContent: string;
+  boardDate: string;
+  boardWriter: string;
+}
+
+interface iUser {
+  id: number;
+  nickname: string;
+  isBanned: boolean;
+}
+
+interface iSubComment {
+  commentId: number;
+  iuser: iUser;
+  content: string;
+  commentDate: string;
+}
+
+interface IComment {
+  commentId: number;
+  iuser: iUser;
+  content: string;
+  commentDate: string;
+  subcomments?: Array<iSubComment>;
+}
+
 const CommunityDetail: React.FC = () => {
   let { id } = useParams<{ id: string }>(); // 게시물 번호
-
-  // id가 undefined인 경우 -> 이 경우가 나올 수 있는지 고민 필요
-  // if (id === undefined) {
-  //   return <p>잘못된 접근입니다.</p>;
-  // }
 
   const myId = useUserStore().id;
   const myNickname = useUserStore().nickname;
 
-  const boardInit = {
-    boardId: 1,
-    boardTitle: "타이틀",
-    boardContent: "asdfsadf",
-    boardDate: "2024-07-22 11:24:16.017",
-    boardIsBanned: false,
-    boardIsDelete: false,
-    boardHit: 0,
-    boardScore: 0,
-    boardRegion: null,
-    boardComment: [],
-    boardWriter: {
-      userId: 0,
-      userName: "초기닉",
-      userIsDeleted: false,
-      userIsBanned: false,
-    },
-  };
-
-  // 댓글 정보
-  // {
-  //   commentId: 3,
-  //   commentContent: "asdfasdfasdf",
-  //   commentUser: {
-  //     userId: 2,
-  //     userName: "일반",
-  //     userEmail: "user",
-  //     userPassword:
-  //       "$2a$10$HJFwab/8RwivR7Fr3Q4rM.J3eCZEPsxKijNqMpaV09zOA4eqEZPFe",
-  //     userBirthYear: 1998,
-  //     userPhone: "010",
-  //     userRegisterDate: "2024-07-19 13:41:35.067",
-  //     userNickname: "유저",
-  //     userGender: 1,
-  //     userSso: "GOOGLE",
-  //     userIsAdmin: false,
-  //     userIsDeleted: false,
-  //     userIsBanned: false,
-  //   },
-  // commentDate: "2024-07-22T11:26:25.397+00:00",
-  // commentIsDeleted: false,
-
-  const [board, setBoard] = useState(boardInit);
-  const [boardContent, setBoardContent] = useState<string>("");
-  const [comments, setComments] = useState<any[]>([]);
+  const [boardContent, setBoardContent] = useState<IBoardContent>();
+  const [comments, setComments] = useState<Array<IComment>>([]);
   const commentRef = useRef<string>("");
 
   // 시간 찍기 함수
-  const timeStamp = (): string => {
-    const date = new Date();
-    const year = String(date.getFullYear());
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
+  // const timeStamp = (): string => {
+  //   const date = new Date();
+  //   const year = String(date.getFullYear());
+  //   const month = String(date.getMonth() + 1).padStart(2, "0");
+  //   const day = String(date.getDate()).padStart(2, "0");
+  //   const hours = String(date.getHours()).padStart(2, "0");
+  //   const minutes = String(date.getMinutes()).padStart(2, "0");
+  //   const seconds = String(date.getSeconds()).padStart(2, "0");
 
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  };
+  //   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  // };
 
   // 댓글을 받아오는 함수
-  const handleCommentGet = (id: number) => {
+  const handleCommentGet = () => {
     axios({
-      method: "POST",
+      method: "GET",
       url: `${process.env.REACT_APP_BACKEND_URL}/comments/${id}`,
       headers: {},
-    }).then((response) => setComments([...response.data.comment]));
+    }).then((response) => {
+      setComments(response.data.data);
+    });
   };
 
   // 댓글 작성 함수. 백엔드로 댓글을 전송하고 그 데이터를 활용해 댓글 리스트 state에 하나를 붙여 갱신
-  const handleCommentCreate = (
-    boardId: number,
-    content: string,
-    parentId?: number
-  ) => {
+  const handleCommentCreate = (boardId: number, content: string) => {
+    console.log("check");
     axios({
       method: "POST",
-      url: `${process.env.REACT_APP_BACKEND_URL}comments/${boardId}/write`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/comments/${boardId}/write`,
       headers: {},
       data: {
         content,
-        parentId,
       },
     })
       .then((response) => {
+        alert("등록이 되었습니다.");
         console.log(response);
-        setComments([
-          ...comments,
-          {
-            commentId: comments[-1]["commentId"] + 1,
-            commentContent: commentRef.current,
-            commentUser: {
-              userId: myId,
-              userName: myNickname,
-              userIsDeleted: false,
-              userIsBanned: false,
-            },
-            commentDate: timeStamp(),
-          },
-        ]);
+        window.location.replace("");
+        // setComments([
+        //   ...comments,
+        //   {
+        //     commentId: comments[-1]["commentId"] + 1,
+        //     commentContent: commentRef.current,
+        //     commentNickname: myNickname,
+        //     commentDate: timeStamp(),
+        //   },
+        // ]);
       })
-      .catch((err) => console.log("댓글 못보냄요"));
+      .catch(() => {
+        alert("로그인 후 작성하실 수 있습니다.");
+      });
   };
 
   // 상세 페이지로 이동 시, 페이지 정보를 받아오는 함수. board 안에 상세페이지의 모든 정보가 저장됨
   useEffect(() => {
+    handleCommentGet();
     axios({
       method: "GET",
       url: `${process.env.REACT_APP_BACKEND_URL}/boards/${id}`,
     })
       .then((response) => {
-        console.log(response.data.board.boardContent);
-        setBoardContent(response.data.board.boardContent);
-        const contentDiv = document.body.querySelector(".board-content");
-        console.log(contentDiv);
-        if (
-          contentDiv !== null &&
-          response.data.board.boardContent !== undefined
-        ) {
-          console.log(contentDiv);
-          contentDiv.appendChild(response.data.board.boardContent);
-        }
-        setBoard({ ...response.data.board });
+        setBoardContent({
+          boardId: response.data.board.boardId,
+          boardTitle: response.data.board.boardTitle,
+          boardDate: response.data.board.boardDate,
+          boardWriter: response.data.board.boardWriter.userNickname,
+          boardContent: response.data.board.boardContent,
+        });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        window.open(err);
+      });
   }, []);
 
-  // boardId가 id인 게시글 찾기
-  const item = contents.find(
-    (obj) => obj.boardId === parseInt(id as string, 10)
-  );
-  const sanitizedData = () => ({ __html: boardContent });
+  const sanitizedData = () => ({
+    __html: boardContent !== undefined ? boardContent.boardContent : "",
+  });
 
   return (
     <div>
       <div className="mt-10">
-        {item ? (
+        {boardContent ? (
           <div>
             <RollBackBtn />
-            <h1 className="text-2xl font-bold">{item.boardTitle}</h1>
+            <h1 className="text-2xl font-bold">{boardContent.boardTitle}</h1>
             <div className="mt-2">
-              <span className="pe-2">{board.boardWriter.userName}</span>|
-              <span className="ps-2">{board.boardDate}</span>
+              <span className="pe-2">{boardContent.boardWriter}</span>|
+              <span className="ps-2">{boardContent.boardDate}</span>
             </div>
             <div className="mt-5 board-content">
               <div dangerouslySetInnerHTML={sanitizedData()} />
             </div>
             <div>
               <div className="mt-10 w-full bg-lime-400 p-3">댓글 목록</div>
-              {/* resData 부분을 comments로 바꿔주면 된다. */}
-              {resData.board.boardComment.map((comment: any) => {
+              {comments.map((comment: any) => {
                 return (
                   <Comment
                     key={comment.commentId}
                     commentId={comment.commentId}
-                    userName={comment.commentUser.userName}
-                    content={comment.commentContent}
-                    date={comment.commentDate}
-                    comments={comment.comments}
+                    iuser={comment.iuser}
+                    content={comment.content}
+                    commentDate={comment.commentDate}
+                    subcomments={comment.subcomments}
+                    boardId={id}
                   />
                 );
               })}
@@ -190,7 +162,7 @@ const CommunityDetail: React.FC = () => {
                   placeholder="댓글 입력"
                   name="message"
                   rows={4}
-                  className="block p-2.5 w-full text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-lime-300 focus:border-lime-500 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="block p-2.5 w-full text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-lime-300 focus:border-lime-500 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 resize-none"
                   onChange={(e) => (commentRef.current = e.target.value)}
                 ></textarea>
                 <button

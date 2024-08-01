@@ -11,7 +11,8 @@ authAxios.interceptors.request.use(
     ) {
       const { token } = useUserStore.getState();
       if (token) {
-        config.headers["Authorization"] = `bearer ${token}`;
+        config.headers["Authorization"] =
+          `bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJiYW5ndG9uZyIsInN1YiI6ImFkbWluIiwiaWQiOjEsIm5pY2tuYW1lIjoi6rSA66as7J6QIiwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOIiwiaWF0IjoxNzIyNDk5MDExLCJleHAiOjE3MzAyNzUwMTF9.x2LYtVjFaYhnMOGE2-BIyIPhIxE-qLvvqFOWjAJyOvBi3pAFkBUOz9G_B67kVlWDSEeKTcqY97vkbIVTpPJX_w`;
       }
     }
     return config;

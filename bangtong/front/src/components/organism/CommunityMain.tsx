@@ -60,7 +60,6 @@ const CommunityMain: React.FC = () => {
       .then((response) => {
         setContents(response.data.content);
         setIsLoaded(true);
-        console.log(response.data.content);
       })
       .catch((e) => console.log(e));
   };
