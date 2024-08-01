@@ -1,11 +1,11 @@
 package com.jisang.bangtong.controller.comment;
 
 import com.jisang.bangtong.dto.comment.CommentDto;
+import com.jisang.bangtong.dto.comment.IComment;
 import com.jisang.bangtong.dto.common.ResponseDto;
-import com.jisang.bangtong.model.comment.Comment;
 import com.jisang.bangtong.service.comment.CommentService;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,40 +33,39 @@ public class CommentController {
   //  댓글 작성
   @PostMapping("/{boardId}/write")
   public ResponseEntity<ResponseDto<Void>> writeComment(@PathVariable long boardId,
-      @RequestBody CommentDto commentDto) {
+      @RequestBody CommentDto commentDto, HttpServletRequest request) {
     log.info("comment write {}, {}", commentDto, boardId);
-    commentService.writeComment(boardId, commentDto);
+    commentService.writeComment(boardId, commentDto, request);
 
     return ResponseEntity.ok(ResponseDto.res(SUCCESS));
   }
 
   //  댓글 수정
   @PutMapping("/modify/{commentId}")
-  public ResponseEntity<ResponseDto<CommentDto>> modifyComment(@PathVariable long commentId,
-      @RequestBody Map<String, String> map) {
-    CommentDto commentDto = commentService.modifyComment(commentId, map.get("content"));
-
-    if (commentDto == null) {
+  public ResponseEntity<ResponseDto<Void>> modifyComment(@PathVariable long commentId,
+      @RequestBody String content, HttpServletRequest request) {
+    int result = commentService.modifyComment(commentId, content, request);
+    if (result != 1) {
       return ResponseEntity.ok(ResponseDto.res(CLIENT_ERROR));
     } else {
-      return ResponseEntity.ok(ResponseDto.res(SUCCESS, commentDto));
+      return ResponseEntity.ok(ResponseDto.res(SUCCESS));
     }
   }
 
   //  댓글 삭제
   @DeleteMapping("/delete/{commentId}")
-  public ResponseEntity<ResponseDto<Void>> deleteComment(@PathVariable long commentId) {
-    commentService.deleteComment(commentId);
+  public ResponseEntity<ResponseDto<Void>> deleteComment(@PathVariable long commentId, HttpServletRequest request) {
+    commentService.deleteComment(commentId, request);
     return ResponseEntity.ok(ResponseDto.res(SUCCESS));
   }
 
   //  댓글 목록 조회
   //  TODO: parent의 답댓글 list 관리
   @GetMapping("/{boardId}")
-  public ResponseEntity<ResponseDto<List<Comment>>> getComments(@PathVariable long boardId) {
-    List<Comment> dtos = commentService.getComments(boardId);
-
-    return ResponseEntity.ok(ResponseDto.res(SUCCESS, dtos));
+  public ResponseDto<List<IComment>> getComments(@PathVariable long boardId) {
+    List<IComment> dtos = commentService.getComments(boardId);
+    log.info("getComments {}", dtos);
+    return ResponseDto.res(SUCCESS, dtos);
   }
 
 
