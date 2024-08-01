@@ -4,6 +4,7 @@ import com.jisang.bangtong.constants.ResponseMessageConstants;
 import com.jisang.bangtong.constants.SecurityConstants;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.dto.user.LoginRequestDTO;
+import com.jisang.bangtong.dto.user.UserDto;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -58,11 +59,12 @@ public class UserController {
 
   //  로그인 (일반)
   @PostMapping("/login")
-  public ResponseEntity<ResponseDto<Void>> login(@RequestBody LoginRequestDTO loginRequest) {
-    String accessToken = userService.login(loginRequest);
+  public ResponseEntity<ResponseDto<UserDto>> login(@RequestBody LoginRequestDTO loginRequest) {
+    Map<String, Object> map = userService.login(loginRequest);
 
-    return ResponseEntity.status(HttpStatus.OK).header(SecurityConstants.JWT_HEADER, accessToken)
-        .body(ResponseDto.res(ResponseMessageConstants.SUCCESS));
+    return ResponseEntity.status(HttpStatus.OK).header(SecurityConstants.JWT_HEADER,
+            (String) map.get("accessToken"))
+        .body(ResponseDto.res(ResponseMessageConstants.SUCCESS, (UserDto) map.get("user")));
   }
 
   //  로그아웃

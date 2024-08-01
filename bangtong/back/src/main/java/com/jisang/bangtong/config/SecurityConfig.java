@@ -8,7 +8,9 @@ import com.jisang.bangtong.handler.OAuth2SuccessHandler;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.user.OAuth2UserServiceImpl;
 import com.jisang.bangtong.util.JwtUtil;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -73,7 +77,8 @@ public class SecurityConfig {
         .formLogin(Customizer.withDefaults())
         .oauth2Login(
             oauth -> oauth
-                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService)
+                    .userAuthoritiesMapper(grantedAuthoritiesMapper()))
                 .successHandler(oAuth2SuccessHandler))
         .logout(logout -> logout.logoutSuccessUrl("/"))
         .httpBasic(hbc -> hbc.authenticationEntryPoint(new BasicAuthenticationEntryPoint()))
@@ -102,6 +107,11 @@ public class SecurityConfig {
     providerManager.setEraseCredentialsAfterAuthentication(false);
 
     return providerManager;
+  }
+
+  @Bean
+  GrantedAuthoritiesMapper grantedAuthoritiesMapper() {
+    return authorities -> (Set<GrantedAuthority>) new HashSet<GrantedAuthority>(authorities);
   }
 
 }

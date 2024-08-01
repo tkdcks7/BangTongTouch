@@ -1,5 +1,7 @@
 package com.jisang.bangtong.handler;
 
+import com.jisang.bangtong.model.user.User;
+import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.util.JwtUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,24 +25,22 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
   private static final Logger log = LoggerFactory.getLogger(OAuth2SuccessHandler.class);
   private final JwtUtil jwtUtil;
+  private final UserRepository userRepository;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) throws IOException, ServletException {
     OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-    Long userId = oAuth2User.getAttribute("id");
-    String userEmail = oAuth2User.getAttribute("email");
-    String userNickname = oAuth2User.getAttribute("nickname");
+    String email = oAuth2User.getAttribute("email");
+    String authorities = oAuth2User.getAttribute("authorities");
 
-//    String accessToken = jwtUtil.generateAccessToken(userId, userEmail, userNickname, new Date());
-//    String targetUrl = UriComponentsBuilder.fromUriString("/")
-//        .queryParam("access_token", accessToken).build().toUriString();
-//
-//    System.out.println("accessToken: " + accessToken);
-//    System.out.println("targetUrl: " + targetUrl);
+    User user = userRepository.findByUserEmail(email).orElse(null);
+    String accessToken = jwtUtil.generateAccessToken(user, authorities, new Date());
+    String targetUrl = UriComponentsBuilder.fromUriString("/")
+        .queryParam("access_token", accessToken).build().toUriString();
 
     RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-    redirectStrategy.sendRedirect(request, response, "/");
+    redirectStrategy.sendRedirect(request, response, targetUrl);
   }
 
 }
