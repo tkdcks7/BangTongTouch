@@ -1,3 +1,4 @@
+import { isToken } from "typescript";
 import { create } from "zustand";
 import { persist, PersistOptions } from "zustand/middleware";
 
@@ -7,9 +8,10 @@ interface User {
   email: string | null;
   profileImage: string | null;
   nickname: string;
-  token: string;
+  token: string | null;
   setInfoUpdate: (data: any) => void;
   setToken: (token: string) => void;
+  clearToken: () => void;
   setLogOut: () => void;
 }
 
@@ -41,7 +43,7 @@ const useUserStore = create<User>()(
       email: "",
       profileImage: "",
       nickname: "",
-      token: "",
+      token: null,
       // 유저 정보 업데이트 setter
       setInfoUpdate: ({ id, email, profileImage, nickname }) => {
         set(() => ({
@@ -55,13 +57,14 @@ const useUserStore = create<User>()(
       setToken: (token) => {
         set(() => ({ token }));
       },
+      clearToken: () => set({ token: null }),
       setLogOut: () => {
         set(() => ({
           id: 0,
           email: "",
           profileImage: "",
           nickname: "",
-          token: "",
+          token: null,
         }));
       },
     }),
