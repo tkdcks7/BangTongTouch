@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -53,8 +54,9 @@ public class CommentController {
   }
 
   //  댓글 삭제
-  @DeleteMapping("/delete/{commentId}")
-  public ResponseEntity<ResponseDto<Void>> deleteComment(@PathVariable long commentId, HttpServletRequest request) {
+  @PutMapping("/delete/{commentId}")
+  public ResponseEntity<ResponseDto<Void>> deleteComment(@PathVariable long commentId,
+      HttpServletRequest request) {
     commentService.deleteComment(commentId, request);
     return ResponseEntity.ok(ResponseDto.res(SUCCESS));
   }

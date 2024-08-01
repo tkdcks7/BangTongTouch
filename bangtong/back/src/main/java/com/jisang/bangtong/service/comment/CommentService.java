@@ -41,33 +41,32 @@ public class CommentService {
     log.info("Service: writeComment 시작");
 
     Long commentPid = commentDto.getParentId();
-    if(isCommentDtoNull(commentDto)){
+    if (isCommentDtoNull(commentDto)) {
       throw new IllegalArgumentException("댓글 내용이 누락되었습니다.");
     }
-    if(!isValidParent(commentPid)){
+    if (!isValidParent(commentPid)) {
       throw new NotFoundException("부모 댓글이 올바르지 않습니다");
     }
-    if(!isValidBoard(boardId)){
+    if (!isValidBoard(boardId)) {
       throw new NotFoundException("해당 게시글이 없습니다");
     }
     String token = jwtUtil.getAccessToken(request);
     Long userId = jwtUtil.getUserIdFromToken(token);
     User writer = userRepository.findById(userId).orElse(null);
     Board boardFrom = boardRepository.findById(boardId).orElse(null);
-    if(!isValidUser(writer)){
+    if (!isValidUser(writer)) {
       throw new NotFoundException("작성자를 찾을 수 없습니다.");
     }
     log.info("write : {}", writer);
     Comment comment = Comment.builder()
-              .commentUser(writer)
-                  .commentContent(commentDto.getContent())
+        .commentUser(writer)
+        .commentContent(commentDto.getContent())
         .board(boardFrom).build();
 
-
-    if(commentPid != null) {
+    if (commentPid != null) {
       Comment parentComment = commentRepository.findById(commentPid).orElse(null);
       comment.setCommentParent(parentComment);
-    }else{
+    } else {
       comment.setCommentParent(null);
     }
 
@@ -79,10 +78,12 @@ public class CommentService {
     log.info("Comment: modifyComment 실행");
     String token = jwtUtil.getAccessToken(request);
     Long userId = jwtUtil.getUserIdFromToken(token);
-    if(isValidComment(commentId, userId)){
+
+    if (!isValidComment(commentId, userId)) {
       throw new NotFoundException("해당 댓글이 없습니다");
     }
-    if(content.length() >500) {
+
+    if (content.length() > 500) {
       throw new IllegalArgumentException("글자수가 너무 많습니다.");
     }
     Comment comment = commentRepository.findById(commentId).orElse(null);
@@ -97,68 +98,74 @@ public class CommentService {
   public void deleteComment(long commentId, HttpServletRequest request) {
     String token = jwtUtil.getAccessToken(request);
     Long userId = jwtUtil.getUserIdFromToken(token);
-    if(isValidComment(commentId, userId)){
+
+    if (!isValidComment(commentId, userId)) {
       throw new NotFoundException("해당 댓글이 없습니다");
     }
-    commentRepository.deleteComment(commentId);
+
+    Comment comment = commentRepository.findById(commentId).orElse(null);
+    comment.setCommentIsDeleted(true);
+
+    commentRepository.save(comment);
   }
 
   //  댓글 목록 조회
   public List<IComment> getComments(long boardId) {
-    if(!isValidBoard(boardId))
+    if (!isValidBoard(boardId)) {
       throw new NotFoundException("해당 board를 찾지 못했습니다.");
+    }
     List<Comment> comments = commentRepository.findCommentsWithRepliesByBoardId(boardId);
     List<IComment> iComment = new ArrayList<>();
 
     for (Comment comment : comments) {
-        IComment c;
-        User user = comment.getCommentUser();
-        List<ISubComment> subComment = new ArrayList<>();
-        for(Comment s : comment.getComments()){
-          ISubComment iSubComment = ISubComment.builder()
-              .commentId(s.getCommentId())
-              .IUser(getuserCommentReturnDto(s.getCommentUser()))
-              .content(s.getCommentContent())
-              .commentDate(s.getCommentDate())
-              .build();
-          subComment.add(iSubComment);
-        }
+      IComment c;
+      User user = comment.getCommentUser();
+      List<ISubComment> subComment = new ArrayList<>();
+      for (Comment s : comment.getComments()) {
+        ISubComment iSubComment = ISubComment.builder()
+            .commentId(s.getCommentId())
+            .IUser(getuserCommentReturnDto(s.getCommentUser()))
+            .content(s.getCommentContent())
+            .commentDate(s.getCommentDate())
+            .build();
+        subComment.add(iSubComment);
+      }
 
-
-        IUser u = getuserCommentReturnDto(user);
-        c = IComment.builder().commentId(comment.getCommentId())
-            .IUser(u)
-            .content(comment.getCommentContent())
-                .commentDate(comment.getCommentDate())
-                    .subcomments(subComment)
-                        .build();
-        iComment.add(c);
+      IUser u = getuserCommentReturnDto(user);
+      c = IComment.builder().commentId(comment.getCommentId())
+          .IUser(u)
+          .content(comment.getCommentContent())
+          .commentDate(comment.getCommentDate())
+          .subcomments(subComment)
+          .build();
+      iComment.add(c);
     }
 
     return iComment;
   }
 
-  private boolean isValidUser(User u){
-    if(u == null){
-      return false;
-    }
-    return true;
-  }
-  private boolean isValidBoard(Long boardId){
-    Board board = boardRepository.findById(boardId).orElse(null);
-    if(board == null){
+  private boolean isValidUser(User u) {
+    if (u == null) {
       return false;
     }
     return true;
   }
 
-  private boolean isCommentDtoNull(CommentDto commentDto){
+  private boolean isValidBoard(Long boardId) {
+    Board board = boardRepository.findById(boardId).orElse(null);
+    if (board == null) {
+      return false;
+    }
+    return true;
+  }
+
+  private boolean isCommentDtoNull(CommentDto commentDto) {
     String content = commentDto.getContent();
     return commentDto.getContent() == null || content.trim().isEmpty();
   }
 
-  private boolean isValidParent(Long parentId){
-    if(parentId == null){   //부모가 없을 수도 있으니까
+  private boolean isValidParent(Long parentId) {
+    if (parentId == null) {   //부모가 없을 수도 있으니까
       return true;
     }
 
@@ -167,13 +174,17 @@ public class CommentService {
     return comment != null;
   }
 
-  private boolean isValidComment(Long commendId, Long userId){
+  private boolean isValidComment(Long commendId, Long userId) {
     Comment comment = commentRepository.findById(commendId).orElse(null);
-    if(comment == null) return false;
+
+    if (comment == null) {
+      return false;
+    }
+
     return comment.getCommentUser().getUserId().equals(userId);
   }
 
-  private IUser getuserCommentReturnDto(User user){
+  private IUser getuserCommentReturnDto(User user) {
     return IUser.builder()
         .userId(user.getUserId())
         .isBanned(user.isUserIsBanned())
