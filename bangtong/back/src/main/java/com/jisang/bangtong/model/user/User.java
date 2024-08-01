@@ -34,7 +34,7 @@ public class User {
 
 //  TODO: media_id FK 불러오기
 
-  @Column(nullable = false, length = 40)
+  @Column(nullable = false, length = 40, unique = true)
   private String userEmail;
 
   @Column(length = 256)
