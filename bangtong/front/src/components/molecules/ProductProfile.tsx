@@ -20,7 +20,7 @@ const ProductProfile: React.FC = () => {
         text="연락하기"
         width="w-20"
         textSize="text-sm"
-        backgroundColor="yellow-300"
+        backgroundColor="bg-yellow-300"
       />
     </div>
   );

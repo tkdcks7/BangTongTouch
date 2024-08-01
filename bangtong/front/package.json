@@ -25,6 +25,7 @@
     "@types/sockjs-client": "^1.5.4",
     "antd": "^5.19.3",
     "axios": "^1.7.2",
+    "browser-image-compression": "^2.0.2",
     "framer-motion": "^11.3.2",
     "react": "^18.3.1",
     "react-cookie": "^7.1.4",
@@ -49,7 +50,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "https://api.vworld.kr",
+  "proxy": "https://naveropenapi.apigw.ntruss.com",
   "eslintConfig": {
     "extends": [
       "react-app",

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 // 컴포넌트 불러오기
@@ -77,14 +77,14 @@ const FindSelectPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
-      <div className="text-3xl font-bold m-6">
+    <>
+      <div className="text-3xl text-center font-bold m-6">
         <TextBox text="아이디/비밀번호 찾기" size="2xl" />
       </div>
       <div className="flex justify-center mt-5">
         <Btn
           text="아이디 찾기"
-          backgroundColor="lime-500"
+          backgroundColor="bg-lime-500"
           textColor="white"
           onClick={handleIdFindBtnClick}
         />
@@ -107,7 +107,7 @@ const FindSelectPage: React.FC = () => {
         {/* input send가 안돼서 임시로 넣음. 구현되면 제거할 것 */}
         <Btn
           text="전송"
-          backgroundColor="lime-500"
+          backgroundColor="bg-lime-500"
           textColor="white"
           width="w-24"
           height="h-12"
@@ -125,7 +125,7 @@ const FindSelectPage: React.FC = () => {
       <div className="flex justify-center mt-5">
         <Btn
           text="비밀번호 찾기"
-          backgroundColor="yellow-300"
+          backgroundColor="bg-yellow-300"
           textColor="white"
           onClick={handlePwFindBtnClick}
         />
@@ -148,7 +148,7 @@ const FindSelectPage: React.FC = () => {
         {/* input send가 안돼서 임시로 넣음. 구현되면 제거할 것 */}
         <Btn
           text="전송"
-          backgroundColor="lime-500"
+          backgroundColor="bg-lime-500"
           textColor="white"
           width="w-24"
           height="h-12"
@@ -168,14 +168,18 @@ const FindSelectPage: React.FC = () => {
         {/* input send가 안돼서 임시로 넣음. 구현되면 제거할 것 */}
         <Btn
           text="인증번호 전송"
-          backgroundColor="lime-500"
+          backgroundColor="bg-lime-500"
           textColor="white"
           width="w-24"
           height="h-12"
           onClick={verifyAuthHandler}
         />
       </div>
-    </div>
+
+      <div className="text-lime-500 text-sm md:text-base mt-3 text-center">
+        <Link to={"/user/login"}>로그인 화면으로</Link>
+      </div>
+    </>
   );
 };
 
