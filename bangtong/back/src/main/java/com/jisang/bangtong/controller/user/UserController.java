@@ -3,7 +3,8 @@ package com.jisang.bangtong.controller.user;
 import com.jisang.bangtong.constants.ResponseMessageConstants;
 import com.jisang.bangtong.constants.SecurityConstants;
 import com.jisang.bangtong.dto.common.ResponseDto;
-import com.jisang.bangtong.dto.user.LoginRequestDTO;
+import com.jisang.bangtong.dto.user.LoginRequestDto;
+import com.jisang.bangtong.dto.user.RegisterRequestDto;
 import com.jisang.bangtong.dto.user.UserDto;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.service.user.UserService;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,20 +32,12 @@ public class UserController {
   private UserService userService;
   private PasswordEncoder passwordEncoder;
 
-  @GetMapping("/test")
-  public ResponseDto<Void> test() {
-    return ResponseDto.res("oauth test success");
-  }
-
   //  회원가입 (일반)
   @PostMapping("/register")
-  public ResponseDto<User> register(@RequestBody User user) {
-    String password = passwordEncoder.encode(user.getUserPassword());
-    user.setUserPassword(password);
+  public ResponseDto<User> register(@RequestBody RegisterRequestDto registerRequestDto) {
+    userService.register(registerRequestDto);
 
-    userService.register(user);
-
-    return ResponseDto.res(ResponseMessageConstants.SUCCESS, user);
+    return ResponseDto.res(ResponseMessageConstants.SUCCESS);
   }
 
   //  회원탈퇴
@@ -59,11 +51,11 @@ public class UserController {
 
   //  로그인 (일반)
   @PostMapping("/login")
-  public ResponseEntity<ResponseDto<UserDto>> login(@RequestBody LoginRequestDTO loginRequest) {
+  public ResponseEntity<ResponseDto<UserDto>> login(@RequestBody LoginRequestDto loginRequest) {
     Map<String, Object> map = userService.login(loginRequest);
 
-    return ResponseEntity.status(HttpStatus.OK).header(SecurityConstants.JWT_HEADER,
-            (String) map.get("accessToken"))
+    return ResponseEntity.status(HttpStatus.OK)
+        .header(SecurityConstants.JWT_HEADER, (String) map.get("accessToken"))
         .body(ResponseDto.res(ResponseMessageConstants.SUCCESS, (UserDto) map.get("user")));
   }
 
