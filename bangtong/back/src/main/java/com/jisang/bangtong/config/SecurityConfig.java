@@ -72,8 +72,7 @@ public class SecurityConfig {
             BasicAuthenticationFilter.class)
         .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
         .authorizeHttpRequests(
-            (requests) -> requests.requestMatchers("/comments/**").authenticated()
-                .anyRequest().permitAll())
+            (requests) -> requests.anyRequest().permitAll())
         .formLogin(Customizer.withDefaults())
         .oauth2Login(
             oauth -> oauth
