@@ -4,6 +4,7 @@ import com.jisang.bangtong.constants.SecurityConstants;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.util.JwtUtil;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -40,7 +41,6 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
       try {
         String email = jwtUtil.getUserEmailFromToken(token);
         String authorities = jwtUtil.parseToken(token).get("authorities").toString();
-
         User user = userRepository.findByUserEmail(email).orElse(null);
 
         if (user == null) {
@@ -52,14 +52,14 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
       } catch (ExpiredJwtException e) {
-        log.error("Expired JWT token");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write("만료된 토큰입니다.");
+        return;
       } catch (Exception e) {
         throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
       }
-
-      log.info("token: {}", token);
     }
-    
+
     filterChain.doFilter(request, response);
   }
 
