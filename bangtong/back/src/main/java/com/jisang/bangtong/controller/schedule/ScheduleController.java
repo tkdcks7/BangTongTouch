@@ -3,16 +3,17 @@ package com.jisang.bangtong.controller.schedule;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.dto.schedule.ScheduleDto;
 import com.jisang.bangtong.service.schedule.ScheduleService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/schedules")
+@Slf4j
 public class ScheduleController {
     @Autowired
     private ScheduleService scheduleService;
@@ -23,6 +24,9 @@ public class ScheduleController {
     // 예약 생성
     @PostMapping("/add")
     public ResponseDto<Void> createSchedule(@RequestBody ScheduleDto scheduleDto) {
+        log.info("controller");
+        log.info("scheduleDto: {}", scheduleDto);
+
         scheduleService.createSchedule(scheduleDto);
 
 //        Date scheduleDate = map.get("scheduleDate");

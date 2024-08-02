@@ -1,5 +1,6 @@
 package com.jisang.bangtong.model.schedule;
 
+import com.jisang.bangtong.model.chatroom.Chatroom;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class Schedule {
     //    TODO: 채팅방 ID
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "chatroom_id")
-//    private Chatroom chatroomId = 1L;
+    private Chatroom chatroom;
 
     @Column(nullable = false)
     private Date scheduleDate;
