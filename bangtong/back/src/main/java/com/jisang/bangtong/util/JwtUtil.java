@@ -5,6 +5,7 @@ import com.jisang.bangtong.model.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -19,44 +20,64 @@ public class JwtUtil {
   private final String secret = SecurityConstants.JWT_SECRET_DEFAULT_VALUE;
   private final SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
-  public String generateAccessToken(User user, Authentication authenticationResponse,
-      Date currentDate) {
+  public String generateAccessToken(User user, String authorities, Date currentDate) {
     return Jwts.builder()
         .issuer("bangtong")
-        .subject("U" + user.getUserId())
-        .claim("email", user.getUserEmail())
-        .claim("authorities",
-            authenticationResponse.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(",")))
+        .subject(user.getUserEmail())
+        .claim("id", user.getUserId())
+        .claim("nickname", user.getUserNickname())
+        .claim("authorities", authorities)
         .issuedAt(currentDate)
         .expiration(new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRES_IN))
         .signWith(secretKey)
         .compact();
   }
 
-  public String generateRefreshToken(User user, Authentication authenticationResponse,
-      Date currentDate) {
+  public String generateRefreshToken(User user, String authorities, Date currentDate) {
     return Jwts.builder()
         .issuer("bangtong")
-        .subject("U" + user.getUserId())
-        .claim("email", user.getUserEmail())
-        .claim("authorities",
-            authenticationResponse.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(",")))
+        .subject(user.getUserEmail())
+        .claim("id", user.getUserId())
+        .claim("nickname", user.getUserNickname())
+        .claim("authorities", authorities)
         .issuedAt(currentDate)
         .expiration(new Date(currentDate.getTime() + SecurityConstants.JWT_REFRESH_EXPIRES_IN))
         .signWith(secretKey)
         .compact();
   }
 
-  public String parseToken(String token) {
-    Claims claims = Jwts.parser()
+  public Claims parseToken(String token) {
+    return Jwts.parser()
         .verifyWith(secretKey)
         .build()
         .parseSignedClaims(token)
         .getPayload();
+  }
 
+  public String getAccessToken(HttpServletRequest request) {
+    String header = request.getHeader(SecurityConstants.JWT_HEADER);
+    String token = "";
+
+    if (header != null && header.startsWith("Bearer ")) {
+      token = header.substring(7);
+    }
+
+    return token;
+  }
+
+  public String getUserEmailFromToken(String token) {
+    Claims claims = parseToken(token);
     return claims.getSubject();
+  }
+
+  public Long getUserIdFromToken(String token) {
+    Claims claims = parseToken(token);
+    return Long.parseLong(String.valueOf(claims.get("id")));
+  }
+
+  public String getUserNicknameFromToken(String token) {
+    Claims claims = parseToken(token);
+    return (String) claims.get("nickname");
   }
 
 }

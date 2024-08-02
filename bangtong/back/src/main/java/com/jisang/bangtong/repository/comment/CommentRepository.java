@@ -11,10 +11,6 @@ import org.springframework.stereotype.Repository;
 
 public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 
-  @Modifying(clearAutomatically = true)
-  @Query("UPDATE Comment SET commentIsDeleted = true WHERE commentId = :commentId")
-  void deleteComment(Long commentId);
-
   List<Comment> findByBoard_BoardId(Long boardId);
-  //User findByUser_UserId(Long userId);
+
 }

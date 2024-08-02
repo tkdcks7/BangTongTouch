@@ -5,13 +5,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.jisang.bangtong.model.common.Authority;
+import com.jisang.bangtong.model.media.Media;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.util.Date;
@@ -32,9 +35,11 @@ public class User {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long userId;
 
-//  TODO: media_id FK 불러오기
+  @OneToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "media_id")
+  private Media userProfileImage;
 
-  @Column(nullable = false, length = 40)
+  @Column(nullable = false, length = 40, unique = true)
   private String userEmail;
 
   @Column(length = 256)
@@ -46,7 +51,6 @@ public class User {
   @Column(length = 13)
   private String userPhone;
 
-  @Column
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
   @Temporal(TemporalType.TIMESTAMP)
   private Date userRegisterDate = new Date();
@@ -73,6 +77,8 @@ public class User {
   @Column(columnDefinition = "boolean default false")
   private boolean userIsBanned;
 
+  @Column(length = 512)
+  private String userRefreshToken;
 
   public User updateUser(String userNickname, String userEmail) {
     this.userNickname = userNickname;

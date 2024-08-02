@@ -28,7 +28,7 @@ public class RegionController {
   @Autowired
   private RegionService regionService;
 
-  @GetMapping("/")
+  @GetMapping
   public ResponseEntity<ResponseDto<List<RegionSidoDto>>> searchSido(){
     log.info("/regions/ 호출");
     List<RegionSidoDto> regions = regionService.searchSido();

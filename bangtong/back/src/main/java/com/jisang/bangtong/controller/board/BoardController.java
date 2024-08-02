@@ -1,12 +1,22 @@
 package com.jisang.bangtong.controller.board;
 
+import com.jisang.bangtong.dto.board.BoardInputDto;
+import com.jisang.bangtong.dto.board.BoardReturnDto;
 import com.jisang.bangtong.dto.board.BoardSearchDto;
+import com.jisang.bangtong.dto.board.BoardUpdateDto;
+import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.board.Board;
 import com.jisang.bangtong.model.comment.Comment;
+import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.board.BoardService;
+import com.jisang.bangtong.service.common.FileService;
 import com.jisang.bangtong.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +40,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -41,95 +53,47 @@ public class BoardController {
   private BoardService boardService;
 
   @Autowired
-  private UserRepository userRepository;
+  private FileService fileService;
 
-  @PostMapping(value = {"/write/{regionId}", "/write"}, consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Object> write(@RequestBody Map<String, String> map, @PathVariable(required = false) String regionId) {
-    Board board = new Board();
-    board.setBoardContent(map.get("boardContent"));
-    Long userId = Long.parseLong(map.get("boardWriter"));
-    board.setBoardWriter(userRepository.findById(userId).get());
-    board.setBoardTitle(map.get("boardTitle"));
-    log.info("write board: {}, {}, {}", board, regionId);
-
-    boardService.save(board, regionId); // BoardService의 save 메서드 호출
-    Map<String, Object> response = new HashMap<>();
-    response.put("status", 200);
-    response.put("message", "SUCCESS");
-    response.put("board", board);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+  @PostMapping(value = {"/write/{regionId}", "/write"})
+  public ResponseDto<Void> write(@RequestBody BoardInputDto boardInputDto, @PathVariable(required = false) String regionId, HttpServletRequest request) {
+    log.info("boardWrite 실행 {}");
+    boardService.save(boardInputDto, regionId, request); // BoardService의 save 메서드 호출
+    return ResponseDto.res("success");
   }
 
   @PutMapping("/modify/{boardId}")
-  public ResponseEntity<Object> modify(@PathVariable("boardId") long boardId,
-      @RequestBody Board board) {
-    log.info("modify board: {}", board);
-    Optional<Board> existingBoard = boardService.findById(boardId);
-
-    Region region = existingBoard.map(Board::getBoardRegion).orElse(null);
-
-    if (existingBoard.isPresent()) {
-      Board updatedBoard = existingBoard.get();
-      updatedBoard.setBoardTitle(board.getBoardTitle());
-      updatedBoard.setBoardContent(board.getBoardContent());
-      boardService.save(updatedBoard, region == null ? null : region.getRegionId()); // 수정된 게시물을 BoardService의 save 메서드로 업데이트
-      Map<String, Object> response = new HashMap<>();
-      response.put("status", 200);
-      response.put("message", "SUCCESS");
-      response.put("board", updatedBoard); // 수정된 Board 객체 추가
-      return ResponseEntity.status(HttpStatus.OK).body(response);
-    } else {
-      Map<String, Object> response = new HashMap<>();
-      response.put("status", 200);
-      response.put("message", "SUCCESS");
-      return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
+  public ResponseDto<BoardReturnDto> modify(@PathVariable("boardId") long boardId,
+      @RequestBody BoardUpdateDto boardUpdateDto, HttpServletRequest request) {
+    log.info("modify board: {}", boardUpdateDto);
+    BoardReturnDto dto = boardService.update(boardUpdateDto, boardId,request);
+    return ResponseDto.res("success", dto);
   }
 
   @PutMapping("/delete/{boardId}")
-  public ResponseEntity<Object> delete(@PathVariable("boardId") long boardId) {
+  public ResponseDto<Void> delete(@PathVariable("boardId") long boardId, HttpServletRequest request) {
     log.info("delete board: {}", boardId);
-    boardService.delete(boardId); // BoardService의 delete 메서드 호출
-    Map<String, Object> response = new HashMap<>();
-    response.put("status", 200);
-    response.put("message", "SUCCESS");
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+    boardService.delete(boardId, request); // BoardService의 delete 메서드 호출
+    return ResponseDto.res("SUCCESS");
   }
 
   @GetMapping("/{boardId}")
-  public ResponseEntity<Object> get(@PathVariable("boardId") long boardId) {
-    log.info("get board: {}", boardId);
-    Optional<Board> board = boardService.getBoardCommentParentIsNull(boardId);
-    Map<String, Object> response = new HashMap<>();
-    log.info("{}", board.get());
-    if (board != null) {
-      //boardReturn.setCommentList(boardService.getCommentsByBoardId(boardId));
-      response.put("status", 200);
-      response.put("message", "SUCCESS");
-      response.put("board", board.get());
-      return ResponseEntity.status(HttpStatus.OK).body(response);
-    } else {
-      response.put("status", 200);
-      response.put("message", "Board not found");
-      return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
+  public ResponseDto<BoardReturnDto> getBoard(@PathVariable("boardId") long boardId) {
+    BoardReturnDto dto =  boardService.getBoard(boardId);
+    return ResponseDto.res("SUCCESS", dto);
   }
 
   @PostMapping("/list")
-  public ResponseEntity<Object> getList( @RequestBody BoardSearchDto boardSearchDto) {
+  public ResponseDto<Page<BoardReturnDto>> getList(@RequestBody BoardSearchDto boardSearchDto) {
     log.info("list 출력 {}", boardSearchDto);
-
     if (boardSearchDto.getPageNo() == null) {
       boardSearchDto.setPageNo(0);  // 기본값 설정
     }
     if (boardSearchDto.getSize() == null) {
       boardSearchDto.setSize(10);  // 기본값 설정
     }
-
-    Pageable pageable = PageRequest.of(boardSearchDto.getPageNo(), boardSearchDto.getSize(), Sort.by("boardDate"));
-    Page<Board> boardPage = boardService.getBoards(pageable, boardSearchDto);
-    return ResponseEntity.ok(boardPage);
+    Page<BoardReturnDto> boardPage = boardService.getBoards(boardSearchDto);
+    return ResponseDto.res("SUCCESS", boardPage);
   }
 
 }

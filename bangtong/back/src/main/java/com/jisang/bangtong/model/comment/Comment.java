@@ -23,11 +23,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+@Builder
 @Entity
 @Data
 @NoArgsConstructor
@@ -41,7 +43,7 @@ public class Comment {
 
   @ManyToOne
   @JoinColumn(name = "boardId", foreignKey = @ForeignKey(name = "fk_comment_board"))
-  @JsonIgnore
+  @JsonManagedReference
   private Board board;
 
   @Column(nullable = false, length = 1024)
@@ -55,10 +57,11 @@ public class Comment {
   @JoinColumn(name = "comment_parent_id", nullable = true, foreignKey = @ForeignKey(name = "fk_comment_comment"))
   @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "commentId")
   @JsonBackReference
+  @JsonIgnore
   private Comment commentParent;
 
   @OneToMany(mappedBy = "commentParent", fetch = FetchType.LAZY)
-  @JsonManagedReference
+  @JsonBackReference
   private List<Comment> comments = new ArrayList<>();
 
   @Temporal(value = TemporalType.TIMESTAMP)
@@ -68,4 +71,16 @@ public class Comment {
   @Column(columnDefinition = "boolean default false")
   private boolean commentIsDeleted;
 
+  @Override
+  public String toString() {
+    return "Comment{" +
+        "commentId=" + commentId +
+        ", board=" + board +
+//        ", commentContent='" + commentContent + '\'' +
+        ", commentUser=" + commentUser +
+        ", commentParent=" + commentParent +
+        ", commentDate=" + commentDate +
+        ", commentIsDeleted=" + commentIsDeleted +
+        '}';
+  }
 }

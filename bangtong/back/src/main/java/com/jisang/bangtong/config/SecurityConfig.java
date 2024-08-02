@@ -1,22 +1,28 @@
 package com.jisang.bangtong.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 import com.jisang.bangtong.exceptionhandling.BasicAuthenticationEntryPoint;
 import com.jisang.bangtong.exceptionhandling.CustomAccessDeniedHandler;
 import com.jisang.bangtong.filter.CsrfCookieFilter;
-import com.jisang.bangtong.filter.JWTTokenValidatorFilter;
+import com.jisang.bangtong.filter.JwtTokenValidatorFilter;
+import com.jisang.bangtong.handler.OAuth2SuccessHandler;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.user.OAuth2UserServiceImpl;
+import com.jisang.bangtong.util.JwtUtil;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,11 +34,14 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
   private final OAuth2UserServiceImpl oAuth2UserService;
   private final UserRepository userRepository;
+  private final JwtUtil jwtUtil;
+  private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
   @Bean
   SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -44,30 +53,36 @@ public class SecurityConfig {
           CorsConfiguration config = new CorsConfiguration();
 
           config.setAllowedOriginPatterns(List.of("*"));
-          config.setAllowedMethods(List.of("*"));
           config.setAllowCredentials(true);
+          config.setAllowedMethods(List.of("*"));
           config.setAllowedHeaders(List.of("*"));
           config.setExposedHeaders(List.of("Authorization"));
           config.setMaxAge(3600L);
 
           return config;
-        })).csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+        }))
+        .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
             .ignoringRequestMatchers(
                 //    "/users/register", "/users/login"
                 "/**"
             )
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
         .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-        .addFilterBefore(new JWTTokenValidatorFilter(userRepository),
+        .addFilterBefore(new JwtTokenValidatorFilter(userRepository, jwtUtil),
             BasicAuthenticationFilter.class)
-//        .addFilterAfter(new JWTTokenGeneratorFilter(), JWTTokenValidatorFilter.class)
         .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
         .authorizeHttpRequests(
-            (requests) -> requests.requestMatchers("/regions/**").authenticated()
-                .anyRequest().permitAll()).formLogin(withDefaults())
+            (requests) -> requests
+                .requestMatchers("/comments/delete/**", "/comments/modify/**", "/comments/*/write",
+                    "/users/delete", "/users/logout").authenticated()
+                .anyRequest().permitAll())
+        .formLogin(Customizer.withDefaults())
         .oauth2Login(
-            oauth -> oauth.defaultSuccessUrl("/users/test", true)
-                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService)))
+            oauth -> oauth
+                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService)
+                    .userAuthoritiesMapper(grantedAuthoritiesMapper()))
+                .successHandler(oAuth2SuccessHandler))
+        .logout(logout -> logout.logoutSuccessUrl("/"))
         .httpBasic(hbc -> hbc.authenticationEntryPoint(new BasicAuthenticationEntryPoint()))
         .exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 
@@ -94,6 +109,11 @@ public class SecurityConfig {
     providerManager.setEraseCredentialsAfterAuthentication(false);
 
     return providerManager;
+  }
+
+  @Bean
+  GrantedAuthoritiesMapper grantedAuthoritiesMapper() {
+    return authorities -> (Set<GrantedAuthority>) new HashSet<GrantedAuthority>(authorities);
   }
 
 }
