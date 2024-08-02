@@ -89,6 +89,11 @@ const FilterBox: React.FC = () => {
     },
   };
 
+  // 검색을 진행하는 함수
+  const handleSearch = () => {
+    console.log("검색 진행");
+  };
+
   return (
     <div className="w-80 px-5 py-10 border border-2 rounded-xl mr-5 shadow-md">
       <button
@@ -156,7 +161,10 @@ const FilterBox: React.FC = () => {
       <BtnGroup title="편의시설" itemsArray={facilities} />
       <BtnGroup title="지원 여부" itemsArray={["월세 지원", "가구도 승계"]} />
       <div className="text-end mr-2">
-        <button className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg">
+        <button
+          className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
+          onClick={handleSearch}
+        >
           <SearchOutlined className="my-auto mx-auto" />
         </button>
       </div>
