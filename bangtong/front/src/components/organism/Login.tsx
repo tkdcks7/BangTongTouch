@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import useUserStore from "../../store/userStore";
 
 // 컴포넌트 불러오기
+import { Form, Input, Button, message, ConfigProvider } from "antd";
 import TextBox from "../atoms/TextBox";
 import InputBox from "../molecules/InputBox";
 import IconBtn from "../atoms/IconBtn";
@@ -39,11 +40,22 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const { token, setInfoUpdate, setToken } = useUserStore(); // store
   const navigate = useNavigate();
+  const [form] = Form.useForm(); // antd
 
   interface LoginInfo {
     username: string;
     password: string;
   }
+
+  // ant design 글로벌 디자인 토큰
+  const theme = {
+    token: {
+      colorBgTextHover: "#E9FFE7",
+      colorPrimary: "#129B07",
+      colorPrimaryBorder: "#129B07",
+      colorLinkHover: "#6EF962",
+    },
+  };
 
   // 소셜 로그인
   const location = useLocation();
@@ -131,47 +143,72 @@ const LoginPage: React.FC = () => {
       <div className="font-bold m-6 text-center">
         <TextBox text="로그인" size="2xl" />
       </div>
-      <form>
-        <InputBox
-          placeholder="이메일 (아이디)"
-          buttonType="cancel"
-          size="large"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <InputBox
-          placeholder="비밀번호"
-          buttonType="cancel"
-          size="large"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <div className="flex justify-between text-sm md:text-base text-lime-500 mt-3">
-          <Link to="/user/FindSelectPage">아이디/비밀번호 찾기</Link>
-          <Link to="/user/register">회원가입</Link>
-        </div>
-        <div className="flex justify-center mt-3">
-          <div className="mx-2">
-            <IconBtn imgSrc={Google} size={40} onClick={handleGoogleLogin} />
+      <ConfigProvider theme={theme}>
+        <Form form={form} layout="vertical" autoComplete="off">
+          <Form.Item
+            name="이메일 (아이디)"
+            rules={[
+              { required: true, message: "" },
+              { type: "email", warningOnly: true, message: "" },
+              { type: "string" },
+            ]}
+            hasFeedback
+            style={{ marginBottom: "8px" }}
+          >
+            <Input
+              placeholder="이메일 (아이디)"
+              className="rounded-full border-2"
+              size="large"
+              allowClear
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item
+            name="비밀번호"
+            rules={[{ required: true, message: "" }]}
+            style={{ marginBottom: "8px" }}
+            hasFeedback
+          >
+            <Input.Password
+              placeholder="비밀번호"
+              className="rounded-full border-2"
+              size="large"
+              allowClear
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Form.Item>
+          <div className="flex justify-between text-sm md:text-base text-lime-500">
+            <Link to="/user/FindSelectPage">아이디/비밀번호 찾기</Link>
+            <Link to="/user/register">회원가입</Link>
           </div>
-          <div className="mx-2">
-            <IconBtn imgSrc={Kakao} size={40} onClick={handleKakaotalkLogin} />
+          <div className="flex justify-center mt-3">
+            <div className="mx-2">
+              <IconBtn imgSrc={Google} size={40} onClick={handleGoogleLogin} />
+            </div>
+            <div className="mx-2">
+              <IconBtn
+                imgSrc={Kakao}
+                size={40}
+                onClick={handleKakaotalkLogin}
+              />
+            </div>
+            <div className="mx-2">
+              <IconBtn imgSrc={Naver} size={40} onClick={handleNaverLogin} />
+            </div>
           </div>
-          <div className="mx-2">
-            <IconBtn imgSrc={Naver} size={40} onClick={handleNaverLogin} />
+          <div className="flex justify-center mt-10">
+            <Button
+              type="primary"
+              onClick={handleLogIn}
+              className="py-6 px-10 rounded-full text-lg"
+            >
+              로그인
+            </Button>
           </div>
-        </div>
-        <div className="flex justify-center mt-20">
-          <Btn
-            text="로그인"
-            backgroundColor="bg-lime-500"
-            textColor="white"
-            onClick={handleLogIn}
-          />
-        </div>
-      </form>
+        </Form>
+      </ConfigProvider>
     </>
   );
 };

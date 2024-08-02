@@ -20,7 +20,7 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="w-full md:w-3/5">
+    <div className="w-full md:w-2/5">
       {id ? (
         <div>
           <ProfileBox userNickname={nickname} />
