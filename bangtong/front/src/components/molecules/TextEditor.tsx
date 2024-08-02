@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import imageCompression from "browser-image-compression";
 
 interface CKEditorProps {
   data: string;
@@ -52,10 +53,10 @@ const TextEditor: FC<CKEditorProps> = ({ data, onChange }) => {
         {`
         .ck-content ul,
         .ck-content ol {
-          padding-left: 20px; /* 말머리 기호의 왼쪽 여백을 조정 */
+          padding-left: 20px;
         }
-        .ck-content{
-        height:450px;
+        .ck-content {
+          height: 450px;
         }
       `}
       </style>
@@ -65,34 +66,63 @@ const TextEditor: FC<CKEditorProps> = ({ data, onChange }) => {
 
 function MyCustomUploadAdapterPlugin(editor: any) {
   editor.plugins.get("FileRepository").createUploadAdapter = (loader: any) => {
-    return MyUploadAdapter(loader);
+    return MyUploadAdapter(loader, editor);
   };
 }
 
-const MyUploadAdapter = (loader: any) => {
+const MyUploadAdapter = (loader: any, editor: any) => {
   return {
-    upload: () => {
-      return new Promise((resolve, reject) => {
-        const data = new FormData();
-        loader.file.then((file: any) => {
-          data.append("file", file);
-          fetch(`${process.env.REACT_APP_BACKEND_URL}/upload`, {
-            method: "POST",
-            body: data,
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              resolve({
-                default: data.url,
-              });
-            })
-            .catch((error) => {
-              reject(error);
-            });
+    upload: async () => {
+      const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"]; // 허용된 파일 유형
+
+      try {
+        const file = await loader.file;
+        console.log(file);
+        if (!ALLOWED_TYPES.includes(file.type)) {
+          throw new Error("Invalid file type.");
+        }
+
+        // 이미지 파일을 압축
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1024,
+          useWebWorker: true,
+        };
+
+        const compressedFile = await imageCompression(file, options);
+
+        // 파일을 Base64로 변환
+        const base64 = await toBase64(compressedFile);
+
+        // CKEditor에 Base64 이미지 삽입
+        const imgElement = `<img src='${base64}' alt='Image' />`;
+        editor.model.change((writer: any) => {
+          const viewFragment = editor.data.processor.toView(imgElement);
+          const modelFragment = editor.data.toModel(viewFragment);
+          editor.model.insertContent(
+            modelFragment,
+            editor.model.document.selection
+          );
         });
-      });
+
+        return {
+          default: base64,
+        };
+      } catch (error) {
+        throw error;
+      }
     },
   };
+};
+
+// 파일을 Base64로 변환하는 함수
+const toBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
 };
 
 export default TextEditor;

@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes, PropsWithChildren } from 'react';
+import React, { ButtonHTMLAttributes, PropsWithChildren } from "react";
 
 // 버튼 컴포넌트가 받을 수 있는 모든 속성을 정의
 interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -17,24 +17,25 @@ interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 // 버튼 컴포넌트
 const Btn: React.FC<PropsWithChildren<IButtonProps>> = ({
-  width = 'w-36', // 기본 너비
-  height = 'h-12', // 기본 높이
+  width = "w-36", // 기본 너비
+  height = "h-12", // 기본 높이
   text, // text 내용
   backgroundColor, // 버튼색
   borderColor,
-  borderRadius = 'full', // 기본 테두리 둥글기
+  borderRadius = "full", // 기본 테두리 둥글기
   hoverBackgroundColor, // hover
   hoverTextColor,
   textColor,
-  textSize = 'text-base', // 기본 텍스트 크기
+  textSize = "text-base", // 기본 텍스트 크기
   children,
   onClick,
   ...props
 }) => {
   return (
     <button
-      className={`text-center font-bold tracking-wider shadow ${width} ${height} bg-${backgroundColor} ${borderColor} rounded-${borderRadius} ${hoverBackgroundColor} ${hoverTextColor} text-${textColor} ${textSize}`}
-      {...props} onClick={onClick}
+      className={`text-center font-bold tracking-wider shadow ${width} ${height} ${backgroundColor} ${borderColor} rounded-${borderRadius} ${hoverBackgroundColor} ${hoverTextColor} text-${textColor} ${textSize}`}
+      {...props}
+      onClick={onClick}
     >
       {text}
       {children}

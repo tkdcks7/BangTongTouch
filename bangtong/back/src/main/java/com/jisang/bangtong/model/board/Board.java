@@ -11,12 +11,18 @@ import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.model.user.User;
 import jakarta.persistence.*;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
+import lombok.RequiredArgsConstructor;
+
 @Data
 @Entity
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class Board {
 
   @Id
@@ -43,38 +49,20 @@ public class Board {
   @Column(nullable = false)
   private int boardHit = 0;  // 기본값을 코드에서 직접 설정
 
-  @Column(nullable = false)
-  private int boardScore = 0;
-
   //TODO: Region 클래스 생성 후 관계 설정
   @ManyToOne
   @JoinColumn(name="regionId", foreignKey = @ForeignKey(name = "fk_board_region"))
   private Region boardRegion;
 
-  @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "commentId")
-  @JsonManagedReference
-  private List<Comment> boardComment;
+//  @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+//  @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "commentId")
+//  @JsonManagedReference
+//  private List<Comment> boardComment;
 
   // TODO: User 클래스 생성 후 관계 설정
   @ManyToOne
   @JoinColumn(name="user_id", foreignKey = @ForeignKey(name= "fk_board_user"))
   @JsonManagedReference
   private User boardWriter;
-
-  @Override
-  public String toString() {
-    return "Board{" +
-        "boardId=" + boardId +
-        ", boardTitle='" + boardTitle + '\'' +
-        //", boardContent='" + boardContent + '\'' +
-        ", boardDate=" + boardDate +
-        ", boardIsBanned=" + boardIsBanned +
-        ", boardIsDelete=" + boardIsDelete +
-        ", boardHit=" + boardHit +
-        ", boardScore=" + boardScore +
-        ", boardRegion=" + boardRegion +
-        ", boardWriter=" + boardWriter +
-        '}';
-  }
+  
 }

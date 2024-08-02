@@ -16,12 +16,6 @@ const ProfileMyFavItems: React.FC = () => {
     APART: "아파트",
   };
 
-  const [isheartFilled, setIsHeartFilled] = useState(true);
-
-  const handleHeartClick = () => {
-    setIsHeartFilled((isheartFilled) => !isheartFilled);
-  };
-
   return (
     <div className="flex flex-wrap justify-center">
       {usersFavItems.map((item) => (

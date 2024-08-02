@@ -39,6 +39,7 @@ interface InputProps
   error?: boolean;
   size?: "small" | "medium" | "large";
   buttonType?: "cancel" | "check" | "dropdown" | "send" | "search"; // cancel, check, dropdown, send, search
+  boxSize?: "mobile" | "pc";
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   value?: string;
   setValue?: React.Dispatch<React.SetStateAction<string>>;
@@ -51,6 +52,7 @@ const InputBox: React.FC<InputProps> = ({
   placeholder,
   buttonType,
   size = "medium",
+  boxSize = "mobile",
   type,
   id = "",
   width = 400,
@@ -72,14 +74,10 @@ const InputBox: React.FC<InputProps> = ({
     "border-red-500 focus:border-red-500 focus:ring-red-500 text-red-600 focus:text-red-500";
   const qualifiedClasses = "border-lime-500 text-white focus:text-white";
 
-  const baseInputClasses = `flex items-center mt-1 px-3 py-2 ${id === "q" ? "bg-lime-500" : "bg-white"} border-2 border-gray-300 block rounded-full
+  const baseInputClasses = `flex items-center ${boxSize === "mobile" ? "w-full" : "w-3/5"} mt-1 px-3 py-2 ${id === "q" ? "bg-lime-500" : "bg-white"}  border-2 border-gray-300 block rounded-full
     ${isFocused ? "ring-1 ring-lime-500" : ""}
     ${id === "e" ? errorClasses : ""}
     ${id === "q" ? qualifiedClasses : ""}`;
-
-  const inputStyle: React.CSSProperties = {};
-  if (width) inputStyle.width = width;
-  if (height) inputStyle.height = height;
 
   let whatBtn = "";
 
@@ -124,7 +122,7 @@ const InputBox: React.FC<InputProps> = ({
   };
 
   return (
-    <div style={inputStyle}>
+    <div>
       <div className={baseInputClasses}>
         <input
           style={inputStyle2}

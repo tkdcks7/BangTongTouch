@@ -15,8 +15,10 @@ const ChatBox: React.FC = () => {
 
   return (
     <div className="mt-10">
-      <div className="mb-3 font-bold md:hidden">
-        <p>새로운 연락이 도착했어요!</p>
+      <div className="mb-3 md:hidden">
+        <p>
+          <span className="font-bold">확인하지 않은 소식</span>이 있나요?
+        </p>
       </div>
       <div className="mb-3 hidden md:block text-xl text-center">
         <svg
