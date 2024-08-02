@@ -64,7 +64,8 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom{
             ), // IUser 생성자 제약조건
             region, // Region도 추가
             board.boardHit, // hit 필드 추가
-            board.boardDate // boardDate 필드 추가
+            board.boardDate, // boardDate 필드 추가
+            board.boardIsBanned
         ))
         .from(board)
         .leftJoin(board.boardWriter, user) // board.user와 사용자 연관관계 설정
