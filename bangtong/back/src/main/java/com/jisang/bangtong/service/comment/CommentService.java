@@ -137,6 +137,7 @@ public class CommentService {
             .IUser(getuserCommentReturnDto(s.getCommentUser()))
             .content(s.getCommentContent())
             .commentDate(s.getCommentDate())
+            .isDeleted(s.isCommentIsDeleted())
             .build();
         subComment.add(iSubComment);
       }
@@ -167,6 +168,7 @@ public class CommentService {
           .IUser(getuserCommentReturnDto(s.getCommentUser()))
           .content(s.getCommentContent())
           .commentDate(s.getCommentDate())
+          .isDeleted(s.isCommentIsDeleted())
           .build();
       subComment.add(iSubComment);
     }
