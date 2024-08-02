@@ -26,7 +26,7 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="w-full md:w-3/5">
+    <div className="w-full md:w-2/5">
       {id ? (
         <div>
           {/* 프로필 메인페이지에서만 프로필 편집 창이 뜨도록 주소 비교 */}

@@ -1,16 +1,20 @@
 import React, { useState } from "react";
+import dayjs from "dayjs";
 
 // 컴포넌트
 import ProductMap from "../molecules/ProductMap";
 import InputBox from "../molecules/InputBox";
 import FilterBox from "../molecules/FilterBox";
-import BtnGroup from "../molecules/BtnGroup";
 import { Button, ConfigProvider, DatePicker, Popover, Radio } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
 
 const { RangePicker } = DatePicker;
 
 const ProductMapBox: React.FC = () => {
+  const [startDate, setStartDate] = useState(dayjs("0000-00-00"));
+  const [endDate, setEndDate] = useState(dayjs("0000-00-00"));
+  const [order, setOrder] = useState(0); // 정렬 (스마트 추천, 최신 등록순, ...)
+
   // ant design 글로벌 디자인 토큰
   const theme = {
     token: {
@@ -20,12 +24,22 @@ const ProductMapBox: React.FC = () => {
     },
   };
 
+  const handelChange = (dates: any) => {
+    setStartDate(dates[0]);
+    setEndDate(dates[1]);
+    console.log(startDate.date, endDate.date);
+  };
+
   const popoverTitle = (
     <p className="text-center mb-3">희망 주거기간을 설정해주세요.</p>
   );
 
   const datePicker = (
-    <RangePicker className="w-full" placeholder={["입주 일자", "퇴거 일자"]} />
+    <RangePicker
+      className="w-full"
+      placeholder={["입주 일자", "퇴거 일자"]}
+      onChange={handelChange}
+    />
   );
 
   // order
@@ -55,15 +69,16 @@ const ProductMapBox: React.FC = () => {
                   content={datePicker}
                 >
                   <Button
-                    type="primary"
-                    icon={<CalendarOutlined className="text-white" />}
+                    type="text"
+                    size="large"
+                    icon={<CalendarOutlined className="text-lime-500" />}
                   ></Button>
                 </Popover>
-                <Radio.Group defaultValue={orderBy[0]}>
-                  <Radio.Button value={orderBy[0]}>{orderBy[0]}</Radio.Button>
-                  <Radio.Button value={orderBy[1]}>{orderBy[1]}</Radio.Button>
-                  <Radio.Button value={orderBy[2]}>{orderBy[2]}</Radio.Button>
-                  <Radio.Button value={orderBy[3]}>{orderBy[3]}</Radio.Button>
+                <Radio.Group defaultValue={0}>
+                  <Radio.Button value={0}>{orderBy[0]}</Radio.Button>
+                  <Radio.Button value={1}>{orderBy[1]}</Radio.Button>
+                  <Radio.Button value={2}>{orderBy[2]}</Radio.Button>
+                  <Radio.Button value={3}>{orderBy[3]}</Radio.Button>
                 </Radio.Group>
               </div>
             </ConfigProvider>

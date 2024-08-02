@@ -13,7 +13,6 @@ import MainPage from "./components/page/MainPage"; // 메인 페이지
 
 // 매물
 import ProductPage from "./components/page/ProductPage"; // 페이지
-import ProductList from "./components/molecules/ProductList"; // 매물 리스트
 import ProductDetail from "./components/organism/ProductDetail"; // 매물 상세
 import ProductUpload from "./components/organism/ProductUpload"; // 매물 업로드
 
@@ -57,7 +56,6 @@ const Router: React.FC = () => {
           {/* 상품(매물) 페이지 */}
           <Route path="products" element={<ProductPage />}>
             <Route path="" element={<ProductMapBox />} />
-            <Route path="list" element={<ProductList />} />
             <Route path=":id" element={<ProductDetail />} />
             <Route path="upload" element={<ProductUpload />} />
           </Route>
