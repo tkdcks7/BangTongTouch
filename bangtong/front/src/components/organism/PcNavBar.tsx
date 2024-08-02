@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import authAxios from "../../utils/authAxios";
 
 // 컴포넌트 불러오기
 import IconBtn from "../atoms/IconBtn";
@@ -31,10 +32,9 @@ const PcNavBar: React.FC = () => {
 
   // logout 실행 함수
   const handleLogOutBtnClick = (e: any) => {
-    axios({
+    authAxios({
       method: "PUT",
       url: `${process.env.REACT_APP_BACKEND_URL}/users/logout`,
-      headers: {},
     })
       .then((response) => {
         setLogOut(); // userInfo와 token을 초기화
@@ -101,7 +101,7 @@ const PcNavBar: React.FC = () => {
 
         {/* 로그인 되면 로그아웃 버튼이 뜨도록 */}
         <div className="mx-1">
-          {id > 0 ? (
+          {token ? (
             <Btn
               text="로그아웃"
               backgroundColor="bg-red-400"
