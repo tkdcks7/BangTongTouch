@@ -6,6 +6,7 @@ import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.service.comment.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,14 +44,11 @@ public class CommentController {
 
   //  댓글 수정
   @PutMapping("/modify/{commentId}")
-  public ResponseEntity<ResponseDto<Void>> modifyComment(@PathVariable long commentId,
-      @RequestBody String content, HttpServletRequest request) {
-    int result = commentService.modifyComment(commentId, content, request);
-    if (result != 1) {
-      return ResponseEntity.ok(ResponseDto.res(CLIENT_ERROR));
-    } else {
-      return ResponseEntity.ok(ResponseDto.res(SUCCESS));
-    }
+  public ResponseDto<IComment> modifyComment(@PathVariable long commentId,
+      @RequestBody Map<String, String> map, HttpServletRequest request) {
+    log.info("map {}", map);
+    IComment iComment = commentService.modifyComment(commentId, map.get("content"), request);
+    return ResponseDto.res(SUCCESS,iComment);
   }
 
   //  댓글 삭제
