@@ -21,9 +21,10 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reportId;
 
-//    TODO: 신고 유형 ID
-    @Column(nullable = false)
-    private int reportTypeId;
+    //    TODO: 신고 유형 ID
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="report_type_id")
+    private ReportType reportType;
 
     @Column(length = 100)
     private String reportContent;
@@ -33,8 +34,8 @@ public class Report {
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn (name = "board_id")
-    private Board Board;
+    @JoinColumn(name = "board_id")
+    private Board board;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id")

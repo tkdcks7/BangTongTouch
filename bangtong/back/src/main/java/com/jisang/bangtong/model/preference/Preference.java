@@ -1,6 +1,7 @@
 package com.jisang.bangtong.model.preference;
 
 import com.jisang.bangtong.model.region.Region;
+import com.jisang.bangtong.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,8 +22,9 @@ public class Preference {
     private String preferenceName;
 
     //TODO
-    @Column(nullable = false)
-    private Long userId = 2L;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "region_id")

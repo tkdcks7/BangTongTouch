@@ -19,25 +19,21 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class AlarmSettingController {
+
     @Autowired
     private AlarmSettingService alarmSettingService;
 
-    @GetMapping("/test")
-    public void gettest(){
-        log.info("asklml");
-    }
-
     // 알림 권한 설정
-    @PostMapping("/setting/modify/{userId}")
-    public ResponseEntity<ResponseDto<Void>> updatealarmsetting(@PathVariable("userId") Long userId, @RequestBody AlarmSettingDto settingDto) {
-        userId = 1L;
+    @PutMapping("/setting/modify/{userId}")
+    public ResponseEntity<ResponseDto<Void>> updateAlarmSetting(@PathVariable("userId") Long userId, @RequestBody AlarmSettingDto settingDto) {
+//        userId = 1L;
         System.out.println("업데이트");
         alarmSettingService.updateAlarmSetting(userId, settingDto);
         return ResponseEntity.ok(ResponseDto.res("SUCCESS"));
     }
 
     // 알림 권한 조회
-    @GetMapping("/setting/{userID}")
+    @GetMapping("/setting/{userId}")
     private ResponseEntity<ResponseDto<List<AlarmSettingDto>>> alarmAuthorize(@PathVariable long userId) {
         List<AlarmSettingDto> settingList = alarmSettingService.alarmAuthorize(userId);
         return ResponseEntity.ok(ResponseDto.res("SUCCESS", settingList));

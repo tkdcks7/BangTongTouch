@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportDto {
-    private Integer reportSubjectType;
-    private Integer reportTypeId;
+    private int reportSubjectTypeId;
+    private int reportTypeId;
     private String content;
     private Long subjectId;
 }

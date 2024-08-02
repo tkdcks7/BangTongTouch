@@ -1,6 +1,7 @@
 package com.jisang.bangtong.model.alarmMessage;
 
 
+import com.jisang.bangtong.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +20,9 @@ public class AlarmMessage {
     private Long alarmMessageId;
 
     //    TODO: 받는 사람 ID 참조
-    private Long userId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Temporal(value = TemporalType.TIMESTAMP)
     @CreationTimestamp

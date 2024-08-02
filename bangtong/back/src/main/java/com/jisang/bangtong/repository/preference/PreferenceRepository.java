@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PreferenceRepository extends JpaRepository<Preference, Long> {
-    Region findByRegion_RegionId(String regionId);
 
     Preference findByPreferenceId(long preferenceId);
 }

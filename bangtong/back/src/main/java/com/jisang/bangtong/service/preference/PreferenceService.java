@@ -3,8 +3,10 @@ package com.jisang.bangtong.service.preference;
 import com.jisang.bangtong.dto.preference.PreferenceDto;
 import com.jisang.bangtong.model.preference.Preference;
 import com.jisang.bangtong.model.region.Region;
+import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.preference.PreferenceRepository;
 import com.jisang.bangtong.repository.region.RegionRepository;
+import com.jisang.bangtong.repository.user.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,16 +18,17 @@ public class PreferenceService {
     private PreferenceRepository preferenceRepository;
     @Autowired
     private RegionRepository regionRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public void addPreference(PreferenceDto preferenceDto) {
-
+    public void addPreference(long userId, PreferenceDto preferenceDto) {
         // 선호 설정 등록
         // String 자료형 / 넘어오는 형태: (예) 서울특별시 / 서울특별시 강서구 / 서울특별시 강서구 가양동
         // 1. '주소' 띄어쓰기 ' ' split = []
         String[] addressParts = preferenceDto.getRegionAddress().split(" ");
 
-        Region region = new Region();
-// 원래 문자열이 null인 경우에는 바로 return null을 때리고 종료
+        Region region = null;  // Initialize as null
+        // 원래 문자열이 null인 경우에는 바로 return null을 때리고 종료
         switch (addressParts.length) {
             case 1:
                 region = regionRepository.findByRegionDetails(addressParts[0], "", "").orElse(null);
@@ -38,38 +41,35 @@ public class PreferenceService {
                 break;
         }
 
-        // 2. split된 문자열을 바탕으로 regionId 검색
-//        Optional<Region> regionOpt = regionRepository.findByAddress(addressParts);
-        // 3. regionId를 preference에 set
+        User user = userRepository.findById(userId).orElse(null);
 
         Preference preference = new Preference();
         preference.setPreferenceName(preferenceDto.getPreferenceName());
-//        region = preferenceRepository.findByRegion_RegionId(preferenceDto.getRegionId());
         preference.setPreferenceDeposit(preferenceDto.getPreferenceDeposit());
         preference.setRegion(region);
+        preference.setUser(user);
         preference.setPreferenceRent(preferenceDto.getPreferenceRent());
         preference.setPreferenceType(preferenceDto.getPreferenceType());
         preference.setPreferenceInfra(preferenceDto.getPreferenceInfra());
         preference.setPreferenceStartDate(preferenceDto.getPreferenceStartDate());
         preference.setPreferenceEndDate(preferenceDto.getPreferenceEndDate());
         preferenceRepository.save(preference);
-
     }
 
     // 선호 설정 수정
     public PreferenceDto modifyPreference(long preferenceId, PreferenceDto preferenceDto) {
-        Preference exisistingPreference = preferenceRepository.findByPreferenceId(preferenceId);
+        Preference existingPreference = preferenceRepository.findByPreferenceId(preferenceId);
 
-        exisistingPreference.setPreferenceName(preferenceDto.getPreferenceName());
-        exisistingPreference.setPreferenceDeposit(preferenceDto.getPreferenceDeposit());
-        exisistingPreference.setPreferenceRent(preferenceDto.getPreferenceRent());
-        exisistingPreference.setPreferenceType(preferenceDto.getPreferenceType());
-        exisistingPreference.setPreferenceInfra(preferenceDto.getPreferenceInfra());
-        exisistingPreference.setPreferenceStartDate(preferenceDto.getPreferenceStartDate());
-        exisistingPreference.setPreferenceEndDate(preferenceDto.getPreferenceEndDate());
+        existingPreference.setPreferenceName(preferenceDto.getPreferenceName());
+        existingPreference.setPreferenceDeposit(preferenceDto.getPreferenceDeposit());
+        existingPreference.setPreferenceRent(preferenceDto.getPreferenceRent());
+        existingPreference.setPreferenceType(preferenceDto.getPreferenceType());
+        existingPreference.setPreferenceInfra(preferenceDto.getPreferenceInfra());
+        existingPreference.setPreferenceStartDate(preferenceDto.getPreferenceStartDate());
+        existingPreference.setPreferenceEndDate(preferenceDto.getPreferenceEndDate());
 
         String[] addressParts = preferenceDto.getRegionAddress().split(" ");
-        Region region = new Region();
+        Region region = null;  // Initialize as null
 
         switch (addressParts.length) {
             case 1:
@@ -82,11 +82,12 @@ public class PreferenceService {
                 region = regionRepository.findByRegionDetails(addressParts[0], addressParts[1], addressParts[2]).orElse(null);
                 break;
         }
-        exisistingPreference.setRegion(region);
+        existingPreference.setRegion(region);
 
-        Preference updatePreference = preferenceRepository.save(exisistingPreference);
+        Preference updatePreference = preferenceRepository.save(existingPreference);
 
         PreferenceDto updatePreferenceDto = new PreferenceDto();
+        updatePreferenceDto.setPreferenceId(updatePreference.getPreferenceId());
         updatePreferenceDto.setPreferenceName(updatePreference.getPreferenceName());
         updatePreferenceDto.setPreferenceDeposit(updatePreference.getPreferenceDeposit());
         updatePreferenceDto.setPreferenceRent(updatePreference.getPreferenceRent());
@@ -94,7 +95,21 @@ public class PreferenceService {
         updatePreferenceDto.setPreferenceInfra(updatePreference.getPreferenceInfra());
         updatePreferenceDto.setPreferenceStartDate(updatePreference.getPreferenceStartDate());
         updatePreferenceDto.setPreferenceEndDate(updatePreference.getPreferenceEndDate());
-        updatePreferenceDto.setRegionAddress(preferenceDto.getRegionAddress());
+
+        Region regionEntity = updatePreference.getRegion();
+        if (regionEntity != null) {
+            updatePreferenceDto.setRegionId(regionEntity.getRegionId());  // Use original 8-digit ID
+            StringBuilder sb = new StringBuilder();
+            sb.append(regionEntity.getRegionSido())
+                    .append(" ")
+                    .append(regionEntity.getRegionGugun())
+                    .append(" ")
+                    .append(regionEntity.getRegionDong());
+            updatePreferenceDto.setRegionAddress(sb.toString().trim());
+        } else {
+            updatePreferenceDto.setRegionId(null);
+            updatePreferenceDto.setRegionAddress("");
+        }
 
         return updatePreferenceDto;
     }
@@ -114,7 +129,7 @@ public class PreferenceService {
             if (result != null) {
                 dto.setPreferenceId(result.getPreferenceId());
                 dto.setPreferenceName(result.getPreferenceName());
-                dto.setUserId(result.getUserId());
+                dto.setUserId(result.getUser().getUserId());
                 dto.setPreferenceDeposit(result.getPreferenceDeposit());
                 dto.setPreferenceRent(result.getPreferenceRent());
                 dto.setPreferenceType(result.getPreferenceType());
@@ -123,16 +138,20 @@ public class PreferenceService {
                 dto.setPreferenceEndDate(result.getPreferenceEndDate());
 
                 Region region = result.getRegion();
-                dto.setRegionId(region.getRegionId());
+                if (region != null) {
+                    dto.setRegionId(region.getRegionId());  // Use original 8-digit ID
 
-                StringBuilder sb = new StringBuilder();
-                sb.append(region.getRegionSido())
-                        .append(" ")
-                        .append(region.getRegionGugun())
-                        .append(" ")
-                        .append(region.getRegionDong());
-
-                dto.setRegionAddress(sb.toString().trim());
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(region.getRegionSido())
+                            .append(" ")
+                            .append(region.getRegionGugun())
+                            .append(" ")
+                            .append(region.getRegionDong());
+                    dto.setRegionAddress(sb.toString().trim());
+                } else {
+                    dto.setRegionId(null);
+                    dto.setRegionAddress("");
+                }
             }
         } catch (Exception e) {
             return null;

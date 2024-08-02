@@ -18,8 +18,9 @@ public class Schedule {
     private Long scheduleId;
 
     //    TODO: 채팅방 ID
-    @Column(nullable = false)
-    private Long chatroomId = 1L;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "chatroom_id")
+//    private Chatroom chatroomId = 1L;
 
     @Column(nullable = false)
     private Date scheduleDate;

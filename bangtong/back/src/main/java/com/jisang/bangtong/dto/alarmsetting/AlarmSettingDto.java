@@ -14,5 +14,6 @@ public class AlarmSettingDto {
     private boolean alarmPhoneComplete;
     private boolean alarmPhoneInterest;
     private boolean alarmEmailChat;
+    private boolean alarmEmailComplete;
     private boolean alarmEmailInterest;
 }
