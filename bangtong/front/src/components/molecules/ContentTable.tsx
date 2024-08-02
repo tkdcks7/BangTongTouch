@@ -7,25 +7,28 @@ import { contents as contentsData } from "../../data.js";
 import Post from "../atoms/Post";
 import { Link } from "react-router-dom";
 
-interface boardWriter {
-  userBirthYear: number;
-  userEmail: string;
-  userGender: number;
+interface iUser {
   userId: number;
-  userIsAdmin: boolean;
-  userIsBanned: boolean;
-  userIsDeleted: boolean;
-  userNickname: string;
-  userPhone: string;
-  userProvider: string;
-  userRegisterDate: string;
+  nickname: string;
+  isBanned: boolean;
+}
+
+interface region {
+  regionId: string;
+  regionSido: string;
+  regionGugun: string;
+  regionDong: string;
 }
 
 interface Content {
   boardId: number;
   boardTitle: string;
-  boardWriter: boardWriter;
+  boardWriter: iUser;
+  boardContent: string;
   boardDate: string;
+  region?: region;
+  hit: number;
+  boardIsBanned: boolean;
 }
 
 interface ContentTableProps {
@@ -51,7 +54,7 @@ const ContentTable: React.FC<ContentTableProps> = ({ contents }) => {
               key={content.boardId}
               id={content.boardId}
               title={content.boardTitle}
-              writer={content.boardWriter.userNickname}
+              writer={content.boardWriter.nickname}
               date={content.boardDate}
             />
           ))

@@ -42,6 +42,10 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm(); // antd
 
+  if (token) {
+    navigate("/");
+  }
+
   interface LoginInfo {
     username: string;
     password: string;
@@ -88,6 +92,14 @@ const LoginPage: React.FC = () => {
   // 일반 로그인함수
   const handleLogIn = (e: any): void => {
     e.preventDefault();
+    if (email === "") {
+      alert("이메일을 입력해주세요");
+      return;
+    }
+    if (password === "") {
+      alert("비밀번호를 입력해주세요");
+      return;
+    }
     const payload: LoginInfo = {
       username: email,
       password: password,

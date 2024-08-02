@@ -9,13 +9,24 @@ import Comment from "../atoms/Comment";
 
 // Store
 import useUserStore from "../../store/userStore";
+import authAxios from "../../utils/authAxios";
+
+interface region {
+  regionId: string;
+  regionSido: string;
+  regionGugun: string;
+  regionDong: string;
+}
 
 interface IBoardContent {
   boardId: number;
   boardTitle: string;
   boardContent: string;
+  region: region;
+  hit: number;
   boardDate: string;
-  boardWriter: string;
+  boardWriter: iUser;
+  boardIsBanned: boolean;
 }
 
 interface iUser {
@@ -27,6 +38,7 @@ interface iUser {
 interface iSubComment {
   commentId: number;
   iuser: iUser;
+  deleted: boolean;
   content: string;
   commentDate: string;
 }
@@ -35,6 +47,7 @@ interface IComment {
   commentId: number;
   iuser: iUser;
   content: string;
+  deleted?: boolean;
   commentDate: string;
   subcomments?: Array<iSubComment>;
 }
@@ -70,13 +83,13 @@ const CommunityDetail: React.FC = () => {
       headers: {},
     }).then((response) => {
       setComments(response.data.data);
+      console.log(response.data.data);
     });
   };
 
   // 댓글 작성 함수. 백엔드로 댓글을 전송하고 그 데이터를 활용해 댓글 리스트 state에 하나를 붙여 갱신
   const handleCommentCreate = (boardId: number, content: string) => {
-    console.log("check");
-    axios({
+    authAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/comments/${boardId}/write`,
       headers: {},
@@ -86,8 +99,8 @@ const CommunityDetail: React.FC = () => {
     })
       .then((response) => {
         alert("등록이 되었습니다.");
-        console.log(response);
         window.location.replace("");
+        // window.location.replace("");
         // setComments([
         //   ...comments,
         //   {
@@ -111,13 +124,7 @@ const CommunityDetail: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/boards/${id}`,
     })
       .then((response) => {
-        setBoardContent({
-          boardId: response.data.board.boardId,
-          boardTitle: response.data.board.boardTitle,
-          boardDate: response.data.board.boardDate,
-          boardWriter: response.data.board.boardWriter.userNickname,
-          boardContent: response.data.board.boardContent,
-        });
+        setBoardContent(response.data.data);
       })
       .catch((err) => {
         window.open(err);
@@ -136,7 +143,7 @@ const CommunityDetail: React.FC = () => {
             <RollBackBtn />
             <h1 className="text-2xl font-bold">{boardContent.boardTitle}</h1>
             <div className="mt-2">
-              <span className="pe-2">{boardContent.boardWriter}</span>|
+              <span className="pe-2">{boardContent.boardWriter.nickname}</span>|
               <span className="ps-2">{boardContent.boardDate}</span>
             </div>
             <div className="mt-5 board-content">
@@ -149,6 +156,7 @@ const CommunityDetail: React.FC = () => {
                   <Comment
                     key={comment.commentId}
                     commentId={comment.commentId}
+                    deleted={comment.deleted}
                     iuser={comment.iuser}
                     content={comment.content}
                     commentDate={comment.commentDate}

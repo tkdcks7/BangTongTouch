@@ -11,15 +11,13 @@ authAxios.interceptors.request.use(
     ) {
       const { token } = useUserStore.getState();
       if (token) {
-        config.headers["Authorization"] =
-          `bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJiYW5ndG9uZyIsInN1YiI6ImFkbWluIiwiaWQiOjEsIm5pY2tuYW1lIjoi6rSA66as7J6QIiwiYXV0aG9yaXRpZXMiOiJST0xFX0FETUlOIiwiaWF0IjoxNzIyNDk5MDExLCJleHAiOjE3MzAyNzUwMTF9.x2LYtVjFaYhnMOGE2-BIyIPhIxE-qLvvqFOWjAJyOvBi3pAFkBUOz9G_B67kVlWDSEeKTcqY97vkbIVTpPJX_w`;
+        config.headers["Authorization"] = `Bearer ${token}`;
       }
     }
     return config;
   },
-  (_) => {
-    alert("잘못된 접근입니다. 로그인 후 이용해주세요.");
-    window.location.replace("localhost:3000/login");
+  (error) => {
+    return "잘못된 접근입니다. 로그인 후 이용해주세요.";
   }
 );
 

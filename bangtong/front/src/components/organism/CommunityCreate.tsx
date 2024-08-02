@@ -13,6 +13,7 @@ import TextEditor from "../molecules/TextEditor";
 import axios, { HttpStatusCode } from "axios";
 import { getCookie } from "../../utils/cookie";
 import { getUserAddressKr } from "../../utils/services";
+import authAxios from "../../utils/authAxios";
 
 const CommunityCreate: React.FC = () => {
   const [textEditorValue, setTextEditorValue] = useState("");
@@ -73,13 +74,17 @@ const CommunityCreate: React.FC = () => {
               data.append("boardContent", textEditorValue);
               data.append("boardWriter", "1");
 
-              axios({
+              authAxios({
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/json",
+                  "Content-Type": "application/json; charset=UTF-8",
                 },
                 url: `${process.env.REACT_APP_BACKEND_URL}/boards/write`,
-                data: data,
+                data: {
+                  boardTitle: titleValue,
+                  boardContent: textEditorValue,
+                  boardWriter: 1,
+                },
               })
                 .then((response) => {
                   if (response.status === HttpStatusCode.Ok) redirectToBoards();

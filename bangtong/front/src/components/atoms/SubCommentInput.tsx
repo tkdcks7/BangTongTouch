@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useRef } from "react";
+import authAxios from "../../utils/authAxios";
 
 interface SubCommentInputProps {
   parentId: number;
@@ -14,7 +15,7 @@ const SubCommentInput: React.FC<SubCommentInputProps> = ({
   const postSubCommentInput = () => {
     if (content.current === "") return;
     console.log("check");
-    axios({
+    authAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/comments/${boardId}/write`,
       headers: {},
