@@ -18,6 +18,8 @@ const FilterBox: React.FC = () => {
   const [regions, setRegions] = useState([]);
   const [rentalCost, setRentalCost] = useState([0, 0]); // 월세
   const [depositCost, setDepositCost] = useState([0, 0]); // 보증금
+  const [rentSupportable, setRentSupportable] = useState(false); // 월세 지원 여부
+  const [funitureSupportable, setFunitureSupportable] = useState(false); // 가구 승계 여부
 
   const showRegionModal = () => {
     setOpen(true);
@@ -57,6 +59,7 @@ const FilterBox: React.FC = () => {
     setDepositCost(newData);
   };
 
+  // type
   const homeCategory: string[] = [
     "원룸",
     "투룸+",
@@ -65,6 +68,7 @@ const FilterBox: React.FC = () => {
     "아파트",
   ];
 
+  // infra
   const facilities: string[] = [
     "경찰서",
     "마트",
@@ -76,8 +80,6 @@ const FilterBox: React.FC = () => {
     "편의점",
   ];
 
-  const supportMenu: string[] = ["월세 지원", "가구도 승계"];
-
   // ant design 글로벌 디자인 토큰
   const theme = {
     token: {
@@ -85,6 +87,11 @@ const FilterBox: React.FC = () => {
       colorPrimary: "#129B07",
       colorPrimaryBorder: "#129B07",
     },
+  };
+
+  // 검색을 진행하는 함수
+  const handleSearch = () => {
+    console.log("검색 진행");
   };
 
   return (
@@ -127,6 +134,7 @@ const FilterBox: React.FC = () => {
           </div>
         </Modal>
       </ConfigProvider>
+
       <TextBtn
         title="보증금"
         text={
@@ -151,9 +159,12 @@ const FilterBox: React.FC = () => {
       />
       <BtnGroup title="집 유형" itemsArray={homeCategory} />
       <BtnGroup title="편의시설" itemsArray={facilities} />
-      <BtnGroup title="지원 여부" itemsArray={supportMenu} />
+      <BtnGroup title="지원 여부" itemsArray={["월세 지원", "가구도 승계"]} />
       <div className="text-end mr-2">
-        <button className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg">
+        <button
+          className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
+          onClick={handleSearch}
+        >
           <SearchOutlined className="my-auto mx-auto" />
         </button>
       </div>

@@ -8,6 +8,7 @@ import TextBox from "../atoms/TextBox";
 import InputBox from "../molecules/InputBox";
 import Btn from "../atoms/Btn";
 import DropDown from "../molecules/DropDown";
+import { Form } from "antd";
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -181,7 +182,7 @@ const SignupPage: React.FC = () => {
       <div className="text-3xl text-center font-bold m-6">
         <TextBox text="회원가입" size="2xl" />
       </div>
-      <form
+      <Form
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
@@ -284,7 +285,7 @@ const SignupPage: React.FC = () => {
             onClick={handleSignUp}
           />
         </div>
-      </form>
+      </Form>
     </>
   );
 };

@@ -7,25 +7,28 @@ import { contents as contentsData } from "../../data.js";
 import Post from "../atoms/Post";
 import { Link } from "react-router-dom";
 
-interface boardWriter {
-  userBirthYear: number;
-  userEmail: string;
-  userGender: number;
+interface iUser {
   userId: number;
-  userIsAdmin: boolean;
-  userIsBanned: boolean;
-  userIsDeleted: boolean;
-  userNickname: string;
-  userPhone: string;
-  userProvider: string;
-  userRegisterDate: string;
+  nickname: string;
+  isBanned: boolean;
+}
+
+interface region {
+  regionId: string;
+  regionSido: string;
+  regionGugun: string;
+  regionDong: string;
 }
 
 interface Content {
   boardId: number;
   boardTitle: string;
-  boardWriter: boardWriter;
+  boardWriter: iUser;
+  boardContent: string;
   boardDate: string;
+  region?: region;
+  hit: number;
+  boardIsBanned: boolean;
 }
 
 interface ContentTableProps {
@@ -42,16 +45,27 @@ const ContentTable: React.FC<ContentTableProps> = ({ contents }) => {
           <th className="p-2">작성시간</th>
         </tr>
       </thead>
+
       <tbody>
-        {contents.map((content) => (
+        {/* contents가 빈 배열일 경우 예외처리 */}
+        {contents ? (
+          contents.map((content) => (
+            <Post
+              key={content.boardId}
+              id={content.boardId}
+              title={content.boardTitle}
+              writer={content.boardWriter.nickname}
+              date={content.boardDate}
+            />
+          ))
+        ) : (
           <Post
-            key={content.boardId}
-            id={content.boardId}
-            title={content.boardTitle}
-            writer={content.boardWriter.userNickname}
-            date={content.boardDate}
+            id={0}
+            title={"게시글 없음"}
+            writer={"게시글 없음"}
+            date={"0000-00-00 00:00"}
           />
-        ))}
+        )}
       </tbody>
     </table>
   );

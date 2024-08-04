@@ -21,6 +21,7 @@ interface iSubComment {
   commentId: number;
   iuser: iUser;
   content: string;
+  deleted?: boolean;
   commentDate: string;
 }
 
@@ -28,6 +29,7 @@ interface IComment {
   commentId: number;
   iuser: iUser;
   content: string;
+  deleted?: boolean;
   commentDate: string;
   boardId?: string;
   subcomments?: Array<iSubComment>;
@@ -39,6 +41,7 @@ const Comment: React.FC<IComment> = ({
   content,
   commentDate,
   boardId,
+  deleted,
   subcomments = [],
 }) => {
   const [isSubCommentInputOpen, setIsSubCommentInputOpen] =
@@ -63,7 +66,7 @@ const Comment: React.FC<IComment> = ({
   };
   const deleteComment = () => {
     authAxios({
-      method: "DELETE",
+      method: "PUT",
       url: `${process.env.REACT_APP_BACKEND_URL}/comments/delete/${commentId}`,
     })
       .then((response) => {
@@ -106,26 +109,28 @@ const Comment: React.FC<IComment> = ({
   };
   return (
     <React.Fragment>
+      <Modal
+        title="댓글 신고"
+        open={isModalOpen}
+        onOk={reportComment}
+        onCancel={changeModalStatus}
+      >
+        <div>
+          <div>댓글 작성자: {iuser.nickname}</div>
+          <div>댓글 내용: </div>
+        </div>
+        <div>{content}</div>
+        <span>신고 사유: </span>
+        <input
+          className="w-4/5 border"
+          type="text"
+          onChange={(e) => (reportRef.current = e.target.value)}
+        />
+      </Modal>
       <div className="flex pl-1 py-0.5">
-        <Modal
-          title="댓글 신고"
-          open={isModalOpen}
-          onOk={reportComment}
-          onCancel={changeModalStatus}
-        >
-          <div>
-            <div>댓글 작성자: {iuser.nickname}</div>
-            <div>댓글 내용: </div>
-          </div>
-          <div>{content}</div>
-          <span>신고 사유: </span>
-          <input
-            className="w-4/5 border"
-            type="text"
-            onChange={(e) => (reportRef.current = e.target.value)}
-          />
-        </Modal>
-        <div className="flex-initial text-sm w-12">{iuser.nickname}</div>
+        <div className="flex-initial text-sm w-12">
+          {deleted === false ? iuser.nickname : "X"}
+        </div>
         {isEditClicked === true ? (
           <div className="flex justify-between w-full">
             <input
@@ -144,12 +149,14 @@ const Comment: React.FC<IComment> = ({
               className="flex-1 text-base break-words overflow-hidden whitespace-pre-wrap hover:cursor-pointer"
               onClick={changeSubCommentInput}
             >
-              {content}
+              {deleted === false ? content : "삭제된 메시지입니다."}
             </div>
             <div className="flex-initial text-xs w-16">
               {formatTimestamp(commentDate)}
             </div>
-            <button onClick={changeMenuVisible}>…</button>
+            {deleted === false ? (
+              <button onClick={changeMenuVisible}>…</button>
+            ) : null}
             {menuVisible === true ? (
               <div className="absolute bg-gray-300 right-2">
                 {iuser.userId === useUserStore.getState().id ? (
@@ -180,6 +187,7 @@ const Comment: React.FC<IComment> = ({
                 key={cmt.commentId}
                 commentId={cmt.commentId}
                 iuser={cmt.iuser}
+                deleted={cmt.deleted}
                 content={cmt.content}
                 commentDate={cmt.commentDate}
               />

@@ -19,12 +19,14 @@ interface iSubComment {
   commentId: number;
   iuser: iUser;
   content: string;
+  deleted?: boolean;
   commentDate: string;
 }
 
 const SubComment: React.FC<iSubComment> = ({
   commentId,
   iuser,
+  deleted = false,
   content,
   commentDate,
 }) => {
@@ -45,7 +47,7 @@ const SubComment: React.FC<iSubComment> = ({
   };
   const deleteComment = () => {
     authAxios({
-      method: "DELETE",
+      method: "PUT",
       url: `${process.env.REACT_APP_BACKEND_URL}/comments/delete/${commentId}`,
     })
       .then((response) => {
@@ -110,7 +112,9 @@ const SubComment: React.FC<iSubComment> = ({
         <div>┖</div>
       </div>
       <div className="flex w-full">
-        <div className="flex-initial text-sm w-12">{iuser.nickname}</div>
+        <div className="flex-initial text-sm w-12">
+          {deleted === false ? iuser.nickname : "X"}
+        </div>
         {isEditClicked === true ? (
           <div className="flex justify-between w-full">
             <input
@@ -118,7 +122,8 @@ const SubComment: React.FC<iSubComment> = ({
               defaultValue={editContent.current}
               onChange={(e) => (editContent.current = e.target.value)}
               type="text"
-            />{" "}
+            />
+            {""}
             <button onClick={modifyComment} className="pr-4">
               수정
             </button>
@@ -126,12 +131,14 @@ const SubComment: React.FC<iSubComment> = ({
         ) : (
           <React.Fragment>
             <div className="flex-1 text-base break-words overflow-hidden whitespace-pre-wrap">
-              {content}
+              {deleted === false ? content : "삭제된 메시지입니다."}
             </div>
             <div className="flex-initial text-xs w-16">
               {formatTimestamp(commentDate)}
             </div>
-            <button onClick={changeMenuVisible}>…</button>
+            {deleted === false ? (
+              <button onClick={changeMenuVisible}>…</button>
+            ) : null}
             {menuVisible === true ? (
               <div className="absolute bg-gray-300 right-2">
                 {iuser.userId === useUserStore.getState().id ? (
@@ -145,9 +152,7 @@ const SubComment: React.FC<iSubComment> = ({
                   </ul>
                 )}
               </div>
-            ) : (
-              ""
-            )}
+            ) : null}
           </React.Fragment>
         )}
       </div>

@@ -13,31 +13,35 @@ import Loading from "../atoms/Loading";
 // 이미지 소스
 import Pencil from "../../assets/Pencil.png";
 
-interface BoardWriter {
-  userBirthYear: number;
-  userEmail: string;
-  userGender: number;
+interface iUser {
   userId: number;
-  userIsAdmin: boolean;
-  userIsBanned: boolean;
-  userIsDeleted: boolean;
-  userNickname: string;
-  userPhone: string;
-  userProvider: string;
-  userRegisterDate: string;
+  nickname: string;
+  isBanned: boolean;
+}
+
+interface region {
+  regionId: string;
+  regionSido: string;
+  regionGugun: string;
+  regionDong: string;
 }
 
 interface Content {
   boardId: number;
   boardTitle: string;
-  boardWriter: BoardWriter;
+  boardWriter: iUser;
+  boardContent: string;
   boardDate: string;
+  region?: region;
+  hit: number;
+  boardIsBanned: boolean;
 }
 
 const CommunityMain: React.FC = () => {
   // 데이터 (받아온 게시글들)
   const [page, setPage] = useState<number>(1);
-  const [contents, setContents] = useState<Content[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [contents, setContents] = useState<Array<Content>>([]);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   // pagination 글로벌 디자인 토큰
@@ -58,7 +62,11 @@ const CommunityMain: React.FC = () => {
       },
     })
       .then((response) => {
-        setContents(response.data.content);
+        console.log(response.data);
+        setContents(response.data.data.content);
+        console.log(response.data.data.totalPages);
+        setTotalPages(parseInt(response.data.totalPages, 10));
+        console.log(totalPages);
         setIsLoaded(true);
       })
       .catch((e) => console.log(e));
@@ -98,7 +106,7 @@ const CommunityMain: React.FC = () => {
           <ConfigProvider theme={theme}>
             <Pagination
               current={page}
-              total={50}
+              total={totalPages}
               className="mt-10"
               responsive
               onChange={(pageNumber) => {

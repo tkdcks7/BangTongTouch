@@ -11,7 +11,6 @@ interface User {
   token: string | null;
   setInfoUpdate: (data: any) => void;
   setToken: (token: string) => void;
-  clearToken: () => void;
   setLogOut: () => void;
 }
 
@@ -55,9 +54,9 @@ const useUserStore = create<User>()(
       },
       // 토큰 업데이트 setter
       setToken: (token) => {
+        console.log(token);
         set(() => ({ token }));
       },
-      clearToken: () => set({ token: null }),
       setLogOut: () => {
         set(() => ({
           id: 0,
