@@ -187,9 +187,8 @@ public class UserService {
   public void modifyUserInformation(UserInformationDto userInformationDto) {
     String password = passwordEncoder.encode(userInformationDto.getPassword());
 
-    User user = getUser(userInformationDto.getUserId());
+    User user = userRepository.findById(userInformationDto.getUserId()).orElse(null);
     user.setUserPassword(password);
-    user.setUserNickname(userInformationDto.getNickname());
     user.setUserPhone(userInformationDto.getPhone());
 
     userRepository.save(user);

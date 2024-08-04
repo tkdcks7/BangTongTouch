@@ -41,7 +41,6 @@ public class UserController {
 
   private final JwtUtil jwtUtil;
   private UserService userService;
-  private PasswordEncoder passwordEncoder;
 
   //  회원가입 (일반)
   @PostMapping("/register")
@@ -66,8 +65,8 @@ public class UserController {
     Map<String, Object> map = userService.login(loginRequest);
 
     if (map == null) {
-      return ResponseEntity.status(HttpStatus.OK)
-          .body(ResponseDto.res(ResponseMessageConstants.SUCCESS, null));
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(ResponseDto.res(ResponseMessageConstants.CLIENT_ERROR, null));
     }
 
     return ResponseEntity.status(HttpStatus.OK)
