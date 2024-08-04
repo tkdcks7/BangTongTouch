@@ -6,6 +6,7 @@ import TextBtn from "../atoms/TextBtn";
 import BtnGroup from "../molecules/BtnGroup";
 import Datepicker, { DateValueType } from "react-tailwindcss-datepicker";
 import { ConfigProvider, Modal } from "antd";
+import { productSearchStore } from "../../store/productStore";
 
 // 이모티콘
 import { SearchOutlined } from "@ant-design/icons";
@@ -16,10 +17,10 @@ const FilterBox: React.FC = () => {
   const [open, setOpen] = useState(false); // 지역 선택 모달
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [regions, setRegions] = useState([]);
-  const [rentalCost, setRentalCost] = useState([0, 0]); // 월세
-  const [depositCost, setDepositCost] = useState([0, 0]); // 보증금
   const [rentSupportable, setRentSupportable] = useState(false); // 월세 지원 여부
   const [funitureSupportable, setFunitureSupportable] = useState(false); // 가구 승계 여부
+
+  const { minDeposit, maxDeposit, minRent, maxRent } = productSearchStore()
 
   const showRegionModal = () => {
     setOpen(true);
@@ -49,14 +50,6 @@ const FilterBox: React.FC = () => {
 
   const handleBtnClick = (region: { regionId: string; regionSido: string }) => {
     setLocation(region);
-  };
-
-  const handleRentChange = (newData: number[]) => {
-    setRentalCost(newData);
-  };
-
-  const handleDepositChange = (newData: number[]) => {
-    setDepositCost(newData);
   };
 
   // type
@@ -138,24 +131,18 @@ const FilterBox: React.FC = () => {
       <TextBtn
         title="보증금"
         text={
-          depositCost[0] || depositCost[1]
-            ? `${depositCost[0]}만~${depositCost[1]}만`
+          minDeposit || maxDeposit
+            ? `${minDeposit}만~${maxDeposit}만`
             : "클릭하여 가격 설정"
         }
-        min={0}
-        max={3000}
-        onDataChange={handleDepositChange}
       />
       <TextBtn
         title="월세 (관리비 포함)"
         text={
-          rentalCost[0] || rentalCost[1]
-            ? `${rentalCost[0]}만~${rentalCost[1]}만`
+          minRent || maxRent
+            ? `${minRent}만~${maxRent}만`
             : "클릭하여 가격 설정"
         }
-        min={0}
-        max={300}
-        onDataChange={handleRentChange}
       />
       <BtnGroup title="집 유형" itemsArray={homeCategory} />
       <BtnGroup title="편의시설" itemsArray={facilities} />
