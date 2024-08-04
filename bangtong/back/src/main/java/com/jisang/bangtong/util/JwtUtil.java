@@ -8,13 +8,13 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.stream.Collectors;
+import java.util.Objects;
 import javax.crypto.SecretKey;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class JwtUtil {
 
   private final String secret = SecurityConstants.JWT_SECRET_DEFAULT_VALUE;
