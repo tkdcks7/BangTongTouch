@@ -21,7 +21,7 @@ public interface BoardService {
 
   void delete(long id, HttpServletRequest request);
 
-  Page<BoardReturnDto>  getBoards(BoardSearchDto boardSearchDto);
+  Page<BoardReturnDto> getBoards(BoardSearchDto boardSearchDto);
 
   BoardReturnDto update(BoardUpdateDto boardUpdateDto, Long boardId, HttpServletRequest request);
 

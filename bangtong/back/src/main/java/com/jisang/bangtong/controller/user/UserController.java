@@ -4,13 +4,18 @@ import com.jisang.bangtong.constants.ResponseMessageConstants;
 import com.jisang.bangtong.constants.SecurityConstants;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.dto.user.LoginRequestDto;
+import com.jisang.bangtong.dto.user.ProfileDto;
+import com.jisang.bangtong.dto.user.ProfileModificationDto;
 import com.jisang.bangtong.dto.user.RegisterRequestDto;
 import com.jisang.bangtong.dto.user.UserDto;
+import com.jisang.bangtong.dto.user.UserInformationDto;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.service.user.UserService;
 import com.jisang.bangtong.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +23,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/users")
@@ -32,7 +41,6 @@ public class UserController {
 
   private final JwtUtil jwtUtil;
   private UserService userService;
-  private PasswordEncoder passwordEncoder;
 
   //  회원가입 (일반)
   @PostMapping("/register")
@@ -56,6 +64,11 @@ public class UserController {
   public ResponseEntity<ResponseDto<UserDto>> login(@RequestBody LoginRequestDto loginRequest) {
     Map<String, Object> map = userService.login(loginRequest);
 
+    if (map == null) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(ResponseDto.res(ResponseMessageConstants.CLIENT_ERROR, null));
+    }
+
     return ResponseEntity.status(HttpStatus.OK)
         .header(SecurityConstants.JWT_HEADER, (String) map.get("accessToken"))
         .body(ResponseDto.res(ResponseMessageConstants.SUCCESS, (UserDto) map.get("user")));
@@ -65,6 +78,71 @@ public class UserController {
   @PutMapping("/logout")
   public ResponseDto<Void> logout(HttpServletRequest request, HttpServletResponse response) {
     userService.logout(request, response);
+
+    return ResponseDto.res(ResponseMessageConstants.SUCCESS);
+  }
+
+  // 내 프로필 조회
+  @GetMapping("/profile/{userId}")
+  public ResponseDto<ProfileDto> getProfile(@PathVariable Long userId) {
+    ProfileDto profileDto = userService.getProfile(userId);
+
+    if (profileDto.getUserId() == null) {
+      return ResponseDto.res(ResponseMessageConstants.CLIENT_ERROR, profileDto);
+    }
+
+    return ResponseDto.res(ResponseMessageConstants.SUCCESS, profileDto);
+  }
+
+  // 내 프로필 수정
+  @PutMapping("/modify/{userId}/profile")
+  public ResponseDto<ProfileDto> modifyProfile(@PathVariable Long userId,
+      @RequestParam("nickname") String nickname,
+      @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) {
+    ProfileModificationDto profileModificationDto = new ProfileModificationDto();
+    profileModificationDto.setUserId(userId);
+    profileModificationDto.setNickname(nickname);
+
+    List<MultipartFile> profileImages = new ArrayList<>();
+    profileImages.add(profileImage);
+    profileModificationDto.setProfileImage(profileImages);
+
+    ProfileDto profileDto = userService.modifyProfile(profileModificationDto);
+
+    if (profileDto == null) {
+      return ResponseDto.res(ResponseMessageConstants.SERVER_ERROR, new ProfileDto());
+    } else {
+      if (profileDto.getUserId() == null || profileDto.getUserId() == 0) {
+        return ResponseDto.res(ResponseMessageConstants.CLIENT_ERROR, profileDto);
+      }
+
+      return ResponseDto.res(ResponseMessageConstants.SUCCESS, profileDto);
+    }
+  }
+
+  // 내 회원 정보 조회
+  @GetMapping("/{userId}")
+  public ResponseDto<UserInformationDto> getUserInformation(@PathVariable Long userId) {
+    UserInformationDto userInformationDto = userService.getUserInformation(userId);
+
+    if (userInformationDto.getUserId() == null || userInformationDto.getUserId() == 0) {
+      return ResponseDto.res(ResponseMessageConstants.CLIENT_ERROR, userInformationDto);
+    }
+
+    return ResponseDto.res(ResponseMessageConstants.SUCCESS, userInformationDto);
+  }
+
+  // 내 회원 정보 수정
+  @PutMapping("/modify/{userId}")
+  public ResponseDto<Void> modifyUserInformation(@PathVariable Long userId,
+      @RequestBody UserInformationDto userInformationDto) {
+    userInformationDto.setUserId(userId);
+
+    try {
+      userService.modifyUserInformation(userInformationDto);
+    } catch (Exception e) {
+      return ResponseDto.res(ResponseMessageConstants.SERVER_ERROR);
+    }
 
     return ResponseDto.res(ResponseMessageConstants.SUCCESS);
   }
