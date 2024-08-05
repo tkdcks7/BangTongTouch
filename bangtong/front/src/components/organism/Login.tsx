@@ -15,6 +15,7 @@ import Btn from "../atoms/Btn";
 import Google from "../../assets/GoogleSocial.png";
 import Kakao from "../../assets/KakaoSocial.png";
 import Naver from "../../assets/NaverSocial.png";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 
 /**
  * 검증 오류가 발생하였을 경우 id 값을 "e" 검증이 되었을 경우 "q", 기본 상태 "" 처럼 빈 값 string 변수로 전달
@@ -172,6 +173,7 @@ const LoginPage: React.FC = () => {
               className="rounded-full border-2"
               size="large"
               allowClear
+              prefix={<UserOutlined />}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -187,6 +189,7 @@ const LoginPage: React.FC = () => {
               className="rounded-full border-2"
               size="large"
               allowClear
+              prefix={<LockOutlined />}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

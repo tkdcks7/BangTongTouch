@@ -121,7 +121,7 @@ const PcNavBar: React.FC = () => {
                   <Btn
                     text="회원가입"
                     backgroundColor="bg-yellow-300"
-                    onClick={() => navigate("")}
+                    onClick={handleSignUpBtnClick}
                   />
                 </div>
               </div>

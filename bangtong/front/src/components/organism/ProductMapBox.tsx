@@ -5,8 +5,21 @@ import dayjs from "dayjs";
 import ProductMap from "../molecules/ProductMap";
 import InputBox from "../molecules/InputBox";
 import FilterBox from "../molecules/FilterBox";
-import { Button, ConfigProvider, DatePicker, Popover, Radio } from "antd";
-import { CalendarOutlined } from "@ant-design/icons";
+import {
+  Button,
+  ConfigProvider,
+  DatePicker,
+  Dropdown,
+  Popover,
+  Radio,
+  Space,
+  FloatButton,
+} from "antd";
+import type { MenuProps } from "antd";
+import ProductList from "../molecules/ProductList";
+
+// 아이콘
+import { CalendarOutlined, DownOutlined } from "@ant-design/icons";
 
 const { RangePicker } = DatePicker;
 
@@ -43,21 +56,43 @@ const ProductMapBox: React.FC = () => {
   );
 
   // order
+  // "스마트 추천", "최신 등록순", "가격 낮은 순", "집 넓은 순"
   const orderBy = ["스마트 추천", "최신 등록순", "가격 낮은 순", "집 넓은 순"];
+
+  const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+    setOrder(parseInt(key));
+  };
+
+  const items: MenuProps["items"] = [
+    {
+      label: "스마트 추천",
+      key: 0,
+    },
+    {
+      label: "최신 등록순",
+      key: 1,
+    },
+    {
+      label: "가격 낮은 순",
+      key: 2,
+    },
+    {
+      label: "집 넓은 순",
+      key: 3,
+    },
+  ];
+
+  const menuProps = {
+    items,
+    onClick: handleMenuClick,
+  };
 
   return (
     <div className="my-20 flex items-center justify-center">
-      <div className="hidden lg:block">
+      <div className="hidden lg:block mr-5">
         <FilterBox />
       </div>
-      <div className="w-4/5 lg:w-2/5">
-        <div className="lg:hidden mt-5">
-          <InputBox
-            placeholder="주소 검색"
-            buttonType="search"
-            width={"auto"}
-          />
-        </div>
+      <div className="lg:w-2/5">
         <div className="text-center">
           <div className="text-lime-600 font-bold text-center">
             <ConfigProvider theme={theme}>
@@ -74,12 +109,27 @@ const ProductMapBox: React.FC = () => {
                     icon={<CalendarOutlined className="text-lime-500" />}
                   ></Button>
                 </Popover>
-                <Radio.Group defaultValue={0}>
-                  <Radio.Button value={0}>{orderBy[0]}</Radio.Button>
-                  <Radio.Button value={1}>{orderBy[1]}</Radio.Button>
-                  <Radio.Button value={2}>{orderBy[2]}</Radio.Button>
-                  <Radio.Button value={3}>{orderBy[3]}</Radio.Button>
+                <Radio.Group
+                  defaultValue={0}
+                  className="hidden md:block lg:hidden xl:block"
+                >
+                  {orderBy.map((item, index) => (
+                    <Radio.Button value={index} onClick={() => setOrder(index)}>
+                      {item}
+                    </Radio.Button>
+                  ))}
                 </Radio.Group>
+                <Dropdown
+                  menu={menuProps}
+                  className="md:hidden lg:block xl:hidden"
+                >
+                  <Button onClick={(e) => e.preventDefault()}>
+                    <Space>
+                      {orderBy[order]}
+                      <DownOutlined />
+                    </Space>
+                  </Button>
+                </Dropdown>
               </div>
             </ConfigProvider>
           </div>
@@ -88,6 +138,7 @@ const ProductMapBox: React.FC = () => {
           <ProductMap />
         </div>
       </div>
+      <ProductList />
     </div>
   );
 };
