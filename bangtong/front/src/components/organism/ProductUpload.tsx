@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import authAxios from "../../utils/authAxios";
+import dayjs from "dayjs";
+import { getUserAddressNum } from "../../utils/services";
 
 // 컴포넌트
 import InputBox from "../molecules/InputBox";
@@ -9,8 +12,31 @@ import Attachment from "../atoms/Attachment";
 import Btn from "../atoms/Btn";
 import OptionBtnGroup from "../molecules/OptionBtnGroup";
 import RadioGroup from "../molecules/RadioGroup";
-import Datepicker from "react-tailwindcss-datepicker";
 import useProductOptionStore from "../../store/productStore";
+import { Button, DatePicker, Popover } from "antd";
+import { CalendarOutlined } from "@ant-design/icons";
+
+// 매물 업로드에 필요한 json의 인터페이스
+interface ProductUploadDto {
+  type: String;
+  regionId: String;
+  address: String;
+  deposit: number;
+  rent: number;
+  maintenance: number;
+  maintenanceInfo: String;
+  isRentSupportable: Boolean;
+  isFurnitureSupportable: Boolean;
+  square: number;
+  room: number;
+  option: number;
+  additionalOption: String[];
+  startDate: Date;
+  endDate: Date;
+  AddressDetail: String;
+  lat: number;
+  lng: number;
+}
 
 const ProductUpload: React.FC = () => {
   let { id }: any = useParams(); // 상품 번호. 있으면 update, 없으면 create
@@ -36,16 +62,10 @@ const ProductUpload: React.FC = () => {
   const [movieFile, setMovieFile] = useState(null);
 
   // Datepicker를 위한 state
-  const [value, setValue] = useState({
-    startDate: "",
-    endDate: "",
-  });
+  const [date, setDate] = useState(["0000-00-00", "0000-00-00"]);
 
-  // Datepicker를 위한 핸들러
-  const handleValueChange = (newValue: any): void => {
-    console.log("newValue:", newValue);
-    setValue(newValue);
-  };
+  // 날짜 선택창
+  const { RangePicker } = DatePicker;
 
   // 수정일 시, 백엔드에서 값을 받아온 후 state에 집어넣음.
   if (id) {
@@ -101,37 +121,35 @@ const ProductUpload: React.FC = () => {
   };
 
   // 파일 등록 시 확장자 유효성판정 후 업로드
-  const handleFileChange = (fileInput: any, fileType: string) => {
+  const onFileChange = (fileInput: any, fileType: string) => {
     if (fileInput) {
-      let extensionAllowed: string[] = [];
-      const extensionName = fileInput.name.split(".").pop().toLowerCase();
-      if (fileType === "사진") {
-        extensionAllowed = ["jpg", "png", "gif"];
-      } else if (fileType === "영상") {
-        extensionAllowed = ["mp4"];
+      const extensionName = fileInput.name.split(".").pop().toLowerCase(); // 파일명에서 확장자명 추출
+      if (
+        ["jpg", "png", "gif"].includes(extensionName) &&
+        fileType === "사진"
+      ) {
+        setImgFile(() => fileInput);
+      } else if (extensionName === "mp4" && fileType === "영상") {
+        setMovieFile(() => fileInput);
       } else {
-        if (fileType === "사진") {
-          setImgFile(null);
-          alert(
-            "지원하지 않는 형식의 파일입니다\n*확장자가 jpg, png, gif인 파일만 등록 가능"
-          );
-        } else {
-          setMovieFile(null);
-          alert(
-            "지원하지 않는 형식의 파일입니다\n*확장자가 mp4인 파일만 등록 가능"
-          );
-        }
-        return;
-      }
-      if (extensionAllowed.includes(extensionName)) {
-        if (fileType === "사진") {
-          setImgFile(fileInput);
-        } else {
-          setMovieFile(fileInput);
-        }
+        window.alert(
+          "지원하지 않는 형식의 파일입니다\n*확장자가 jpg, png, gif, mp4인 파일만 등록 가능"
+        );
       }
     }
   };
+
+  const handelChange = (dates: any) => {
+    setDate([dates[0], dates[1]]);
+  };
+
+  const datePicker = (
+    <RangePicker
+      className="w-full"
+      placeholder={["입주 가능일", "계약종료일"]}
+      onChange={handelChange}
+    />
+  );
 
   //   productAddress: String,
   //   productDeposit: Integer,
@@ -169,11 +187,49 @@ const ProductUpload: React.FC = () => {
 
   // 매물 업로드 실행 함수
   const handleUploadClick = () => {
-    console.log(`이미지파일은 ${imgFile}입니다.`);
+    // interface ProductUploadDto {
+    //   type: String;
+    //   regionId: String;
+    //   address: String;
+    //   deposit: number;
+    //   rent: number;
+    //   maintenance: number;
+    //   maintenanceInfo: String;
+    //   isRentSupportable: Boolean;
+    //   isFurnitureSupportable: Boolean;
+    //   square: number;
+    //   room: number;
+    //   option: number;
+    //   additionalOption: String[];
+    //   startDate: Date;
+    //   endDate: Date;
+    //   AddressDetail: String;
+    //   lat: number;
+    //   lng: number;
+    //   }
+
+    const lnum = async () => {
+      const [lat, lng] = await getUserAddressNum(address);
+    };
+
+    // 이부분 수정중!!!!
+    const productUploadDto: ProductUploadDto = {
+      address,
+      deposit: Number(deposit),
+      rent: Number(charge),
+      maintenance: Number(maintanence),
+      maintenanceInfo: maintanenceInfo,
+      square: Number(area),
+      room: Number(room),
+      additionalOption: furnitureList,
+      startDate: dayjs(date[0]).toDate(),
+      endDate: dayjs(date[1]).toDate(),
+      AddressDetail: addressDetail,
+    };
     const formData = new FormData();
 
     // 보낼 값을 formData에 append
-    formData.append("productAddress", address); // productAddress 말고 productAddressDetail도 만들어줄것을 요청
+    formData.append("productAddress", address);
     formData.append("addressDetail", addressDetail);
     formData.append("productDeposit", deposit);
     formData.append("productRent", charge);
@@ -183,8 +239,8 @@ const ProductUpload: React.FC = () => {
     formData.append("remainDate", remainDate);
     formData.append("productRoom", room);
     formData.append("furniture", furniture);
-    formData.append("productStartDate", value.startDate);
-    formData.append("productEndDate", value.endDate);
+    formData.append("productStartDate", dayjs(date[0]).format("YYYY-MM-DD"));
+    formData.append("productEndDate", dayjs(date[1]).format("YYYY-MM-DD"));
 
     // Option 처리 부분
     let option: string = "0000000";
@@ -200,13 +256,12 @@ const ProductUpload: React.FC = () => {
     }
     formData.append("productOption", option);
 
-    // 이미지와 영상은 null이면 안올려야하나, 임시로 올릴 수 있도록 작성
+    // 이미지와 영상 업로드
     if (imgFile) {
-      formData.append("imgFile", imgFile);
+      formData.append(`productMedia[0]`, imgFile);
     }
-
     if (movieFile) {
-      formData.append("movieFile", movieFile);
+      formData.append(`productMedia[1]`, movieFile);
     }
 
     axios({
@@ -307,11 +362,22 @@ const ProductUpload: React.FC = () => {
             onChange={(e) => setArea(e.target.value)}
           />
           <div style={{ width: "45%" }}>
-            <Datepicker
-              value={value}
-              onChange={handleValueChange}
-              useRange={false}
-            />
+            <Popover
+              trigger="click"
+              placement="bottom"
+              title={
+                <p className="text-center mb-3">
+                  양도 가능 기간을 설정해주세요.
+                </p>
+              }
+              content={datePicker}
+            >
+              <Button
+                type="text"
+                size="large"
+                icon={<CalendarOutlined className="text-lime-500" />}
+              ></Button>
+            </Popover>
           </div>
         </div>
       </form>
@@ -357,8 +423,8 @@ const ProductUpload: React.FC = () => {
           </div>
         </div>
         <div id="attachment-group">
-          <Attachment fileType="사진" onFileChange={handleFileChange} />
-          <Attachment fileType="동영상" onFileChange={handleFileChange} />
+          <Attachment fileType="사진" onFileChange={onFileChange} />
+          <Attachment fileType="동영상" onFileChange={onFileChange} />
         </div>
         <div className="text-center mt-5">
           <Btn
