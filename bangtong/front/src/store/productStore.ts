@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import dayjs from "dayjs";
 
 interface ProductOption {
   풀옵션: boolean;
@@ -37,20 +38,8 @@ const useProductOptionStore = create<ProductStore>((set) => ({
     })),
 }));
 
-// order: Integer,
-// minDeposit: Integer,
-// maxDeposit: Integer,
-// minRent: Integer,
-// maxRent: Integer,
-// type: String,
-// address: String,
-// rentSupportable: Boolean,
-// furnitureSupportable: Boolean,
-// infra: Integer,
-// startDate: String,
-// endDate: String
-
 interface ProductSearchParams {
+  productsList: any[]; // 조회한 매물 목록
   order: number;
   minDeposit: number;
   maxDeposit: number;
@@ -63,6 +52,8 @@ interface ProductSearchParams {
   infra: number[]; // 비트마스킹용 array
   startDate: string;
   endDate: string;
+  setProductsList: (data: any) => void; // 매물 목록 갱신
+  setOrder: (idx: number) => void;
   setDeposit: (min: number, max: number) => void;
   setRent: (min: number, max: number) => void;
   setHomeType: (index: number) => void;
@@ -70,23 +61,26 @@ interface ProductSearchParams {
   setRentSupportable: () => void;
   setFurnitureSupportable: () => void;
   setInfra: (index: number) => void;
-  setDate: (st: string, ed: string) => void;
+  setDate: (st: any, ed: any) => void;
 }
 
 // 검색 옵션 store
 export const productSearchStore = create<ProductSearchParams>((set) => ({
+  productsList: [],
   order: 0,
   minDeposit: 0,
-  maxDeposit: 0,
+  maxDeposit: 3000,
   minRent: 0,
-  maxRent: 0,
+  maxRent: 300,
   homeType: [0, 0, 0, 0, 0],
   address: "",
   rentSupportable: false,
   furnitureSupportable: false,
   infra: [0, 0, 0, 0, 0, 0, 0, 0],
-  startDate: "",
-  endDate: "",
+  startDate: "0000-00-00",
+  endDate: "0000-00-00",
+  setProductsList: (data: any) => set(() => ({ productsList: data })),
+  setOrder: (idx: number) => set(() => ({ order: idx })),
   setDeposit: (min: number, max: number) =>
     set(() => ({
       minDeposit: min,
@@ -118,10 +112,10 @@ export const productSearchStore = create<ProductSearchParams>((set) => ({
       }
       return { infra: newInfra };
     }),
-  setDate: (st: string, ed: string) =>
+  setDate: (st: any, ed: any) =>
     set(() => ({
-      startDate: st,
-      endDate: ed,
+      startDate: dayjs(st).format("YYYY-MM-DD"),
+      endDate: dayjs(ed).format("YYYY-MM-DD"),
     })),
 }));
 
