@@ -19,6 +19,7 @@ const FilterBox: React.FC = () => {
   const [regions, setRegions] = useState([]); // 지역 선택 모달에 뜰 버튼들 갱신
 
   const {
+    order,
     minDeposit,
     maxDeposit,
     minRent,
@@ -112,6 +113,15 @@ const FilterBox: React.FC = () => {
     "아파트",
   ];
 
+  // 영어 type(변환해야함.)
+  const homeCategoryEnglish: string[] = [
+    "ONEROOM",
+    "OFFICE",
+    "TWOROOM",
+    "VILLA",
+    "APARTMENT",
+  ];
+
   // infra
   const facilities: string[] = [
     "경찰서",
@@ -134,18 +144,25 @@ const FilterBox: React.FC = () => {
   };
 
   // 편의시설 비트마스킹하는 함수
-  const bitMaskingInfra = (numArr: number[]) => {
-    const infraCopy: number[] = [...numArr]; // 반응형 이슈를 피하기 위한 배열 복사
-    return infraCopy.map((el) => String(el)).join("");
+  const bitMaskingInfra = (numArr: number[]): number => {
+    let val = 0;
+    numArr.forEach((el, idx) => {
+      if (el) {
+        val += 2 ** (7 - idx);
+      }
+    });
+    return val;
   };
 
   // 방 타입을 반환하는 함수
-  const roomTypeConverter = (numArr: number[]) => numArr.findIndex((el) => el); // 1인 index(0이 아닌 index) 반환
+  const roomTypeConverter = (numArr: number[]) =>
+    homeCategoryEnglish[numArr.findIndex((el) => el)]; // 1인 index(0이 아닌 index) 반환
 
   // 검색을 진행하는 함수
   const handleSearch = () => {
     console.log("검색 진행");
     const searchData = {
+      order,
       minDeposit,
       maxDeposit,
       minRent,
@@ -158,7 +175,9 @@ const FilterBox: React.FC = () => {
       startDate,
       endDate,
     };
-    authAxios({
+    console.log(`searchData는...`);
+    console.log(searchData);
+    axios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
       data: searchData,

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import dayjs from "dayjs";
 
 interface ProductOption {
   풀옵션: boolean;
@@ -60,7 +61,7 @@ interface ProductSearchParams {
   setRentSupportable: () => void;
   setFurnitureSupportable: () => void;
   setInfra: (index: number) => void;
-  setDate: (st: string, ed: string) => void;
+  setDate: (st: any, ed: any) => void;
 }
 
 // 검색 옵션 store
@@ -111,10 +112,10 @@ export const productSearchStore = create<ProductSearchParams>((set) => ({
       }
       return { infra: newInfra };
     }),
-  setDate: (st: string, ed: string) =>
+  setDate: (st: any, ed: any) =>
     set(() => ({
-      startDate: st,
-      endDate: ed,
+      startDate: dayjs(st).format("YYYY-MM-DD"),
+      endDate: dayjs(ed).format("YYYY-MM-DD"),
     })),
 }));
 
