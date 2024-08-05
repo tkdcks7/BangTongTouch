@@ -20,4 +20,5 @@ public class IComment {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
   Date commentDate;
   List<ISubComment> subcomments;
+  boolean isDeleted;
 }

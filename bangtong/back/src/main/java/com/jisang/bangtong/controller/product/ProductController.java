@@ -1,18 +1,15 @@
 package com.jisang.bangtong.controller.product;
 
 import com.jisang.bangtong.dto.common.ResponseDto;
+import com.jisang.bangtong.dto.product.ProductReturnDto;
 import com.jisang.bangtong.dto.product.ProductSearchDto;
 import com.jisang.bangtong.dto.product.ProductUpdateDto;
 import com.jisang.bangtong.dto.product.ProductUploadDto;
-import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.model.product.ProductType;
-import com.jisang.bangtong.service.common.FileService;
 import com.jisang.bangtong.service.product.ProductService;
-import com.jisang.bangtong.service.product.ProductServiceImpl;
-import com.jisang.bangtong.service.region.RegionService;
-import com.jisang.bangtong.service.user.UserService;
-import java.io.IOException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -44,75 +41,35 @@ public class ProductController {
   //  매물 업로드
   //  TODO: Multipart 처리
   @PostMapping(value="/upload")
-  public ResponseDto<Void> upload(@RequestPart Map<String, String> productUploadDto, @RequestPart(required = false) List<MultipartFile> productMedia) {
+  public ResponseDto<Void> upload(@RequestPart @Valid ProductUploadDto productUploadDto, @RequestPart(required = false) List<MultipartFile> productMedia, HttpServletRequest request) {
     log.info("product upload 실행 {}", productUploadDto);
-    log.info("{}", productMedia);
-    ProductUploadDto updateDto = new ProductUploadDto();
-    setUpdateDto(productUploadDto, updateDto);
-
-    productService.upload(updateDto, productMedia);
-
+    productService.upload(productUploadDto, productMedia, request);
     return new ResponseDto<>(SUCCESS);
   }
 
-  private void setUpdateDto(Map<String, String> productUploadDto, ProductUploadDto updateDto) {
-    updateDto.setLng(Double.parseDouble(productUploadDto.get("lng")));
-    updateDto.setLat(Double.parseDouble(productUploadDto.get("lat")));
-    updateDto.setProductType(ProductType.valueOf(productUploadDto.get("productType")));
-    updateDto.setRegionId(productUploadDto.get("regionId"));
-    updateDto.setUserId(Long.parseLong(productUploadDto.get("userId")));
-    updateDto.setProductAddress(productUploadDto.get("productAddress"));
-    updateDto.setProductDeposit(Integer.parseInt(productUploadDto.get("productDeposit")));
-    updateDto.setProductIsRentSupportable(Boolean.parseBoolean(productUploadDto.get("productIsRentSupportable")));
-    updateDto.setProductIsFurnitureSupportable(Boolean.parseBoolean(productUploadDto.get("productIsFurnitureSupportable")));
-    updateDto.setProductSquare(Float.parseFloat(productUploadDto.get("productSquare")));
-    updateDto.setProductRoom(Integer.parseInt(productUploadDto.get("productRoom")));
-    updateDto.setProductOption(productUploadDto.get("productOption"));
-    updateDto.setProductStartDate(Date.valueOf(productUploadDto.get("productStartDate")));
-    updateDto.setProductEndDate(Date.valueOf(productUploadDto.get("productEndDate")));
-    updateDto.setProductMaintenanceInfo(productUploadDto.get("productMaintenanceInfo"));
-  }
-
   @PutMapping("/modify/{productId}")
-  public ResponseDto<Void> modify(@RequestBody ProductUpdateDto productUpdateDto) {
-
+  public ResponseDto<Void> modify(@RequestBody @Valid ProductUpdateDto productUpdateDto, HttpServletRequest request, @PathVariable Long productId) {
     log.info("modify 실행 {}", productUpdateDto);
-
-    Product product = productService.getProduct(productUpdateDto.getProductId());
-
-    //setter 설정
-    product.setProductId(productUpdateDto.getProductId());
-    product.setProductDeposit(productUpdateDto.getProductDeposit());
-    product.setProductMaintenance(productUpdateDto.getProductMaintenance());
-    product.setProductIsRentSupportable(productUpdateDto.getProductIsRentSupportable());
-    product.setProductIsFurnitureSupportable(productUpdateDto.getProductIsFurnitureSupportable());
-    product.setProductOption(productUpdateDto.getProductOption());
-    product.setProductAdditionalOption(productUpdateDto.getProductAdditionalOption());
-    product.setProductStartDate(productUpdateDto.getProductStartDate());
-    product.setProductEndDate(productUpdateDto.getProductEndDate());
-
-    productService.update(product);
+    productService.update(productUpdateDto, productId ,request);
     return new ResponseDto<>(SUCCESS);
   }
 
   //매물 조회
   @GetMapping("/{productId}")
-  public ResponseDto<Product> getProduct(@PathVariable("productId") Long productId) {
-    Product product = productService.getProduct(productId);
+  public ResponseDto<ProductReturnDto> getProduct(@PathVariable("productId") Long productId) {
+    ProductReturnDto product = productService.getProduct(productId);
     return new ResponseDto<>(SUCCESS, product);
   }
 
   @PutMapping("/delete/{productId}")
-  public ResponseDto<Void> delete(@PathVariable("productId") Long productId) {
-    Product product = productService.getProduct(productId);
-    product.setProductIsDeleted(true);
-    productService.update(product);
+  public ResponseDto<Void> delete(@PathVariable("productId") Long productId, HttpServletRequest request) {
+    productService.delete(productId, request);
     return new ResponseDto<>(SUCCESS);
   }
 
   @PostMapping("/search")
-  public ResponseDto<List<Product>> search(@RequestBody ProductSearchDto productSearchDto){
-    List<Product> searchList = productService.searchList(productSearchDto);
+  public ResponseDto<List<ProductReturnDto>> search(@RequestBody ProductSearchDto productSearchDto, HttpServletRequest request){
+    List<ProductReturnDto> searchList = productService.searchList(productSearchDto, request);
     return new ResponseDto<>(SUCCESS, searchList);
   }
 }
