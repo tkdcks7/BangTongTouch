@@ -141,7 +141,7 @@ const ProductDetail: React.FC = () => {
 
   return (
     <div>
-      <div className="mt-10">
+      <div className="mt-10 w-full md:w-2/5 mx-auto">
         <ImgCarousel />
         {/* 유저 프로필, 연락하기 */}
         <ProductProfile />
@@ -187,6 +187,7 @@ const ProductDetail: React.FC = () => {
         {/* 구분선 */}
         <Devider />
         <LocationAround />
+        <div className="h-20" />
       </div>
     </div>
   );

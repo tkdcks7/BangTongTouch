@@ -24,7 +24,7 @@ import { CalendarOutlined, DownOutlined } from "@ant-design/icons";
 const { RangePicker } = DatePicker;
 
 const ProductMapBox: React.FC = () => {
-  const { productsList, setOrder, setDate } = productSearchStore();
+  const { productsList, order, setOrder, setDate } = productSearchStore();
 
   // ant design 글로벌 디자인 토큰
   const theme = {
@@ -107,20 +107,14 @@ const ProductMapBox: React.FC = () => {
                     icon={<CalendarOutlined className="text-lime-500" />}
                   ></Button>
                 </Popover>
-                <Radio.Group
-                  defaultValue={0}
-                  className="hidden md:block lg:hidden xl:block"
-                >
+                <Radio.Group defaultValue={0} className="hidden xl:block">
                   {orderBy.map((item, index) => (
                     <Radio.Button value={index} onClick={() => setOrder(index)}>
                       {item}
                     </Radio.Button>
                   ))}
                 </Radio.Group>
-                <Dropdown
-                  menu={menuProps}
-                  className="md:hidden lg:block xl:hidden"
-                >
+                <Dropdown menu={menuProps} className="xl:hidden">
                   <Button onClick={(e) => e.preventDefault()}>
                     <Space>
                       {orderBy[order]}
@@ -136,7 +130,9 @@ const ProductMapBox: React.FC = () => {
           <ProductMap />
         </div>
       </div>
-      <ProductList />
+      <div className="hidden lg:block ml-5">
+        <ProductList />
+      </div>
     </div>
   );
 };
