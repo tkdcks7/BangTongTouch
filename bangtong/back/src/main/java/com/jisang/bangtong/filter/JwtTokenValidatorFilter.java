@@ -11,6 +11,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,9 +53,16 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
       } catch (ExpiredJwtException e) {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write("만료된 토큰입니다.");
-        return;
+        Long id = Long.parseLong(String.valueOf(e.getClaims().get("id")));
+        User user = userRepository.findById(id).orElse(null);
+        String refreshToken = user.getUserRefreshToken();
+
+        if (refreshToken == null) {
+          throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
+        }
+
+        String accessToken = jwtUtil.generateAccessToken(user,
+            String.valueOf(e.getClaims().get("authorities")), new Date());
       } catch (Exception e) {
         throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
       }
