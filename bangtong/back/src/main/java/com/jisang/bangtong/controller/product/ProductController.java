@@ -9,6 +9,7 @@ import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.model.product.ProductType;
 import com.jisang.bangtong.service.product.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.sql.Date;
 import java.util.List;
 import java.util.Map;
@@ -40,19 +41,16 @@ public class ProductController {
   //  매물 업로드
   //  TODO: Multipart 처리
   @PostMapping(value="/upload")
-  public ResponseDto<Void> upload(@RequestPart Map<String, Object> productUploadDto, @RequestPart(required = false) List<MultipartFile> productMedia, HttpServletRequest request) {
+  public ResponseDto<Void> upload(@RequestPart @Valid ProductUploadDto productUploadDto, @RequestPart(required = false) List<MultipartFile> productMedia, HttpServletRequest request) {
     log.info("product upload 실행 {}", productUploadDto);
-    log.info("{}", productMedia);
-    ProductUploadDto updateDto = setUploadDto(productUploadDto);
-    log.info("{}", updateDto);
-    //productService.upload(updateDto, productMedia, request);
+    productService.upload(productUploadDto, productMedia, request);
     return new ResponseDto<>(SUCCESS);
   }
 
   @PutMapping("/modify/{productId}")
-  public ResponseDto<Void> modify(@RequestBody ProductUpdateDto productUpdateDto, HttpServletRequest request) {
+  public ResponseDto<Void> modify(@RequestBody @Valid ProductUpdateDto productUpdateDto, HttpServletRequest request, @PathVariable Long productId) {
     log.info("modify 실행 {}", productUpdateDto);
-    productService.update(productUpdateDto, request);
+    productService.update(productUpdateDto, productId ,request);
     return new ResponseDto<>(SUCCESS);
   }
 
@@ -64,47 +62,14 @@ public class ProductController {
   }
 
   @PutMapping("/delete/{productId}")
-  public ResponseDto<Void> delete(@PathVariable("productId") Long productId) {
-    productService.delete(productId);
+  public ResponseDto<Void> delete(@PathVariable("productId") Long productId, HttpServletRequest request) {
+    productService.delete(productId, request);
     return new ResponseDto<>(SUCCESS);
   }
 
   @PostMapping("/search")
-  public ResponseDto<List<ProductReturnDto>> search(@RequestBody ProductSearchDto productSearchDto){
-    List<ProductReturnDto> searchList = productService.searchList(productSearchDto);
+  public ResponseDto<List<ProductReturnDto>> search(@RequestBody ProductSearchDto productSearchDto, HttpServletRequest request){
+    List<ProductReturnDto> searchList = productService.searchList(productSearchDto, request);
     return new ResponseDto<>(SUCCESS, searchList);
-  }
-
-  private ProductUploadDto setUploadDto(Map<String, Object> productUploadDto) {
-    ProductUploadDto uploadDto = new ProductUploadDto();
-    List<String> strList = (List<String>)productUploadDto.get("productAdditionalOption");
-    StringBuilder sb = new StringBuilder();
-    for(int i=0; i<strList.size()-1; i++){
-      sb.append(strList.get(i)).append(",");
-    }
-    sb.append(strList.get(strList.size()-1));
-
-    uploadDto.setProductType(ProductType.valueOf(toStr(productUploadDto.get("productType"))));
-    uploadDto.setRegionId(toStr(productUploadDto.get("regionId")));
-    uploadDto.setProductAddress(toStr(productUploadDto.get("productAddress")));
-    uploadDto.setProductDeposit(Integer.parseInt(toStr(productUploadDto.get("productDeposit"))));
-    uploadDto.setProductMaintenance(Integer.parseInt(toStr(productUploadDto.get("productMaintenance"))));
-    uploadDto.setProductMaintenanceInfo(toStr(productUploadDto.get("productMaintenanceInfo")));
-    uploadDto.setProductIsRentSupportable(Boolean.parseBoolean(toStr(productUploadDto.get("productIsRentSupportable"))));
-    uploadDto.setProductIsFurnitureSupportable(Boolean.parseBoolean(toStr(productUploadDto.get("productIsFurnitureSupportable"))));
-    uploadDto.setProductSquare(Float.parseFloat(toStr(productUploadDto.get("productSquare"))));
-    uploadDto.setProductRoom(Integer.parseInt(toStr(productUploadDto.get("productRoom"))));
-    uploadDto.setProductOption(Integer.parseInt(toStr(productUploadDto.get("productOption"))));
-    uploadDto.setProductAdditionalOption(sb.toString());
-    uploadDto.setLng(Double.parseDouble(toStr(productUploadDto.get("lng"))));
-    uploadDto.setLat(Double.parseDouble(toStr(productUploadDto.get("lat"))));
-    uploadDto.setProductStartDate(Date.valueOf(toStr(productUploadDto.get("productStartDate"))));
-    uploadDto.setProductEndDate(Date.valueOf(toStr(productUploadDto.get("productEndDate"))));
-    uploadDto.setProductDetailAddress(toStr(productUploadDto.get("productDetailAddress")));
-    return uploadDto;
-  }
-
-  private String toStr(Object obj){
-    return String.valueOf(obj);
   }
 }

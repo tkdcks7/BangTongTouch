@@ -16,4 +16,6 @@ public interface InterestRepository extends JpaRepository<Interest, Long> {
   void deleteByUserIdAndProductId(@Param("userId") Long userId, @Param("productId") Long productId);
 
   Optional<List<Interest>> findAllByUser_UserId(Long userId);
+
+  Optional<Interest> findByProduct_ProductIdAndUser_UserId(Long productId, Long userId);
 }

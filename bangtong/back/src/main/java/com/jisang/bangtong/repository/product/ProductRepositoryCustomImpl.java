@@ -36,7 +36,6 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
                 .and(product.productType.eq(ProductType.valueOf(productSearchDto.getType())))
                 .and(product.productIsRentSupportable.eq(productSearchDto.isRentSupportable()))
                 .and(product.productIsFurnitureSupportable.eq(productSearchDto.isFurnitureSupportable()))
-                .and(product.productOption.eq(productSearchDto.getInfra())) // 여기 데이터 타입 확인 필요
                 .and(product.productStartDate.goe(productSearchDto.getStartDate()))
                 .and(product.productEndDate.loe(productSearchDto.getEndDate()))
         )
