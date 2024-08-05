@@ -3,7 +3,7 @@ import authAxios from "../../utils/authAxios";
 import useUserStore from "../../store/userStore";
 
 // 컴포넌트
-import Chatroom from "./Chatroom";
+// import Chatroom from "./Chatroom";
 
 // 이미지 소스
 import Room from "../../assets/Room1.jpg";
@@ -29,7 +29,8 @@ const ChatBox: React.FC = () => {
         chatroomList.map((room) => {
           return (
             // 상속을 해줘야함.
-            <Chatroom />
+            // <Chatroom />
+            <p></p>
           );
         })
       ) : (

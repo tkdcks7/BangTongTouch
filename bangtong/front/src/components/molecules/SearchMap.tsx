@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import { Link } from "react-router-dom";
+import { FloatButton } from "antd";
 
 // 이미지 소스
 import MapProduct from "../../assets/MapProduct.png"; // 매물
@@ -10,6 +11,7 @@ import MapBusStation from "../../assets/MapBusStation.png"; // 버스정류장
 import MapBank from "../../assets/MapBank.png"; // 은행
 import MapLaundry from "../../assets/MapLaundry.png"; // 세탁소
 import MapGym from "../../assets/MapGym.png"; // 헬스장
+import { FilterOutlined } from "@ant-design/icons";
 
 interface MapProps {
   basePos: Pos; // 초기 위치(매물 좌표 or 사용자의 위치)

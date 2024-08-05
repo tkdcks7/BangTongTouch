@@ -191,7 +191,7 @@ const FilterBox: React.FC = () => {
   };
 
   return (
-    <div className="w-80 px-5 py-10 border border-2 rounded-xl mr-5 shadow-md">
+    <div className="w-80 px-5 py-10 border border-2 rounded-xl shadow-md">
       <button
         className="w-full bg-lime-500 text-white p-2 rounded-full"
         onClick={showRegionModal}
