@@ -7,20 +7,18 @@ interface TextBtnProps {
   text: string;
 }
 
-const TextBtn: React.FC<TextBtnProps> = ({
-  title,
-  text,
-}) => {
-  let min = 0
-  let max = 0
-  const { minDeposit, maxDeposit, minRent, maxRent, setDeposit, setRent } = productSearchStore()
+const TextBtn: React.FC<TextBtnProps> = ({ title, text }) => {
+  let min = 0;
+  let max = 3000;
+  const { minDeposit, maxDeposit, minRent, maxRent, setDeposit, setRent } =
+    productSearchStore();
   const [modalOpen, setModalOpen] = useState(false);
   if (title === "보증금") {
-    min = minDeposit
-    max = maxDeposit
+    min = minDeposit;
+    max = maxDeposit;
   } else {
-    min = minRent
-    max = maxRent
+    min = minRent;
+    max = maxRent;
   }
   const [sliderValue, setSliderValue] = useState<number[]>([min, max]);
   const [minInput, setMinInput] = useState<number>(min);
@@ -90,20 +88,25 @@ const TextBtn: React.FC<TextBtnProps> = ({
           onOk={() => {
             // OK를 눌렀을 시 보증금 혹은 월세 조건을 설정하고 모달을 닫는 핸들러
             if (title === "보증금") {
-              setDeposit(sliderValue[0], sliderValue[1])
+              setDeposit(sliderValue[0], sliderValue[1]);
             } else {
-              setRent(sliderValue[0], sliderValue[1])
+              setRent(sliderValue[0], sliderValue[1]);
             }
-            setModalOpen(false)
+            min = sliderValue[0];
+            max = sliderValue[1];
+            setModalOpen(false);
           }}
-          onCancel={() => setModalOpen(false)}
+          onCancel={() => {
+            setModalOpen(false);
+            setSliderValue([min, max]);
+          }}
         >
           <Slider
             range
             marks={title === "보증금" ? depositMarks : rentalMarks}
-            defaultValue={[min, max]}
-            min={min}
-            max={max}
+            defaultValue={[0, 3000]}
+            min={0}
+            max={title === "보증금" ? 3000 : 300}
             value={sliderValue}
             step={title === "보증금" ? 100 : 10}
             keyboard
