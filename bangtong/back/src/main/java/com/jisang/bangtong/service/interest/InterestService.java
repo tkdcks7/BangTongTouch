@@ -10,4 +10,5 @@ public interface InterestService {
   void add(InterestDto interestDto);
   void delete(InterestDto interestDto);
   Optional<List<Interest>> getList(Long userId);
+  Interest getInterest(Long userId, Long productId);
 }

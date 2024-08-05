@@ -24,7 +24,7 @@ public class ProductUploadDto {
   private float productSquare;
   private int productRoom;
   private Integer productOption;
-  private String productAdditionalOption;
+  private List<String> productAdditionalOption;
   private Date productPostDate;
   private Date productStartDate;
   private Date productEndDate;

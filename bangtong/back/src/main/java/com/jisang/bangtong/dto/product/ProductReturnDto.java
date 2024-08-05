@@ -1,5 +1,6 @@
 package com.jisang.bangtong.dto.product;
 
+import com.jisang.bangtong.dto.region.RegionReturnDto;
 import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.model.product.ProductType;
@@ -18,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductReturnDto {
   Long productId;
   ProductType productType;
-  Region region;
+  RegionReturnDto regionReturnDto;
   String productAddress;
   Integer productDeposit;
   Integer productRent;
@@ -34,9 +35,10 @@ public class ProductReturnDto {
   Date productPostDate;
   Date productStartDate;
   Date productEndDate;
-  Float lat;
-  Float lng;
+  Double lat;
+  Double lng;
   String productAdditionalDetail;
   boolean productIsInterest;
   List<Media> mediaList;
+  boolean productIsDelete;
 }

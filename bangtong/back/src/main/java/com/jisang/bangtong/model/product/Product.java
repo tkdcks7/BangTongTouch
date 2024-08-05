@@ -22,6 +22,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -45,7 +47,7 @@ public class Product {
   private ProductType productType;
 
 // TODO: region FK 불러오기
-  @OneToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "regionId", foreignKey = @ForeignKey(name = "fk_product_region"), nullable = false)
   private Region region;
 
@@ -65,9 +67,10 @@ public class Product {
   @Column(nullable = false)
   private int productMaintenance;
 
+  @Size(max = 200, message = "관리비 정보가 너무 많습니다.")
   @Column(nullable = false, length = 200)
   private String productMaintenanceInfo;
-
+  
   @Column(columnDefinition = "boolean default false")
   private boolean productIsRentSupportable=false;
 
@@ -80,8 +83,8 @@ public class Product {
   @Column(nullable = false)
   private int productRoom;
 
-  @Column(nullable = false, length = 7)
-  private String productOption;
+  @Column
+  private Integer productOption;
 
   @Column(nullable = true, length = 100)
   private String productAdditionalOption;

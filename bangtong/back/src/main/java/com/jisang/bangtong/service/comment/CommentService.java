@@ -147,6 +147,7 @@ public class CommentService {
           .IUser(u)
           .content(comment.getCommentContent())
           .commentDate(comment.getCommentDate())
+          .isDeleted(comment.isCommentIsDeleted())
           .subcomments(subComment)
           .build();
       iComment.add(c);
