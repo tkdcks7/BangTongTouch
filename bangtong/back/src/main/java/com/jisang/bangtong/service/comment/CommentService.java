@@ -74,7 +74,7 @@ public class CommentService {
   }
 
   //  댓글 수정
-  public int modifyComment(long commentId, String content, HttpServletRequest request) {
+  public IComment modifyComment(long commentId, String content, HttpServletRequest request) {
     log.info("Comment: modifyComment 실행");
     String token = jwtUtil.getAccessToken(request);
     Long userId = jwtUtil.getUserIdFromToken(token);
@@ -91,7 +91,17 @@ public class CommentService {
     comment.setCommentContent(content);
     comment.setCommentDate(new Date());
     commentRepository.save(comment);
-    return 1;
+
+
+
+    return IComment.builder()
+        .commentId(comment.getCommentId())
+        .content(comment.getCommentContent())
+        .commentDate(comment.getCommentDate())
+        .isDeleted(comment.isCommentIsDeleted())
+        .subcomments(getSubComments(commentId))
+        .IUser(getIUser(comment.getCommentUser()))
+        .build();
   }
 
   //  댓글 삭제
@@ -127,6 +137,7 @@ public class CommentService {
             .IUser(getuserCommentReturnDto(s.getCommentUser()))
             .content(s.getCommentContent())
             .commentDate(s.getCommentDate())
+            .isDeleted(s.isCommentIsDeleted())
             .build();
         subComment.add(iSubComment);
       }
@@ -142,6 +153,34 @@ public class CommentService {
     }
 
     return iComment;
+  }
+
+  private List<ISubComment> getSubComments(Long commentId) {
+    List<ISubComment> subComment = new ArrayList<>();
+    Comment comment = commentRepository.findById(commentId).orElse(null);
+
+    List<Comment> p = comment.getComments();
+    if(p == null) return null;
+
+    for (Comment s : comment.getComments()) {
+      ISubComment iSubComment = ISubComment.builder()
+          .commentId(s.getCommentId())
+          .IUser(getuserCommentReturnDto(s.getCommentUser()))
+          .content(s.getCommentContent())
+          .commentDate(s.getCommentDate())
+          .isDeleted(s.isCommentIsDeleted())
+          .build();
+      subComment.add(iSubComment);
+    }
+    return subComment;
+  }
+
+  private IUser getIUser(User user){
+    return IUser.builder()
+        .nickname(user.getUserNickname())
+        .userId(user.getUserId())
+        .isBanned(user.isUserIsBanned())
+        .build();
   }
 
   private boolean isValidUser(User u) {

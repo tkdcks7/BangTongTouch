@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import dayjs from "dayjs";
+import { productSearchStore } from "../../store/productStore";
 
 // 컴포넌트
 import ProductMap from "../molecules/ProductMap";
@@ -11,9 +11,7 @@ import { CalendarOutlined } from "@ant-design/icons";
 const { RangePicker } = DatePicker;
 
 const ProductMapBox: React.FC = () => {
-  const [startDate, setStartDate] = useState(dayjs("0000-00-00"));
-  const [endDate, setEndDate] = useState(dayjs("0000-00-00"));
-  const [order, setOrder] = useState(0); // 정렬 (스마트 추천, 최신 등록순, ...)
+  const { productsList, setOrder, setDate } = productSearchStore();
 
   // ant design 글로벌 디자인 토큰
   const theme = {
@@ -24,15 +22,10 @@ const ProductMapBox: React.FC = () => {
     },
   };
 
+  // 이게 작동해서 날짜가 제대로 store에 저장되는지 확인 필요
   const handelChange = (dates: any) => {
-    setStartDate(dates[0]);
-    setEndDate(dates[1]);
-    console.log(startDate.date, endDate.date);
+    setDate(dates[0], dates[1]);
   };
-
-  const popoverTitle = (
-    <p className="text-center mb-3">희망 주거기간을 설정해주세요.</p>
-  );
 
   const datePicker = (
     <RangePicker
@@ -46,6 +39,7 @@ const ProductMapBox: React.FC = () => {
   const orderBy = ["스마트 추천", "최신 등록순", "가격 낮은 순", "집 넓은 순"];
 
   return (
+    // ProductList 컴포넌트 부분 작성해주세요. store의 productsList를 map으로 띄우면 됨.
     <div className="my-20 flex items-center justify-center">
       <div className="hidden lg:block">
         <FilterBox />
@@ -65,7 +59,11 @@ const ProductMapBox: React.FC = () => {
                 <Popover
                   trigger="click"
                   placement="bottom"
-                  title={popoverTitle}
+                  title={
+                    <p className="text-center mb-3">
+                      희망 주거기간을 설정해주세요.
+                    </p>
+                  }
                   content={datePicker}
                 >
                   <Button
@@ -75,10 +73,11 @@ const ProductMapBox: React.FC = () => {
                   ></Button>
                 </Popover>
                 <Radio.Group defaultValue={0}>
-                  <Radio.Button value={0}>{orderBy[0]}</Radio.Button>
-                  <Radio.Button value={1}>{orderBy[1]}</Radio.Button>
-                  <Radio.Button value={2}>{orderBy[2]}</Radio.Button>
-                  <Radio.Button value={3}>{orderBy[3]}</Radio.Button>
+                  {orderBy.map((title, idx) => (
+                    <Radio.Button value={idx} onClick={() => setOrder(idx)}>
+                      {orderBy[idx]}
+                    </Radio.Button>
+                  ))}
                 </Radio.Group>
               </div>
             </ConfigProvider>
