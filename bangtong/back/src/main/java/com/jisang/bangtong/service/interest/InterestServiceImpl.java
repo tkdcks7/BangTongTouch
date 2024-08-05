@@ -65,4 +65,9 @@ public class InterestServiceImpl implements InterestService{
     return interestRepository.findAllByUser_UserId(userId);
   }
 
+  @Override
+  public Interest getInterest(Long userId, Long productId){
+    return interestRepository.findByProduct_ProductIdAndUser_UserId(productId, userId).orElse(null);
+  }
+
 }

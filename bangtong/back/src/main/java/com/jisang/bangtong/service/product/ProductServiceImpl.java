@@ -1,27 +1,40 @@
 package com.jisang.bangtong.service.product;
 
+import com.amazonaws.services.kms.model.NotFoundException;
 import com.jisang.bangtong.dto.product.ProductReturnDto;
 import com.jisang.bangtong.dto.product.ProductSearchDto;
 import com.jisang.bangtong.dto.product.ProductUpdateDto;
 import com.jisang.bangtong.dto.product.ProductUploadDto;
+import com.jisang.bangtong.dto.region.RegionReturnDto;
+import com.jisang.bangtong.model.interest.Interest;
 import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.product.Product;
+import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.file.FileRepository;
+import com.jisang.bangtong.repository.interest.InterestRepository;
 import com.jisang.bangtong.repository.product.ProductRepository;
 import com.jisang.bangtong.repository.region.RegionRepository;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.common.FileService;
+import com.jisang.bangtong.service.interest.InterestService;
+import com.jisang.bangtong.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Slf4j
 public class ProductServiceImpl implements ProductService{
 
   @Autowired
@@ -34,27 +47,48 @@ public class ProductServiceImpl implements ProductService{
   private UserRepository userRepository;
 
   @Autowired
+  private JwtUtil jwtUtil;
+
+  @Autowired
   private FileService fileService;
+
+  @Autowired
+  private InterestRepository interestRepository;
 
   @Transactional
   @Override
   public void upload(ProductUploadDto productUploadDto, List<MultipartFile> productMedia, HttpServletRequest request) {
 
-    User u = new User();
-
+    String token = jwtUtil.getAccessToken(request);
+    Long userId = jwtUtil.getUserIdFromToken(token);
+    User u = userRepository.findById(userId).orElse(null);
+    if(!isValidUser(u)){
+      throw new NotFoundException("매물을 업로드 하는 사용자와 정보가 다릅니다.");
+    }
     Product product = getProductWhenUpload(productUploadDto, u);
     try {
       List<Media> fileList= fileService.upload(productMedia);
       product.setProductMedia(fileList);
     } catch (IOException e) {
-      throw new RuntimeException("파일을 저장할 수 없습니다");
+      throw new IllegalArgumentException("파일을 저장할 수 없습니다");
     }
     productRepository.save(product);
   }
 
   @Override
   @Transactional
-  public void update(ProductUpdateDto productUpdateDto, HttpServletRequest request){
+  public void update(ProductUpdateDto productUpdateDto, Long productId,HttpServletRequest request){
+    log.info("product update 시작");
+    String token = jwtUtil.getAccessToken(request);
+    Long userId = jwtUtil.getUserIdFromToken(token);
+    User u = userRepository.findById(userId).orElse(null);
+    if(!isValidUser(u, userId)){
+      throw new NotFoundException("존재하지 않은 사용자거나 매물 등록을 하지 않은 유저입니다");
+    }
+    Product p = productRepository.findById(productUpdateDto.getProductId()).orElse(null);
+    if(!isValidProduct(p, productId)){
+      throw new IllegalArgumentException("매물 정보가 일치하지 않습니다.");
+    }
     Product product = getProductWhenUpdate(productUpdateDto);
     productRepository.save(product);
   }
@@ -62,14 +96,12 @@ public class ProductServiceImpl implements ProductService{
   @Override
   public ProductReturnDto getProduct(long productId) {
     Product product = productRepository.findById(productId);
-    String addOption = product.getProductAdditionalOption();
-    List<String> additionalOption = new ArrayList<>();
-
-
+    List<String> additionalOption = getAdditionalOptionList(product);
+    RegionReturnDto regionReturnDto = getRegionReturnDto(product);
     return ProductReturnDto.builder()
         .productId(product.getProductId())
         .productType(product.getProductType())
-        .region(product.getRegion())
+        .regionReturnDto(regionReturnDto)
         .productAddress(product.getProductAddress())
         .productDeposit(product.getProductDeposit())
         .productMaintenance(product.getProductMaintenance())
@@ -78,20 +110,110 @@ public class ProductServiceImpl implements ProductService{
         .productIsFurnitureSupportable(product.isProductIsFurnitureSupportable())
         .productSquare(product.getProductSquare())
         .productRoom(product.getProductRoom())
-        .productOption(Integer.parseInt(product.getProductOption()))
+        .productAdditionalOption(additionalOption)
+        .productOption(product.getProductOption())
+        .build();
+  }
+
+  private static RegionReturnDto getRegionReturnDto(Product product) {
+    Region region = product.getRegion();
+    return RegionReturnDto.builder().regionId(region.getRegionId())
+        .regionSido(region.getRegionSido())
+        .regionGugun(region.getRegionGugun())
+        .regionDong(region.getRegionDong())
         .build();
   }
 
   @Override
-  public List<ProductReturnDto> searchList(ProductSearchDto productSearchDto) {
+  public List<ProductReturnDto> searchList(ProductSearchDto productSearchDto, HttpServletRequest request) {
     List<Product> productList= productRepository.searchList(productSearchDto);
     List<ProductReturnDto> productReturnDtoList = new ArrayList<>();
+    Set<Long> interestSet = new HashSet<>();
+    boolean isLike = getInterestSet(interestSet, request);
+
+    for(Product p : productList){
+      Long pId = p.getProductId();
+      ProductReturnDto productReturnDto = ProductReturnDto.builder()
+          .productId(p.getProductId())
+          .productType(p.getProductType())
+          .regionReturnDto(getRegionReturnDto(p))
+          .productAddress(p.getProductAddress())
+          .productDeposit(p.getProductDeposit())
+          .productRent(p.getProductRent())
+          .productMaintenance(p.getProductMaintenance())
+          .productMaintenanceInfo(p.getProductMaintenanceInfo())
+          .productIsRentSupportable(p.isProductIsRentSupportable())
+          .productIsFurnitureSupportable(p.isProductIsFurnitureSupportable())
+          .productSquare(p.getProductSquare())
+          .productRoom(p.getProductRoom())
+          .productOption(p.getProductOption())
+          .productAdditionalOption(
+              getAdditionalOptionList(p))
+          .productPostDate(p.getProductPostDate())
+          .productStartDate(p.getProductStartDate())
+          .productEndDate(p.getProductEndDate())
+          .lat(p.getLat())
+          .lng(p.getLng())
+          .productAdditionalDetail(p.getProductAddressDetail())
+          .productIsInterest(isLike && interestSet.contains(pId))
+          .mediaList(p.getProductMedia())
+          .productIsDelete(p.isProductIsDeleted())
+          .build();
+      productReturnDtoList.add(productReturnDto);
+    }
     return productReturnDtoList;
   }
 
+  private static List<String> getAdditionalOptionList(Product p) {
+    String s= p.getProductAdditionalOption();
+    if(s == null || s.isEmpty()) return null;
+    return Arrays.stream(s.split(",")).toList();
+  }
+
+
   @Override
-  public void delete(Long productId){
-    ;
+  @Transactional
+  public void delete(Long productId, HttpServletRequest request){
+
+    // 유효 매물 검증 로직
+    Product product = productRepository.findById(productId).orElse(null);
+    if(product == null){
+      throw new NotFoundException("삭제하려는 게시물이 없습니다");
+    }
+
+    //사용자 로직
+    String token = jwtUtil.getAccessToken(request);
+    Long userId = jwtUtil.getUserIdFromToken(token);
+    User u = userRepository.findById(userId).orElse(null);
+    if(!isValidUser(u, product.getUser().getUserId())){
+      throw new IllegalArgumentException("올바르지 않은 사용자입니다");
+    }
+
+    product.setProductIsDeleted(true);
+    productRepository.save(product);
+  }
+
+  
+  
+  //빈 인터레스트 셋을 입력받아서 사용자에 따라 어떤 매물을 관심있어 하는지 반환하는 메서드, isLike는 살펴볼만하다는 것을 의미하고,
+  //셋에는 실제 productId가 반환되어 있음.
+  private boolean getInterestSet(Set<Long> interestSet, HttpServletRequest request) {
+    boolean isLike=false;
+    String token = jwtUtil.getAccessToken(request);
+    if(!token.isEmpty()){
+      Long userId = jwtUtil.getUserIdFromToken(token);
+      User u = userRepository.findById(userId).orElse(null);
+      if(isValidUser(u)){
+        isLike = true;
+        List<Interest> interestList = interestRepository.findAllByUser_UserId(userId).orElse(null);
+        if(interestList != null){
+          for(Interest interest : interestList) {
+            interestSet.add(interest.getProduct().getProductId());
+          }
+        }
+      }
+    }
+    return isLike;
   }
 
   private Product getProductWhenUpdate(ProductUpdateDto productUpdateDto){
@@ -110,6 +232,16 @@ public class ProductServiceImpl implements ProductService{
   }
 
   private Product getProductWhenUpload(ProductUploadDto productUploadDto, User u) {
+
+    List<String> strList = productUploadDto.getProductAdditionalOption();
+    StringBuilder sb = new StringBuilder();
+    for(int i=0; i<strList.size()-1; i++){
+      String option = strList.get(i);
+      sb.append(option).append(",");
+    }
+
+    sb.append(strList.get(strList.size()-1));
+
     return Product.builder()
         .productType(productUploadDto.getProductType())
         .region(regionRepository.findById(productUploadDto.getRegionId()).get())
@@ -121,8 +253,8 @@ public class ProductServiceImpl implements ProductService{
         .productMaintenanceInfo(productUploadDto.getProductMaintenanceInfo())
         .productSquare(productUploadDto.getProductSquare())
         .productRoom(productUploadDto.getProductRoom())
-        .productOption(String.valueOf(productUploadDto.getProductOption()))
-        .productAdditionalOption(productUploadDto.getProductAdditionalOption())
+        .productOption(productUploadDto.getProductOption())
+        .productAdditionalOption(sb.toString())
         .productAddress(productUploadDto.getProductAddress())
         .productStartDate(productUploadDto.getProductStartDate())
         .productEndDate(productUploadDto.getProductEndDate())
@@ -132,4 +264,40 @@ public class ProductServiceImpl implements ProductService{
         .build();
   }
 
+  private ProductUploadDto setUploadDto(ProductUploadDto productUploadDto) {
+    ProductUploadDto uploadDto = new ProductUploadDto();
+    List<String> strList = productUploadDto.getProductAdditionalOption();
+    StringBuilder sb = new StringBuilder();
+    for(int i=0; i<strList.size()-1; i++){
+      String option = strList.get(i);
+      sb.append(option).append(",");
+    }
+
+    sb.append(strList.get(strList.size()-1));
+
+    return uploadDto;
+  }
+
+  private boolean isValidUser(User u, Long productId){
+    if(u == null){
+      return false;
+    }
+    if(u.getUserId().equals(productId)){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  private boolean isValidUser(User u) {
+    if (u == null) {
+      return false;
+    }
+    return true;
+  }
+
+  private boolean isValidProduct(Product p, Long productId) {
+    if(p == null) return false;
+    return p.getProductId() == productId;
+  }
 }

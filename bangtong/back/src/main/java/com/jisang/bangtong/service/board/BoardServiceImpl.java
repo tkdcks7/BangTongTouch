@@ -116,7 +116,8 @@ public class BoardServiceImpl implements BoardService {
   @Transactional
   @Override
   public void delete(long id, HttpServletRequest request) {
-    if(!isVaildUser(id, request)){
+    Board b = boardRepository.findById(id).orElse(null);
+    if(!isVaildUser(b.getBoardWriter().getUserId(), request)){
       throw new IllegalArgumentException("작성자가 아닙니다.");
     }
     boardRepository.delete(id);
