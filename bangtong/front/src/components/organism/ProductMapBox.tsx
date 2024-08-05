@@ -19,7 +19,11 @@ import type { MenuProps } from "antd";
 import ProductList from "../molecules/ProductList";
 
 // 아이콘
-import { CalendarOutlined, DownOutlined } from "@ant-design/icons";
+import {
+  CalendarOutlined,
+  DownOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 
 const { RangePicker } = DatePicker;
 
@@ -49,7 +53,6 @@ const ProductMapBox: React.FC = () => {
   );
 
   // order
-  // "스마트 추천", "최신 등록순", "가격 낮은 순", "집 넓은 순"
   const orderBy = ["스마트 추천", "최신 등록순", "가격 낮은 순", "집 넓은 순"];
 
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
@@ -130,9 +133,13 @@ const ProductMapBox: React.FC = () => {
           <ProductMap />
         </div>
       </div>
-      <div className="hidden lg:block ml-5">
-        <ProductList />
-      </div>
+      {productsList.length > 0 ? (
+        <div className="hidden lg:block ml-5">
+          <ProductList />
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

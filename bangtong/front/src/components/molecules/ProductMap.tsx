@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SearchMap from "./SearchMap";
 import { Button, ConfigProvider, Modal } from "antd";
-import { FilterOutlined } from "@ant-design/icons";
+import { FilterOutlined, UploadOutlined } from "@ant-design/icons";
 import FilterBox from "./FilterBox";
 
 interface Pos {
@@ -17,6 +18,8 @@ const ProductMap: React.FC<MapProps> = ({ height }) => {
   const [positionLoaded, setPositionLoaded] = useState<boolean>(false);
   const [basePosition, setBasePosition] = useState<Pos>({ lat: 0, lng: 0 });
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -35,12 +38,21 @@ const ProductMap: React.FC<MapProps> = ({ height }) => {
     }
   }, []);
 
-  // ant design 글로벌 디자인 토큰
-  const theme = {
+  // ant design 글로벌 디자인 토큰 (초록색 버튼)
+  const greenTheme = {
     token: {
       colorBgTextHover: "#E9FFE7",
       colorPrimary: "#129B07",
       colorPrimaryBorder: "#129B07",
+    },
+  };
+
+  // ant design 글로벌 디자인 토큰 (노란색 버튼)
+  const yellowTheme = {
+    token: {
+      colorBgTextHover: "#E9FFE7",
+      colorPrimary: "#FFDB4D",
+      colorPrimaryBorder: "#FFDB4D",
     },
   };
 
@@ -55,7 +67,7 @@ const ProductMap: React.FC<MapProps> = ({ height }) => {
               width="350px"
               height="500px"
             />
-            <ConfigProvider theme={theme}>
+            <ConfigProvider theme={greenTheme}>
               <Button
                 type="primary"
                 className="w-10 h-10 absolute bottom-5 right-5 shadow-lg"
@@ -74,9 +86,29 @@ const ProductMap: React.FC<MapProps> = ({ height }) => {
                 <FilterBox />
               </Modal>
             </ConfigProvider>
+            <ConfigProvider theme={yellowTheme}>
+              <Button
+                type="primary"
+                className="w-40 h-10 absolute left-24 bottom-5 shadow-lg"
+                onClick={() => navigate("upload")}
+              >
+                <UploadOutlined />
+                매물 업로드하기
+              </Button>
+            </ConfigProvider>
           </div>
-          <div className="hidden lg:block">
+          <div className="hidden lg:block relative">
             <SearchMap basePos={basePosition} flag={false} height="800px" />
+            <ConfigProvider theme={yellowTheme}>
+              <Button
+                type="primary"
+                className="w-40 h-10 absolute right-5 bottom-5 shadow-lg"
+                onClick={() => navigate("upload")}
+              >
+                <UploadOutlined />
+                매물 업로드하기
+              </Button>
+            </ConfigProvider>
           </div>
         </div>
       ) : null}
