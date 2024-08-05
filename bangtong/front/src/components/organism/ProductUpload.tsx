@@ -11,6 +11,8 @@ import OptionBtnGroup from "../molecules/OptionBtnGroup";
 import RadioGroup from "../molecules/RadioGroup";
 import Datepicker from "react-tailwindcss-datepicker";
 import useProductOptionStore from "../../store/productStore";
+import { Form, Input } from "antd";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 const ProductUpload: React.FC = () => {
   let { id }: any = useParams(); // 상품 번호. 있으면 update, 없으면 create
@@ -34,6 +36,9 @@ const ProductUpload: React.FC = () => {
   // 사진, 영상 state
   const [imgFile, setImgFile] = useState(null);
   const [movieFile, setMovieFile] = useState(null);
+
+  // ant design Search 컴포넌트
+  const { Search } = Input;
 
   // Datepicker를 위한 state
   const [value, setValue] = useState({
@@ -242,9 +247,88 @@ const ProductUpload: React.FC = () => {
   }, []);
 
   return (
-    <div className="mt-5">
+    <div className="mt-5 md:w-3/5 lg:w-2/5 mx-auto">
       <h2 className="font-bold text-xl">매물 정보를 입력해주세요.</h2>
-      <form id="input-container" className="mt-5">
+      <Form id="input-container" className="mt-5">
+        <Form.Item required>
+          <Search
+            placeholder="주소"
+            size="large"
+            type="text"
+            value={address}
+            onSearch={handleAddressPopUp}
+          />
+        </Form.Item>
+        <Form.Item required>
+          <Input
+            placeholder="상세 주소를 입력해주세요"
+            size="large"
+            type="text"
+            value={addressDetail}
+            onChange={(e) => setAddressDetail(e.target.value)}
+          />
+        </Form.Item>
+        <div className="w-full flex justify-between">
+          <Form.Item required>
+            <Input
+              placeholder="보증금"
+              size="large"
+              type="number"
+              value={deposit}
+              onChange={(e) => setDeposit(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item required>
+            <Input
+              placeholder="월세"
+              size="large"
+              type="text"
+              value={charge}
+              onChange={(e) => setCharge(e.target.value)}
+            />
+          </Form.Item>
+        </div>
+        <div className="w-full flex justify-between">
+          <Form.Item required>
+            <Input
+              placeholder="관리비"
+              size="large"
+              type="text"
+              value={maintanence}
+              onChange={(e) => setMaintanence(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item required>
+            <Input
+              placeholder="관리비 항목"
+              size="large"
+              type="text"
+              value={maintanenceInfo}
+              onChange={(e) => setMaintanenceInfo(e.target.value)}
+            />
+          </Form.Item>
+        </div>
+        <div className="w-full flex justify-between">
+          <Form.Item required>
+            <Input
+              placeholder="면적"
+              size="large"
+              type="text"
+              value={area}
+              onChange={(e) => setArea(e.target.value)}
+            />
+          </Form.Item>
+
+          <div style={{ width: "45%" }}>
+            <Datepicker
+              value={value}
+              onChange={handleValueChange}
+              useRange={false}
+            />
+          </div>
+        </div>
+      </Form>
+      {/* <form id="input-container" className="mt-5">
         <InputBox
           placeholder="주소"
           buttonType="search"
@@ -314,7 +398,7 @@ const ProductUpload: React.FC = () => {
             />
           </div>
         </div>
-      </form>
+      </form> */}
       <div className="mt-5" id="how-many-room">
         <p className="text-lg">방 갯수</p>
         <div className="flex justify-center items-center">
