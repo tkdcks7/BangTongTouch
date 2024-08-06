@@ -38,7 +38,7 @@ public class ReportService {
 
     // 신고 전송
     @Transactional
-    public Report manageReport(Long userId, ReportDto reportDto) {
+    public Report manageReport(ReportDto reportDto) {
         Report report = new Report();
         int reportTypeId = reportDto.getReportTypeId();
         report.setReportType(reportTypeRepository.findById(reportTypeId).orElse(null));
