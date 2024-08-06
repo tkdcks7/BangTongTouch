@@ -52,10 +52,6 @@ const Router: React.FC = () => {
           <Route path="FindSelectPage" element={<FindSelect />} />
         </Route>
 
-        <Route path="videochat" element={<VideoChatPage />}>
-          <Route path=":roomId" />
-        </Route>
-
         {/* 네비게이션바가 있는 페이지의 최상단 */}
         <Route path="/" element={<Layout />}>
           {/* 메인 페이지 */}
