@@ -113,6 +113,7 @@ const VideoChat: React.FC<VideoChatProps> = ({ roomId }) => {
         />
       </div>
       <div>
+        remote {roomId}
         <video
           ref={remoteVideoRef}
           autoPlay
