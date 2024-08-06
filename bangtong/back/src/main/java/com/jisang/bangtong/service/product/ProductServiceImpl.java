@@ -19,6 +19,7 @@ import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.common.FileService;
 import com.jisang.bangtong.service.interest.InterestService;
 import com.jisang.bangtong.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
@@ -127,9 +128,12 @@ public class ProductServiceImpl implements ProductService{
   @Override
   public List<ProductReturnDto> searchList(ProductSearchDto productSearchDto, HttpServletRequest request) {
     List<Product> productList= productRepository.searchList(productSearchDto);
+    log.info("SearchList Test {}", productSearchDto);
     List<ProductReturnDto> productReturnDtoList = new ArrayList<>();
     Set<Long> interestSet = new HashSet<>();
     boolean isLike = getInterestSet(interestSet, request);
+
+
 
     for(Product p : productList){
       Long pId = p.getProductId();
@@ -200,7 +204,8 @@ public class ProductServiceImpl implements ProductService{
   private boolean getInterestSet(Set<Long> interestSet, HttpServletRequest request) {
     boolean isLike=false;
     String token = jwtUtil.getAccessToken(request);
-    if(!token.isEmpty()){
+    if(token == null || token.isEmpty()) return false;
+    try{
       Long userId = jwtUtil.getUserIdFromToken(token);
       User u = userRepository.findById(userId).orElse(null);
       if(isValidUser(u)){
@@ -212,6 +217,9 @@ public class ProductServiceImpl implements ProductService{
           }
         }
       }
+    }catch(ExpiredJwtException e){
+      log.info("{}", e.getMessage());
+      return false;
     }
     return isLike;
   }

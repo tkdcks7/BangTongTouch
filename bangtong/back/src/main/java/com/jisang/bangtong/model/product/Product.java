@@ -125,4 +125,7 @@ public class Product {
 
   @Column(nullable=false)
   private double productScore=0.0;
+
+  @Column(nullable=true)
+  private String description;
 }
