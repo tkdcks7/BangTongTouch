@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import dayjs, { Dayjs } from "dayjs";
 
 // 컴포넌트
 import InputBox from "../molecules/InputBox";
@@ -11,8 +12,7 @@ import OptionBtnGroup from "../molecules/OptionBtnGroup";
 import RadioGroup from "../molecules/RadioGroup";
 import Datepicker from "react-tailwindcss-datepicker";
 import useProductOptionStore from "../../store/productStore";
-import { Form, Input } from "antd";
-import { InfoCircleOutlined } from "@ant-design/icons";
+import { Form, Input, DatePicker, ConfigProvider, Radio } from "antd";
 
 const ProductUpload: React.FC = () => {
   let { id }: any = useParams(); // 상품 번호. 있으면 update, 없으면 create
@@ -29,9 +29,10 @@ const ProductUpload: React.FC = () => {
   const [maintanenceInfo, setMaintanenceInfo] = useState<string>("");
   const [area, setArea] = useState<string>("");
   const [remainDate, setRemainDate] = useState<string>("");
-  const [room, setRoom] = useState<string>("");
+  const [room, setRoom] = useState<string>("0");
   const [furniture, setFurniture] = useState<string>("");
   const [furnitureList, setFurnitureList] = useState<string[]>([]);
+  const [date, setDate] = useState<[any, any]>([null, null]);
 
   // 사진, 영상 state
   const [imgFile, setImgFile] = useState(null);
@@ -40,16 +41,22 @@ const ProductUpload: React.FC = () => {
   // ant design Search 컴포넌트
   const { Search } = Input;
 
-  // Datepicker를 위한 state
-  const [value, setValue] = useState({
-    startDate: "",
-    endDate: "",
-  });
+  // ant design RangePicker 컴포넌트
+  const { RangePicker } = DatePicker;
+
+  // ant design 글로벌 디자인 토큰
+  const theme = {
+    token: {
+      colorBgTextHover: "#E9FFE7",
+      colorPrimary: "#129B07",
+      colorPrimaryBorder: "#129B07",
+    },
+  };
 
   // Datepicker를 위한 핸들러
   const handleValueChange = (newValue: any): void => {
     console.log("newValue:", newValue);
-    setValue(newValue);
+    setDate(newValue);
   };
 
   // 수정일 시, 백엔드에서 값을 받아온 후 state에 집어넣음.
@@ -188,8 +195,8 @@ const ProductUpload: React.FC = () => {
     formData.append("remainDate", remainDate);
     formData.append("productRoom", room);
     formData.append("furniture", furniture);
-    formData.append("productStartDate", value.startDate);
-    formData.append("productEndDate", value.endDate);
+    formData.append("productStartDate", date[0]);
+    formData.append("productEndDate", date[1]);
 
     // Option 처리 부분
     let option: string = "0000000";
@@ -249,86 +256,88 @@ const ProductUpload: React.FC = () => {
   return (
     <div className="mt-5 md:w-3/5 lg:w-2/5 mx-auto">
       <h2 className="font-bold text-xl">매물 정보를 입력해주세요.</h2>
-      <Form id="input-container" className="mt-5">
-        <Form.Item required>
-          <Search
-            placeholder="주소"
-            size="large"
-            type="text"
-            value={address}
-            onSearch={handleAddressPopUp}
-          />
-        </Form.Item>
-        <Form.Item required>
-          <Input
-            placeholder="상세 주소를 입력해주세요"
-            size="large"
-            type="text"
-            value={addressDetail}
-            onChange={(e) => setAddressDetail(e.target.value)}
-          />
-        </Form.Item>
-        <div className="w-full flex justify-between">
+      <ConfigProvider theme={theme}>
+        <Form id="input-container" className="mt-5">
           <Form.Item required>
-            <Input
-              placeholder="보증금"
-              size="large"
-              type="number"
-              value={deposit}
-              onChange={(e) => setDeposit(e.target.value)}
-            />
-          </Form.Item>
-          <Form.Item required>
-            <Input
-              placeholder="월세"
+            <Search
+              placeholder="주소"
               size="large"
               type="text"
-              value={charge}
-              onChange={(e) => setCharge(e.target.value)}
-            />
-          </Form.Item>
-        </div>
-        <div className="w-full flex justify-between">
-          <Form.Item required>
-            <Input
-              placeholder="관리비"
-              size="large"
-              type="text"
-              value={maintanence}
-              onChange={(e) => setMaintanence(e.target.value)}
+              value={address}
+              onSearch={handleAddressPopUp}
             />
           </Form.Item>
           <Form.Item required>
             <Input
-              placeholder="관리비 항목"
+              placeholder="상세 주소를 입력해주세요"
               size="large"
               type="text"
-              value={maintanenceInfo}
-              onChange={(e) => setMaintanenceInfo(e.target.value)}
+              value={addressDetail}
+              onChange={(e) => setAddressDetail(e.target.value)}
             />
           </Form.Item>
-        </div>
-        <div className="w-full flex justify-between">
-          <Form.Item required>
-            <Input
-              placeholder="면적"
+          <div className="mb-5">
+            <RangePicker
               size="large"
-              type="text"
-              value={area}
-              onChange={(e) => setArea(e.target.value)}
-            />
-          </Form.Item>
-
-          <div style={{ width: "45%" }}>
-            <Datepicker
-              value={value}
-              onChange={handleValueChange}
-              useRange={false}
+              className="w-full"
+              placeholder={["승계 가능 일자", "계약 종료 일자"]}
+              value={date}
+              onCalendarChange={handleValueChange}
             />
           </div>
-        </div>
-      </Form>
-      {/* <form id="input-container" className="mt-5">
+          <div className="w-full flex justify-between">
+            <Form.Item required>
+              <Input
+                placeholder="보증금"
+                size="large"
+                type="number"
+                value={deposit}
+                onChange={(e) => setDeposit(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item required>
+              <Input
+                placeholder="월세"
+                size="large"
+                type="text"
+                value={charge}
+                onChange={(e) => setCharge(e.target.value)}
+              />
+            </Form.Item>
+          </div>
+          <div className="w-full flex justify-between">
+            <Form.Item required>
+              <Input
+                placeholder="관리비"
+                size="large"
+                type="text"
+                value={maintanence}
+                onChange={(e) => setMaintanence(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item required>
+              <Input
+                placeholder="관리비 항목"
+                size="large"
+                type="text"
+                value={maintanenceInfo}
+                onChange={(e) => setMaintanenceInfo(e.target.value)}
+              />
+            </Form.Item>
+          </div>
+          <div className="w-full flex justify-between">
+            <Form.Item required>
+              <Input
+                placeholder="면적"
+                size="large"
+                type="text"
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+              />
+            </Form.Item>
+          </div>
+        </Form>
+        {/* <form id="input-container" className="mt-5">
         <InputBox
           placeholder="주소"
           buttonType="search"
@@ -399,60 +408,66 @@ const ProductUpload: React.FC = () => {
           </div>
         </div>
       </form> */}
-      <div className="mt-5" id="how-many-room">
-        <p className="text-lg">방 갯수</p>
-        <div className="flex justify-center items-center">
-          <RadioGroup onChange={handleRoomOption} />
-        </div>
-      </div>
-      <div className="mt-5" id="options">
-        <p className="text-lg">옵션</p>
-        <OptionBtnGroup />
-        {/* 추가 옵션 부분 */}
-        <div className="w-full mt-5">
-          <div className="flex flex-wrap justify-center">
-            {furnitureList.length > 0 ? (
-              furnitureList.map((opt: any) => {
-                return (
-                  <button
-                    className={
-                      "flex flex-col items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
-                    }
-                    onClick={() => hadleFurnitureRemove(opt)}
-                  >
-                    {opt}
-                  </button>
-                );
-              })
-            ) : (
-              <p>등록된 가구가 없습니다.</p>
-            )}
+        <div className="mt-5" id="how-many-room">
+          <p className="text-lg">방 갯수</p>
+          <div className="flex justify-center items-center">
+            {/* <RadioGroup onChange={handleRoomOption} /> */}
+            <Radio.Group onChange={handleRoomOption}>
+              <Radio>1</Radio>
+              <Radio>2</Radio>
+              <Radio>3개 이상</Radio>
+            </Radio.Group>
           </div>
-          <div className="mt-2">
-            {/* 희망 가구 옵션은 가구 icon을 버튼으로 만든 그룹을 컴포넌트로 만들어 활용 */}
-            <InputBox
-              placeholder="희망하는 가구 거래 품목을 입력해주세요."
-              type="text"
-              width={"auto"}
-              value={furniture}
-              onChange={(e) => setFurniture(e.target.value)}
-              onKeyDown={(e) => handleFurnitureAppend(e)}
+        </div>
+        <div className="mt-5" id="options">
+          <p className="text-lg">옵션</p>
+          <OptionBtnGroup />
+          {/* 추가 옵션 부분 */}
+          <div className="w-full mt-5">
+            <div className="flex flex-wrap justify-center">
+              {furnitureList.length > 0 ? (
+                furnitureList.map((opt: any) => {
+                  return (
+                    <button
+                      className={
+                        "flex flex-col items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
+                      }
+                      onClick={() => hadleFurnitureRemove(opt)}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })
+              ) : (
+                <p>등록된 가구가 없습니다.</p>
+              )}
+            </div>
+            <div className="mt-2">
+              {/* 희망 가구 옵션은 가구 icon을 버튼으로 만든 그룹을 컴포넌트로 만들어 활용 */}
+              <InputBox
+                placeholder="희망하는 가구 거래 품목을 입력해주세요."
+                type="text"
+                width={"auto"}
+                value={furniture}
+                onChange={(e) => setFurniture(e.target.value)}
+                onKeyDown={(e) => handleFurnitureAppend(e)}
+              />
+            </div>
+          </div>
+          <div id="attachment-group">
+            <Attachment fileType="사진" onFileChange={handleFileChange} />
+            <Attachment fileType="동영상" onFileChange={handleFileChange} />
+          </div>
+          <div className="text-center mt-5">
+            <Btn
+              text="등록하기"
+              backgroundColor="bg-yellow-300"
+              height="h-10"
+              onClick={handleUploadClick}
             />
           </div>
         </div>
-        <div id="attachment-group">
-          <Attachment fileType="사진" onFileChange={handleFileChange} />
-          <Attachment fileType="동영상" onFileChange={handleFileChange} />
-        </div>
-        <div className="text-center mt-5">
-          <Btn
-            text="등록하기"
-            backgroundColor="bg-yellow-300"
-            height="h-10"
-            onClick={handleUploadClick}
-          />
-        </div>
-      </div>
+      </ConfigProvider>
     </div>
   );
 };
