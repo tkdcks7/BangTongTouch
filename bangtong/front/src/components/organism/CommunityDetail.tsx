@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import { redirect, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-// import { sanitize } from "dompurify";
 
 // 컴포넌트
 import RollBackBtn from "../atoms/RollBackBtn";
 import Comment from "../atoms/Comment";
+import MenuBtn from "../atoms/MenuBtn";
 
 // Store
 import useUserStore from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
+import { Modal, Select } from "antd";
 
 interface region {
   regionId: string;
@@ -18,6 +19,11 @@ interface region {
   regionDong: string;
 }
 
+interface iUser {
+  userId: number;
+  nickname: string;
+  isBanned: boolean;
+}
 interface IBoardContent {
   boardId: number;
   boardTitle: string;
@@ -27,12 +33,6 @@ interface IBoardContent {
   boardDate: string;
   boardWriter: iUser;
   boardIsBanned: boolean;
-}
-
-interface iUser {
-  id: number;
-  nickname: string;
-  isBanned: boolean;
 }
 
 interface iSubComment {
@@ -55,25 +55,20 @@ interface IComment {
 const CommunityDetail: React.FC = () => {
   let { id } = useParams<{ id: string }>(); // 게시물 번호
 
-  const myId = useUserStore().id;
-  const myNickname = useUserStore().nickname;
-
   const [boardContent, setBoardContent] = useState<IBoardContent>();
   const [comments, setComments] = useState<Array<IComment>>([]);
   const commentRef = useRef<string>("");
 
-  // 시간 찍기 함수
-  // const timeStamp = (): string => {
-  //   const date = new Date();
-  //   const year = String(date.getFullYear());
-  //   const month = String(date.getMonth() + 1).padStart(2, "0");
-  //   const day = String(date.getDate()).padStart(2, "0");
-  //   const hours = String(date.getHours()).padStart(2, "0");
-  //   const minutes = String(date.getMinutes()).padStart(2, "0");
-  //   const seconds = String(date.getSeconds()).padStart(2, "0");
+  const userId = useUserStore().id;
+  const navigate = useNavigate();
 
-  //   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  // };
+  const reportRef = useRef<string>("");
+  const reportTypeRef = useRef<number>(0);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const changeModalStatus = () => {
+    reportRef.current = "";
+    setIsModalOpen(!isModalOpen);
+  };
 
   // 댓글을 받아오는 함수
   const handleCommentGet = () => {
@@ -83,7 +78,6 @@ const CommunityDetail: React.FC = () => {
       headers: {},
     }).then((response) => {
       setComments(response.data.data);
-      console.log(response.data.data);
     });
   };
 
@@ -100,16 +94,6 @@ const CommunityDetail: React.FC = () => {
       .then((response) => {
         alert("등록이 되었습니다.");
         window.location.replace("");
-        // window.location.replace("");
-        // setComments([
-        //   ...comments,
-        //   {
-        //     commentId: comments[-1]["commentId"] + 1,
-        //     commentContent: commentRef.current,
-        //     commentNickname: myNickname,
-        //     commentDate: timeStamp(),
-        //   },
-        // ]);
       })
       .catch(() => {
         alert("로그인 후 작성하실 수 있습니다.");
@@ -131,20 +115,119 @@ const CommunityDetail: React.FC = () => {
       });
   }, []);
 
+  const reportBoard = () => {
+    if (reportTypeRef.current === 0) {
+      alert("신고 유형을 선택해주세요.");
+      return;
+    }
+
+    if (reportRef.current === "") {
+      alert("사유를 입력해주세요.");
+      return;
+    }
+    authAxios({
+      method: "POST",
+      url: `${process.env.REACT_APP_BACKEND_URL}/reports`,
+      data: {
+        reportSubjectTypeId: 0,
+        reportTypeId: reportTypeRef.current,
+        content: reportRef.current,
+        subjectId: parseInt(id!!),
+      },
+    })
+      .then((response) => {
+        console.log(response);
+        alert("신고가 완료되었습니다.");
+      })
+      .then((error) => {
+        console.log("error");
+      });
+    changeModalStatus();
+  };
+
   const sanitizedData = () => ({
     __html: boardContent !== undefined ? boardContent.boardContent : "",
   });
 
+  const deleteBoard = () => {
+    authAxios({
+      method: "PUT",
+      url: `${process.env.REACT_APP_BACKEND_URL}/boards/delete/${id}`,
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          alert("삭제가 완료되었습니다.");
+          navigate("../", { replace: true });
+        }
+      })
+      .catch((error) => {
+        alert("에러가 발생했습니다.");
+      });
+  };
+
+  const editBoard = () => {
+    navigate(`/boards/write?id=${id}`);
+  };
+
   return (
     <div>
+      <Modal
+        title="게시글 신고"
+        open={isModalOpen}
+        onOk={reportBoard}
+        onCancel={changeModalStatus}
+      >
+        <div>
+          <div>게시글 작성자: {boardContent?.boardWriter.nickname}</div>
+        </div>
+        <Select
+          defaultValue={"신고 유형"}
+          className="w-full my-2"
+          onChange={(e) => {
+            reportTypeRef.current = parseInt(e);
+            console.log(reportTypeRef.current);
+          }}
+          options={[
+            { value: 1, label: "스팸/도배" },
+            { value: 2, label: "음란물" },
+            { value: 3, label: "유해한 내용" },
+            { value: 4, label: "비속어/차별적 표현" },
+            { value: 5, label: "개인정보 노출" },
+            { value: 6, label: "불쾌한 표현" },
+          ]}
+        />
+        <span>신고 사유</span>
+        <textarea
+          className="w-full border resize-none"
+          onChange={(e) => {
+            console.log(e.target.value);
+            reportRef.current = e.target.value;
+          }}
+        />
+      </Modal>
       <div className="mt-10">
         {boardContent ? (
           <div>
-            <RollBackBtn />
+            <div className="flex justify-between">
+              <RollBackBtn />
+              {boardContent.boardWriter.userId === 2 ? (
+                <MenuBtn
+                  onDeleteClicked={deleteBoard}
+                  onEditClicked={editBoard}
+                />
+              ) : (
+                <button onClick={changeModalStatus}>신고</button>
+              )}
+            </div>
             <h1 className="text-2xl font-bold">{boardContent.boardTitle}</h1>
-            <div className="mt-2">
-              <span className="pe-2">{boardContent.boardWriter.nickname}</span>|
-              <span className="ps-2">{boardContent.boardDate}</span>
+            <div className="mt-2 flex justify-between">
+              <div>
+                <span className="pe-2">
+                  {boardContent.boardWriter.nickname}
+                </span>
+                |<span className="ps-2">{boardContent.boardDate}</span>
+              </div>
+              <div>조회 {boardContent.hit}</div>
             </div>
             <div className="mt-5 board-content">
               <div dangerouslySetInnerHTML={sanitizedData()} />

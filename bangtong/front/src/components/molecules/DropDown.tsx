@@ -9,15 +9,17 @@ interface DropDownProps {
   backgroundColor?: string;
   width?: string;
   textSize?: string;
+  onSelected?: (selectedValue: string) => void;
 }
 
-const DropDown: React.FC<DropDownProps>= ({
+const DropDown: React.FC<DropDownProps> = ({
   title = "통신사",
   itemList = ["SKT", "KT", "LG U+", "알뜰폰"],
   rounded = "full",
   backgroundColor = "white",
   width = "auto",
   textSize = "sm",
+  onSelected = null,
 }) => {
   const [callCompany, setCallCompany] = useState<string>(title);
   const callCompanyList = itemList;
@@ -28,7 +30,9 @@ const DropDown: React.FC<DropDownProps>= ({
   return (
     <Menu as="div" className={`relative inline-block text-left w-${width}`}>
       <div>
-        <MenuButton className={`flex text-nowrap w-full justify-center rounded-${rounded} bg-${backgroundColor} px-3 py-2 text-center text-${textSize} font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50`}>
+        <MenuButton
+          className={`flex text-nowrap w-full justify-center rounded-${rounded} bg-${backgroundColor} px-3 py-2 text-center text-${textSize} font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50`}
+        >
           {callCompany}
           <ChevronDownIcon
             aria-hidden="true"
@@ -47,7 +51,11 @@ const DropDown: React.FC<DropDownProps>= ({
               <button
                 className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 w-full"
                 onClick={(e) => {
-                  handleSetCallCompany(item);
+                  if (onSelected === null) handleSetCallCompany(item);
+                  else {
+                    onSelected(item);
+                    handleSetCallCompany(item);
+                  }
                 }}
               >
                 {item}
@@ -58,6 +66,6 @@ const DropDown: React.FC<DropDownProps>= ({
       </MenuItems>
     </Menu>
   );
-}
+};
 
 export default DropDown;

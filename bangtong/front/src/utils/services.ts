@@ -50,13 +50,14 @@ export const getUserAddressKr = (): Promise<Array<string>> => {
             "X-NCP-APIGW-API-KEY":
               process.env.REACT_APP_CLIENT_SECRET_NAVER_MAP,
           },
-          url: `/map-reversegeocode/v2/gc?coords=${position.coords.longitude},${position.coords.latitude}&orders=admcode&output=json`,
+          url: `/map-reversegeocode/v2/gc?coords=${position.coords.longitude},${position.coords.latitude}&orders=legalcode&output=json`,
         })
           .then((response) => {
             const address: Array<string> = [];
             address.push(response.data.results[0].region.area1.name);
             address.push(response.data.results[0].region.area2.name);
             address.push(response.data.results[0].region.area3.name);
+            address.push(response.data.results[0].code.id);
             resolve(address);
           })
           .catch((error) => {

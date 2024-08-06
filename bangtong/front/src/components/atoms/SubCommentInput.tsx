@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useRef } from "react";
 import authAxios from "../../utils/authAxios";
 

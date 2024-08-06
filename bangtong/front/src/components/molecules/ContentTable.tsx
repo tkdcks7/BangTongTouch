@@ -49,15 +49,17 @@ const ContentTable: React.FC<ContentTableProps> = ({ contents }) => {
       <tbody>
         {/* contents가 빈 배열일 경우 예외처리 */}
         {contents ? (
-          contents.map((content) => (
-            <Post
-              key={content.boardId}
-              id={content.boardId}
-              title={content.boardTitle}
-              writer={content.boardWriter.nickname}
-              date={content.boardDate}
-            />
-          ))
+          contents
+            .filter((content) => content.boardIsBanned !== true)
+            .map((content) => (
+              <Post
+                key={content.boardId}
+                id={content.boardId}
+                title={content.boardTitle}
+                writer={content.boardWriter.nickname}
+                date={content.boardDate}
+              />
+            ))
         ) : (
           <Post
             id={0}
