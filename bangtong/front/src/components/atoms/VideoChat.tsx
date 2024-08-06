@@ -103,24 +103,21 @@ const VideoChat: React.FC<VideoChatProps> = ({ roomId }) => {
 
   return (
     <div>
-      <h2>Video Chat Room: {roomId}</h2>
       <div>
-        <h3>Local Video</h3>
         <video
           ref={localVideoRef}
           autoPlay
           muted
           playsInline
-          className={`w-full scale-x-[-1]`}
+          className={`scale-x-[-1]`}
         />
       </div>
       <div>
-        <h3>Remote Video</h3>
         <video
           ref={remoteVideoRef}
           autoPlay
           playsInline
-          className={`w-full scale-x-[-1]`}
+          className={`scale-x-[-1]`}
         />
       </div>
     </div>
