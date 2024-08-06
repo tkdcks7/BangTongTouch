@@ -52,8 +52,7 @@ const ProductUpload: React.FC = () => {
   const [maintanence, setMaintanence] = useState<string>("");
   const [maintanenceInfo, setMaintanenceInfo] = useState<string>("");
   const [area, setArea] = useState<string>("");
-  const [remainDate, setRemainDate] = useState<string>("");
-  const [room, setRoom] = useState<string>("0");
+  const [room, setRoom] = useState<string>("1");
   const [furniture, setFurniture] = useState<string>("");
   const [furnitureList, setFurnitureList] = useState<string[]>([]);
   const [coordinate, setCoordinate] = useState<number[]>([]);
@@ -145,9 +144,9 @@ const ProductUpload: React.FC = () => {
         ["jpg", "png", "gif"].includes(extensionName) &&
         fileType === "사진"
       ) {
-        setImgFile(() => fileInput);
-      } else if (extensionName === "mp4" && fileType === "영상") {
-        setMovieFile(() => fileInput);
+        setImgFile(fileInput);
+      } else if (extensionName === "mp4" && fileType === "동영상") {
+        setMovieFile(fileInput);
       } else {
         window.alert(
           "지원하지 않는 형식의 파일입니다\n*확장자가 jpg, png, gif, mp4인 파일만 등록 가능"
@@ -175,6 +174,7 @@ const ProductUpload: React.FC = () => {
 
   // 매물 업로드 실행 함수
   const handleUploadClick = () => {
+    console.log("매물 업로드 시작!");
     // Option 처리 부분
     let option: number = 0;
     if (optionObj["풀옵션"]) {
@@ -187,10 +187,10 @@ const ProductUpload: React.FC = () => {
       );
     }
 
-    // 주소 처리 부분
+    // 주소로 위경도 반환
     if (address) {
       getUserAddressNum(address).then((res) => {
-        setCoordinate(res);
+        setCoordinate(() => res);
       });
     } else {
       window.alert("주소가 있어야 위도/경도를 반환할 수 있습니다.");
@@ -206,17 +206,22 @@ const ProductUpload: React.FC = () => {
       maintenance: Number(maintanence),
       maintenanceInfo: maintanenceInfo,
       isRentSupportable: false,
-      isFurnitureSupportable: false,
+      isFurnitureSupportable: furnitureList.length > 0,
       square: Number(area),
       room: Number(room),
       option,
       additionalOption: furnitureList,
-      startDate: dayjs(value.startDate[0]).toDate(),
-      endDate: dayjs(value.endDate[1]).toDate(),
+      startDate: dayjs(date[0]).toDate(),
+      endDate: dayjs(date[1]).toDate(),
       AddressDetail: addressDetail,
       lat: coordinate[0],
       lng: coordinate[1],
     };
+
+    console.log("productUploadDto 출력");
+    console.log(productUploadDto);
+    console.log(imgFile);
+    console.log(movieFile);
 
     const formData = new FormData(); // formData 객체 생성
     formData.append("productUploadDto", JSON.stringify(productUploadDto)); // productUploadDto 객체를 JSON으로 변환
@@ -228,12 +233,15 @@ const ProductUpload: React.FC = () => {
     if (movieFile) {
       formData.append(`productMedia[1]`, movieFile);
     }
+    console.log("폼데이터는...");
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
 
-    axios({
+    authAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/products/upload`,
       data: formData,
-      headers: { "Content-Type": "multipart/form-data" },
     })
       .then((response) => console.log(response, "detailPage로 이동합니다."))
       .catch((err) => console.log(err));
