@@ -24,15 +24,15 @@ public class ReportController {
     private final String SERVER_ERROR = "server_error";
 
     // 신고 전송
-    @PostMapping("/{userId}")
-    public ResponseDto<Void> manageReport(@PathVariable Long userId, @RequestBody Map<String, Object> map) {
+    @PostMapping
+    public ResponseDto<Void> manageReport(@RequestBody Map<String, Object> map) {
         ReportDto reportDto = new ReportDto();
         reportDto.setReportTypeId((Integer) map.get("reportTypeId"));
         reportDto.setReportSubjectTypeId((Integer) map.get("reportSubjectTypeId"));
         reportDto.setContent((String) map.get("content"));
         reportDto.setSubjectId(Long.parseLong(String.valueOf(map.get("subjectId"))));
 
-        Report report = reportService.manageReport(userId, reportDto);
+        Report report = reportService.manageReport(reportDto);
 
         if (report == null) {
             return ResponseDto.res(CLIENT_ERROR);
