@@ -56,6 +56,7 @@ const ProductUpload: React.FC = () => {
   const [room, setRoom] = useState<string>("");
   const [furniture, setFurniture] = useState<string>("");
   const [furnitureList, setFurnitureList] = useState<string[]>([]);
+  const [coordinate, setCoordinate] = useState<number[]>([]);
 
   // 사진, 영상 state
   const [imgFile, setImgFile] = useState(null);
@@ -151,23 +152,6 @@ const ProductUpload: React.FC = () => {
     />
   );
 
-  //   productAddress: String,
-  //   productDeposit: Integer,
-  //   productRent: Integer,
-  //   productMaintenence: Integer,
-  //   productMaintenenceInfo: Integer,
-  //   productSquare: Float,
-  //   productRoom: Integer,
-  //   productOption: String,
-  //   productIsSupportable: Boolean,
-  //   productIsFurnitureSupportable: Boolean,
-  //   productAdditionalOption: String,
-  //   productStartDate: String,
-  //   productEndDate: String
-  //   productPostDate: String,
-  //   productIsBanned: Boolean,
-  //   productIsDeleted: Boolean,
-
   // 추가 옵션 등록 함수
   const handleFurnitureAppend = (e: any) => {
     if (e.key === "Enter" && furniture) {
@@ -187,74 +171,51 @@ const ProductUpload: React.FC = () => {
 
   // 매물 업로드 실행 함수
   const handleUploadClick = () => {
-    // interface ProductUploadDto {
-    //   type: String;
-    //   regionId: String;
-    //   address: String;
-    //   deposit: number;
-    //   rent: number;
-    //   maintenance: number;
-    //   maintenanceInfo: String;
-    //   isRentSupportable: Boolean;
-    //   isFurnitureSupportable: Boolean;
-    //   square: number;
-    //   room: number;
-    //   option: number;
-    //   additionalOption: String[];
-    //   startDate: Date;
-    //   endDate: Date;
-    //   AddressDetail: String;
-    //   lat: number;
-    //   lng: number;
-    //   }
+    // Option 처리 부분
+    let option: number = 0;
+    if (optionObj["풀옵션"]) {
+      option = 255;
+    } else {
+      (Object.keys(optionObj) as (keyof typeof optionObj)[]).forEach(
+        (opt, idx) => {
+          optionObj[opt] ? (option += 2 ** (7 - idx)) : (option += 0);
+        }
+      );
+    }
 
-    const lnum = async () => {
-      const [lat, lng] = await getUserAddressNum(address);
-    };
+    // 주소 처리 부분
+    if (address) {
+      getUserAddressNum(address).then((res) => {
+        setCoordinate(res);
+      });
+    } else {
+      window.alert("주소가 있어야 위도/경도를 반환할 수 있습니다.");
+    }
 
     // 이부분 수정중!!!!
     const productUploadDto: ProductUploadDto = {
+      type: "ONEROOM", // 지금 값을 입력할 컴포넌트 없음
       address,
+      regionId: "1111", // 임시로 고정값을 넣어줬는데 로직 짜야함
       deposit: Number(deposit),
       rent: Number(charge),
       maintenance: Number(maintanence),
       maintenanceInfo: maintanenceInfo,
+      isRentSupportable: false,
+      isFurnitureSupportable: false,
       square: Number(area),
       room: Number(room),
+      option,
       additionalOption: furnitureList,
       startDate: dayjs(date[0]).toDate(),
       endDate: dayjs(date[1]).toDate(),
       AddressDetail: addressDetail,
+      lat: coordinate[0],
+      lng: coordinate[1],
     };
-    const formData = new FormData();
 
-    // 보낼 값을 formData에 append
-    formData.append("productAddress", address);
-    formData.append("addressDetail", addressDetail);
-    formData.append("productDeposit", deposit);
-    formData.append("productRent", charge);
-    formData.append("productMaintenence", maintanence);
-    formData.append("productMaintenenceInfo", maintanenceInfo);
-    formData.append("productSquare", area);
-    formData.append("remainDate", remainDate);
-    formData.append("productRoom", room);
-    formData.append("furniture", furniture);
-    formData.append("productStartDate", dayjs(date[0]).format("YYYY-MM-DD"));
-    formData.append("productEndDate", dayjs(date[1]).format("YYYY-MM-DD"));
-
-    // Option 처리 부분
-    let option: string = "0000000";
-    if (optionObj["풀옵션"]) {
-      option = "1111111";
-    } else {
-      const optionArr = (
-        Object.keys(optionObj) as (keyof typeof optionObj)[]
-      ).map((opt) => {
-        return optionObj[opt] ? "1" : "0";
-      });
-      option = optionArr.slice(1).join("");
-    }
-    formData.append("productOption", option);
+    const formData = new FormData(); // formData 객체 생성
+    formData.append("productUploadDto", JSON.stringify(productUploadDto)); // productUploadDto 객체를 JSON으로 변환
 
     // 이미지와 영상 업로드
     if (imgFile) {
