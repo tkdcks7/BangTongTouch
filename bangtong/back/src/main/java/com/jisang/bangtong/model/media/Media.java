@@ -3,6 +3,7 @@ package com.jisang.bangtong.model.media;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.jisang.bangtong.model.board.Board;
+import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.model.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,6 +36,11 @@ public class Media {
   // board_id를 외래 키로 설정
   @JsonProperty(access = Access.WRITE_ONLY)
   private Board board; // Board 참조 추가
+
+  @ManyToOne
+  @JoinColumn(name="product_id", foreignKey = @ForeignKey(name="fk_media_product"))
+  @JsonProperty(access = Access.WRITE_ONLY)
+  private Product product;
 
   @Override
   public String toString() {

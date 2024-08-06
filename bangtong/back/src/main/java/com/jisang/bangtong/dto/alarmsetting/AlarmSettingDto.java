@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 public class AlarmSettingDto {
     private Long alarmId;
     private Long userId;
-    private Boolean alarmPhoneChat;
-    private Boolean alarmPhoneComplete;
-    private Boolean alarmPhoneInterest;
-    private Boolean alarmEmailChat;
-    private Boolean alarmEmailInterest;
+    private boolean alarmPhoneChat;
+    private boolean alarmPhoneComplete;
+    private boolean alarmPhoneInterest;
+    private boolean alarmEmailChat;
+    private boolean alarmEmailComplete;
+    private boolean alarmEmailInterest;
 }

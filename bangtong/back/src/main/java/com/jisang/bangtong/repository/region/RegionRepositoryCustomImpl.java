@@ -39,7 +39,8 @@ public class RegionRepositoryCustomImpl implements RegionRepositoryCustom {
             region.regionId.substring(0, 4).as("regionId"), region.regionGugun))
         .from(region)
         .where(region.regionId.substring(0, 2).eq(sido)
-            .and(region.regionId.substring(2, 4).ne("00")))
+            .and(region.regionGugun.length().gt(0))
+            )
         .groupBy(region.regionId.substring(0, 4), region.regionGugun)
         .distinct()
         .fetch();
@@ -54,7 +55,7 @@ public class RegionRepositoryCustomImpl implements RegionRepositoryCustom {
             region.regionDong))
         .from(region)
         .where(region.regionId.substring(0, 4).eq(gugun)
-            .and(region.regionId.substring(4).ne("000")))
+            .and(region.regionDong.length().gt(0)))
         .groupBy(region.regionId.substring(0), region.regionDong)
         .distinct()
         .fetch();

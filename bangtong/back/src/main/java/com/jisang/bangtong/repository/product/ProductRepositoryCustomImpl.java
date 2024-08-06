@@ -8,6 +8,8 @@ import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.model.product.ProductType;
 import com.jisang.bangtong.model.product.QProduct;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -19,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
   private final JPAQueryFactory queryFactory;
   private final EntityManager entityManager;
-
+  private final QProduct product = QProduct.product;
   @Autowired
   public ProductRepositoryCustomImpl(JPAQueryFactory queryFactory, EntityManager entityManager) {
     this.queryFactory = queryFactory;
@@ -29,6 +31,12 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
   @Override
   public List<Product> searchList(ProductSearchDto productSearchDto) {
     log.info("productSearchDto:{}", productSearchDto);
+
+    NumberTemplate<Double> distanceExpression = Expressions.numberTemplate(Double.class,
+        "6371 * acos(cos(radians({0})) * cos(radians({1})) * cos(radians({2}) - radians({3})) + sin(radians({0})) * sin(radians({1})))",
+        productSearchDto.getLat(), product.lat, product.lng, productSearchDto.getLng()
+    );
+
     return queryFactory.selectFrom(product)
         .where(
             product.productDeposit.between(productSearchDto.getMinDeposit(), productSearchDto.getMaxDeposit())
@@ -38,6 +46,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
                 .and(product.productIsFurnitureSupportable.eq(productSearchDto.isFurnitureSupportable()))
                 .and(product.productStartDate.goe(productSearchDto.getStartDate()))
                 .and(product.productEndDate.loe(productSearchDto.getEndDate()))
+                .and(distanceExpression.lt(1))
         )
         .orderBy(buildOrderSpecifiers(productSearchDto.getOrder()))
         .fetch();
