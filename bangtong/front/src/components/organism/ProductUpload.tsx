@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import authAxios from "../../utils/authAxios";
+import { getUserAddressNum } from "../../utils/services";
 import dayjs, { Dayjs } from "dayjs";
 
 // 컴포넌트
@@ -13,6 +15,28 @@ import RadioGroup from "../molecules/RadioGroup";
 import Datepicker from "react-tailwindcss-datepicker";
 import useProductOptionStore from "../../store/productStore";
 import { Form, Input, DatePicker, ConfigProvider, Radio } from "antd";
+
+// 매물 업로드에 필요한 json의 인터페이스
+interface ProductUploadDto {
+  type: String;
+  regionId: String;
+  address: String;
+  deposit: number;
+  rent: number;
+  maintenance: number;
+  maintenanceInfo: String;
+  isRentSupportable: Boolean;
+  isFurnitureSupportable: Boolean;
+  square: number;
+  room: number;
+  option: number;
+  additionalOption: String[];
+  startDate: Date;
+  endDate: Date;
+  AddressDetail: String;
+  lat: number;
+  lng: number;
+}
 
 const ProductUpload: React.FC = () => {
   let { id }: any = useParams(); // 상품 번호. 있으면 update, 없으면 create
@@ -32,6 +56,7 @@ const ProductUpload: React.FC = () => {
   const [room, setRoom] = useState<string>("0");
   const [furniture, setFurniture] = useState<string>("");
   const [furnitureList, setFurnitureList] = useState<string[]>([]);
+  const [coordinate, setCoordinate] = useState<number[]>([]);
   const [date, setDate] = useState<[any, any]>([null, null]);
 
   // 사진, 영상 state
@@ -113,54 +138,23 @@ const ProductUpload: React.FC = () => {
   };
 
   // 파일 등록 시 확장자 유효성판정 후 업로드
-  const handleFileChange = (fileInput: any, fileType: string) => {
+  const onFileChange = (fileInput: any, fileType: string) => {
     if (fileInput) {
-      let extensionAllowed: string[] = [];
-      const extensionName = fileInput.name.split(".").pop().toLowerCase();
-      if (fileType === "사진") {
-        extensionAllowed = ["jpg", "png", "gif"];
-      } else if (fileType === "영상") {
-        extensionAllowed = ["mp4"];
+      const extensionName = fileInput.name.split(".").pop().toLowerCase(); // 파일명에서 확장자명 추출
+      if (
+        ["jpg", "png", "gif"].includes(extensionName) &&
+        fileType === "사진"
+      ) {
+        setImgFile(() => fileInput);
+      } else if (extensionName === "mp4" && fileType === "영상") {
+        setMovieFile(() => fileInput);
       } else {
-        if (fileType === "사진") {
-          setImgFile(null);
-          alert(
-            "지원하지 않는 형식의 파일입니다\n*확장자가 jpg, png, gif인 파일만 등록 가능"
-          );
-        } else {
-          setMovieFile(null);
-          alert(
-            "지원하지 않는 형식의 파일입니다\n*확장자가 mp4인 파일만 등록 가능"
-          );
-        }
-        return;
-      }
-      if (extensionAllowed.includes(extensionName)) {
-        if (fileType === "사진") {
-          setImgFile(fileInput);
-        } else {
-          setMovieFile(fileInput);
-        }
+        window.alert(
+          "지원하지 않는 형식의 파일입니다\n*확장자가 jpg, png, gif, mp4인 파일만 등록 가능"
+        );
       }
     }
   };
-
-  //   productAddress: String,
-  //   productDeposit: Integer,
-  //   productRent: Integer,
-  //   productMaintenence: Integer,
-  //   productMaintenenceInfo: Integer,
-  //   productSquare: Float,
-  //   productRoom: Integer,
-  //   productOption: String,
-  //   productIsSupportable: Boolean,
-  //   productIsFurnitureSupportable: Boolean,
-  //   productAdditionalOption: String,
-  //   productStartDate: String,
-  //   productEndDate: String
-  //   productPostDate: String,
-  //   productIsBanned: Boolean,
-  //   productIsDeleted: Boolean,
 
   // 추가 옵션 등록 함수
   const handleFurnitureAppend = (e: any) => {
@@ -181,44 +175,58 @@ const ProductUpload: React.FC = () => {
 
   // 매물 업로드 실행 함수
   const handleUploadClick = () => {
-    console.log(`이미지파일은 ${imgFile}입니다.`);
-    const formData = new FormData();
-
-    // 보낼 값을 formData에 append
-    formData.append("productAddress", address); // productAddress 말고 productAddressDetail도 만들어줄것을 요청
-    formData.append("addressDetail", addressDetail);
-    formData.append("productDeposit", deposit);
-    formData.append("productRent", charge);
-    formData.append("productMaintenence", maintanence);
-    formData.append("productMaintenenceInfo", maintanenceInfo);
-    formData.append("productSquare", area);
-    formData.append("remainDate", remainDate);
-    formData.append("productRoom", room);
-    formData.append("furniture", furniture);
-    formData.append("productStartDate", date[0]);
-    formData.append("productEndDate", date[1]);
-
     // Option 처리 부분
-    let option: string = "0000000";
+    let option: number = 0;
     if (optionObj["풀옵션"]) {
-      option = "1111111";
+      option = 255;
     } else {
-      const optionArr = (
-        Object.keys(optionObj) as (keyof typeof optionObj)[]
-      ).map((opt) => {
-        return optionObj[opt] ? "1" : "0";
+      (Object.keys(optionObj) as (keyof typeof optionObj)[]).forEach(
+        (opt, idx) => {
+          optionObj[opt] ? (option += 2 ** (7 - idx)) : (option += 0);
+        }
+      );
+    }
+
+    // 주소 처리 부분
+    if (address) {
+      getUserAddressNum(address).then((res) => {
+        setCoordinate(res);
       });
-      option = optionArr.slice(1).join("");
+    } else {
+      window.alert("주소가 있어야 위도/경도를 반환할 수 있습니다.");
     }
-    formData.append("productOption", option);
 
-    // 이미지와 영상은 null이면 안올려야하나, 임시로 올릴 수 있도록 작성
+    // 이부분 수정중!!!!
+    const productUploadDto: ProductUploadDto = {
+      type: "ONEROOM", // 지금 값을 입력할 컴포넌트 없음
+      address,
+      regionId: "1111", // 임시로 고정값을 넣어줬는데 로직 짜야함
+      deposit: Number(deposit),
+      rent: Number(charge),
+      maintenance: Number(maintanence),
+      maintenanceInfo: maintanenceInfo,
+      isRentSupportable: false,
+      isFurnitureSupportable: false,
+      square: Number(area),
+      room: Number(room),
+      option,
+      additionalOption: furnitureList,
+      startDate: dayjs(value.startDate[0]).toDate(),
+      endDate: dayjs(value.endDate[1]).toDate(),
+      AddressDetail: addressDetail,
+      lat: coordinate[0],
+      lng: coordinate[1],
+    };
+
+    const formData = new FormData(); // formData 객체 생성
+    formData.append("productUploadDto", JSON.stringify(productUploadDto)); // productUploadDto 객체를 JSON으로 변환
+
+    // 이미지와 영상 업로드
     if (imgFile) {
-      formData.append("imgFile", imgFile);
+      formData.append(`productMedia[0]`, imgFile);
     }
-
     if (movieFile) {
-      formData.append("movieFile", movieFile);
+      formData.append(`productMedia[1]`, movieFile);
     }
 
     axios({
@@ -400,11 +408,22 @@ const ProductUpload: React.FC = () => {
             onChange={(e) => setArea(e.target.value)}
           />
           <div style={{ width: "45%" }}>
-            <Datepicker
-              value={value}
-              onChange={handleValueChange}
-              useRange={false}
-            />
+            <Popover
+              trigger="click"
+              placement="bottom"
+              title={
+                <p className="text-center mb-3">
+                  양도 가능 기간을 설정해주세요.
+                </p>
+              }
+              content={datePicker}
+            >
+              <Button
+                type="text"
+                size="large"
+                icon={<CalendarOutlined className="text-lime-500" />}
+              ></Button>
+            </Popover>
           </div>
         </div>
       </form> */}
@@ -455,8 +474,8 @@ const ProductUpload: React.FC = () => {
             </div>
           </div>
           <div id="attachment-group">
-            <Attachment fileType="사진" onFileChange={handleFileChange} />
-            <Attachment fileType="동영상" onFileChange={handleFileChange} />
+            <Attachment fileType="사진" onFileChange={onFileChange} />
+            <Attachment fileType="동영상" onFileChange={onFileChange} />
           </div>
           <div className="text-center mt-5">
             <Btn

@@ -39,7 +39,6 @@ const ProductMapBox: React.FC = () => {
     },
   };
 
-  // 이게 작동해서 날짜가 제대로 store에 저장되는지 확인 필요
   const handelChange = (dates: any) => {
     setDate(dates[0], dates[1]);
   };
