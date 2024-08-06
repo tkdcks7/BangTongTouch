@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import authAxios from "../../utils/authAxios";
+import authAxios, { formDataAxios } from "../../utils/authAxios";
 import { getUserAddressNum } from "../../utils/services";
 import dayjs, { Dayjs } from "dayjs";
 
@@ -18,22 +18,22 @@ import { Form, Input, DatePicker, ConfigProvider, Radio } from "antd";
 
 // 매물 업로드에 필요한 json의 인터페이스
 interface ProductUploadDto {
-  type: String;
-  regionId: String;
-  address: String;
-  deposit: number;
-  rent: number;
-  maintenance: number;
-  maintenanceInfo: String;
-  isRentSupportable: Boolean;
-  isFurnitureSupportable: Boolean;
-  square: number;
-  room: number;
-  option: number;
-  additionalOption: String[];
-  startDate: Date;
-  endDate: Date;
-  AddressDetail: String;
+  productType: string;
+  regionId: string;
+  productAddress: string;
+  productDeposit: number;
+  productRent: number;
+  productMaintenance: number;
+  productMaintenanceInfo: string;
+  productIsRentSupportable: Boolean;
+  productIsFurnitureSupportable: Boolean;
+  productSquare: number;
+  productRoom: number;
+  productOption: number;
+  productAdditionalOption: string[];
+  productStartDate: string;
+  productEndDate: string;
+  productDetailAddress: string;
   lat: number;
   lng: number;
 }
@@ -52,16 +52,15 @@ const ProductUpload: React.FC = () => {
   const [maintanence, setMaintanence] = useState<string>("");
   const [maintanenceInfo, setMaintanenceInfo] = useState<string>("");
   const [area, setArea] = useState<string>("");
-  const [remainDate, setRemainDate] = useState<string>("");
-  const [room, setRoom] = useState<string>("0");
+  const [room, setRoom] = useState<string>("1");
   const [furniture, setFurniture] = useState<string>("");
   const [furnitureList, setFurnitureList] = useState<string[]>([]);
   const [coordinate, setCoordinate] = useState<number[]>([]);
   const [date, setDate] = useState<[any, any]>([null, null]);
 
   // 사진, 영상 state
-  const [imgFile, setImgFile] = useState(null);
-  const [movieFile, setMovieFile] = useState(null);
+  const [imgFile, setImgFile] = useState<File | null>(null);
+  const [movieFile, setMovieFile] = useState<File | null>(null);
 
   // ant design Search 컴포넌트
   const { Search } = Input;
@@ -145,9 +144,9 @@ const ProductUpload: React.FC = () => {
         ["jpg", "png", "gif"].includes(extensionName) &&
         fileType === "사진"
       ) {
-        setImgFile(() => fileInput);
-      } else if (extensionName === "mp4" && fileType === "영상") {
-        setMovieFile(() => fileInput);
+        setImgFile(fileInput);
+      } else if (extensionName === "mp4" && fileType === "동영상") {
+        setMovieFile(fileInput);
       } else {
         window.alert(
           "지원하지 않는 형식의 파일입니다\n*확장자가 jpg, png, gif, mp4인 파일만 등록 가능"
@@ -160,7 +159,6 @@ const ProductUpload: React.FC = () => {
   const handleFurnitureAppend = (e: any) => {
     if (e.key === "Enter" && furniture) {
       setFurnitureList(() => [...furnitureList, furniture]);
-      console.log(`가구가 추가됐습니다. 총 가구는 ${furnitureList} 입니다.`);
       setFurniture(() => "");
     }
   };
@@ -175,6 +173,7 @@ const ProductUpload: React.FC = () => {
 
   // 매물 업로드 실행 함수
   const handleUploadClick = () => {
+    console.log("매물 업로드 시작!");
     // Option 처리 부분
     let option: number = 0;
     if (optionObj["풀옵션"]) {
@@ -187,8 +186,9 @@ const ProductUpload: React.FC = () => {
       );
     }
 
-    // 주소 처리 부분
+    // 주소로 위경도 반환
     if (address) {
+      console.log("주소 있음!");
       getUserAddressNum(address).then((res) => {
         setCoordinate(res);
       });
@@ -198,42 +198,51 @@ const ProductUpload: React.FC = () => {
 
     // 이부분 수정중!!!!
     const productUploadDto: ProductUploadDto = {
-      type: "ONEROOM", // 지금 값을 입력할 컴포넌트 없음
-      address,
-      regionId: "1111", // 임시로 고정값을 넣어줬는데 로직 짜야함
-      deposit: Number(deposit),
-      rent: Number(charge),
-      maintenance: Number(maintanence),
-      maintenanceInfo: maintanenceInfo,
-      isRentSupportable: false,
-      isFurnitureSupportable: false,
-      square: Number(area),
-      room: Number(room),
-      option,
-      additionalOption: furnitureList,
-      startDate: dayjs(value.startDate[0]).toDate(),
-      endDate: dayjs(value.endDate[1]).toDate(),
-      AddressDetail: addressDetail,
+      productType: "ONEROOM", // 지금 값을 입력할 컴포넌트 없음
+      productAddress: address,
+      regionId: "1111010100", // 임시로 고정값을 넣어줬는데 로직 짜야함
+      productDeposit: Number(deposit),
+      productRent: Number(charge),
+      productMaintenance: Number(maintanence),
+      productMaintenanceInfo: maintanenceInfo,
+      productIsRentSupportable: false,
+      productIsFurnitureSupportable: furnitureList.length > 0,
+      productSquare: Number(area),
+      productRoom: Number(room),
+      productOption: option,
+      productAdditionalOption: furnitureList,
+      productStartDate: dayjs(date[0]).format("YYYY-MM-DD"),
+      productEndDate: dayjs(date[1]).format("YYYY-MM-DD"),
+      productDetailAddress: addressDetail,
       lat: coordinate[0],
       lng: coordinate[1],
     };
 
     const formData = new FormData(); // formData 객체 생성
-    formData.append("productUploadDto", JSON.stringify(productUploadDto)); // productUploadDto 객체를 JSON으로 변환
+    const jsonBlob = new Blob([JSON.stringify(productUploadDto)], {
+      type: "application/json",
+    }); // blob으로 변환 후 타입 명시적으로 지정
+    formData.append("productUploadDto", jsonBlob); // productUploadDto라는 key에 productUploadDto 반환
 
     // 이미지와 영상 업로드
     if (imgFile) {
-      formData.append(`productMedia[0]`, imgFile);
+      const imgBlob = new Blob([imgFile]);
+      formData.append(`productMedia`, imgBlob, imgFile.name);
     }
     if (movieFile) {
-      formData.append(`productMedia[1]`, movieFile);
+      const blob = new Blob([movieFile]);
+      formData.append(`productMedia`, blob, movieFile.name);
     }
 
-    axios({
+    // 검증을 위한 부분
+    formData.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+    console.log(formData.get("productMedia[0]"));
+    formDataAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/products/upload`,
       data: formData,
-      headers: { "Content-Type": "multipart/form-data" },
     })
       .then((response) => console.log(response, "detailPage로 이동합니다."))
       .catch((err) => console.log(err));
@@ -345,92 +354,9 @@ const ProductUpload: React.FC = () => {
             </Form.Item>
           </div>
         </Form>
-        {/* <form id="input-container" className="mt-5">
-        <InputBox
-          placeholder="주소"
-          buttonType="search"
-          size="large"
-          type="text"
-          width={"70vw"}
-          value={address}
-          onIconClick={handleAddressPopUp}
-        />
-        <InputBox
-          placeholder="상세 주소를 입력해주세요"
-          type="text"
-          value={addressDetail}
-          onChange={(e) => setAddressDetail(e.target.value)}
-          width={"auto"}
-        />
-        <div className="w-full flex justify-between">
-          <InputBox
-            placeholder="보증금"
-            size="large"
-            type="number"
-            width={"45%"}
-            value={deposit}
-            onChange={(e) => setDeposit(e.target.value)}
-          />
-          <InputBox
-            placeholder="월세"
-            size="large"
-            type="text"
-            width={"45%"}
-            value={charge}
-            onChange={(e) => setCharge(e.target.value)}
-          />
-        </div>
-        <div className="w-full flex justify-between">
-          <InputBox
-            placeholder="관리비"
-            size="large"
-            type="text"
-            width={"45%"}
-            value={maintanence}
-            onChange={(e) => setMaintanence(e.target.value)}
-          />
-          <InputBox
-            placeholder="관리비 항목"
-            size="large"
-            type="text"
-            width={"45%"}
-            value={maintanenceInfo}
-            onChange={(e) => setMaintanenceInfo(e.target.value)}
-          />
-        </div>
-        <div className="w-full flex justify-between">
-          <InputBox
-            placeholder="면적"
-            size="large"
-            type="text"
-            width={"45%"}
-            value={area}
-            onChange={(e) => setArea(e.target.value)}
-          />
-          <div style={{ width: "45%" }}>
-            <Popover
-              trigger="click"
-              placement="bottom"
-              title={
-                <p className="text-center mb-3">
-                  양도 가능 기간을 설정해주세요.
-                </p>
-              }
-              content={datePicker}
-            >
-              <Button
-                type="text"
-                size="large"
-                icon={<CalendarOutlined className="text-lime-500" />}
-              ></Button>
-            </Popover>
-          </div>
-        </div>
-      </form> */}
         <div className="mt-5" id="how-many-room">
           <p className="text-lg">방 갯수</p>
           <div className="flex justify-center items-center">
-            {/* <RadioGroup onChange={handleRoomOption} /> */}
             <Radio.Group onChange={handleRoomOption}>
               <Radio>1</Radio>
               <Radio>2</Radio>
@@ -451,6 +377,7 @@ const ProductUpload: React.FC = () => {
                       className={
                         "flex flex-col items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
                       }
+                      key={opt}
                       onClick={() => hadleFurnitureRemove(opt)}
                     >
                       {opt}
