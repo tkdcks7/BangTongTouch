@@ -15,7 +15,6 @@ const VideoChat: React.FC<VideoChatProps> = ({ roomId }) => {
     const setupConnection = async () => {
       await new Promise<void>((resolve) => {
         SocketService.connect();
-
         const checkConnection = setInterval(() => {
           if (SocketService.client.connected) {
             clearInterval(checkConnection);
@@ -103,9 +102,8 @@ const VideoChat: React.FC<VideoChatProps> = ({ roomId }) => {
 
   return (
     <div>
-      <h2>Video Chat Room: {roomId}</h2>
+      {roomId}
       <div>
-        <h3>Local Video</h3>
         <video
           ref={localVideoRef}
           autoPlay
@@ -115,12 +113,11 @@ const VideoChat: React.FC<VideoChatProps> = ({ roomId }) => {
         />
       </div>
       <div>
-        <h3>Remote Video</h3>
         <video
           ref={remoteVideoRef}
           autoPlay
           playsInline
-          className={`w-full scale-x-[-1]`}
+          className={`scale-x-[-1]`}
         />
       </div>
     </div>

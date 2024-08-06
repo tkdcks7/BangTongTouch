@@ -7,6 +7,8 @@ type IconType = React.ComponentType<AntdIconProps>;
 interface IVideoChatBtnProps extends React.HTMLProps<HTMLDivElement> {
   icon: IconType | keyof typeof AntdIcons;
   backgroundColor?: string;
+  textColor?: string;
+  textSize?: string;
   padding?: string;
   rounded?: string;
   onClick?: () => void;
@@ -15,6 +17,8 @@ interface IVideoChatBtnProps extends React.HTMLProps<HTMLDivElement> {
 const VideoChatBtn: React.FC<IVideoChatBtnProps> = ({
   icon,
   backgroundColor,
+  textColor,
+  textSize,
   padding,
   rounded,
   onClick,
@@ -26,7 +30,7 @@ const VideoChatBtn: React.FC<IVideoChatBtnProps> = ({
 
   return (
     <IconComponent
-      className={`${backgroundColor} ${padding} ${rounded}`}
+      className={`${backgroundColor} ${padding} ${rounded} ${textColor} ${textSize}`}
       onClick={onClick}
     />
   );
