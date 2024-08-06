@@ -37,6 +37,9 @@ import CommunityMain from "./components/organism/CommunityMain"; // 커뮤니티
 import CommunityDetail from "./components/organism/CommunityDetail"; // 글 상세
 import CommunityCreate from "./components/organism/CommunityCreate"; // 글 쓰기
 
+// WebRTC 1:1 실시간 화상 채팅
+import VideoChatPage from "./components/page/VideoChatPage";
+
 // 로그인페이지, 회원가입페이지, 아이디, 비밀번호 찾기는 Nav가 없기 때문에 Layout 밖에 선언함
 const Router: React.FC = () => {
   return (
@@ -65,6 +68,7 @@ const Router: React.FC = () => {
           {/* 채팅 페이지 */}
           <Route path="chats" element={<ChattingPage />}>
             <Route path="" element={<ChatMain />} />
+            <Route path="videochat" element={<VideoChatPage />} />
             <Route path=":id" element={<ChatDetail />} />
           </Route>
 
