@@ -11,7 +11,7 @@ const Attachment: React.FC<AttachmentProps> = ({
   ...props
 }) => {
   const handleFileChange = (e: any) => {
-    const selectedFile: any[] = e.target.files[0];
+    const selectedFile = e.target.files[0];
     onFileChange(selectedFile, fileType);
   };
 

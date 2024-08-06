@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import useProductOptionStore from "../../store/productStore";
 
 // 이미지 소스
+import Fulloption from "../../assets/FullOptionIcon.png";
 import Stove from "../../assets/Stove.png";
 import Fridge from "../../assets/Fridge.png";
 import WashingMachine from "../../assets/WashingMachine.png";
@@ -29,7 +30,7 @@ const OptionBtn: React.FC<BtnProps> = ({ text, ...props }) => {
   const { optionObj, setProductOption } = useProductOptionStore();
 
   const imgObj: any = {
-    풀옵션: "무언가의주소",
+    풀옵션: Fulloption,
     가스레인지: Stove,
     냉장고: Fridge,
     세탁기: WashingMachine,
