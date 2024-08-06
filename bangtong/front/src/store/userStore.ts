@@ -10,6 +10,7 @@ interface User {
   nickname: string;
   token: string | null;
   setInfoUpdate: (data: any) => void;
+  setprofileUpdate: (profileImage?: string, nickname?: string) => void;
   setToken: (token: string) => void;
   setLogOut: () => void;
 }
@@ -44,6 +45,18 @@ const useUserStore = create<User>()(
       nickname: "",
       token: null,
       // 유저 정보 업데이트 setter
+      setprofileUpdate: (profileImage?: string, nickname?: string) =>
+        set((state) => {
+          // profileImage와 nickname이 있을 경우에는 둘 다 수정, 둘 중 하나만 있을 경우에는 하나만 수정
+          const newState: any = {};
+          if (profileImage) {
+            newState.profileImage = profileImage;
+          }
+          if (nickname) {
+            newState.nickname = nickname;
+          }
+          return { ...state, ...newState };
+        }),
       setInfoUpdate: ({ id, email, profileImage, nickname }) => {
         set(() => ({
           id,
