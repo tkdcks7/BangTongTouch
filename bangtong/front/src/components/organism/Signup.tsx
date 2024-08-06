@@ -34,6 +34,7 @@ const SignupPage: React.FC = () => {
     "병아리",
     "댕댕이",
     "도야지",
+    "고슴도치",
   ];
   const adjectiveArr = [
     "귀여운",
@@ -46,6 +47,7 @@ const SignupPage: React.FC = () => {
     "신난",
     "멍한",
     "맹렬한",
+    "방황하는",
   ];
 
   // 랜덤 양의 정수 생성함수
@@ -130,7 +132,7 @@ const SignupPage: React.FC = () => {
       .catch((err) => {
         console.log(err);
         alert(
-          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요."
+          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요.",
         );
       });
   };
@@ -149,7 +151,7 @@ const SignupPage: React.FC = () => {
       .catch((err) => {
         console.log(err);
         alert(
-          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요."
+          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요.",
         );
       });
   };
