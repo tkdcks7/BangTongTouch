@@ -15,7 +15,7 @@ const ChatBox: React.FC = () => {
   useEffect(() => {
     authAxios({
       method: "GET",
-      url: `${process.env.REACT_APP_BACKEND_URL}/chatroom/${id}`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/chatrooms/chatroom/${id}`,
     })
       .then((response) => {
         console.log(response);
