@@ -26,7 +26,7 @@ const Attachment: React.FC<AttachmentProps> = ({
       />
       <label
         htmlFor={"attach-file" + fileType}
-        className="bg-lime-500 p-2 px-20 text-white rounded-xl"
+        className="bg-lime-500 p-2 px-20 text-white rounded-xl hover:bg-lime-600 cursor-pointer"
       >
         파일 찾기
       </label>
