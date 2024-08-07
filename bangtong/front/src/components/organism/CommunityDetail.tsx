@@ -140,7 +140,7 @@ const CommunityDetail: React.FC = () => {
         alert("신고가 완료되었습니다.");
       })
       .then((error) => {
-        console.log("error");
+        alert("로그인 후 이용하실 수 있습니다.");
       });
     changeModalStatus();
   };
@@ -210,7 +210,7 @@ const CommunityDetail: React.FC = () => {
           <div>
             <div className="flex justify-between">
               <RollBackBtn />
-              {boardContent.boardWriter.userId === 2 ? (
+              {boardContent.boardWriter.userId === userId ? (
                 <MenuBtn
                   onDeleteClicked={deleteBoard}
                   onEditClicked={editBoard}

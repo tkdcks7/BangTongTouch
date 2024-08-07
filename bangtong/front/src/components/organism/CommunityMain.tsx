@@ -66,7 +66,6 @@ const CommunityMain: React.FC = () => {
       },
     })
       .then((response) => {
-        console.log(response.data.data);
         const page = parseInt(response.data.data.totalElements);
         setContents(response.data.data.content);
         setIsLoaded(true);

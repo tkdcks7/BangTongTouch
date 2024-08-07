@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import authAxios from "../../utils/authAxios";
 
@@ -12,10 +12,13 @@ import { MenuOutlined } from "@ant-design/icons";
 
 // 데이터
 import useUserStore from "../../store/userStore";
+import useAlarmInfoStore from "../../store/alarmInfoStore";
 
 const MMenuBar: React.FC = () => {
   const navigate = useNavigate();
-  const { id, setLogOut } = useUserStore();
+  const { alarms, alarmNum } = useAlarmInfoStore();
+  const { token, id, setLogOut } = useUserStore();
+  const alarmItems = useRef<Array<any>>();
 
   // logout 실행 함수
   const handleLogOutBtnClick = (e: any) => {
@@ -65,10 +68,39 @@ const MMenuBar: React.FC = () => {
     items,
   };
 
+  useEffect(() => {
+    if (token) {
+      alarmItems.current = alarms?.map((item, index) => {
+        return {
+          label: (
+            <div>
+              <div>{item.alarmMessageDate}</div>
+              <div>{item.alarmMessage}</div>
+            </div>
+          ),
+          key: index,
+        };
+      });
+    }
+  }, []);
+
   return (
     <div className="flex justify-end items-center w-screen p-2">
       <div>
-        <IconBtn imgSrc={Bell} size={30} />
+        {token ? (
+          <Dropdown trigger={["click"]} menu={{ items: alarmItems.current }}>
+            <IconBtn imgSrc={Bell} size={30} />
+          </Dropdown>
+        ) : (
+          <IconBtn
+            imgSrc={Bell}
+            size={30}
+            onClick={() => {
+              alert("로그인 후 이용해 주세요.");
+              navigate("/user/login");
+            }}
+          />
+        )}
       </div>
       <div className="mx-3">
         <Dropdown menu={menuProps} trigger={["click"]}>
