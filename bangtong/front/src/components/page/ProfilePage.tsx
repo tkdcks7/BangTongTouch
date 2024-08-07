@@ -1,9 +1,6 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
-import { useParams } from "react-router-dom";
-
-// 데이터
-import { users } from "../../data";
+import { Outlet, Link } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 // 컴포넌트
 import ProfileBox from "../molecules/ProfileBox";
@@ -12,18 +9,28 @@ import ProfileBox from "../molecules/ProfileBox";
 import useUserStore from "../../store/userStore";
 
 const ProfilePage: React.FC = () => {
+  let urlId: string | undefined = useParams().id; // 접근하려는 user의 profile 페이지
   const { id, nickname } = useUserStore(); // 유저 번호
+  const location = useLocation();
 
-  // id가 undefined인 경우
-  if (id === undefined) {
-    return <p>잘못된 접근입니다.</p>;
+  // id가 undefined 혹은 다른 유저로의 접근인 경우
+  if (id === undefined || id !== Number(urlId)) {
+    return (
+      <>
+        <p>잘못된 접근입니다.</p> <br />
+        <Link to={"/"} className="text-lime-500">
+          --메인으로 돌아가기--
+        </Link>
+      </>
+    );
   }
 
   return (
-    <div className="w-full md:w-3/5">
+    <div className="w-full md:w-2/5">
       {id ? (
         <div>
-          <ProfileBox userNickname={nickname} />
+          {/* 프로필 메인페이지에서만 프로필 편집 창이 뜨도록 주소 비교 */}
+          {location.pathname === `/profile/${id}` ? <ProfileBox /> : <></>}
           <Outlet />
         </div>
       ) : (

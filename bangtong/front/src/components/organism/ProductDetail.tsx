@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Params, useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import useUserStore from "../../store/userStore";
 
 // 컴포넌트
@@ -10,6 +9,9 @@ import ProductProfile from "../molecules/ProductProfile";
 import ProductOptions from "../molecules/ProductOptions";
 import ProductAdditionalOptions from "../molecules/ProductAdditionalOptions";
 import LocationAround from "../molecules/LocationAround";
+import { ConfigProvider, Modal } from "antd";
+import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import authAxios from "../../utils/authAxios";
 
 const ProductDetail: React.FC = () => {
   // 기본값 선언
@@ -17,6 +19,14 @@ const ProductDetail: React.FC = () => {
     productId: 1,
     productType: "ONEROOM",
     productAddress: "147-51",
+    user: {
+      id: 13,
+      userEmail: "test@naver.com",
+      profileImage: "",
+      nickname: "매콤한 호랑이143",
+      IsBanned: false,
+    },
+
     productDeposit: 10,
     productRent: 2000,
     productMaintenance: 5,
@@ -43,9 +53,13 @@ const ProductDetail: React.FC = () => {
   const navigate = useNavigate();
   const userId: number = useUserStore().id;
 
+  // 신고 모달 상태관리
+  const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
+
   // 로딩과 에러를 처리하는 state
   const [loading, setLoading] = useState(true);
   const [connectionFailed, setConnectionFailed] = useState(false);
+  const [isInterest, setIsInterest] = useState(false);
 
   // state와 초기값 선언. 나중에 null, 0 혹은 빈 문자열로 바꿀거임.
   const [productInfo, setProductInfo] = useState(tempObj);
@@ -54,14 +68,24 @@ const ProductDetail: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios({
+        const response = await authAxios({
           method: "POST",
-          url: `${process.env.BACKEND_URL}/products/${id}`,
-          headers: {},
+          url: `${process.env.REACT_APP_BACKEND_URL}/products/${id}`,
         });
         // status code가 200번으로 유지돼서 설정했는데, 이후 변경할 것.
         if (response.config.data) {
           setProductInfo(response.data);
+          // 관심 매물 등록이 돼있는지 조회 후, 그렇다면 관심 상태를 true로
+          authAxios({
+            method: "GET",
+            url: `${process.env.REACT_APP_BACKEND_URL}/interest/${userId}`,
+          })
+            .then((response) => {
+              if (response.data.data.includes(id)) {
+                setIsInterest(true);
+              }
+            })
+            .catch((err) => console.log(err));
         } else {
           setConnectionFailed(true);
           // navigate("/products");
@@ -85,33 +109,36 @@ const ProductDetail: React.FC = () => {
   // }
 
   // 매물 게시글 삭제 함수
-  // const handleDelete = (): void => {
-  //   if (productInfo.userId === userId) {
-  //     axios({
-  //       method: "DELETE",
-  //       url: `${process.env.BACKEND_URL}/products/delete/${id}`,
-  //       headers: {},
-  //     })
-  //       .then((response) => {
-  //         console.log(response);
-  //         navigate("/product");  // 삭제 후 페이지 이동
-  //       })
-  //       .catch((err) => console.log(err));
-  //   }
-  // };
+  const handleDelete = (): void => {
+    if (productInfo.user.id === userId) {
+      authAxios({
+        method: "DELETE",
+        url: `${process.env.BACKEND_URL}/products/delete/${id}`,
+      })
+        .then((response) => {
+          console.log(response);
+          navigate("/product"); // 삭제 후 페이지 이동
+        })
+        .catch((err) => console.log(err));
+    }
+  };
 
   // 관심 매물 등록(좋아요). 관심매물 좋아요 상태도 같이 보내줄 것.
-  const handleLike = (): void => {
-    axios({
-      method: "POST",
-      url: `${process.env.BACKEND_URL}/interests/add`,
-      headers: {},
-    }).then((response) => {
-      if ("등록여부") {
-        console.log("관심 매물로 등록/취소됐습니다.");
-      }
-      console.log("관심 매물로 등록/취소됐습니다.");
-    });
+  const handleInterestBtn = (): void => {
+    let method: string = "POST";
+    let url: string = `${process.env.REACT_APP_BACKEND_URL}/interest/add`;
+    let data: any = { userId, productId: id };
+    if (isInterest) {
+      method = "DELETE";
+      url = `${process.env.REACT_APP_BACKEND_URL}/interest/delete/${userId}/${id}`;
+      data = {};
+    }
+    authAxios({ method, url, data })
+      .then((response) => {
+        console.log("관심 매물 등록/취소됐음!");
+        setIsInterest(() => !isInterest); // 관심 매물 true/false 상태를 반전
+      })
+      .catch((err) => console.log(err));
   };
 
   // 일자를 파싱하는 함수
@@ -120,6 +147,25 @@ const ProductDetail: React.FC = () => {
       return [0, 0, 0];
     }
     return time.split("-").map((el) => Number(el));
+  };
+
+  // modal ok 버튼 핸들러
+  const handleModalOk = () => {
+    setIsReportModalOpen(false);
+  };
+
+  // modal cancel 버튼 핸들러
+  const handleModalCancel = () => {
+    setIsReportModalOpen(false);
+  };
+
+  // ant design 글로벌 디자인 토큰
+  const theme = {
+    token: {
+      colorBgTextHover: "#E9FFE7",
+      colorPrimary: "#129B07",
+      colorPrimaryBorder: "#129B07",
+    },
   };
 
   // 계약일, 계약종료일을 연월일로 반환
@@ -141,10 +187,11 @@ const ProductDetail: React.FC = () => {
 
   return (
     <div>
-      <div className="mt-10">
+      <div className="mt-10 w-full md:w-2/5 mx-auto">
         <ImgCarousel />
+        <h2 className="text-2xl font-bold text-center">{`${productInfo.boardRegion.regionSido} ${productInfo.boardRegion.regionGugun} ${productInfo.boardRegion.regionDong}`}</h2>
         {/* 유저 프로필, 연락하기 */}
-        <ProductProfile />
+        <ProductProfile userinfo={productInfo.user} />
         <p className="mt-2">간단한 설명 (유저 입력)</p>
         {/* 구분선 */}
         <Devider />
@@ -187,7 +234,23 @@ const ProductDetail: React.FC = () => {
         {/* 구분선 */}
         <Devider />
         <LocationAround />
+        <div className="h-20" />
       </div>
+      <button onClick={() => setIsReportModalOpen(true)}>신고버튼테스트</button>
+      <br />
+      <button onClick={handleInterestBtn}>
+        {isInterest ? <HeartFilled /> : <HeartOutlined />}
+      </button>
+      <ConfigProvider theme={theme}>
+        <Modal
+          title="지역을 선택해주세요."
+          open={isReportModalOpen}
+          onOk={handleModalOk}
+          onCancel={handleModalCancel}
+        >
+          <div className="p-2 text-center"></div>
+        </Modal>
+      </ConfigProvider>
     </div>
   );
 };

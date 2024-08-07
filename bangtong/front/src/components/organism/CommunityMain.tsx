@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
@@ -12,33 +12,40 @@ import Loading from "../atoms/Loading";
 
 // 이미지 소스
 import Pencil from "../../assets/Pencil.png";
+import { getUserAddressKr } from "../../utils/services";
 
-interface BoardWriter {
-  userBirthYear: number;
-  userEmail: string;
-  userGender: number;
+interface iUser {
   userId: number;
-  userIsAdmin: boolean;
-  userIsBanned: boolean;
-  userIsDeleted: boolean;
-  userNickname: string;
-  userPhone: string;
-  userProvider: string;
-  userRegisterDate: string;
+  nickname: string;
+  isBanned: boolean;
+}
+
+interface region {
+  regionId: string;
+  regionSido: string;
+  regionGugun: string;
+  regionDong: string;
 }
 
 interface Content {
   boardId: number;
   boardTitle: string;
-  boardWriter: BoardWriter;
+  boardWriter: iUser;
+  boardContent: string;
   boardDate: string;
+  region?: region;
+  hit: number;
+  boardIsBanned: boolean;
 }
 
 const CommunityMain: React.FC = () => {
   // 데이터 (받아온 게시글들)
   const [page, setPage] = useState<number>(1);
-  const [contents, setContents] = useState<Content[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [contents, setContents] = useState<Array<Content>>([]);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [communityCategory, setCommunityCategory] = useState<boolean>(false);
+  const addr = useRef<number>(0);
 
   // pagination 글로벌 디자인 토큰
   const theme = {
@@ -55,18 +62,41 @@ const CommunityMain: React.FC = () => {
       data: {
         pageNo: `${page - 1}`,
         size: "10",
+        regionId: communityCategory === true ? addr.current : null,
       },
     })
       .then((response) => {
-        setContents(response.data.content);
+        const page = parseInt(response.data.data.totalElements);
+        setContents(response.data.data.content);
         setIsLoaded(true);
+        setTotalPages(page);
       })
       .catch((e) => console.log(e));
   };
 
+  const changeCommunityCategory = (flag: boolean) => {
+    setCommunityCategory(flag);
+  };
+
   useEffect(() => {
-    loadData();
-  }, [page]);
+    const getAddress = async () => {
+      if (communityCategory === true) {
+        setIsLoaded(false);
+        const temp: any = await getUserAddressKr().catch((e) => {
+          alert("해당 서비스를 이용하시려면 위치 권한을 허용해주셔야합니다.");
+          window.location.replace("");
+        });
+        addr.current = temp[3];
+        loadData();
+        setIsLoaded(true);
+      }
+    };
+    if (communityCategory === true) {
+      getAddress();
+    } else {
+      loadData();
+    }
+  }, [page, communityCategory]);
 
   return (
     <>
@@ -84,7 +114,7 @@ const CommunityMain: React.FC = () => {
             />
           </div>
           <div className="my-5 md:w-full">
-            <MultiBtn />
+            <MultiBtn setCategory={changeCommunityCategory} />
           </div>
           {isLoaded && <ContentTable contents={contents} />}
           <div className="w-full p-2 mt-5 flex justify-end">
@@ -98,12 +128,10 @@ const CommunityMain: React.FC = () => {
           <ConfigProvider theme={theme}>
             <Pagination
               current={page}
-              total={50}
+              total={totalPages}
               className="mt-10"
               responsive
-              onChange={(pageNumber) => {
-                setPage(pageNumber);
-              }}
+              onChange={(pageNumber) => setPage(pageNumber)}
             />
           </ConfigProvider>
         </div>

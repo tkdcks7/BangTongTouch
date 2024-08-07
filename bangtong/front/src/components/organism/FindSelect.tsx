@@ -6,13 +6,16 @@ import axios from "axios";
 import TextBox from "../atoms/TextBox";
 import Btn from "../atoms/Btn";
 import InputBox from "../molecules/InputBox";
+import { Button, ConfigProvider, Input, Modal } from "antd";
 
 const FindSelectPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const [isIdBtnShow, setIsIdBtnShow] = useState<boolean>(false);
+  const [isIdModalOpen, setIsIdModalOpen] = useState(false);
+  const [isPwModalOpen, setIsPwModalOpen] = useState(false);
+  // const [isIdBtnShow, setIsIdBtnShow] = useState<boolean>(false);
+  // const [isPwBtnShow, setIsPwBtnShow] = useState<boolean>(false);
   const [isMailChecked, setIsMailChecked] = useState<boolean>(false);
-  const [isPwBtnShow, setIsPwBtnShow] = useState<boolean>(false);
   const [isAuthShow, setIsAuthShow] = useState<boolean>(false);
 
   const [phone, setPhone] = useState<string>("");
@@ -20,19 +23,22 @@ const FindSelectPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [auth, setAuth] = useState<string>("");
 
-  const handleIdFindBtnClick: React.MouseEventHandler<HTMLElement> = (
-    e: any
-  ) => {
-    setIsIdBtnShow(() => !isIdBtnShow);
-    setIsPwBtnShow(() => false);
+  // ant design 글로벌 디자인 토큰
+  const theme = {
+    token: {
+      colorBgTextHover: "#E9FFE7",
+      colorPrimary: "#129B07",
+      colorPrimaryBorder: "#129B07",
+      colorLinkHover: "#6EF962",
+    },
   };
 
-  const handlePwFindBtnClick: React.MouseEventHandler<HTMLElement> = (
-    e: any
-  ) => {
-    setIsPwBtnShow(() => !isPwBtnShow);
-    setIsIdBtnShow(() => false);
-  };
+  // const handlePwFindBtnClick: React.MouseEventHandler<HTMLElement> = (
+  //   e: any
+  // ) => {
+  //   setIsPwBtnShow(() => !isPwBtnShow);
+  //   setIsIdBtnShow(() => false);
+  // };
 
   // 전화번호를 보내서 연동된 메일이 있는지 확인하는 함수. 받아온 이메일은 마스킹 후 보여준다.
   const mailCheck: React.MouseEventHandler<HTMLElement> = (e: any) => {
@@ -78,21 +84,28 @@ const FindSelectPage: React.FC = () => {
 
   return (
     <>
-      <div className="text-3xl text-center font-bold m-6">
-        <TextBox text="아이디/비밀번호 찾기" size="2xl" />
-      </div>
-      <div className="flex justify-center mt-5">
-        <Btn
-          text="아이디 찾기"
-          backgroundColor="bg-lime-500"
-          textColor="white"
-          onClick={handleIdFindBtnClick}
-        />
-      </div>
-      <div
-        className={`flex justify-center mt-5 ${isIdBtnShow ? "" : "hidden"}`}
-      >
-        <InputBox
+      <ConfigProvider theme={theme}>
+        <div className="text-3xl text-center font-bold m-6">
+          <TextBox text="아이디/비밀번호 찾기" size="2xl" />
+        </div>
+        <div className="flex justify-center mt-5">
+          <Button
+            type="primary"
+            onClick={() => setIsIdModalOpen(true)}
+            className="py-6 px-10 rounded-full text-lg font-bold"
+          >
+            아이디 찾기
+          </Button>
+          <Modal
+            title="아이디 찾기"
+            open={isIdModalOpen}
+            onOk={() => setIsIdModalOpen(false)}
+            onCancel={() => setIsIdModalOpen(false)}
+          >
+            <Input></Input>
+          </Modal>
+        </div>
+        {/* <InputBox
           placeholder="핸드폰 번호(- 없이 숫자만 입력)"
           buttonType="send"
           size="small"
@@ -103,37 +116,34 @@ const FindSelectPage: React.FC = () => {
             console.log(phone);
           }}
           width={"70vw"}
-        />
+        /> */}
         {/* input send가 안돼서 임시로 넣음. 구현되면 제거할 것 */}
-        <Btn
-          text="전송"
-          backgroundColor="bg-lime-500"
-          textColor="white"
-          width="w-24"
-          height="h-12"
-          onClick={mailCheck}
-        />
-      </div>
+        {/* <Btn
+        text="전송"
+        backgroundColor="bg-lime-500"
+        textColor="white"
+        width="w-24"
+        height="h-12"
+        onClick={mailCheck}
+      /> */}
 
-      {/* 이메일 확인이 끝날 시, "메일은 ~~~입니다." 라고 알려주는 div */}
-      <div
-        className={`flex justify-center mt-5 ${isMailChecked ? "" : "hidden"}`}
-      >
-        <TextBox text={`이메일은 ${maskedEmail} 입니다.`} size="xl" />
-      </div>
+        {/* 이메일 확인이 끝날 시, "메일은 ~~~입니다." 라고 알려주는 div */}
+        <div
+          className={`flex justify-center mt-5 ${isMailChecked ? "" : "hidden"}`}
+        >
+          <TextBox text={`이메일은 ${maskedEmail} 입니다.`} size="xl" />
+        </div>
 
-      <div className="flex justify-center mt-5">
-        <Btn
-          text="비밀번호 찾기"
-          backgroundColor="bg-yellow-300"
-          textColor="white"
-          onClick={handlePwFindBtnClick}
-        />
-      </div>
-      <div
-        className={`flex justify-center mt-5 ${isPwBtnShow ? "" : "hidden"}`}
-      >
-        <InputBox
+        <div className="flex justify-center mt-5">
+          <Btn
+            text="비밀번호 찾기"
+            backgroundColor="bg-yellow-300"
+            textColor="white"
+            onClick={() => setIsPwModalOpen(true)}
+          />
+        </div>
+        <Modal></Modal>
+        {/* <InputBox
           placeholder="이메일"
           buttonType="send"
           size="small"
@@ -144,41 +154,43 @@ const FindSelectPage: React.FC = () => {
             console.log(email);
           }}
           width={"70vw"}
-        />
+        /> */}
         {/* input send가 안돼서 임시로 넣음. 구현되면 제거할 것 */}
-        <Btn
-          text="전송"
-          backgroundColor="bg-lime-500"
-          textColor="white"
-          width="w-24"
-          height="h-12"
-          onClick={emailVerifiyHandler}
-        />
-      </div>
-      <div className={`flex justify-center mt-5 ${isAuthShow ? "" : "hidden"}`}>
-        <InputBox
-          placeholder="인증번호 입력"
-          buttonType="send"
-          size="small"
-          type="text"
-          value={auth}
-          onChange={(e) => setAuth(e.target.value)}
-          width={"70vw"}
-        />
-        {/* input send가 안돼서 임시로 넣음. 구현되면 제거할 것 */}
-        <Btn
-          text="인증번호 전송"
-          backgroundColor="bg-lime-500"
-          textColor="white"
-          width="w-24"
-          height="h-12"
-          onClick={verifyAuthHandler}
-        />
-      </div>
+        {/* <Btn
+        text="전송"
+        backgroundColor="bg-lime-500"
+        textColor="white"
+        width="w-24"
+        height="h-12"
+        onClick={emailVerifiyHandler}
+      /> */}
+        <div
+          className={`flex justify-center mt-5 ${isAuthShow ? "" : "hidden"}`}
+        >
+          <InputBox
+            placeholder="인증번호 입력"
+            buttonType="send"
+            size="small"
+            type="text"
+            value={auth}
+            onChange={(e) => setAuth(e.target.value)}
+            width={"70vw"}
+          />
+          {/* input send가 안돼서 임시로 넣음. 구현되면 제거할 것 */}
+          <Btn
+            text="인증번호 전송"
+            backgroundColor="bg-lime-500"
+            textColor="white"
+            width="w-24"
+            height="h-12"
+            onClick={verifyAuthHandler}
+          />
+        </div>
 
-      <div className="text-lime-500 text-sm md:text-base mt-3 text-center">
-        <Link to={"/user/login"}>로그인 화면으로</Link>
-      </div>
+        <div className="text-lime-500 text-sm md:text-base mt-3 text-center">
+          <Link to={"/user/login"}>로그인 화면으로</Link>
+        </div>
+      </ConfigProvider>
     </>
   );
 };
