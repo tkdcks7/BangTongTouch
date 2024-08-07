@@ -15,11 +15,12 @@ const ProfileMenu: React.FC = () => {
     <div className="mx-2 my-4">
       <Accordion transition transitionTimeout={200}>
         <AccordionPart header="내 관심 매물">
-          <ProfileMyFavItems />
+          <ProfileMyFavItems type="favorite" />
         </AccordionPart>
 
         <AccordionPart header="내가 올린 매물">
-          <ProfileMyFavItems />
+          {/* API 만들어지면 type을 mine으로 고쳐야함 */}
+          <ProfileMyFavItems type="favorite" />
         </AccordionPart>
       </Accordion>
       <ProfileModal />

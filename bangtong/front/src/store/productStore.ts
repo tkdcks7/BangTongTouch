@@ -29,13 +29,36 @@ const useProductOptionStore = create<ProductStore>((set) => ({
     티비: false,
   },
   // 옵션 정보 setter
+  // setProductOption: (key) =>
+  //   set((state) => ({
+  //     optionObj: {
+  //       ...state.optionObj,
+  //       [key]: !state.optionObj[key],
+  //     },
+  //   })),
   setProductOption: (key) =>
-    set((state) => ({
-      optionObj: {
-        ...state.optionObj,
-        [key]: !state.optionObj[key],
-      },
-    })),
+    set((state) => {
+      const productOptionKeys: (keyof ProductOption)[] = Object.keys(
+        state.optionObj
+      ) as (keyof ProductOption)[];
+      const newObj = { ...state.optionObj };
+      console.log(newObj);
+      // 풀옵션일 경우
+      if (key === "풀옵션") {
+        if (state.optionObj["풀옵션"]) {
+          console.log("all false");
+          productOptionKeys.forEach((el) => (newObj[el] = false)); // 풀옵션을 끌 경우, 전체를 false로
+        } else {
+          console.log("all true");
+          productOptionKeys.forEach((el) => (newObj[el] = true)); // 풀옵션을 켤 경우, 전체를 true로
+        }
+      } else {
+        newObj[key] = !newObj[key];
+      }
+      console.log("newObj는...");
+      console.log(newObj);
+      return { optionObj: newObj };
+    }),
 }));
 
 interface ProductSearchParams {

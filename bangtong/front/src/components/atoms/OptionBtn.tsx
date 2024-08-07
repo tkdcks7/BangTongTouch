@@ -40,6 +40,7 @@ const OptionBtn: React.FC<BtnProps> = ({ text, ...props }) => {
     티비: Tv,
   };
   const imgSrc = imgObj[text];
+  const isDisabled = optionObj["풀옵션"] && text !== "풀옵션"; // 풀옵션이 아닌 버튼의 비활성화를 위한 값
 
   return (
     <button
@@ -48,6 +49,7 @@ const OptionBtn: React.FC<BtnProps> = ({ text, ...props }) => {
         "flex flex-col items-center border border-lime-500 rounded-full m-1 px-3 py-1 " +
         (optionObj[text] ? " bg-lime-500 text-white" : "text-lime-500 bg-white")
       }
+      disabled={isDisabled}
     >
       <img src={imgSrc} alt="" className="w-8 h-8 mb-2" />
       <span>{text}</span>
