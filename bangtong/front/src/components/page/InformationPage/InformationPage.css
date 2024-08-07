@@ -1,0 +1,30 @@
+#back-ground {
+  background-color: #ffdb4d;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.green {
+  color: #129b07;
+}
+
+#main-text {
+  font-size: 40px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+#sub-text {
+  font-size: 30px;
+}
+
+#count {
+  color: #129b07;
+  margin-left: 10px;
+}
+
+#home-img {
+  width: 400px;
+  margin-bottom: 30px;
+}

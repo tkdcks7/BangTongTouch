@@ -7,7 +7,7 @@ import PcNavBar from "../organism/PcNavBar"; // PC 네비게이션바
 import PcFooter from "../organism/PcFooter"; // PC 푸터
 
 // 비 로그인 시 보여줄 페이지
-import InformationPage from "../page/InformationPage";
+import InformationPage from "../page/InformationPage/InformationPage";
 
 import { Outlet } from "react-router-dom";
 

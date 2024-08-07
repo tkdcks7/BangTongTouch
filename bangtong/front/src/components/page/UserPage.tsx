@@ -18,7 +18,7 @@ const UserPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-yellow-200">
+    <div style={{ backgroundColor: "#ffdb4d" }}>
       <div className="flex justify-between items-center w-full h-20 px-5 hidden md:flex">
         <Link to="/" className="text-start">
           <img src={BlackLogo} alt="로고" className="w-40" />
