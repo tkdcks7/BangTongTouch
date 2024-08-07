@@ -94,7 +94,7 @@ public class ProductServiceImpl implements ProductService{
     productRepository.save(product);
   }
 
-  @Override
+  @Transactional
   public ProductReturnDto getProduct(long productId) {
     Product product = productRepository.findById(productId);
     List<String> additionalOption = getAdditionalOptionList(product);

@@ -42,10 +42,6 @@ public class Chat {
   String chatContent;
 
   @ManyToOne
-  @JoinColumn(name="senderId", foreignKey = @ForeignKey(name="fk_chat_user"))
-  User sender;
-
-  @ManyToOne
   @JoinColumn(name="receiverId")
   User receiver;
 
@@ -56,6 +52,6 @@ public class Chat {
 
   // TODO 미디어 쿼리 작성해야됨
   @OneToMany
-  @JoinColumn(name="mediaId", foreignKey = @ForeignKey(name="fk_chat_media"))
+  @JoinColumn(name="mediaId", nullable = false, foreignKey = @ForeignKey(name="fk_chat_media"))
   List<Media> mediaList;
 }

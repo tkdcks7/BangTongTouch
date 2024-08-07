@@ -9,6 +9,7 @@ import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.model.product.ProductType;
 import com.jisang.bangtong.service.product.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import java.sql.Date;
 import java.util.List;
@@ -55,6 +56,7 @@ public class ProductController {
   }
 
   //매물 조회
+  @Transactional
   @GetMapping("/{productId}")
   public ResponseDto<ProductReturnDto> getProduct(@PathVariable("productId") Long productId) {
     ProductReturnDto product = productService.getProduct(productId);
