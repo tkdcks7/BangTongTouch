@@ -1,6 +1,5 @@
-import { isToken } from "typescript";
 import { create } from "zustand";
-import { persist, PersistOptions } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
 // UserDto 를 바탕으로 Interface 생성
 interface User {
@@ -93,5 +92,56 @@ export const useAlarmStore = create<UserAlarmSetting>()((set) => ({
     }));
   },
 }));
+
+// public class PreferenceDto {
+//   private Long preferenceId;
+//   private String preferenceName;
+//   private Long userId;
+//   private String regionId;
+//   private String regionAddress;
+//   private Integer preferenceDeposit;
+//   private Integer preferenceRent;
+//   private String preferenceType;
+//   private String preferenceInfra;
+//   private Date preferenceStartDate;
+//   private Date preferenceEndDate;
+// }
+
+interface PreferenceI {
+  regionId: string;
+  regionAddress: string;
+  preferenceDeposit: number;
+  preferenceRent: number;
+  preferenceType: string;
+  preferenceInfra: number;
+  preferenceStartDate: string;
+  preferenceEndDate: string;
+  preferenceOptions: number;
+  setPreferUpdate: (payload: Partial<PreferenceI>) => void;
+}
+
+// 유저 선호 설정 store
+export const useUserPreferStore = create<PreferenceI>()(
+  persist(
+    (set) => ({
+      regionId: "",
+      regionAddress: "",
+      preferenceDeposit: 0,
+      preferenceRent: 0,
+      preferenceType: "",
+      preferenceInfra: 0,
+      preferenceStartDate: "",
+      preferenceEndDate: "",
+      preferenceOptions: 0,
+      setPreferUpdate: (payload: Partial<PreferenceI>) => {
+        set((state) => ({ ...state, ...payload }));
+      },
+    }),
+    {
+      name: "user-preferences", // 저장될 키 이름
+      getStorage: () => localStorage, // 사용할 스토리지 (localStorage가 기본값)
+    }
+  )
+);
 
 export default useUserStore;

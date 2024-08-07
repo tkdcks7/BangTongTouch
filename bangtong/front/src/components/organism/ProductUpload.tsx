@@ -15,7 +15,6 @@ import RadioGroup from "../molecules/RadioGroup";
 import Datepicker from "react-tailwindcss-datepicker";
 import useProductOptionStore from "../../store/productStore";
 import { Form, Input, DatePicker, ConfigProvider, Radio } from "antd";
-import { CloseCircleOutlined } from "@ant-design/icons";
 
 // 매물 업로드에 필요한 json의 인터페이스
 interface ProductUploadDto {
@@ -35,6 +34,7 @@ interface ProductUploadDto {
   productStartDate: string;
   productEndDate: string;
   productDetailAddress: string;
+  productDescirption: string;
   lat: number;
   lng: number;
 }
@@ -58,6 +58,8 @@ const ProductUpload: React.FC = () => {
   const [furnitureList, setFurnitureList] = useState<string[]>([]);
   const [coordinate, setCoordinate] = useState<number[]>([]);
   const [date, setDate] = useState<[any, any]>([null, null]);
+  const [typeIndex, setTypeIndex] = useState<number>(0);
+  const [description, setDescription] = useState<string>("");
 
   // 사진, 영상 state
   const [imgFile, setImgFile] = useState<File | null>(null);
@@ -187,6 +189,30 @@ const ProductUpload: React.FC = () => {
       );
     }
 
+    // 주소를 바탕으로 regionId 반환
+    const addressToRegionId = (ads: string): string | void => {
+      const regionArr: string[] = ads.split(" ");
+      const stIdx = ads.indexOf("(");
+      let edIdx = ads.indexOf(")");
+      if (ads.indexOf(",") !== -1) {
+        edIdx = ads.indexOf(",");
+      }
+      authAxios({
+        method: "POST",
+        url: `${process.env.REACT_APP_BACKEND_URL}/regions/무언가의주소`,
+        data: {
+          sido: regionArr[0],
+          gugun: regionArr[1],
+          Dong: ads.slice(stIdx, edIdx),
+        },
+      })
+        .then((response) => {
+          console.log(response);
+          return response.data.data;
+        })
+        .catch((err) => console.log(err));
+    };
+
     // 주소로 위경도 반환
     if (address) {
       console.log("주소 있음!");
@@ -199,9 +225,9 @@ const ProductUpload: React.FC = () => {
 
     // 이부분 수정중!!!!
     const productUploadDto: ProductUploadDto = {
-      productType: "ONEROOM", // 지금 값을 입력할 컴포넌트 없음
+      productType: homeCategoryEnglish[typeIndex],
       productAddress: address,
-      regionId: "1111010100", // 임시로 고정값을 넣어줬는데 로직 짜야함
+      regionId: "1111010100", // 임시로 고정값을 넣어줬는데 나중에 addressToRegionId 넣어서 로직 짜야함
       productDeposit: Number(deposit),
       productRent: Number(charge),
       productMaintenance: Number(maintanence),
@@ -209,12 +235,13 @@ const ProductUpload: React.FC = () => {
       productIsRentSupportable: false,
       productIsFurnitureSupportable: furnitureList.length > 0,
       productSquare: Number(area),
-      productRoom: Number(room),
+      productRoom: room,
       productOption: option,
       productAdditionalOption: furnitureList,
       productStartDate: dayjs(date[0]).format("YYYY-MM-DD"),
       productEndDate: dayjs(date[1]).format("YYYY-MM-DD"),
       productDetailAddress: addressDetail,
+      productDescirption: description,
       lat: coordinate[0],
       lng: coordinate[1],
     };
@@ -224,7 +251,7 @@ const ProductUpload: React.FC = () => {
       type: "application/json",
     }); // blob으로 변환 후 타입 명시적으로 지정
     formData.append("productUploadDto", jsonBlob); // productUploadDto라는 key에 productUploadDto 반환
-
+    console.log(JSON.stringify(productUploadDto));
     // 이미지와 영상 업로드
     if (imgFile) {
       const imgBlob = new Blob([imgFile]);
@@ -271,6 +298,15 @@ const ProductUpload: React.FC = () => {
     };
   }, []);
 
+  // 영어 type(변환해야함.)
+  const homeCategoryEnglish: string[] = [
+    "ONEROOM",
+    "OFFICE",
+    "TWOROOM",
+    "VILLA",
+    "APARTMENT",
+  ];
+
   return (
     <div className="mt-5 md:w-3/5 lg:w-2/5 mx-auto">
       <h2 className="font-bold text-xl">매물 정보를 입력해주세요.</h2>
@@ -278,7 +314,7 @@ const ProductUpload: React.FC = () => {
         <Form id="input-container" className="mt-5">
           <Form.Item required>
             <Search
-              placeholder="주소"
+              placeholder="돋보기를 눌러 주소를 입력해주세요"
               size="large"
               type="text"
               value={address}
@@ -317,7 +353,7 @@ const ProductUpload: React.FC = () => {
               <Input
                 placeholder="월세"
                 size="large"
-                type="text"
+                type="number"
                 value={charge}
                 onChange={(e) => setCharge(e.target.value)}
               />
@@ -328,7 +364,7 @@ const ProductUpload: React.FC = () => {
               <Input
                 placeholder="관리비"
                 size="large"
-                type="text"
+                type="number"
                 value={maintanence}
                 onChange={(e) => setMaintanence(e.target.value)}
               />
@@ -346,15 +382,36 @@ const ProductUpload: React.FC = () => {
           <div className="w-full flex justify-between">
             <Form.Item required>
               <Input
-                placeholder="면적"
+                placeholder="면적(제곱미터)"
                 size="large"
-                type="text"
+                type="number"
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
               />
             </Form.Item>
           </div>
         </Form>
+        <Input.TextArea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="세부 사항을 입력해주세요"
+          autoSize={{ minRows: 3, maxRows: 10 }}
+        />
+        <div className="mt-5" id="productType">
+          <p className="text-lg">거주 유형</p>
+          <div className="flex justify-center items-center">
+            <Radio.Group
+              onChange={(e) => setTypeIndex(e.target.value)}
+              value={typeIndex}
+            >
+              <Radio value={0}>원룸</Radio>
+              <Radio value={1}>오피스텔</Radio>
+              <Radio value={2}>투룸</Radio>
+              <Radio value={3}>아파트</Radio>
+              <Radio value={4}>빌라</Radio>
+            </Radio.Group>
+          </div>
+        </div>
         <div className="mt-5" id="how-many-room">
           <p className="text-lg">방 갯수</p>
           <div className="flex justify-center items-center">
@@ -370,26 +427,24 @@ const ProductUpload: React.FC = () => {
           <OptionBtnGroup />
           {/* 추가 옵션 부분 */}
           <div className="w-full mt-5">
+            <p className="text-lg">추가 옵션</p>
             <div className="flex flex-wrap justify-center">
               {furnitureList.length > 0 ? (
                 furnitureList.map((opt: any) => {
                   return (
-                    <div
+                    <button
                       className={
-                        "flex items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
+                        "flex flex-col items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
                       }
                       key={opt}
+                      onClick={() => hadleFurnitureRemove(opt)}
                     >
                       {opt}
-                      <CloseCircleOutlined
-                        onClick={() => hadleFurnitureRemove(opt)}
-                        className="cursor-pointer ms-3"
-                      />
-                    </div>
+                    </button>
                   );
                 })
               ) : (
-                <p>등록된 가구가 없습니다.</p>
+                <p className="text-red-500">등록된 가구가 없습니다.</p>
               )}
             </div>
             <div className="mt-2">
@@ -411,7 +466,7 @@ const ProductUpload: React.FC = () => {
           <div className="text-center mt-5">
             <Btn
               text="등록하기"
-              backgroundColor="bg-yellow-300 hover:bg-yellow-400"
+              backgroundColor="bg-yellow-300"
               height="h-10"
               onClick={handleUploadClick}
             />
