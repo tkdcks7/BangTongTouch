@@ -38,7 +38,7 @@ public class Media {
   private Board board; // Board 참조 추가
 
   @ManyToOne
-  @JoinColumn(name="product_id", foreignKey = @ForeignKey(name="fk_media_product"))
+  @JoinColumn(name = "product_id", foreignKey = @ForeignKey(name = "fk_media_product"))
   @JsonProperty(access = Access.WRITE_ONLY)
   private Product product;
 
@@ -46,11 +46,13 @@ public class Media {
   public String toString() {
     return "";
   }
-//  @ManyToOne // Product와의 Many-to-One 관계
+
+  //  @ManyToOne // Product와의 Many-to-One 관계
 //  @JoinColumn(name = "product_id") // nullable을 true로 설정
 //  private Product product;
 //
-//  @OneToOne
-//  @JoinColumn(name="user_id")
-//  private User user;
+  @OneToOne
+  @JoinColumn(name = "user_id")
+  private User user;
+
 }
