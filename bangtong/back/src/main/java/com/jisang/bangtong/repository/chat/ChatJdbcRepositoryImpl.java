@@ -17,7 +17,7 @@ public class ChatJdbcRepositoryImpl implements ChatJdbcRepository{
   private JdbcTemplate jdbcTemplate;
 
   public void saveAllListChats(List<Chat> messages){
-    String sql = "INSERT INTO chat (`sender_id`, `chat_content`, `chat_time`, `chatroom_id`, `receiver_id`) VALUES (?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO chat (`chat_content`, `chat_time`, `chatroom_id`, `receiver_id`) VALUES (?, ?, ?, ?)";
 
     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
 
@@ -25,11 +25,10 @@ public class ChatJdbcRepositoryImpl implements ChatJdbcRepository{
       public void setValues(PreparedStatement ps, int i) throws SQLException {
         Chat chat = messages.get(i);
         Chat message = messages.get(i);
-        ps.setString(1, String.valueOf(message.getSender().getUserId()));
-        ps.setString(2, String.valueOf(chat.getChatContent()));
-        ps.setString(3, String.valueOf(new Timestamp(message.getChatTime().getTime())));
-        ps.setString(4, String.valueOf(chat.getChatRoom().getChatroomId()));
-        ps.setString(5, String.valueOf(chat.getReceiver().getUserId()));
+        ps.setString(1, String.valueOf(chat.getChatContent()));
+        ps.setString(2, String.valueOf(new Timestamp(message.getChatTime().getTime())));
+        ps.setString(3, String.valueOf(chat.getChatRoom().getChatroomId()));
+        ps.setString(4, String.valueOf(chat.getReceiver().getUserId()));
       }
 
       @Override

@@ -1,6 +1,7 @@
 package com.jisang.bangtong.model.chat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.jisang.bangtong.model.chatroom.Chatroom;
 import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.user.User;
@@ -42,10 +43,6 @@ public class Chat {
   String chatContent;
 
   @ManyToOne
-  @JoinColumn(name="senderId", foreignKey = @ForeignKey(name="fk_chat_user"))
-  User sender;
-
-  @ManyToOne
   @JoinColumn(name="receiverId")
   User receiver;
 
@@ -54,8 +51,4 @@ public class Chat {
   @Temporal(TemporalType.TIMESTAMP)
   Date chatTime=new Date();
 
-  // TODO 미디어 쿼리 작성해야됨
-  @OneToMany
-  @JoinColumn(name="mediaId", foreignKey = @ForeignKey(name="fk_chat_media"))
-  List<Media> mediaList;
 }

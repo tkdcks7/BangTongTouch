@@ -4,13 +4,24 @@ import com.jisang.bangtong.dto.chat.ChatReturnDto;
 import com.jisang.bangtong.dto.chatroom.ChatroomDto;
 import com.jisang.bangtong.dto.chatroom.ChatroomExitDto;
 import com.jisang.bangtong.dto.chatroom.ChatroomReturnDto;
+import com.jisang.bangtong.dto.product.ProductReturnDto;
+import com.jisang.bangtong.dto.region.RegionReturnDto;
+import com.jisang.bangtong.dto.user.IUser;
 import com.jisang.bangtong.model.chat.Chat;
 import com.jisang.bangtong.model.chatroom.Chatroom;
+import com.jisang.bangtong.model.chatroom.QChatroom;
+import com.jisang.bangtong.model.media.QMedia;
 import com.jisang.bangtong.model.product.Product;
+import com.jisang.bangtong.model.product.QProduct;
+import com.jisang.bangtong.model.region.QRegion;
+import com.jisang.bangtong.model.user.QUser;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.chatroom.ChatroomRepository;
 import com.jisang.bangtong.repository.product.ProductRepository;
 import com.jisang.bangtong.repository.user.UserRepository;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +67,7 @@ public class ChatroomServiceImpl implements ChatroomService {
       }
 
       if (chatroomGet.getParticipant().getUserId().equals(userId)) {
-        chatroomGet.setChatRoomParticipantIsOut(true);
+        chatroomGet.setChatroomParticipantIsOut(true);
       }
 
       chatroomRepository.save(chatroomGet);
@@ -66,24 +77,7 @@ public class ChatroomServiceImpl implements ChatroomService {
   @Override
   public List<ChatroomReturnDto> getChatroom(Long userId) {
     log.info("chatroomServiceImpl getChatroom 실행");
-    List<Chatroom> chatrooms = chatroomRepository.getChatroom(userId).orElse(new ArrayList<>());
-    List<ChatroomReturnDto> chatroomReturnDtos = new ArrayList<>();
-    log.info("TestSuccess {}", chatrooms);
-    for(Chatroom chatroom : chatrooms){
-      ChatroomReturnDto chatroomReturnDto = new ChatroomReturnDto();
-      chatroomReturnDto.setChatroomId(chatroom.getChatroomId());
-      chatroomReturnDto.setProduct(chatroom.getProduct());
-      chatroomReturnDto.setChatroomCreatedAt(chatroom.getChatroomCreatedAt());
-      if(chatroom.getMaker().getUserId().equals(userId)){
-        chatroomReturnDto.setUser(chatroom.getMaker());
-      }
-      if(chatroom.getParticipant().getUserId().equals(userId)){
-        chatroomReturnDto.setUser(chatroom.getParticipant());
-      }
-      log.info("test {}", chatroomReturnDto);
-      chatroomReturnDtos.add(chatroomReturnDto);
-    }
-    return chatroomReturnDtos;
+    return chatroomRepository.getChatroom(userId);
   }
 
   @Override
@@ -99,7 +93,6 @@ public class ChatroomServiceImpl implements ChatroomService {
         chatReturnDto.setChatContent(chat.getChatContent());
         chatReturnDto.setChatTime(chat.getChatTime());
         chatReturnDto.setReceiver(chat.getReceiver());
-        chatReturnDto.setSender(chat.getSender());
         chatReturnDtos.add(chatReturnDto);
       }
     }
