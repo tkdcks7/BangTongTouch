@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useProductOptionStore from "../../store/productStore";
 
 // 이미지 소스
-import Fulloption from "../../assets/FullOptionIcon.png";
+import Fulloption from "../../assets/FullOptionIcon.svg";
 import Stove from "../../assets/Stove.png";
 import Fridge from "../../assets/Fridge.png";
 import WashingMachine from "../../assets/WashingMachine.png";
@@ -45,11 +45,11 @@ const OptionBtn: React.FC<BtnProps> = ({ text, ...props }) => {
     <button
       onClick={() => setProductOption(text)}
       className={
-        "flex flex-col items-center border border-lime-500 rounded-full m-1 px-3 py-1 " +
+        "flex flex-col items-center border border-lime-500 rounded-full m-1 px-3 py-2 " +
         (optionObj[text] ? " bg-lime-500 text-white" : "text-lime-500 bg-white")
       }
     >
-      <img src={imgSrc} alt="" className="w-8 h-8 mb-2" />
+      <img src={imgSrc} alt="" className="w-8 h-8" />
       <span>{text}</span>
     </button>
   );

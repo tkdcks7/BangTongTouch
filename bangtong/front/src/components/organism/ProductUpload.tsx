@@ -15,6 +15,7 @@ import RadioGroup from "../molecules/RadioGroup";
 import Datepicker from "react-tailwindcss-datepicker";
 import useProductOptionStore from "../../store/productStore";
 import { Form, Input, DatePicker, ConfigProvider, Radio } from "antd";
+import { CloseCircleOutlined } from "@ant-design/icons";
 
 // 매물 업로드에 필요한 json의 인터페이스
 interface ProductUploadDto {
@@ -52,7 +53,7 @@ const ProductUpload: React.FC = () => {
   const [maintanence, setMaintanence] = useState<string>("");
   const [maintanenceInfo, setMaintanenceInfo] = useState<string>("");
   const [area, setArea] = useState<string>("");
-  const [room, setRoom] = useState<string>("1");
+  const [room, setRoom] = useState<number>(1);
   const [furniture, setFurniture] = useState<string>("");
   const [furnitureList, setFurnitureList] = useState<string[]>([]);
   const [coordinate, setCoordinate] = useState<number[]>([]);
@@ -357,10 +358,10 @@ const ProductUpload: React.FC = () => {
         <div className="mt-5" id="how-many-room">
           <p className="text-lg">방 갯수</p>
           <div className="flex justify-center items-center">
-            <Radio.Group onChange={handleRoomOption}>
-              <Radio>1</Radio>
-              <Radio>2</Radio>
-              <Radio>3개 이상</Radio>
+            <Radio.Group onChange={handleRoomOption} value={room}>
+              <Radio value={1}>1</Radio>
+              <Radio value={2}>2</Radio>
+              <Radio value={3}>3개 이상</Radio>
             </Radio.Group>
           </div>
         </div>
@@ -373,15 +374,18 @@ const ProductUpload: React.FC = () => {
               {furnitureList.length > 0 ? (
                 furnitureList.map((opt: any) => {
                   return (
-                    <button
+                    <div
                       className={
-                        "flex flex-col items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
+                        "flex items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
                       }
                       key={opt}
-                      onClick={() => hadleFurnitureRemove(opt)}
                     >
                       {opt}
-                    </button>
+                      <CloseCircleOutlined
+                        onClick={() => hadleFurnitureRemove(opt)}
+                        className="cursor-pointer ms-3"
+                      />
+                    </div>
                   );
                 })
               ) : (
@@ -407,7 +411,7 @@ const ProductUpload: React.FC = () => {
           <div className="text-center mt-5">
             <Btn
               text="등록하기"
-              backgroundColor="bg-yellow-300"
+              backgroundColor="bg-yellow-300 hover:bg-yellow-400"
               height="h-10"
               onClick={handleUploadClick}
             />

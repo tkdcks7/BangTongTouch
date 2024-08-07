@@ -247,22 +247,8 @@ const FilterBox: React.FC = () => {
         </Modal>
       </ConfigProvider>
 
-      <TextBtn
-        title="보증금"
-        text={
-          minDeposit === 0 && maxDeposit === 3000
-            ? "클릭하여 가격 설정"
-            : `${minDeposit}만~${maxDeposit}만`
-        }
-      />
-      <TextBtn
-        title="월세 (관리비 포함)"
-        text={
-          minRent === 0 && maxRent === 300
-            ? "클릭하여 가격 설정"
-            : `${minRent}만~${maxRent}만`
-        }
-      />
+      <TextBtn title="보증금" text={`${minDeposit}만~${maxDeposit}만`} />
+      <TextBtn title="월세 (관리비 포함)" text={`${minRent}만~${maxRent}만`} />
       <BtnGroup title="집 유형" itemsArray={homeCategory} />
       <BtnGroup title="편의시설" itemsArray={facilities} />
       <BtnGroup title="지원 여부" itemsArray={["월세 지원", "가구도 승계"]} />
