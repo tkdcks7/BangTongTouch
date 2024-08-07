@@ -1,5 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Params, redirect, useNavigate, useParams } from "react-router-dom";
+import {
+  Params,
+  redirect,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { contents } from "../../data";
 
 // 컴포넌트
@@ -13,22 +19,59 @@ import TextEditor from "../molecules/TextEditor";
 import axios, { HttpStatusCode } from "axios";
 import { getCookie } from "../../utils/cookie";
 import { getUserAddressKr } from "../../utils/services";
+import authAxios from "../../utils/authAxios";
+import useUserStore from "../../store/userStore";
 
 const CommunityCreate: React.FC = () => {
   const [textEditorValue, setTextEditorValue] = useState("");
   const [titleValue, setTitleValue] = useState("");
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const id = queryParams.get("id");
+  const { token } = useUserStore();
+
+  const [category, setCategory] = useState<string>("게시판 종류 선택");
+  const addr = useRef<number>();
+
+  console.log(category);
+
   const redirectToBoards = () => {
-    navigate("../");
+    navigate("../", { replace: true });
   };
 
+  if (token === null) {
+    alert("로그인 후 이용하실 수 있습니다.");
+    redirectToBoards();
+  }
   useEffect(() => {
     const getAddress = async () => {
-      const temp: any = await getUserAddressKr();
-      console.log(temp);
+      if (category !== "전체") {
+        const temp: any = await getUserAddressKr().catch((e) => {
+          alert("해당 서비스를 이용하시려면 위치 권한을 허용해주셔야합니다.");
+          window.location.replace("");
+        });
+        addr.current = temp[3];
+      }
     };
     getAddress();
+  }, [category]);
+  useEffect(() => {
+    if (id !== null) {
+      axios({
+        method: "GET",
+        url: `${process.env.REACT_APP_BACKEND_URL}/boards/${id}`,
+      })
+        .then((response) => {
+          setTitleValue(response.data.data.boardTitle);
+          setTextEditorValue(response.data.data.boardContent);
+        })
+        .catch((err) => {
+          alert("에러가 발생하였습니다.");
+          redirectToBoards();
+        });
+    }
   }, []);
 
   return (
@@ -36,7 +79,7 @@ const CommunityCreate: React.FC = () => {
       <div className="mt-10">
         <RollBackBtn />
       </div>
-      <form className="rounded-lg">
+      <div className="rounded-lg">
         <div className="bg-lime-500 flex justify-between p-2 rounded-t-lg">
           <input
             className="bg-transparent w-full focus:outline-none text-white placeholder:text-white"
@@ -46,10 +89,11 @@ const CommunityCreate: React.FC = () => {
             placeholder="제목을 입력해주세요."
           />
           <DropDown
-            title="말머리 설정"
-            itemList={["공구"]}
+            title="게시판 종류 선택"
+            itemList={["전체", "내 지역"]}
             rounded="lg"
             backgroundColor="yellow-color"
+            onSelected={setCategory}
           />
         </div>
         <TextEditor data={textEditorValue} onChange={setTextEditorValue} />
@@ -67,31 +111,60 @@ const CommunityCreate: React.FC = () => {
                 alert("내용을 입력해주세요.");
                 return;
               }
-              alert("글이 등록되었습니다.");
+
+              if (category !== "전체") {
+              }
+
               const data = new FormData();
               data.append("boardTitle", titleValue);
               data.append("boardContent", textEditorValue);
               data.append("boardWriter", "1");
-
-              axios({
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                url: `${process.env.REACT_APP_BACKEND_URL}/boards/write`,
-                data: data,
-              })
-                .then((response) => {
-                  if (response.status === HttpStatusCode.Ok) redirectToBoards();
-                  else alert("오류가 발생하였습니다.");
+              if (id === null) {
+                authAxios({
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json; charset=UTF-8",
+                  },
+                  url: `${process.env.REACT_APP_BACKEND_URL}/boards/write${category !== "전체" ? "/" + addr.current : ""}`,
+                  data: {
+                    boardTitle: titleValue,
+                    boardContent: textEditorValue,
+                    boardWriter: 1,
+                  },
                 })
-                .catch((error) => console.log("전송 실패", error));
+                  .then((response) => {
+                    if (response.status === HttpStatusCode.Ok) {
+                      alert("글이 등록되었습니다.");
+                      redirectToBoards();
+                    } else alert("오류가 발생하였습니다.");
+                  })
+                  .catch((error) => console.log("전송 실패", error));
+              } else {
+                authAxios({
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json; charset=UTF-8",
+                  },
+                  url: `${process.env.REACT_APP_BACKEND_URL}/boards/modify/${id}`,
+                  data: {
+                    boardTitle: titleValue,
+                    boardContent: textEditorValue,
+                  },
+                })
+                  .then((response) => {
+                    if (response.status === HttpStatusCode.Ok) {
+                      alert("수정이 완료되었습니다.");
+                      redirectToBoards();
+                    } else alert("오류가 발생하였습니다.");
+                  })
+                  .catch((error) => console.log("전송 실패", error));
+              }
             }}
           >
-            작성하기
+            {id === null ? "작성하기" : "수정하기"}
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

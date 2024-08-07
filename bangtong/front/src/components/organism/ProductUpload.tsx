@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import authAxios, { formDataAxios } from "../../utils/authAxios";
+import { getUserAddressNum } from "../../utils/services";
+import dayjs, { Dayjs } from "dayjs";
 
 // 컴포넌트
 import InputBox from "../molecules/InputBox";
@@ -11,6 +14,30 @@ import OptionBtnGroup from "../molecules/OptionBtnGroup";
 import RadioGroup from "../molecules/RadioGroup";
 import Datepicker from "react-tailwindcss-datepicker";
 import useProductOptionStore from "../../store/productStore";
+import { Form, Input, DatePicker, ConfigProvider, Radio } from "antd";
+import { CloseCircleOutlined } from "@ant-design/icons";
+
+// 매물 업로드에 필요한 json의 인터페이스
+interface ProductUploadDto {
+  productType: string;
+  regionId: string;
+  productAddress: string;
+  productDeposit: number;
+  productRent: number;
+  productMaintenance: number;
+  productMaintenanceInfo: string;
+  productIsRentSupportable: Boolean;
+  productIsFurnitureSupportable: Boolean;
+  productSquare: number;
+  productRoom: number;
+  productOption: number;
+  productAdditionalOption: string[];
+  productStartDate: string;
+  productEndDate: string;
+  productDetailAddress: string;
+  lat: number;
+  lng: number;
+}
 
 const ProductUpload: React.FC = () => {
   let { id }: any = useParams(); // 상품 번호. 있으면 update, 없으면 create
@@ -26,25 +53,35 @@ const ProductUpload: React.FC = () => {
   const [maintanence, setMaintanence] = useState<string>("");
   const [maintanenceInfo, setMaintanenceInfo] = useState<string>("");
   const [area, setArea] = useState<string>("");
-  const [remainDate, setRemainDate] = useState<string>("");
-  const [room, setRoom] = useState<string>("");
+  const [room, setRoom] = useState<number>(1);
   const [furniture, setFurniture] = useState<string>("");
   const [furnitureList, setFurnitureList] = useState<string[]>([]);
+  const [coordinate, setCoordinate] = useState<number[]>([]);
+  const [date, setDate] = useState<[any, any]>([null, null]);
 
   // 사진, 영상 state
-  const [imgFile, setImgFile] = useState(null);
-  const [movieFile, setMovieFile] = useState(null);
+  const [imgFile, setImgFile] = useState<File | null>(null);
+  const [movieFile, setMovieFile] = useState<File | null>(null);
 
-  // Datepicker를 위한 state
-  const [value, setValue] = useState({
-    startDate: "",
-    endDate: "",
-  });
+  // ant design Search 컴포넌트
+  const { Search } = Input;
+
+  // ant design RangePicker 컴포넌트
+  const { RangePicker } = DatePicker;
+
+  // ant design 글로벌 디자인 토큰
+  const theme = {
+    token: {
+      colorBgTextHover: "#E9FFE7",
+      colorPrimary: "#129B07",
+      colorPrimaryBorder: "#129B07",
+    },
+  };
 
   // Datepicker를 위한 핸들러
   const handleValueChange = (newValue: any): void => {
     console.log("newValue:", newValue);
-    setValue(newValue);
+    setDate(newValue);
   };
 
   // 수정일 시, 백엔드에서 값을 받아온 후 state에 집어넣음.
@@ -101,60 +138,28 @@ const ProductUpload: React.FC = () => {
   };
 
   // 파일 등록 시 확장자 유효성판정 후 업로드
-  const handleFileChange = (fileInput: any, fileType: string) => {
+  const onFileChange = (fileInput: any, fileType: string) => {
     if (fileInput) {
-      let extensionAllowed: string[] = [];
-      const extensionName = fileInput.name.split(".").pop().toLowerCase();
-      if (fileType === "사진") {
-        extensionAllowed = ["jpg", "png", "gif"];
-      } else if (fileType === "영상") {
-        extensionAllowed = ["mp4"];
+      const extensionName = fileInput.name.split(".").pop().toLowerCase(); // 파일명에서 확장자명 추출
+      if (
+        ["jpg", "png", "gif"].includes(extensionName) &&
+        fileType === "사진"
+      ) {
+        setImgFile(fileInput);
+      } else if (extensionName === "mp4" && fileType === "동영상") {
+        setMovieFile(fileInput);
       } else {
-        if (fileType === "사진") {
-          setImgFile(null);
-          alert(
-            "지원하지 않는 형식의 파일입니다\n*확장자가 jpg, png, gif인 파일만 등록 가능"
-          );
-        } else {
-          setMovieFile(null);
-          alert(
-            "지원하지 않는 형식의 파일입니다\n*확장자가 mp4인 파일만 등록 가능"
-          );
-        }
-        return;
-      }
-      if (extensionAllowed.includes(extensionName)) {
-        if (fileType === "사진") {
-          setImgFile(fileInput);
-        } else {
-          setMovieFile(fileInput);
-        }
+        window.alert(
+          "지원하지 않는 형식의 파일입니다\n*확장자가 jpg, png, gif, mp4인 파일만 등록 가능"
+        );
       }
     }
   };
-
-  //   productAddress: String,
-  //   productDeposit: Integer,
-  //   productRent: Integer,
-  //   productMaintenence: Integer,
-  //   productMaintenenceInfo: Integer,
-  //   productSquare: Float,
-  //   productRoom: Integer,
-  //   productOption: String,
-  //   productIsSupportable: Boolean,
-  //   productIsFurnitureSupportable: Boolean,
-  //   productAdditionalOption: String,
-  //   productStartDate: String,
-  //   productEndDate: String
-  //   productPostDate: String,
-  //   productIsBanned: Boolean,
-  //   productIsDeleted: Boolean,
 
   // 추가 옵션 등록 함수
   const handleFurnitureAppend = (e: any) => {
     if (e.key === "Enter" && furniture) {
       setFurnitureList(() => [...furnitureList, furniture]);
-      console.log(`가구가 추가됐습니다. 총 가구는 ${furnitureList} 입니다.`);
       setFurniture(() => "");
     }
   };
@@ -169,51 +174,76 @@ const ProductUpload: React.FC = () => {
 
   // 매물 업로드 실행 함수
   const handleUploadClick = () => {
-    console.log(`이미지파일은 ${imgFile}입니다.`);
-    const formData = new FormData();
-
-    // 보낼 값을 formData에 append
-    formData.append("productAddress", address); // productAddress 말고 productAddressDetail도 만들어줄것을 요청
-    formData.append("addressDetail", addressDetail);
-    formData.append("productDeposit", deposit);
-    formData.append("productRent", charge);
-    formData.append("productMaintenence", maintanence);
-    formData.append("productMaintenenceInfo", maintanenceInfo);
-    formData.append("productSquare", area);
-    formData.append("remainDate", remainDate);
-    formData.append("productRoom", room);
-    formData.append("furniture", furniture);
-    formData.append("productStartDate", value.startDate);
-    formData.append("productEndDate", value.endDate);
-
+    console.log("매물 업로드 시작!");
     // Option 처리 부분
-    let option: string = "0000000";
+    let option: number = 0;
     if (optionObj["풀옵션"]) {
-      option = "1111111";
+      option = 255;
     } else {
-      const optionArr = (
-        Object.keys(optionObj) as (keyof typeof optionObj)[]
-      ).map((opt) => {
-        return optionObj[opt] ? "1" : "0";
+      (Object.keys(optionObj) as (keyof typeof optionObj)[]).forEach(
+        (opt, idx) => {
+          optionObj[opt] ? (option += 2 ** (7 - idx)) : (option += 0);
+        }
+      );
+    }
+
+    // 주소로 위경도 반환
+    if (address) {
+      console.log("주소 있음!");
+      getUserAddressNum(address).then((res) => {
+        setCoordinate(res);
       });
-      option = optionArr.slice(1).join("");
+    } else {
+      window.alert("주소가 있어야 위도/경도를 반환할 수 있습니다.");
     }
-    formData.append("productOption", option);
 
-    // 이미지와 영상은 null이면 안올려야하나, 임시로 올릴 수 있도록 작성
+    // 이부분 수정중!!!!
+    const productUploadDto: ProductUploadDto = {
+      productType: "ONEROOM", // 지금 값을 입력할 컴포넌트 없음
+      productAddress: address,
+      regionId: "1111010100", // 임시로 고정값을 넣어줬는데 로직 짜야함
+      productDeposit: Number(deposit),
+      productRent: Number(charge),
+      productMaintenance: Number(maintanence),
+      productMaintenanceInfo: maintanenceInfo,
+      productIsRentSupportable: false,
+      productIsFurnitureSupportable: furnitureList.length > 0,
+      productSquare: Number(area),
+      productRoom: Number(room),
+      productOption: option,
+      productAdditionalOption: furnitureList,
+      productStartDate: dayjs(date[0]).format("YYYY-MM-DD"),
+      productEndDate: dayjs(date[1]).format("YYYY-MM-DD"),
+      productDetailAddress: addressDetail,
+      lat: coordinate[0],
+      lng: coordinate[1],
+    };
+
+    const formData = new FormData(); // formData 객체 생성
+    const jsonBlob = new Blob([JSON.stringify(productUploadDto)], {
+      type: "application/json",
+    }); // blob으로 변환 후 타입 명시적으로 지정
+    formData.append("productUploadDto", jsonBlob); // productUploadDto라는 key에 productUploadDto 반환
+
+    // 이미지와 영상 업로드
     if (imgFile) {
-      formData.append("imgFile", imgFile);
+      const imgBlob = new Blob([imgFile]);
+      formData.append(`productMedia`, imgBlob, imgFile.name);
     }
-
     if (movieFile) {
-      formData.append("movieFile", movieFile);
+      const blob = new Blob([movieFile]);
+      formData.append(`productMedia`, blob, movieFile.name);
     }
 
-    axios({
+    // 검증을 위한 부분
+    formData.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
+    console.log(formData.get("productMedia[0]"));
+    formDataAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/products/upload`,
       data: formData,
-      headers: { "Content-Type": "multipart/form-data" },
     })
       .then((response) => console.log(response, "detailPage로 이동합니다."))
       .catch((err) => console.log(err));
@@ -242,133 +272,152 @@ const ProductUpload: React.FC = () => {
   }, []);
 
   return (
-    <div className="mt-5">
+    <div className="mt-5 md:w-3/5 lg:w-2/5 mx-auto">
       <h2 className="font-bold text-xl">매물 정보를 입력해주세요.</h2>
-      <form id="input-container" className="mt-5">
-        <InputBox
-          placeholder="주소"
-          buttonType="search"
-          size="large"
-          type="text"
-          width={"70vw"}
-          value={address}
-          onIconClick={handleAddressPopUp}
-        />
-        <InputBox
-          placeholder="상세 주소를 입력해주세요"
-          type="text"
-          value={addressDetail}
-          onChange={(e) => setAddressDetail(e.target.value)}
-          width={"auto"}
-        />
-        <div className="w-full flex justify-between">
-          <InputBox
-            placeholder="보증금"
-            size="large"
-            type="number"
-            width={"45%"}
-            value={deposit}
-            onChange={(e) => setDeposit(e.target.value)}
-          />
-          <InputBox
-            placeholder="월세"
-            size="large"
-            type="text"
-            width={"45%"}
-            value={charge}
-            onChange={(e) => setCharge(e.target.value)}
-          />
-        </div>
-        <div className="w-full flex justify-between">
-          <InputBox
-            placeholder="관리비"
-            size="large"
-            type="text"
-            width={"45%"}
-            value={maintanence}
-            onChange={(e) => setMaintanence(e.target.value)}
-          />
-          <InputBox
-            placeholder="관리비 항목"
-            size="large"
-            type="text"
-            width={"45%"}
-            value={maintanenceInfo}
-            onChange={(e) => setMaintanenceInfo(e.target.value)}
-          />
-        </div>
-        <div className="w-full flex justify-between">
-          <InputBox
-            placeholder="면적"
-            size="large"
-            type="text"
-            width={"45%"}
-            value={area}
-            onChange={(e) => setArea(e.target.value)}
-          />
-          <div style={{ width: "45%" }}>
-            <Datepicker
-              value={value}
-              onChange={handleValueChange}
-              useRange={false}
-            />
-          </div>
-        </div>
-      </form>
-      <div className="mt-5" id="how-many-room">
-        <p className="text-lg">방 갯수</p>
-        <div className="flex justify-center items-center">
-          <RadioGroup onChange={handleRoomOption} />
-        </div>
-      </div>
-      <div className="mt-5" id="options">
-        <p className="text-lg">옵션</p>
-        <OptionBtnGroup />
-        {/* 추가 옵션 부분 */}
-        <div className="w-full mt-5">
-          <div className="flex flex-wrap justify-center">
-            {furnitureList.length > 0 ? (
-              furnitureList.map((opt: any) => {
-                return (
-                  <button
-                    className={
-                      "flex flex-col items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
-                    }
-                    onClick={() => hadleFurnitureRemove(opt)}
-                  >
-                    {opt}
-                  </button>
-                );
-              })
-            ) : (
-              <p>등록된 가구가 없습니다.</p>
-            )}
-          </div>
-          <div className="mt-2">
-            {/* 희망 가구 옵션은 가구 icon을 버튼으로 만든 그룹을 컴포넌트로 만들어 활용 */}
-            <InputBox
-              placeholder="희망하는 가구 거래 품목을 입력해주세요."
+      <ConfigProvider theme={theme}>
+        <Form id="input-container" className="mt-5">
+          <Form.Item required>
+            <Search
+              placeholder="주소"
+              size="large"
               type="text"
-              width={"auto"}
-              value={furniture}
-              onChange={(e) => setFurniture(e.target.value)}
-              onKeyDown={(e) => handleFurnitureAppend(e)}
+              value={address}
+              onSearch={handleAddressPopUp}
+            />
+          </Form.Item>
+          <Form.Item required>
+            <Input
+              placeholder="상세 주소를 입력해주세요"
+              size="large"
+              type="text"
+              value={addressDetail}
+              onChange={(e) => setAddressDetail(e.target.value)}
+            />
+          </Form.Item>
+          <div className="mb-5">
+            <RangePicker
+              size="large"
+              className="w-full"
+              placeholder={["승계 가능 일자", "계약 종료 일자"]}
+              value={date}
+              onCalendarChange={handleValueChange}
+            />
+          </div>
+          <div className="w-full flex justify-between">
+            <Form.Item required>
+              <Input
+                placeholder="보증금"
+                size="large"
+                type="number"
+                value={deposit}
+                onChange={(e) => setDeposit(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item required>
+              <Input
+                placeholder="월세"
+                size="large"
+                type="text"
+                value={charge}
+                onChange={(e) => setCharge(e.target.value)}
+              />
+            </Form.Item>
+          </div>
+          <div className="w-full flex justify-between">
+            <Form.Item required>
+              <Input
+                placeholder="관리비"
+                size="large"
+                type="text"
+                value={maintanence}
+                onChange={(e) => setMaintanence(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item required>
+              <Input
+                placeholder="관리비 항목"
+                size="large"
+                type="text"
+                value={maintanenceInfo}
+                onChange={(e) => setMaintanenceInfo(e.target.value)}
+              />
+            </Form.Item>
+          </div>
+          <div className="w-full flex justify-between">
+            <Form.Item required>
+              <Input
+                placeholder="면적"
+                size="large"
+                type="text"
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+              />
+            </Form.Item>
+          </div>
+        </Form>
+        <div className="mt-5" id="how-many-room">
+          <p className="text-lg">방 갯수</p>
+          <div className="flex justify-center items-center">
+            <Radio.Group onChange={handleRoomOption} value={room}>
+              <Radio value={1}>1</Radio>
+              <Radio value={2}>2</Radio>
+              <Radio value={3}>3개 이상</Radio>
+            </Radio.Group>
+          </div>
+        </div>
+        <div className="mt-5" id="options">
+          <p className="text-lg">옵션</p>
+          <OptionBtnGroup />
+          {/* 추가 옵션 부분 */}
+          <div className="w-full mt-5">
+            <div className="flex flex-wrap justify-center">
+              {furnitureList.length > 0 ? (
+                furnitureList.map((opt: any) => {
+                  return (
+                    <div
+                      className={
+                        "flex items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
+                      }
+                      key={opt}
+                    >
+                      {opt}
+                      <CloseCircleOutlined
+                        onClick={() => hadleFurnitureRemove(opt)}
+                        className="cursor-pointer ms-3"
+                      />
+                    </div>
+                  );
+                })
+              ) : (
+                <p>등록된 가구가 없습니다.</p>
+              )}
+            </div>
+            <div className="mt-2">
+              {/* 희망 가구 옵션은 가구 icon을 버튼으로 만든 그룹을 컴포넌트로 만들어 활용 */}
+              <InputBox
+                placeholder="희망하는 가구 거래 품목을 입력해주세요."
+                type="text"
+                width={"auto"}
+                value={furniture}
+                onChange={(e) => setFurniture(e.target.value)}
+                onKeyDown={(e) => handleFurnitureAppend(e)}
+              />
+            </div>
+          </div>
+          <div id="attachment-group">
+            <Attachment fileType="사진" onFileChange={onFileChange} />
+            <Attachment fileType="동영상" onFileChange={onFileChange} />
+          </div>
+          <div className="text-center mt-5">
+            <Btn
+              text="등록하기"
+              backgroundColor="bg-yellow-300 hover:bg-yellow-400"
+              height="h-10"
+              onClick={handleUploadClick}
             />
           </div>
         </div>
-        <div id="attachment-group">
-          <Attachment fileType="사진" onFileChange={handleFileChange} />
-          <Attachment fileType="동영상" onFileChange={handleFileChange} />
-        </div>
-        <div className="text-center mt-5">
-          <Btn
-            text="등록하기"
-            backgroundColor="bg-yellow-300"
-            height="h-10"
-            onClick={handleUploadClick}
-          />
-        </div>
-      </div>
+      </ConfigProvider>
     </div>
   );
 };
