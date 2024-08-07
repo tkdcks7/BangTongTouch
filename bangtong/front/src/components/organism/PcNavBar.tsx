@@ -1,23 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import authAxios from "../../utils/authAxios";
 
 // 컴포넌트 불러오기
-import IconBtn from "../atoms/IconBtn";
+import { Dropdown } from "antd";
 import Btn from "../atoms/Btn";
-import { Alert, Button } from "antd";
+import IconBtn from "../atoms/IconBtn";
 
 // 이미지 소스
 import Bell from "../../assets/Bell.png";
 import Logo from "../../assets/GreenLogo.png";
 
 // Store
+import useAlarmInfoStore from "../../store/alarmInfoStore";
 import useUserStore from "../../store/userStore";
 
 const PcNavBar: React.FC = () => {
   const { token, id, setLogOut } = useUserStore();
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
+  const alarms = useAlarmInfoStore().alarms;
+  const alarmItems = useRef<Array<any>>();
 
   // signup 페이지로 이동하는 함수
   const handleSignUpBtnClick = (e: any) => {
@@ -31,10 +34,9 @@ const PcNavBar: React.FC = () => {
 
   // logout 실행 함수
   const handleLogOutBtnClick = (e: any) => {
-    axios({
+    authAxios({
       method: "PUT",
       url: `${process.env.REACT_APP_BACKEND_URL}/users/logout`,
-      headers: {},
     })
       .then((response) => {
         setLogOut(); // userInfo와 token을 초기화
@@ -48,11 +50,24 @@ const PcNavBar: React.FC = () => {
     setVisible(!visible);
   };
 
-  if (token) {
-  }
+  useEffect(() => {
+    if (token) {
+      alarmItems.current = alarms?.map((item, index) => {
+        return {
+          label: (
+            <div>
+              <div>{item.alarmMessageDate}</div>
+              <div>{item.alarmMessage}</div>
+            </div>
+          ),
+          key: index,
+        };
+      });
+    }
+  }, []);
 
   return (
-    <header className="flex justify-between items-center w-full bg-white p-5 mb-10">
+    <header className="flex justify-between items-center w-full h-20 px-5 bg-white mb-10">
       <Link to="/" className="text-start">
         <img src={Logo} alt="로고" className="w-40" />
       </Link>
@@ -96,12 +111,26 @@ const PcNavBar: React.FC = () => {
           신통방톡
         </NavLink>
         <div className="flex items-center justify-center mx-3 w-10 h-10">
-          <IconBtn imgSrc={Bell} size={30} />
+          {token ? (
+            <Dropdown trigger={["click"]} menu={{ items: alarmItems.current }}>
+              <IconBtn imgSrc={Bell} size={30} />
+            </Dropdown>
+          ) : (
+            <IconBtn
+              imgSrc={Bell}
+              size={30}
+              onClick={() => {
+                alert("로그인 후 이용해 주세요.");
+                navigate("/user/login");
+              }}
+            />
+          )}
+          {token ? useAlarmInfoStore.getState().alarmNum : null}
         </div>
 
         {/* 로그인 되면 로그아웃 버튼이 뜨도록 */}
         <div className="mx-1">
-          {id > 0 ? (
+          {token ? (
             <Btn
               text="로그아웃"
               backgroundColor="bg-red-400"
@@ -121,7 +150,7 @@ const PcNavBar: React.FC = () => {
                   <Btn
                     text="회원가입"
                     backgroundColor="bg-yellow-300"
-                    onClick={() => navigate("")}
+                    onClick={handleSignUpBtnClick}
                   />
                 </div>
               </div>

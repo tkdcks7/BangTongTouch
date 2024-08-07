@@ -8,6 +8,7 @@ import TextBox from "../atoms/TextBox";
 import InputBox from "../molecules/InputBox";
 import Btn from "../atoms/Btn";
 import DropDown from "../molecules/DropDown";
+import { Form, Input, ConfigProvider, Button } from "antd";
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -17,6 +18,7 @@ const SignupPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordVerification, setPasswordVerification] = useState<string>("");
+  const [page, setPage] = useState(0); // 페이지 넘기기 위한 변수
 
   const navigate = useNavigate();
 
@@ -64,29 +66,6 @@ const SignupPage: React.FC = () => {
 
   // 일반 회원가입 함수
   const handleSignUp = (e: any): void => {
-    e.preventDefault();
-    if (name === "") {
-      alert("이름을 입력해주세요");
-      return;
-    }
-    console.log(email.includes("@"));
-    if (socialNumber.length < 7) {
-      alert("올바른 주민번호를 입력해주세요");
-      return;
-    }
-    if (email === "" && email.includes("@") === false) {
-      alert("올바른 이메일을 입력해주세요");
-      return;
-    }
-    if (password === "") {
-      alert("올바른 비밀번호를 입력해주세요");
-      return;
-    }
-    if (password !== passwordVerification) {
-      alert("비밀번호가 다릅니다. 다시 입력해주세요");
-      return;
-    }
-
     // 주민번호를 기반으로 출생년도와 성별을 산출
     let birthYear: number = Number(socialNumber.slice(0, 2)) + 1900;
     // 2000년 이후 주민 앞자리의 경우
@@ -178,12 +157,165 @@ const SignupPage: React.FC = () => {
     };
   }, []);
 
+  // ant design 글로벌 디자인 토큰
+  const theme = {
+    token: {
+      colorBgTextHover: "#E9FFE7",
+      colorPrimary: "#129B07",
+      colorPrimaryBorder: "#129B07",
+      colorLinkHover: "#6EF962",
+    },
+  };
+
+  const handleNext = () => {
+    setPage(() => page + 1);
+    console.log(page);
+  };
+
+  const eachPage = [
+    <>
+      <Form.Item
+        name="이름"
+        rules={[
+          { required: true, message: "이름을 입력해주세요." },
+          { type: "string" },
+        ]}
+        hasFeedback
+      >
+        <Input
+          placeholder="이름"
+          className="rounded-full border-2"
+          size="large"
+          allowClear
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </Form.Item>
+      <Form.Item
+        name="주민등록번호"
+        rules={[
+          { required: true, message: "주민등록번호를 입력해주세요." },
+          {
+            type: "number",
+            message: "올바른 주민등록번호를 입력해주세요.",
+          },
+        ]}
+        hasFeedback
+      >
+        <Input
+          placeholder="주민등록번호"
+          className="rounded-full border-2"
+          size="large"
+          allowClear
+          value={socialNumber}
+          onChange={(e) => setSocialNumber(e.target.value)}
+        />
+      </Form.Item>
+    </>,
+    <>
+      <Form.Item
+        name="휴대폰 번호"
+        rules={[
+          { required: true, message: "이름을 입력해주세요." },
+          { type: "string" },
+        ]}
+        hasFeedback
+      >
+        <Input
+          placeholder="휴대폰 번호"
+          className="rounded-full border-2"
+          size="large"
+          allowClear
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </Form.Item>
+      <Form.Item
+        name="이메일"
+        rules={[
+          { required: true, message: "주민등록번호를 입력해주세요." },
+          {
+            type: "number",
+            message: "올바른 주민등록번호를 입력해주세요.",
+          },
+        ]}
+        hasFeedback
+      >
+        <Input
+          placeholder="이메일"
+          className="rounded-full border-2"
+          size="large"
+          allowClear
+          value={socialNumber}
+          onChange={(e) => setSocialNumber(e.target.value)}
+        />
+      </Form.Item>
+    </>,
+    <>
+      <Form.Item
+        name="이름"
+        rules={[
+          { required: true, message: "이름을 입력해주세요." },
+          { type: "string" },
+        ]}
+        hasFeedback
+      >
+        <Input
+          placeholder="이름"
+          className="rounded-full border-2"
+          size="large"
+          allowClear
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </Form.Item>
+      <Form.Item
+        name="주민등록번호"
+        rules={[
+          { required: true, message: "주민등록번호를 입력해주세요." },
+          {
+            type: "number",
+            message: "올바른 주민등록번호를 입력해주세요.",
+          },
+        ]}
+        hasFeedback
+      >
+        <Input
+          placeholder="주민등록번호"
+          className="rounded-full border-2"
+          size="large"
+          allowClear
+          value={socialNumber}
+          onChange={(e) => setSocialNumber(e.target.value)}
+        />
+      </Form.Item>
+    </>,
+  ];
+
   return (
     <>
       <div className="text-3xl text-center font-bold m-6">
         <TextBox text="회원가입" size="2xl" />
       </div>
-      <form
+      <ConfigProvider theme={theme}>
+        <Form>
+          {eachPage[page] ? eachPage[page] : ""}
+          <Form.Item className="text-center">
+            <Button
+              type="primary"
+              className="py-6 px-10 rounded-full text-lg"
+              onClick={page + 1 === eachPage.length ? handleSignUp : handleNext}
+              htmlType="submit"
+            >
+              {page + 1 === eachPage.length ? "회원가입" : "다음"}
+            </Button>
+          </Form.Item>
+        </Form>
+        <div className="text-lime-500 text-sm md:text-base mt-3 text-start">
+          <Link to={"/user/login"}>로그인 화면으로</Link>
+        </div>
+      </ConfigProvider>
+      {/* <Form
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
@@ -243,8 +375,8 @@ const SignupPage: React.FC = () => {
             setEmail(e.target.value);
           }}
           onIconClick={(e) => setEmail("")}
-        />
-        {/* <InputBox
+        /> */}
+      {/* <InputBox
           placeholder="인증번호 입력"
           buttonType="send"
           size="large"
@@ -252,7 +384,7 @@ const SignupPage: React.FC = () => {
           value={certificationNumber}
           onChange={(e) => setCertificationNumber(e.target.value)}
         /> */}
-        <InputBox
+      {/* <InputBox
           placeholder="비밀번호"
           buttonType="cancel"
           size="large"
@@ -285,8 +417,8 @@ const SignupPage: React.FC = () => {
             textColor="white"
             onClick={handleSignUp}
           />
-        </div>
-      </form>
+        </div> 
+      </Form> */}
     </>
   );
 };

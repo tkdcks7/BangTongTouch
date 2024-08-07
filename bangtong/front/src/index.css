@@ -12,3 +12,7 @@
 body {
   font-family: "PyeoungChang";
 }
+
+#product-list::-webkit-scrollbar {
+  display: none;
+}
