@@ -38,6 +38,7 @@ import CommunityDetail from "./components/organism/CommunityDetail"; // 글 상�
 import CommunityCreate from "./components/organism/CommunityCreate"; // 글 쓰기
 import authAxios from "./utils/authAxios";
 import useAlarmInfoStore from "./store/alarmInfoStore";
+import NotFoundPage from "./components/page/NotFoundPage";
 
 interface AlarmI {
   alarmMessageId: number;
@@ -113,6 +114,7 @@ const AppRoutes: React.FC = () => {
           <Route path=":id" element={<CommunityDetail />} />
           <Route path="write" element={<CommunityCreate />} />
         </Route>
+        <Route path="/*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );
