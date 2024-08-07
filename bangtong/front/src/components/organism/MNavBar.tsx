@@ -19,7 +19,7 @@ const MNavBar: React.FC = () => {
   const { id } = useUserStore();
 
   return (
-    <div className="flex justify-around w-full fixed bottom-0 left-0 bg-lime-500 p-2 pb-5">
+    <div className="flex justify-around w-full fixed bottom-0 left-0 bg-lime-500 dark:bg-lime-600 p-2 pb-5">
       <Link to="/" className="w-14 flex flex-col items-center">
         <IconBtn imgSrc={Home} size={20} />
         <TextBox text="홈" size="sm" />

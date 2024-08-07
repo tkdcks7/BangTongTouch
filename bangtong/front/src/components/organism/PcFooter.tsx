@@ -11,7 +11,7 @@ import { MailFilled, PhoneFilled } from "@ant-design/icons";
 
 const PcFooter: React.FC = () => {
   return (
-    <footer className="border-t border-gray-300 p-5 bg-gray-50 text-lime-700">
+    <footer className="border-t border-gray-300 p-5 bg-gray-50 text-lime-700 dark:bg-gray-800 dark:text-yellow-200">
       <div className="grid grid-cols-4 gap-4 px-10">
         <div>
           <p className="text-xl font-bold my-3">Link</p>

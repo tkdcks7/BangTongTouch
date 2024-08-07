@@ -6,7 +6,7 @@ import defaultProfile from "../../assets/defaultprofile.jpg";
 
 const ChatBox: React.FC = () => {
   return (
-    <div className="mt-10 border p-3 bg-lime-100 rounded-xl md:p-7">
+    <div className="mt-10 border p-3 bg-lime-100 rounded-xl md:p-7 dark:text-black">
       <p className="font-bold">1번집</p>
       <div className="border border-gray-300 my-2" />
       <div className="flex items-center">

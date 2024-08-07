@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class PreferenceDto {
     private Long preferenceId;
-    private String preferenceName;
+//    private String preferenceName;
     private Long userId;
     private String regionId;
     private String regionAddress;
