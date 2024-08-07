@@ -136,13 +136,12 @@ public class UserService {
 
   public ProfileDto modifyProfile(ProfileModificationDto profileModificationDto) {
     User user = getUser(profileModificationDto.getUserId());
-
     ProfileDto profileDto = new ProfileDto();
 
     if (user != null) {
       user.setUserNickname(profileModificationDto.getNickname());
 
-      if (profileModificationDto.getProfileImage() != null) {
+      if (profileModificationDto.getProfileImage().get(0) != null) {
         try {
           List<Media> mediaList = fileService.upload(profileModificationDto.getProfileImage());
           user.setUserProfileImage(mediaList.get(0));
