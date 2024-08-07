@@ -55,14 +55,17 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
       } catch (ExpiredJwtException e) {
         Long id = Long.parseLong(String.valueOf(e.getClaims().get("id")));
         User user = userRepository.findById(id).orElse(null);
-        String refreshToken = user.getUserRefreshToken();
 
-        if (refreshToken == null) {
-          throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
+        if (user != null) {
+          String refreshToken = user.getUserRefreshToken();
+
+          if (refreshToken == null) {
+            throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
+          }
+
+          String accessToken = jwtUtil.generateAccessToken(user,
+              String.valueOf(e.getClaims().get("authorities")), new Date());
         }
-
-        String accessToken = jwtUtil.generateAccessToken(user,
-            String.valueOf(e.getClaims().get("authorities")), new Date());
       } catch (Exception e) {
         throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);
       }
