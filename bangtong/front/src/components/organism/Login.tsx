@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
@@ -7,9 +7,7 @@ import useUserStore from "../../store/userStore";
 // 컴포넌트 불러오기
 import { Form, Input, Button, message, ConfigProvider } from "antd";
 import TextBox from "../atoms/TextBox";
-import InputBox from "../molecules/InputBox";
 import IconBtn from "../atoms/IconBtn";
-import Btn from "../atoms/Btn";
 
 // 이미지 소스
 import Google from "../../assets/GoogleSocial.png";
@@ -42,6 +40,7 @@ const LoginPage: React.FC = () => {
   const { token, setInfoUpdate, setToken } = useUserStore(); // store
   const navigate = useNavigate();
   const [form] = Form.useForm(); // antd
+  const [isRejected, setIsRejected] = useState(false);
 
   if (token) {
     navigate("/");
@@ -91,8 +90,7 @@ const LoginPage: React.FC = () => {
   }
 
   // 일반 로그인함수
-  const handleLogIn = (e: any): void => {
-    e.preventDefault();
+  const handleLogIn = (): void => {
     if (email === "") {
       alert("이메일을 입력해주세요");
       return;
@@ -118,7 +116,10 @@ const LoginPage: React.FC = () => {
         setToken(response.headers.authorization);
         navigate("../../");
       })
-      .catch((error) => console.log("전송 실패", error));
+      .catch((error) => {
+        console.log("전송 실패", error);
+        setIsRejected(true);
+      });
   };
 
   // 네이버 로그인 함수
@@ -151,6 +152,7 @@ const LoginPage: React.FC = () => {
     const kakaotalkLoginUri = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=profile_nickname profile_image`;
     window.open(kakaotalkLoginUri, "_blank", "width=600,height=600");
   };
+
   return (
     <>
       <div className="font-bold m-6 text-center">
@@ -161,8 +163,12 @@ const LoginPage: React.FC = () => {
           <Form.Item
             name="이메일 (아이디)"
             rules={[
-              { required: true, message: "" },
-              { type: "email", warningOnly: true, message: "" },
+              { required: true, message: "아이디(이메일)를 입력하세요" },
+              {
+                type: "email",
+                warningOnly: true,
+                message: "이메일은 @ 기호를 포함해야 합니다.",
+              },
               { type: "string" },
             ]}
             hasFeedback
@@ -213,6 +219,14 @@ const LoginPage: React.FC = () => {
               <IconBtn imgSrc={Naver} size={40} onClick={handleNaverLogin} />
             </div>
           </div>
+          {isRejected ? (
+            <div className="bg-red-200 text-red-600 text-center p-4 rounded-md shadow-md max-w-xs mx-auto mt-4">
+              로그인에 실패했습니다. <br />
+              이메일/비밀번호를 확인해주세요.
+            </div>
+          ) : (
+            <></>
+          )}
           <div className="flex justify-center mt-10">
             <Button
               type="primary"
