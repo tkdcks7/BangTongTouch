@@ -120,7 +120,6 @@ public class Product {
   private String productAddressDetail;    //몇동 몇호
 
   @OneToMany(mappedBy = "product") // mappedBy 속성 사용
-  @JsonBackReference
   private List<Media> productMedia;
 
   @Column(nullable=false)

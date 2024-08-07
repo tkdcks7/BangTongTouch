@@ -46,10 +46,10 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
     QRegion qRegion = QRegion.region;
     QMedia qMedia = QMedia.media;
 
-//    BooleanExpression makerCondition = qChatroom.Maker.userId.eq(userId)
-//        .and(qChatroom.chatroomMakerIsOut.eq(false));
-//    BooleanExpression participantCondition = qChatroom.Participant.userId.eq(userId)
-//        .and(qChatroom.chatroomParticipantIsOut.eq(false));
+    BooleanExpression makerCondition = qChatroom.Maker.userId.eq(userId)
+        .and(qChatroom.chatroomMakerIsOut.eq(false));
+    BooleanExpression participantCondition = qChatroom.Participant.userId.eq(userId)
+        .and(qChatroom.chatroomParticipantIsOut.eq(false));
 
     List<ChatroomReturnDto> chatrooms = queryFactory
         .select(Projections.constructor(ChatroomReturnDto.class,
@@ -95,10 +95,10 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
         .from(qChatroom)
         .leftJoin(qChatroom.product, qProduct)
         .leftJoin(qProduct.region, qRegion)
-        //.leftJoin(qChatroom.Maker, qUser)
+        .leftJoin(qChatroom.Maker, qUser)
         .leftJoin(qProduct.productMedia, qMedia)
         //.leftJoin(qChatroom.Participant, qUser) // Participant에 대해 또 다른 별칭
-        //.where(makerCondition.or(participantCondition))
+        .where(makerCondition.or(participantCondition))
         .fetch();
 
     log.info("chat {}", chatrooms);
