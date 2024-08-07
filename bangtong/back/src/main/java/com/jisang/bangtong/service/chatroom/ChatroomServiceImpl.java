@@ -93,7 +93,6 @@ public class ChatroomServiceImpl implements ChatroomService {
         chatReturnDto.setChatContent(chat.getChatContent());
         chatReturnDto.setChatTime(chat.getChatTime());
         chatReturnDto.setReceiver(chat.getReceiver());
-        chatReturnDto.setSender(chat.getSender());
         chatReturnDtos.add(chatReturnDto);
       }
     }

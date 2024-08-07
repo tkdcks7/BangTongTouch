@@ -96,7 +96,5 @@ public class ProductReturnDto {
     this.productIsInterest = productIsInterest;
     this.mediaList = mediaList;
     this.productIsDelete = productIsDelete;
-
-
   }
 }

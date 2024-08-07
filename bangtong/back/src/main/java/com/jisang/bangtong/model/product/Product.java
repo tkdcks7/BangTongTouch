@@ -119,8 +119,8 @@ public class Product {
   @Column(length = 100)
   private String productAddressDetail;    //몇동 몇호
 
-  @OneToMany
-  @JoinColumn(name="mediaId")
+  @OneToMany(mappedBy = "product") // mappedBy 속성 사용
+  @JsonBackReference
   private List<Media> productMedia;
 
   @Column(nullable=false)

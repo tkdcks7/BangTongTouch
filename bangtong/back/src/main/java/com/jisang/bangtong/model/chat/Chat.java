@@ -52,6 +52,6 @@ public class Chat {
 
   // TODO 미디어 쿼리 작성해야됨
   @OneToMany
-  @JoinColumn(name="mediaId", nullable = false, foreignKey = @ForeignKey(name="fk_chat_media"))
+  @JoinColumn(nullable = false, foreignKey = @ForeignKey(name="fk_chat_media"))
   List<Media> mediaList;
 }

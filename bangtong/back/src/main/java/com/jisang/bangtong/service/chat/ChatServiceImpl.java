@@ -56,7 +56,6 @@ public class ChatServiceImpl implements ChatService {
       throw new RuntimeException("ChatServiceImpl send receiver and sender is null");
     }else{
       chat.setReceiver(receiver);
-      chat.setSender(sender);
     }
     if(files != null && !files.isEmpty()) {
       try {
