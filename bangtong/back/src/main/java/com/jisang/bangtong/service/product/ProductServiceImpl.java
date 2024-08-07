@@ -65,12 +65,14 @@ public class ProductServiceImpl implements ProductService {
     }
     Product product = getProductWhenUpload(productUploadDto, u);
     try {
+
+      productRepository.save(product);
       List<Media> fileList = fileService.upload(productMedia);
       product.setProductMedia(fileList);
     } catch (IOException e) {
       throw new IllegalArgumentException("파일을 저장할 수 없습니다");
     }
-    productRepository.save(product);
+
   }
 
   @Override
@@ -92,7 +94,7 @@ public class ProductServiceImpl implements ProductService {
     productRepository.save(product);
   }
 
-  @Override
+  @Transactional
   public ProductReturnDto getProduct(long productId) {
     Product product = productRepository.findById(productId);
     List<String> additionalOption = getAdditionalOptionList(product);
