@@ -160,7 +160,6 @@ const FilterBox: React.FC = () => {
 
   // 검색을 진행하는 함수
   const handleSearch = () => {
-    console.log("검색 진행");
     const searchData = {
       order,
       minDeposit,
@@ -175,8 +174,6 @@ const FilterBox: React.FC = () => {
       startDate,
       endDate,
     };
-    console.log(`searchData는...`);
-    console.log(searchData);
 
     if (
       searchData.address === "" ||
@@ -192,9 +189,9 @@ const FilterBox: React.FC = () => {
         data: searchData,
       })
         .then((response) => {
-          console.log("검색 완료!");
-          console.log(response);
-          setProductsList(response.data.data);
+          if (response.data.data === null || response.data.data.length === 0)
+            alert("검색 결과가 없습니다.");
+          else setProductsList(response.data.data);
         })
         .catch((err) => console.log(err));
     }
