@@ -8,7 +8,10 @@ import TextBox from "../atoms/TextBox";
 import InputBox from "../molecules/InputBox";
 import Btn from "../atoms/Btn";
 import DropDown from "../molecules/DropDown";
-import { Form, Input, ConfigProvider, Button } from "antd";
+import { Form, Input, ConfigProvider, Button, Space } from "antd";
+
+// 아이콘
+import { LineOutlined } from "@ant-design/icons";
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -19,6 +22,7 @@ const SignupPage: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [passwordVerification, setPasswordVerification] = useState<string>("");
   const [page, setPage] = useState(0); // 페이지 넘기기 위한 변수
+  const [form] = Form.useForm();
 
   const navigate = useNavigate();
 
@@ -165,130 +169,14 @@ const SignupPage: React.FC = () => {
     },
   };
 
-  const handleNext = () => {
-    setPage(() => page + 1);
-    console.log(page);
+  const handleNext = async () => {
+    try {
+      await form.validateFields();
+      setPage(page + 1);
+    } catch (error) {
+      console.log("유효성 검사 실패:", error);
+    }
   };
-
-  const eachPage = [
-    <>
-      <Form.Item
-        name="이름"
-        rules={[
-          { required: true, message: "이름을 입력해주세요." },
-          { type: "string" },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="이름"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </Form.Item>
-      <Form.Item
-        name="주민등록번호"
-        rules={[
-          { required: true, message: "주민등록번호를 입력해주세요." },
-          {
-            type: "number",
-            message: "올바른 주민등록번호를 입력해주세요.",
-          },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="주민등록번호"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={socialNumber}
-          onChange={(e) => setSocialNumber(e.target.value)}
-        />
-      </Form.Item>
-    </>,
-    <>
-      <Form.Item
-        name="휴대폰 번호"
-        rules={[
-          { required: true, message: "이름을 입력해주세요." },
-          { type: "string" },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="휴대폰 번호"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </Form.Item>
-      <Form.Item
-        name="이메일"
-        rules={[
-          { required: true, message: "주민등록번호를 입력해주세요." },
-          {
-            type: "number",
-            message: "올바른 주민등록번호를 입력해주세요.",
-          },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="이메일"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={socialNumber}
-          onChange={(e) => setSocialNumber(e.target.value)}
-        />
-      </Form.Item>
-    </>,
-    <>
-      <Form.Item
-        name="이름"
-        rules={[
-          { required: true, message: "이름을 입력해주세요." },
-          { type: "string" },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="이름"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </Form.Item>
-      <Form.Item
-        name="주민등록번호"
-        rules={[
-          { required: true, message: "주민등록번호를 입력해주세요." },
-          {
-            type: "number",
-            message: "올바른 주민등록번호를 입력해주세요.",
-          },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="주민등록번호"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={socialNumber}
-          onChange={(e) => setSocialNumber(e.target.value)}
-        />
-      </Form.Item>
-    </>,
-  ];
 
   return (
     <>
@@ -296,20 +184,187 @@ const SignupPage: React.FC = () => {
         <TextBox text="회원가입" size="2xl" />
       </div>
       <ConfigProvider theme={theme}>
-        <Form>
-          {eachPage[page] ? eachPage[page] : ""}
-          <Form.Item className="text-center">
+        <Form form={form}>
+          {/* <InputBox
+          placeholder="인증번호 입력"
+          buttonType="send"
+          size="large"
+          type="text"
+          value={certificationNumber}
+          onChange={(e) => setCertificationNumber(e.target.value)}
+        /> */}
+          {page > 3 ? (
+            <Form.Item
+              name="이메일 인증"
+              rules={[{ required: true, message: "이메일 인증이 필요합니다." }]}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                <Input
+                  placeholder="이메일 인증번호"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  onChange={(e) => handleCertificateConfirm(e.target.value)}
+                />
+              </motion.div>
+            </Form.Item>
+          ) : null}
+          {page > 2 ? (
+            <Form.Item
+              name="이메일"
+              rules={[
+                { required: true, message: "이메일을 입력해주세요." },
+                {
+                  type: "email",
+                  message: "올바른 이메일을 입력해주세요.",
+                },
+              ]}
+              hasFeedback
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                <Space.Compact style={{ width: "100%" }}>
+                  <Input
+                    placeholder="이메일"
+                    className="rounded-full border-2"
+                    size="large"
+                    allowClear
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <Button type="primary" size="large" className="rounded-full">
+                    인증하기
+                  </Button>
+                </Space.Compact>
+              </motion.div>
+            </Form.Item>
+          ) : null}
+          {page > 1 ? (
+            <Form.Item
+              name="휴대폰 번호"
+              rules={[
+                { required: true, message: "휴대폰번호를 입력해주세요." },
+                { min: 11, max: 11, message: "휴대폰 번호는 11자리 입니다." },
+                { type: "string" },
+              ]}
+              hasFeedback
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                <Input
+                  placeholder="휴대폰 번호 (- 제외)"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  minLength={11}
+                  maxLength={11}
+                  disabled={page !== 2}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </motion.div>
+            </Form.Item>
+          ) : null}
+          {page > 0 ? (
+            <Form.Item
+              name="주민등록번호"
+              rules={[
+                { required: true, message: "주민등록번호를 입력해주세요." },
+                { min: 7, max: 7, message: "앞 6자리 + 뒤 1자리" },
+                {
+                  type: "string",
+                  message: "올바른 주민등록번호를 입력해주세요.",
+                },
+              ]}
+              hasFeedback
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+                className="flex"
+              >
+                <Input
+                  placeholder="주민번호 (- 제외)"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  value={socialNumber}
+                  disabled={page !== 1}
+                  maxLength={13}
+                  onChange={(e) => setSocialNumber(e.target.value)}
+                />
+              </motion.div>
+            </Form.Item>
+          ) : null}
+          {page >= 0 ? (
+            <Form.Item
+              name="이름"
+              rules={[
+                { required: true, message: "이름을 입력해주세요." },
+                { type: "string" },
+              ]}
+              hasFeedback
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                <Input
+                  placeholder="이름"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={page !== 0}
+                />
+              </motion.div>
+            </Form.Item>
+          ) : null}
+          <div className="text-center">
             <Button
               type="primary"
               className="py-6 px-10 rounded-full text-lg"
-              onClick={page + 1 === eachPage.length ? handleSignUp : handleNext}
+              onClick={page + 1 === 6 ? handleSignUp : handleNext}
               htmlType="submit"
             >
-              {page + 1 === eachPage.length ? "회원가입" : "다음"}
+              {page + 1 === 6 ? "회원가입" : "다음"}
             </Button>
-          </Form.Item>
+          </div>
         </Form>
-        <div className="text-lime-500 text-sm md:text-base mt-3 text-start">
+        <div className="text-lime-500 text-sm md:text-base mt-3 text-center">
           <Link to={"/user/login"}>로그인 화면으로</Link>
         </div>
       </ConfigProvider>
