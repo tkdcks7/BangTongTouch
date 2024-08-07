@@ -11,9 +11,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
 
-  void upload(ProductUploadDto productUploadDto, List<MultipartFile> productMedia, HttpServletRequest request);
-  void update(ProductUpdateDto product, Long productId ,HttpServletRequest request);
+  void upload(ProductUploadDto productUploadDto, List<MultipartFile> productMedia,
+      HttpServletRequest request);
+
+  void update(ProductUpdateDto product, Long productId, HttpServletRequest request);
+
   ProductReturnDto getProduct(long productId);
+
   List<ProductReturnDto> searchList(ProductSearchDto productSearchDto, HttpServletRequest request);
+
   void delete(Long productId, HttpServletRequest request);
+
+  ProductReturnDto getRecentInterestProduct(Long userId);
+  
 }
