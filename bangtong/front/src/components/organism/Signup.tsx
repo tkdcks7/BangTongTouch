@@ -11,7 +11,7 @@ import DropDown from "../molecules/DropDown";
 import { Form, Input, ConfigProvider, Button, Space } from "antd";
 
 // 아이콘
-import { LineOutlined } from "@ant-design/icons";
+import { SendOutlined } from "@ant-design/icons";
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -109,7 +109,10 @@ const SignupPage: React.FC = () => {
         email,
       },
     })
-      .then((response) => alert("해당 이메일로 인증번호가 전송됐습니다."))
+      .then((response) => {
+        alert("해당 이메일로 인증번호가 전송됐습니다.");
+        setPage(page + 1);
+      })
       .catch((err) => {
         console.log(err);
         alert(
@@ -207,13 +210,22 @@ const SignupPage: React.FC = () => {
                   ease: [0, 0.71, 0.2, 1.01],
                 }}
               >
-                <Input
-                  placeholder="이메일 인증번호"
-                  className="rounded-full border-2"
-                  size="large"
-                  allowClear
-                  onChange={(e) => handleCertificateConfirm(e.target.value)}
-                />
+                <Space.Compact className="flex items-center">
+                  <Input
+                    placeholder="이메일 인증번호"
+                    className="rounded-full border-2"
+                    size="large"
+                    allowClear
+                    onChange={(e) => handleCertificateConfirm(e.target.value)}
+                  />
+                  <Button
+                    type="primary"
+                    size="large"
+                    className="text-sm rounded-full"
+                  >
+                    인증하기
+                  </Button>
+                </Space.Compact>
               </motion.div>
             </Form.Item>
           ) : null}
@@ -227,7 +239,6 @@ const SignupPage: React.FC = () => {
                   message: "올바른 이메일을 입력해주세요.",
                 },
               ]}
-              hasFeedback
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
@@ -238,19 +249,22 @@ const SignupPage: React.FC = () => {
                   ease: [0, 0.71, 0.2, 1.01],
                 }}
               >
-                <Space.Compact style={{ width: "100%" }}>
-                  <Input
-                    placeholder="이메일"
-                    className="rounded-full border-2"
-                    size="large"
-                    allowClear
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  <Button type="primary" size="large" className="rounded-full">
-                    인증하기
-                  </Button>
-                </Space.Compact>
+                <Input
+                  placeholder="이메일"
+                  className="rounded-full border-2 me-1"
+                  size="large"
+                  allowClear
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={page !== 3}
+                  suffix={
+                    <SendOutlined
+                      style={{ color: "rgba(0,0,0,.45)" }}
+                      className="cursor-pointer"
+                      onClick={() => handleMailSend(email)}
+                    />
+                  }
+                />
               </motion.div>
             </Form.Item>
           ) : null}
@@ -317,7 +331,7 @@ const SignupPage: React.FC = () => {
                   allowClear
                   value={socialNumber}
                   disabled={page !== 1}
-                  maxLength={13}
+                  maxLength={7}
                   onChange={(e) => setSocialNumber(e.target.value)}
                 />
               </motion.div>
