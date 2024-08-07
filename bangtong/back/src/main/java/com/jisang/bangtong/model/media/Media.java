@@ -1,8 +1,10 @@
 package com.jisang.bangtong.model.media;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.jisang.bangtong.model.board.Board;
+import com.jisang.bangtong.model.chat.Chat;
 import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.model.user.User;
 import jakarta.persistence.Column;
@@ -13,7 +15,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -31,28 +35,20 @@ public class Media {
   @Column(nullable = false, length = 100)
   private String mediaPath;
 
-  @ManyToOne // Board와의 Many-to-One 관계 설정
-  @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "fk_media_board"))
-  // board_id를 외래 키로 설정
-  @JsonProperty(access = Access.WRITE_ONLY)
-  private Board board; // Board 참조 추가
-
   @ManyToOne
   @JoinColumn(name = "product_id", foreignKey = @ForeignKey(name = "fk_media_product"))
   @JsonProperty(access = Access.WRITE_ONLY)
   private Product product;
 
-  @Override
-  public String toString() {
-    return "";
-  }
-
-  //  @ManyToOne // Product와의 Many-to-One 관계
-//  @JoinColumn(name = "product_id") // nullable을 true로 설정
-//  private Product product;
-//
   @OneToOne
   @JoinColumn(name = "user_id")
+  @JsonProperty(access = Access.WRITE_ONLY)
+  @JsonBackReference
   private User user;
 
+  // TODO 미디어 쿼리 작성해야됨
+  @ManyToOne
+  @JoinColumn(foreignKey = @ForeignKey(name="fk_media_chat"))
+  @JsonProperty(access = Access.WRITE_ONLY)
+  private Chat chat;
 }

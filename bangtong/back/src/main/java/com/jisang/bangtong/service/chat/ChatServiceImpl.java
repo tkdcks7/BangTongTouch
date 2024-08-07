@@ -56,12 +56,10 @@ public class ChatServiceImpl implements ChatService {
       throw new RuntimeException("ChatServiceImpl send receiver and sender is null");
     }else{
       chat.setReceiver(receiver);
-      chat.setSender(sender);
     }
     if(files != null && !files.isEmpty()) {
       try {
         List<Media> fileList= fileService.upload(files);
-        chat.setMediaList(fileList);
       } catch (IOException e) {
         throw new RuntimeException("파일을 저장할 수 없습니다");
       }

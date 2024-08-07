@@ -55,6 +55,6 @@ public class Chatroom {
   boolean chatroomMakerIsOut;
 
   @Column
-  boolean chatRoomParticipantIsOut;
+  boolean chatroomParticipantIsOut;
 
 }

@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import authAxios from "../../utils/authAxios";
-import axios from "axios";
-import { Modal } from "antd";
+import { Modal, Select } from "antd";
 import useUserStore from "../../store/userStore";
 
 /**
@@ -19,12 +18,14 @@ interface iSubComment {
   commentId: number;
   iuser: iUser;
   content: string;
+  deleted?: boolean;
   commentDate: string;
 }
 
 const SubComment: React.FC<iSubComment> = ({
   commentId,
   iuser,
+  deleted = false,
   content,
   commentDate,
 }) => {
@@ -32,6 +33,7 @@ const SubComment: React.FC<iSubComment> = ({
   const [isEditClicked, setIsEditClicked] = useState<boolean>(false);
   const editContent = useRef<string>(content);
   const reportRef = useRef<string>(content);
+  const reportTypeRef = useRef<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const changeModalStatus = () => {
     reportRef.current = "";
@@ -45,7 +47,7 @@ const SubComment: React.FC<iSubComment> = ({
   };
   const deleteComment = () => {
     authAxios({
-      method: "DELETE",
+      method: "PUT",
       url: `${process.env.REACT_APP_BACKEND_URL}/comments/delete/${commentId}`,
     })
       .then((response) => {
@@ -67,22 +69,30 @@ const SubComment: React.FC<iSubComment> = ({
       .catch((error) => console.log(error));
   };
   const reportComment = () => {
-    const formData = new FormData();
-    formData.append("reportSubjectTypeId", "0");
-    formData.append("reportTypeId", "0");
-    formData.append("content", reportRef.current);
-    formData.append("subjectId", "0");
-    axios({
+    if (reportTypeRef.current === 0) {
+      alert("신고 유형을 선택해주세요.");
+      return;
+    }
+
+    if (reportRef.current === "") {
+      alert("사유를 입력해주세요.");
+      return;
+    }
+    authAxios({
       method: "POST",
-      url: `${process.env.REACT_APP_BACKEND_URL}/reports/${iuser.userId}/0`,
-      data: formData,
+      url: `${process.env.REACT_APP_BACKEND_URL}/reports`,
+      data: {
+        reportSubjectTypeId: 0,
+        reportTypeId: reportTypeRef.current,
+        content: reportRef.current,
+        subjectId: iuser.userId,
+      },
     })
       .then((response) => {
         alert("신고가 완료되었습니다.");
-        window.location.replace("");
       })
       .then((error) => {
-        console.log("error");
+        alert("로그인 후 이용하실 수 있습니다.");
       });
     changeModalStatus();
   };
@@ -99,18 +109,38 @@ const SubComment: React.FC<iSubComment> = ({
           <div>댓글 내용: </div>
         </div>
         <div>{content}</div>
-        <span>신고 사유: </span>
-        <input
-          className="w-4/5 border"
-          type="text"
-          onChange={(e) => (reportRef.current = e.target.value)}
+        <Select
+          defaultValue={"신고 유형"}
+          className="w-full my-2"
+          onChange={(e) => {
+            reportTypeRef.current = parseInt(e);
+            console.log(reportTypeRef.current);
+          }}
+          options={[
+            { value: 1, label: "스팸/도배" },
+            { value: 2, label: "음란물" },
+            { value: 3, label: "유해한 내용" },
+            { value: 4, label: "비속어/차별적 표현" },
+            { value: 5, label: "개인정보 노출" },
+            { value: 6, label: "불쾌한 표현" },
+          ]}
+        />
+        <span>신고 사유</span>
+        <textarea
+          className="w-full border resize-none"
+          onChange={(e) => {
+            console.log(e.target.value);
+            reportRef.current = e.target.value;
+          }}
         />
       </Modal>
       <div className="flex text-xl items-center justify-center pr-2">
         <div>┖</div>
       </div>
       <div className="flex w-full">
-        <div className="flex-initial text-sm w-12">{iuser.nickname}</div>
+        <div className="flex-initial text-sm w-12">
+          {deleted === false ? iuser.nickname : "X"}
+        </div>
         {isEditClicked === true ? (
           <div className="flex justify-between w-full">
             <input
@@ -118,7 +148,8 @@ const SubComment: React.FC<iSubComment> = ({
               defaultValue={editContent.current}
               onChange={(e) => (editContent.current = e.target.value)}
               type="text"
-            />{" "}
+            />
+            {""}
             <button onClick={modifyComment} className="pr-4">
               수정
             </button>
@@ -126,12 +157,14 @@ const SubComment: React.FC<iSubComment> = ({
         ) : (
           <React.Fragment>
             <div className="flex-1 text-base break-words overflow-hidden whitespace-pre-wrap">
-              {content}
+              {deleted === false ? content : "삭제된 메시지입니다."}
             </div>
             <div className="flex-initial text-xs w-16">
               {formatTimestamp(commentDate)}
             </div>
-            <button onClick={changeMenuVisible}>…</button>
+            {deleted === false ? (
+              <button onClick={changeMenuVisible}>…</button>
+            ) : null}
             {menuVisible === true ? (
               <div className="absolute bg-gray-300 right-2">
                 {iuser.userId === useUserStore.getState().id ? (
@@ -145,9 +178,7 @@ const SubComment: React.FC<iSubComment> = ({
                   </ul>
                 )}
               </div>
-            ) : (
-              ""
-            )}
+            ) : null}
           </React.Fragment>
         )}
       </div>

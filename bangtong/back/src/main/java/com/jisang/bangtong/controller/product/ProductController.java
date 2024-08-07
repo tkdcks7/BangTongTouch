@@ -8,6 +8,7 @@ import com.jisang.bangtong.dto.product.ProductUpdateDto;
 import com.jisang.bangtong.dto.product.ProductUploadDto;
 import com.jisang.bangtong.service.product.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,7 @@ public class ProductController {
   }
 
   //매물 조회
+  @Transactional
   @GetMapping("/{productId}")
   public ResponseDto<ProductReturnDto> getProduct(@PathVariable("productId") Long productId) {
     ProductReturnDto product = productService.getProduct(productId);
