@@ -177,21 +177,31 @@ const FilterBox: React.FC = () => {
     };
     console.log(`searchData는...`);
     console.log(searchData);
-    axios({
-      method: "POST",
-      url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
-      data: searchData,
-    })
-      .then((response) => {
-        console.log("검색 완료!");
-        console.log(response);
-        setProductsList(response.data.data);
+
+    if (
+      searchData.address === "" ||
+      searchData.type === undefined ||
+      searchData.type === null
+    ) {
+      if (searchData.address === "") alert("지역을 선택해 주세요.");
+      else alert("집 유형을 선택해 주세요.");
+    } else {
+      axios({
+        method: "POST",
+        url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
+        data: searchData,
       })
-      .catch((err) => console.log(err));
+        .then((response) => {
+          console.log("검색 완료!");
+          console.log(response);
+          setProductsList(response.data.data);
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   return (
-    <div className="w-80 px-5 py-10 border border-2 rounded-xl shadow-md">
+    <div className="w-80 px-5 py-10 border-2 rounded-xl shadow-md">
       <button
         className="w-full bg-lime-500 text-white p-2 rounded-full"
         onClick={showRegionModal}
@@ -201,13 +211,13 @@ const FilterBox: React.FC = () => {
         ) : (
           <div className="w-full flex items-center justify-center">
             <MapPinIcon width={20} className="me-3" />
-            <p>지역을 선택해주세요.</p>
+            <p>지역을 선택해 주세요.</p>
           </div>
         )}
       </button>
       <ConfigProvider theme={theme}>
         <Modal
-          title="지역을 선택해주세요."
+          title="지역을 선택해 주세요."
           open={open}
           onOk={handleOk}
           confirmLoading={confirmLoading}
@@ -241,12 +251,11 @@ const FilterBox: React.FC = () => {
                       ? region.regionGugun
                       : region.regionDong}
                 </button>
-              )
+              ),
             )}
           </div>
         </Modal>
       </ConfigProvider>
-
       <TextBtn title="보증금" text={`${minDeposit}만~${maxDeposit}만`} />
       <TextBtn title="월세 (관리비 포함)" text={`${minRent}만~${maxRent}만`} />
       <BtnGroup title="집 유형" itemsArray={homeCategory} />
