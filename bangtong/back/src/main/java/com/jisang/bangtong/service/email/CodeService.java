@@ -16,18 +16,14 @@ public class CodeService {
   private String createCode() {
     Random random = new Random();
     int code = random.nextInt(1000000);
-
     return String.format("%06d", code);
   }
 
   public String saveCode(String email) {
     String code = createCode();
 
-    log.info("code service code: {}", code);
-
     try {
       codeRepository.save(email, code);
-      log.info("save email code: {}", code);
     } catch (Exception e) {
       log.error(e.getMessage());
     }
@@ -43,6 +39,10 @@ public class CodeService {
     }
 
     return savedCode.equals(code);
+  }
+
+  public void deleteCode(String email) {
+    codeRepository.delete(email);
   }
 
 }

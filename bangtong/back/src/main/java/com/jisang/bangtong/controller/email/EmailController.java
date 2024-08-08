@@ -22,12 +22,9 @@ public class EmailController {
   @PostMapping
   public ResponseDto<Void> sendCode(@RequestBody EmailDto emailDto) {
     try {
-      log.info("emailDto: {}", emailDto);
-      
       emailService.sendCode(emailDto.getEmail());
       return ResponseDto.res(ResponseMessageConstants.SUCCESS);
     } catch (Exception e) {
-      log.error(e.getMessage());
       return ResponseDto.res(ResponseMessageConstants.SERVER_ERROR);
     }
   }
