@@ -31,4 +31,5 @@ public class ProductUploadDto {
   private double lat; // 위도
   private double lng; //경도
   private String productDetailAddress;
+  private String productDescription;
 }

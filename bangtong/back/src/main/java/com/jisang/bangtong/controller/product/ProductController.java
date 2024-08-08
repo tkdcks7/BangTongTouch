@@ -83,4 +83,11 @@ public class ProductController {
     return ResponseDto.res(ResponseMessageConstants.SUCCESS, productReturnDto);
   }
 
+  @GetMapping("/count")
+  public ResponseDto<Integer> getProductSize() {
+    Integer productSize = productService.getProductSize();
+    log.info("{}", productSize);
+    return ResponseDto.res("SUCCESS", productSize);
+  }
+
 }

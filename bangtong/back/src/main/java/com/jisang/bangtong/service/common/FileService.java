@@ -6,5 +6,6 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileService{
-  List<Media> upload(List<MultipartFile> files)throws IOException;
+  List<Media> upload(List<Media> files) throws IOException;
+  List<Media> getName(List<MultipartFile> files);
 }

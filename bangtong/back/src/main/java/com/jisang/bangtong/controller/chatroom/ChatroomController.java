@@ -50,10 +50,10 @@ public class ChatroomController {
   }
 
   @GetMapping("/chat/{chatroomId}")
-  public ResponseDto<List<ChatReturnDto>> getChats(@PathVariable Long chatroomId){
+  public ResponseDto<ChatReturnDto> getChats(@PathVariable Long chatroomId){
     log.info("{}", chatroomId);
-    List<ChatReturnDto> chatReturnDtoList =  chatroomService.getChats(chatroomId);
-    log.info("getChats: {}", chatReturnDtoList);
-    return ResponseDto.res(SUCCESS, chatReturnDtoList);
+    ChatReturnDto chatReturnDto =  chatroomService.getChats(chatroomId);
+    log.info("getChats: {}", chatReturnDto);
+    return ResponseDto.res(SUCCESS, chatReturnDto);
   }
 }

@@ -12,5 +12,5 @@ public interface ChatroomService {
   void createChatroom(ChatroomDto chatroomDto);
   void exitChatroom(Long chatroomIId, Long userId);
   List<ChatroomReturnDto> getChatroom(Long userId);
-  List<ChatReturnDto> getChats(Long chatroomId);
+  ChatReturnDto getChats(Long chatroomId);
 }

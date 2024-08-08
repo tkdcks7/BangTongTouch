@@ -1,20 +1,19 @@
 package com.jisang.bangtong.dto.chat;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jisang.bangtong.dto.user.ProfileDto;
 import com.jisang.bangtong.model.user.User;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-import java.util.Date;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.RequiredArgsConstructor;
+
 
 @Data
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class ChatReturnDto {
-  User sender;
-  User receiver;
-  String chatContent;
-
-  @Temporal(TemporalType.TIMESTAMP)
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-  Date chatTime;
+  ProfileDto participant;
+  ProfileDto maker;
+  List<ChatContentDto> content;
 }

@@ -39,8 +39,8 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
 
     return queryFactory.selectFrom(product)
         .where(
-            product.productDeposit.between(productSearchDto.getMinDeposit(), productSearchDto.getMaxDeposit())
-                .and(product.productMaintenance.between(productSearchDto.getMinRent(), productSearchDto.getMaxRent()))
+            product.productDeposit.lt(productSearchDto.getMaxDeposit())
+                .and(product.productMaintenance.lt(productSearchDto.getMaxRent()))
                 .and(product.productType.eq(ProductType.valueOf(productSearchDto.getType())))
                 .and(product.productIsRentSupportable.eq(productSearchDto.isRentSupportable()))
                 .and(product.productIsFurnitureSupportable.eq(productSearchDto.isFurnitureSupportable()))

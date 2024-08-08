@@ -59,7 +59,7 @@ public class ChatServiceImpl implements ChatService {
     }
     if(files != null && !files.isEmpty()) {
       try {
-        List<Media> fileList= fileService.upload(files);
+        List<Media> fileList= fileService.upload(fileService.getName(files));
       } catch (IOException e) {
         throw new RuntimeException("파일을 저장할 수 없습니다");
       }

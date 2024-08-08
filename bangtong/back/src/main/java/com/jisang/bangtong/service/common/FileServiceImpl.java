@@ -40,9 +40,7 @@ public class FileServiceImpl implements FileService {
   private final AmazonS3 amazonS3;
   private final FileRepository fileRepository;
 
-  public List<Media> upload(List<MultipartFile> files) throws IOException {
-    log.info("file upload service 실행 {}", bucket);
-
+  public List<Media> getName(List<MultipartFile> files) {
     List<Media> list = new ArrayList<>();
 
     files.forEach(file -> {
@@ -56,12 +54,18 @@ public class FileServiceImpl implements FileService {
       }
       Media media = new Media();
       media.setMediaPath(fileName);
-      media = fileRepository.save(media);
-      //log.info("media info {}", media);
       list.add(media);
     });
     return list;
+  }
 
+  public List<Media> upload(List<Media> files) throws IOException {
+    log.info("file upload service 실행 {}", bucket);
+    files.forEach(file -> {
+      fileRepository.save(file);
+      //log.info("media info {}", media);
+    });
+    return files;
   }
 
   private String makeFileName(MultipartFile multipartFile) {
