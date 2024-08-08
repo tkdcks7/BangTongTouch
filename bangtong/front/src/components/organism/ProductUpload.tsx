@@ -473,6 +473,7 @@ const ProductUpload: React.FC = () => {
           </div>
         </div>
       </ConfigProvider>
+      <div className="h-24" />
     </div>
   );
 };
