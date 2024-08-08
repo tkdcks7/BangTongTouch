@@ -43,15 +43,11 @@ public class Chat {
   String chatContent;
 
   @ManyToOne
-  @JoinColumn(name="senderId")
+  @JoinColumn(name="senderId", foreignKey = @ForeignKey(name="fk_chat_user"), nullable = false)
   User sender;
 
-  @ManyToOne
-  @JoinColumn(name="receiverId")
-  User receiver;
-
   @Column(nullable = false)
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = "Asia/Seoul")
   @Temporal(TemporalType.TIMESTAMP)
   Date chatTime=new Date();
 

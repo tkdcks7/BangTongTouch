@@ -1,6 +1,7 @@
 package com.jisang.bangtong.controller.chat;
 
 import com.jisang.bangtong.dto.chat.ChatDto;
+import com.jisang.bangtong.dto.chat.SendDto;
 import com.jisang.bangtong.dto.chatroom.ChatroomDto;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.chat.Chat;
@@ -39,20 +40,24 @@ public class WebSocketChatController {
 
   @MessageMapping("/hello/{ChatroomId}")  //받는 데
   @SendTo("/topic/greetings/{ChatroomId}")    //보내는곳
-//  public ResponseDto<String> greeting(String message) throws Exception {
-//    log.info(message);
-//    return new ResponseDto<>("SUCCESS",
-//        HtmlUtils.htmlEscape(message));
-//  }
-  public ResponseDto<String> greeting(@RequestPart Map<String, Object> message) throws Exception {
-    Map<String, Object> obj = (Map<String, Object>) message.get("chat");
+  public ResponseDto<String> greeting(@RequestBody Map<String, Object> chatdto) {
+    Map<String, String> chat= (Map<String, String>) chatdto.get("chat");
 
-    log.info("{}", obj);
+    log.info("greeting {}", chat);
+    SendDto sendDto = new SendDto();
+    sendDto.setSender(Long.valueOf(String.valueOf(chat.get("sender"))));
+    sendDto.setChatRoom(Long.valueOf(String.valueOf(chat.get("chatRoom"))));
+    sendDto.setChatMessage(String.valueOf(chat.get("chatContent")));
 
-    chatService.send(obj);
+    //sendDto.get
+    try {
+      chatService.send(sendDto);
+      return new ResponseDto<>("SUCCESS",
+          HtmlUtils.htmlEscape(sendDto.toString()));
+    }catch (RuntimeException e){
+      return new ResponseDto<>("ERROR", HtmlUtils.htmlEscape(e.getMessage()));
+    }
 
-    return new ResponseDto<>("SUCCESS",
-        HtmlUtils.htmlEscape(obj.toString()));
   }
 
 }
