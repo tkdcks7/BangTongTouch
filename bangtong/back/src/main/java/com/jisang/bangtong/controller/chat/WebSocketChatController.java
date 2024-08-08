@@ -44,12 +44,12 @@ public class WebSocketChatController {
 //    return new ResponseDto<>("SUCCESS",
 //        HtmlUtils.htmlEscape(message));
 //  }
-  public ResponseDto<String> greeting(@RequestPart Map<String, Object> message, @RequestPart List<MultipartFile> a) throws Exception {
+  public ResponseDto<String> greeting(@RequestPart Map<String, Object> message) throws Exception {
     Map<String, Object> obj = (Map<String, Object>) message.get("chat");
 
     log.info("{}", obj);
 
-    chatService.send(obj, a);
+    chatService.send(obj, null);
 
     return new ResponseDto<>("SUCCESS",
         HtmlUtils.htmlEscape(obj.toString()));

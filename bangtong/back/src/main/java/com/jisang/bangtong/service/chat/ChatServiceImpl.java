@@ -75,7 +75,7 @@ public class ChatServiceImpl implements ChatService {
     }
     chats.add(chat);
 
-    if(chats.size() > 2){
+    if(chats.size() > 10){
       chatRepository.saveAllListChats(chats);
       chats.clear();
     }
