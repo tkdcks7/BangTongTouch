@@ -18,8 +18,8 @@ public class Preference {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long preferenceId;
 
-//    @Column(nullable = false, length = 12)
-//    private String preferenceName;
+    @Column(nullable = false, length = 12)
+    private String preferenceName;
 
     //TODO
     @ManyToOne(fetch = FetchType.EAGER)

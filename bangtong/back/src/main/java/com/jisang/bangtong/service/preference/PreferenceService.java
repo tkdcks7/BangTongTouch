@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Slf4j
 public class PreferenceService {
@@ -44,7 +47,7 @@ public class PreferenceService {
         User user = userRepository.findById(userId).orElse(null);
 
         Preference preference = new Preference();
-//        preference.setPreferenceName(preferenceDto.getPreferenceName());
+        preference.setPreferenceName(preferenceDto.getPreferenceName());
         preference.setPreferenceDeposit(preferenceDto.getPreferenceDeposit());
         preference.setRegion(region);
         preference.setUser(user);
@@ -60,7 +63,7 @@ public class PreferenceService {
     public PreferenceDto modifyPreference(long preferenceId, PreferenceDto preferenceDto) {
         Preference existingPreference = preferenceRepository.findByPreferenceId(preferenceId);
 
-//        existingPreference.setPreferenceName(preferenceDto.getPreferenceName());
+        existingPreference.setPreferenceName(preferenceDto.getPreferenceName());
         existingPreference.setPreferenceDeposit(preferenceDto.getPreferenceDeposit());
         existingPreference.setPreferenceRent(preferenceDto.getPreferenceRent());
         existingPreference.setPreferenceType(preferenceDto.getPreferenceType());
@@ -88,7 +91,7 @@ public class PreferenceService {
 
         PreferenceDto updatePreferenceDto = new PreferenceDto();
         updatePreferenceDto.setPreferenceId(updatePreference.getPreferenceId());
-//        updatePreferenceDto.setPreferenceName(updatePreference.getPreferenceName());
+        updatePreferenceDto.setPreferenceName(updatePreference.getPreferenceName());
         updatePreferenceDto.setPreferenceDeposit(updatePreference.getPreferenceDeposit());
         updatePreferenceDto.setPreferenceRent(updatePreference.getPreferenceRent());
         updatePreferenceDto.setPreferenceType(updatePreference.getPreferenceType());
@@ -128,7 +131,7 @@ public class PreferenceService {
 
             if (result != null) {
                 dto.setPreferenceId(result.getPreferenceId());
-//                dto.setPreferenceName(result.getPreferenceName());
+                dto.setPreferenceName(result.getPreferenceName());
                 dto.setUserId(result.getUser().getUserId());
                 dto.setPreferenceDeposit(result.getPreferenceDeposit());
                 dto.setPreferenceRent(result.getPreferenceRent());
@@ -157,5 +160,39 @@ public class PreferenceService {
             return null;
         }
         return dto;
+    }
+
+    public List<PreferenceDto> getPreferenceList(long userId) {
+        List<PreferenceDto> resultDto = new ArrayList<>();
+        List<Preference> result = preferenceRepository.findAllByUser_UserId(userId);
+
+        for (Preference preference : result) {
+            PreferenceDto dto = new PreferenceDto();
+            dto.setPreferenceId(preference.getPreferenceId());
+            dto.setPreferenceName(preference.getPreferenceName());
+            dto.setUserId(preference.getUser().getUserId());
+            dto.setPreferenceDeposit(preference.getPreferenceDeposit());
+            dto.setPreferenceRent(preference.getPreferenceRent());
+            dto.setPreferenceType(preference.getPreferenceType());
+            dto.setPreferenceInfra(preference.getPreferenceInfra());
+            dto.setPreferenceStartDate(preference.getPreferenceStartDate());
+            dto.setPreferenceEndDate(preference.getPreferenceEndDate());
+            Region region = preference.getRegion();
+            if (region != null) {
+                dto.setRegionId(region.getRegionId());
+                StringBuilder sb = new StringBuilder();
+                sb.append(region.getRegionSido())
+                        .append(" ")
+                        .append(region.getRegionGugun())
+                        .append(" ")
+                        .append(region.getRegionDong());
+                dto.setRegionAddress(sb.toString().trim());
+            } else {
+                dto.setRegionId(null);
+                dto.setRegionAddress("");
+            }
+            resultDto.add(dto);
+        }
+        return resultDto;
     }
 }

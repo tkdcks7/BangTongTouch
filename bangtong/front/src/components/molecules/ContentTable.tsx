@@ -37,7 +37,7 @@ interface ContentTableProps {
 
 const ContentTable: React.FC<ContentTableProps> = ({ contents }) => {
   return (
-    <table className="border-collapse w-full text-sm text-nowrap">
+    <table className="border-collapse w-full text-sm text-nowrap dark:text-black">
       <thead className="bg-yellow-100">
         <tr>
           <th className="p-2">제목</th>
