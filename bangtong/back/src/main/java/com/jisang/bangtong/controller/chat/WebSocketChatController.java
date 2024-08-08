@@ -37,19 +37,19 @@ public class WebSocketChatController {
     this.chatService = chatService;
   }
 
-  @MessageMapping("/hello/{ChatroomId}")  //받는데
+  @MessageMapping("/hello/{ChatroomId}")  //받는 데
   @SendTo("/topic/greetings/{ChatroomId}")    //보내는곳
 //  public ResponseDto<String> greeting(String message) throws Exception {
 //    log.info(message);
 //    return new ResponseDto<>("SUCCESS",
 //        HtmlUtils.htmlEscape(message));
 //  }
-  public ResponseDto<String> greeting(@RequestBody Map<String, Object> message, @RequestPart List<MultipartFile> chatMedia) throws Exception {
+  public ResponseDto<String> greeting(@RequestPart Map<String, Object> message, @RequestPart List<MultipartFile> a) throws Exception {
     Map<String, Object> obj = (Map<String, Object>) message.get("chat");
 
     log.info("{}", obj);
 
-    chatService.send(obj, chatMedia);
+    chatService.send(obj, a);
 
     return new ResponseDto<>("SUCCESS",
         HtmlUtils.htmlEscape(obj.toString()));

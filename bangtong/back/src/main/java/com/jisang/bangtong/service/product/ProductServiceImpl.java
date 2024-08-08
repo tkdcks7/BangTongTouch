@@ -67,7 +67,8 @@ public class ProductServiceImpl implements ProductService {
     try {
 
       productRepository.save(product);
-      List<Media> fileList = fileService.upload(productMedia);
+      List<Media> fileList = fileService.upload(fileService.getName(productMedia));
+      productRepository.save(product);
       product.setProductMedia(fileList);
     } catch (IOException e) {
       throw new IllegalArgumentException("파일을 저장할 수 없습니다");
@@ -262,21 +263,13 @@ public class ProductServiceImpl implements ProductService {
         .productStartDate(productUploadDto.getProductStartDate())
         .productEndDate(productUploadDto.getProductEndDate())
         .productAddressDetail(productUploadDto.getProductDetailAddress())
+        .productDescription(productUploadDto.getProductDescription())
         .lat(productUploadDto.getLat()).lng(productUploadDto.getLng()).build();
   }
 
-  private ProductUploadDto setUploadDto(ProductUploadDto productUploadDto) {
-    ProductUploadDto uploadDto = new ProductUploadDto();
-    List<String> strList = productUploadDto.getProductAdditionalOption();
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < strList.size() - 1; i++) {
-      String option = strList.get(i);
-      sb.append(option).append(",");
-    }
-
-    sb.append(strList.get(strList.size() - 1));
-
-    return uploadDto;
+  @Override
+  public Integer getProductSize(){
+    return productRepository.countProductByProductIsDeletedIsFalse();
   }
 
   private boolean isValidUser(User u, Long productId) {

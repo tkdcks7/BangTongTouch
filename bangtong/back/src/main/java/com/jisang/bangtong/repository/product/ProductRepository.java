@@ -9,4 +9,5 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
   Product findFirstByRegion_RegionIdAndProductIsDeletedIsFalse(String regionId);
 
+  Integer countProductByProductIsDeletedIsFalse();
 }

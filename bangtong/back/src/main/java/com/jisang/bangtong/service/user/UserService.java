@@ -143,7 +143,7 @@ public class UserService {
 
       if (profileModificationDto.getProfileImage().get(0) != null) {
         try {
-          List<Media> mediaList = fileService.upload(profileModificationDto.getProfileImage());
+          List<Media> mediaList = fileService.upload( fileService.getName( profileModificationDto.getProfileImage()));
           user.setUserProfileImage(mediaList.get(0));
         } catch (Exception e) {
           return null;

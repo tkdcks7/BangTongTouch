@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface ChatroomRepositoryCustom {
   List<ChatroomReturnDto> getChatroom(Long userId);
-  List<Chat> getChats(Long chatroomId);
+  ChatReturnDto getChats(Long chatroomId);
 }

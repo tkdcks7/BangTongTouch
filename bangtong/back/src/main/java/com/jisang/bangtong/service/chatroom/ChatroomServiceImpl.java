@@ -81,26 +81,9 @@ public class ChatroomServiceImpl implements ChatroomService {
   }
 
   @Override
-  public List<ChatReturnDto> getChats(Long chatroomId) {
+  public ChatReturnDto getChats(Long chatroomId) {
     log.info("ChatroomServiceImpl. getChats 시작");
-    List<ChatReturnDto> chatReturnDtos = new ArrayList<>();
-    List<Chat> ret;
-    try{
-      ret = chatroomRepository.getChats(chatroomId);
-      log.info("TestSuccess {}", ret.size());
-      for(Chat chat : ret){
-        ChatReturnDto chatReturnDto = new ChatReturnDto();
-        chatReturnDto.setChatContent(chat.getChatContent());
-        chatReturnDto.setChatTime(chat.getChatTime());
-        chatReturnDto.setReceiver(chat.getReceiver());
-        chatReturnDtos.add(chatReturnDto);
-      }
-    }
-    catch (RuntimeException e){
-        log.error(e.getMessage());
-    }
-
-    return chatReturnDtos;
+    return chatroomRepository.getChats(chatroomId);
   }
 
 }

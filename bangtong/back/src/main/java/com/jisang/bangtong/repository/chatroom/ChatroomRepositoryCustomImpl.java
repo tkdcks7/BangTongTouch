@@ -1,10 +1,13 @@
 package com.jisang.bangtong.repository.chatroom;
 
+import com.jisang.bangtong.dto.chat.ChatContentDto;
+import com.jisang.bangtong.dto.chat.ChatDto;
 import com.jisang.bangtong.dto.chat.ChatReturnDto;
 import com.jisang.bangtong.dto.chatroom.ChatroomReturnDto;
 import com.jisang.bangtong.dto.product.ProductReturnDto;
 import com.jisang.bangtong.dto.region.RegionReturnDto;
 import com.jisang.bangtong.dto.user.IUser;
+import com.jisang.bangtong.dto.user.ProfileDto;
 import com.jisang.bangtong.model.chat.Chat;
 import com.jisang.bangtong.model.chat.QChat;
 import com.jisang.bangtong.model.chatroom.Chatroom;
@@ -13,11 +16,13 @@ import com.jisang.bangtong.model.media.QMedia;
 import com.jisang.bangtong.model.product.QProduct;
 import com.jisang.bangtong.model.region.QRegion;
 import com.jisang.bangtong.model.user.QUser;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -121,14 +126,47 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
   }
 
   @Override
-  public List<Chat> getChats(Long chatroomId) {
-    log.info("hihihi");
-    QChat qChat = QChat.chat;
-    BooleanExpression chatCondition = qChat.chatRoom.chatroomId.eq(chatroomId);
+  public ChatReturnDto getChats(Long chatroomId) {
+    QChat chat = QChat.chat;
+    QChatroom chatroom = QChatroom.chatroom;
 
-    return queryFactory
-        .selectFrom(qChat)
-        .where(chatCondition)
+    // 채팅방의 발신자와 수신자 정보를 가져옵니다.
+    Tuple chatroomInfo = queryFactory
+        .select(
+            Projections.constructor(ProfileDto.class,
+                chatroom.Maker.userId,
+                chatroom.Maker.userProfileImage.mediaPath.coalesce("default_path"),
+                chatroom.Maker.userNickname),
+            Projections.constructor(ProfileDto.class,
+                chatroom.Participant.userId,
+                chatroom.Participant.userProfileImage.mediaPath.coalesce("default_path"),
+                chatroom.Participant.userNickname)
+        )
+        .from(chatroom)
+        .where(chatroom.chatroomId.eq(chatroomId))
+        .fetchOne();
+    if (chatroomInfo == null) {
+      log.warn("Chatroom not found: {}", chatroomId);
+      throw new RuntimeException("채팅방을 찾을 수 없습니다: " + chatroomId);
+    }
+    // 채팅 내용을 가져옵니다.
+    List<ChatContentDto> chatContents = queryFactory
+        .select(Projections.constructor(ChatContentDto.class,
+            chat.chatContent,
+            chat.chatTime))
+        .from(chat)
+        .where(chat.chatRoom.chatroomId.eq(chatroomId))
+        .orderBy(chat.chatTime.asc())
         .fetch();
+
+    // ChatReturnDto를 구성합니다.
+    return ChatReturnDto.builder()
+        .participant(chatroomInfo.get(0, ProfileDto.class))
+        .maker(chatroomInfo.get(1, ProfileDto.class))
+        .content(chatContents)
+        .build();
   }
+
+
+
 }

@@ -70,7 +70,8 @@ public class SecurityConfig {
         .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
         .addFilterBefore(new JwtTokenValidatorFilter(userRepository, jwtUtil),
             BasicAuthenticationFilter.class)
-        .requiresChannel(rcc -> rcc.anyRequest().requiresSecure())
+        .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
+//        .requiresChannel(rcc -> rcc.anyRequest().requiresSecure())
         .authorizeHttpRequests(
             (requests) -> requests
                 .requestMatchers("/comments/delete/**", "/comments/modify/**", "/comments/*/write",
