@@ -1,15 +1,14 @@
 package com.jisang.bangtong.service.email;
 
-import com.jisang.bangtong.dto.email.EmailDto;
-import com.jisang.bangtong.model.email.Code;
 import com.jisang.bangtong.repository.email.CodeRepository;
-import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CodeService {
 
   private final CodeRepository codeRepository;
@@ -23,20 +22,27 @@ public class CodeService {
 
   public String saveCode(String email) {
     String code = createCode();
-    codeRepository.save(new Code(email, code));
+
+    log.info("code service code: {}", code);
+
+    try {
+      codeRepository.save(email, code);
+      log.info("save email code: {}", code);
+    } catch (Exception e) {
+      log.error(e.getMessage());
+    }
 
     return code;
   }
 
-  public boolean verifyCode(String email, String receivedCode) {
-    Optional<Code> code = codeRepository.findById(email);
-    String savedCode = code.map(Code::getCode).orElse(null);
+  public boolean verifyCode(String email, String code) {
+    String savedCode = codeRepository.getCode(email);
 
     if (savedCode == null) {
       return false;
     }
 
-    return savedCode.equals(receivedCode);
+    return savedCode.equals(code);
   }
 
 }

@@ -18,10 +18,19 @@ public class EmailService {
   private final JavaMailSender javaMailSender;
 
   public void sendCode(String email) {
+    log.info("send email code");
+
     String code = codeService.saveCode(email);
+
+    log.info("send email code done");
+
     MimeMessage mimeMessage = createMimeMessage(email, code);
 
+    log.info("mimeMessage: {}", mimeMessage);
+
     javaMailSender.send(mimeMessage);
+
+    log.info("send complete");
   }
 
   public boolean verifyCode(EmailDto emailDto) {
@@ -54,7 +63,7 @@ public class EmailService {
           .append("</style></head><body><div class=\"container\">").append("<h1>이메일 인증 코드</h1>")
           .append("<p>안녕하세요,</p>").append("<p>귀하의 계정 인증을 위한 6자리 코드입니다. 아래 코드를 입력해 주세요:</p>")
           .append("<div class=\"verification-code\">").append(code).append("</div>")
-          .append("본인이 요청하지 않은 경우 이 이메일을 무시하셔도 됩니다.</p>").append("<p>감사합니다.</p>")
+          .append("코드는 5분간 유효합니다. 본인이 요청하지 않은 경우 이 이메일을 무시하셔도 됩니다.</p>").append("<p>감사합니다.</p>")
           .append("<div class=\"footer\">본 이메일은 발신 전용이며 회신되지 않습니다.</div>")
           .append("</div></body></html>");
 

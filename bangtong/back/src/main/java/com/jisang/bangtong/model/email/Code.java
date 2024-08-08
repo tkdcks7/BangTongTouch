@@ -1,17 +1,19 @@
 package com.jisang.bangtong.model.email;
 
+import java.io.Serializable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
-@RedisHash
 @Data
-public class Code {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Code implements Serializable {
 
   @Id
   private String email;
-
   private String code;
 
   @TimeToLive
