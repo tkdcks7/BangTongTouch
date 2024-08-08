@@ -17,6 +17,7 @@ import Room3 from "../../../assets/RoomCard3.png";
 import Room4 from "../../../assets/RoomCard4.png";
 import HomeExample from "../../../assets/HomeExample.jpg";
 import { hover } from "@testing-library/user-event/dist/hover";
+import { Hidden } from "@mui/material";
 
 const container = {
   hidden: { opacity: 1, scale: 0 },
@@ -24,13 +25,21 @@ const container = {
     opacity: 1,
     scale: 1,
     transition: {
-      delayChildren: 0.8,
-      staggerChildren: 0.5,
+      delayChildren: 0.3,
+      staggerChildren: 0.3,
     },
   },
 };
 
 const item = {
+  hidden: { y: 30, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+  },
+};
+
+const text = {
   hidden: { y: 20, opacity: 0 },
   visible: {
     y: 0,
@@ -116,42 +125,56 @@ const InformationPage: React.FC = () => {
   return (
     <main className="w-lvw h-lvh" id="back-ground">
       <motion.div
-        className="header text-start outline-text"
-        initial={{
-          y: 0,
-          opacity: "0%",
-        }}
-        whileInView={{
-          y: -30,
-          opacity: "100%",
-        }}
-        transition={{
-          ease: "easeIn",
-          duration: 0.5,
-        }}
+        className="header text-start"
+        variants={container}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false }}
       >
-        <h1 className="mb-3">간편한</h1>
-        <h1 className="mb-3">승계생활</h1>
+        <motion.h1
+          variants={text}
+          transition={{
+            ease: "easeIn",
+            duration: 0.3,
+          }}
+        >
+          간편한
+        </motion.h1>
+        <motion.h1
+          variants={text}
+          transition={{
+            ease: "easeIn",
+            duration: 0.3,
+          }}
+        >
+          원룸승계,
+        </motion.h1>
       </motion.div>
       <motion.div
-        className="main-container"
-        initial={{
-          y: 0,
-          opacity: "0%",
-        }}
-        whileInView={{
-          y: -30,
-          opacity: "100%",
-        }}
-        transition={{
-          ease: "easeIn",
-          duration: 0.5,
-        }}
+        className="header text-end"
+        variants={container}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false }}
       >
-        <h1 className="mb-3">
-          간편한 승계생활, <span className="green">방통터치</span>와 함께
+        <motion.h1
+          variants={text}
+          transition={{
+            ease: "easeIn",
+            duration: 0.3,
+          }}
+        >
+          <span className="green">방통터치</span>에서
+        </motion.h1>
+        <motion.h1
+          variants={text}
+          transition={{
+            ease: "easeIn",
+            duration: 0.3,
+          }}
+        >
           시작하세요.
-        </h1>
+        </motion.h1>
       </motion.div>
       <motion.div
         initial={{
@@ -168,7 +191,7 @@ const InformationPage: React.FC = () => {
           duration: 0.5,
         }}
       >
-        <div className="text-center mb-10 main-container">
+        <div className="text-center mb-10 footer">
           <motion.h1
             initial={{
               y: 0,
@@ -179,15 +202,16 @@ const InformationPage: React.FC = () => {
               opacity: "100%",
             }}
             viewport={{ once: false }}
+            className="mb-10"
           >
-            현재 방통터치에는
+            방통터치에서
             <motion.span id="count" viewport={{ once: false }} ref={countRef}>
               {rounded}
             </motion.span>
-            개의 매물이 등록되어 있습니다.
+            개의 매물이 당신을 기다리고 있습니다.
           </motion.h1>
           <motion.ul
-            className="container flex justify-center"
+            className="flex justify-center"
             variants={container}
             initial="hidden"
             whileInView="visible"
@@ -207,31 +231,15 @@ const InformationPage: React.FC = () => {
             </motion.li>
           </motion.ul>
         </div>
-
-        <motion.div
-          initial={{
-            y: 0,
-            opacity: "0%",
-          }}
-          whileInView={{
-            y: -30,
-            opacity: "100%",
-          }}
-          viewport={{ once: false }}
-          transition={{
-            ease: "easeIn",
-            duration: 0.5,
-          }}
-          className="footer"
-        >
-          <h1 className="mb-32">
-            매물을 업로드하거나, 마음에 드는 매물을 찾아보세요
-          </h1>
-          <Link to={"user/login"} style={{ color: "#129B07" }}>
-            <motion.h1>로그인하러 가기</motion.h1>
-          </Link>
-        </motion.div>
       </motion.div>
+      <motion.button
+        id="start-button"
+        whileHover={{ scale: 1.2 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={handleLogInBtnClick}
+      >
+        시작하기
+      </motion.button>
     </main>
   );
 };
