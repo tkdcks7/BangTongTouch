@@ -23,10 +23,12 @@ public class CodeService {
     String code = createCode();
 
     if (codeRepository.getCode(email) != null) {
+      log.info(codeRepository.getCode(email));
       codeRepository.delete(email);
     }
 
     try {
+      log.info("save: {}, {}", email, code);
       codeRepository.save(email, code);
     } catch (Exception e) {
       log.error(e.getMessage());
