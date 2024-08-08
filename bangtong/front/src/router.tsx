@@ -97,7 +97,7 @@ const AppRoutes: React.FC = () => {
           {/* 채팅 페이지 */}
           <Route path="chats" element={<ChattingPage />}>
             <Route path="" element={<ChatMain />} />
-            <Route path=":id" element={<ChatDetail />} />
+            <Route path=":roomId" element={<ChatDetail />} />
           </Route>
 
           {/* 마이페이지 */}

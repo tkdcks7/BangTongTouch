@@ -35,8 +35,6 @@ const CommunityCreate: React.FC = () => {
   const [category, setCategory] = useState<string>("게시판 종류 선택");
   const addr = useRef<number>();
 
-  console.log(category);
-
   const redirectToBoards = () => {
     navigate("../", { replace: true });
   };
