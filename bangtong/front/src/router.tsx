@@ -35,7 +35,7 @@ import CommunityCreate from "./components/organism/CommunityCreate"; // 글 쓰�
 import authAxios from "./utils/authAxios";
 import useAlarmInfoStore from "./store/alarmInfoStore";
 import NotFoundPage from "./components/page/NotFoundPage";
-import ProductSearchPage from "./components/page/ProductSearchPage";
+import ProductSearch1Page from "./components/page/ProductSearch1Page";
 
 interface AlarmI {
   alarmMessageId: number;
@@ -87,7 +87,7 @@ const AppRoutes: React.FC = () => {
           <Route path="" element={<ProductMapBox />} />
           <Route path=":id" element={<ProductDetail />} />
           <Route path="upload" element={<ProductUpload />} />
-          <Route path="search" element={<ProductSearchPage />} />
+          <Route path="search" element={<ProductSearch1Page />} />
         </Route>
 
         {/* 채팅 페이지 */}
