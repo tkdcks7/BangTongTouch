@@ -31,8 +31,8 @@ public class ChatController {
   }
 
   @PostMapping("/save")
-  public ResponseDto<Void> sendMessage(@RequestBody Map<String, Object> chat, @RequestPart List<MultipartFile> chatMedia) {
-    chatService.send(chat, chatMedia);
+  public ResponseDto<Void> sendMessage(@RequestBody Map<String, Object> chat) {
+    chatService.send(chat);
     return ResponseDto.res(SUCCESS);
   }
 

@@ -39,7 +39,7 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional
-  public Chat send(Map<String, Object> chatDto, List<MultipartFile> files) {
+  public Chat send(Map<String, Object> chatDto) {
     log.info("ChatService Impl {}", chatDto);
 
     Chat chat = new Chat();
@@ -51,6 +51,7 @@ public class ChatServiceImpl implements ChatService {
     Long senderId = Long.parseLong(chatDto.get("sender").toString());
     User receiver = userRepository.findById(receiverId).orElse(null);
     User sender = userRepository.findById(senderId).orElse(null);
+    List<MultipartFile> files = (List<MultipartFile>) chatDto.get("media");
     log.info("{}", chat.getChatTime());
     if(receiver == null || sender == null) {
       throw new RuntimeException("ChatServiceImpl send receiver and sender is null");
@@ -59,7 +60,7 @@ public class ChatServiceImpl implements ChatService {
     }
     if(files != null && !files.isEmpty()) {
       try {
-        List<Media> fileList= fileService.upload(files);
+        List<Media> fileList= fileService.upload(fileService.getName(files));
       } catch (IOException e) {
         throw new RuntimeException("파일을 저장할 수 없습니다");
       }

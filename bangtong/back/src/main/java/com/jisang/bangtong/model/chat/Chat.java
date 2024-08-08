@@ -43,6 +43,10 @@ public class Chat {
   String chatContent;
 
   @ManyToOne
+  @JoinColumn(name="senderId")
+  User sender;
+
+  @ManyToOne
   @JoinColumn(name="receiverId")
   User receiver;
 
