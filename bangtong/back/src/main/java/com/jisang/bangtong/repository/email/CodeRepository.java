@@ -14,6 +14,7 @@ public class CodeRepository {
 
   public void save(String email, String code) {
     try {
+      log.info("repo code: {}", code);
       redisTemplate.opsForValue().set(email, code);
     } catch (Exception e) {
       log.error(e.getMessage());
