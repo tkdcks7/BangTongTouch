@@ -17,17 +17,9 @@
 }
 
 .header {
-  color: #00000000;
-  font-size: 200px;
+  font-size: 180px;
   font-weight: bolder;
-}
-
-.outline-text {
-  text-shadow:
-    -1px 0px rgb(0, 0, 0),
-    0px 1px rgb(0, 0, 0),
-    1px 0px rgb(0, 0, 0),
-    0px -1px rgb(0, 0, 0);
+  margin-bottom: 300px;
 }
 
 .main-container {
@@ -42,7 +34,7 @@
   font-size: 40px;
   font-weight: bold;
   margin-top: 350px;
-  margin-bottom: 200px;
+  margin-bottom: 100px;
 }
 
 #sub-text {
@@ -70,4 +62,16 @@
   height: 100vh;
   z-index: -1;
   overflow: hidden;
+}
+
+#start-button {
+  font-size: xx-large;
+  font-weight: bold;
+  color: white;
+  width: 200px;
+  padding: 20px;
+  border-radius: 50px;
+  margin: auto;
+  margin-bottom: 100px;
+  background: #129b07;
 }
