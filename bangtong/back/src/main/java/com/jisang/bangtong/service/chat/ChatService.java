@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ChatService {
 
-  Chat send(Map<String, Object> chat, List<MultipartFile> files);
+  Chat send(Map<String, Object> chat);
 
   List<Chat> getMessagesByRoom(Long roomId);
 }

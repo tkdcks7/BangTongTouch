@@ -49,7 +49,7 @@ public class WebSocketChatController {
 
     log.info("{}", obj);
 
-    chatService.send(obj, null);
+    chatService.send(obj);
 
     return new ResponseDto<>("SUCCESS",
         HtmlUtils.htmlEscape(obj.toString()));
