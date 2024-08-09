@@ -13,10 +13,12 @@ import { ChevronRightIcon } from "@heroicons/react/20/solid";
 const ProfileMenu: React.FC = () => {
   return (
     <div className="mx-2 my-4">
-      <Accordion transition transitionTimeout={200}>
+      <Accordion transition transitionTimeout={200} className="dark:hover:text-black">
         <AccordionPart header="내 관심 매물">
           <ProfileMyFavItems />
         </AccordionPart>
+      </Accordion>
+        <Accordion transition transitionTimeout={200} className="dark:hover:text-black">
 
         <AccordionPart header="내가 올린 매물">
           <ProfileMyFavItems />
@@ -25,14 +27,14 @@ const ProfileMenu: React.FC = () => {
       {/* <ProfileModal /> */}
       <NavLink
         to={"update"}
-        className="flex items-center w-full p-4 text-left hover:bg-slate-100 rounded-xl border border-black mb-2"
+        className="flex items-center w-full p-4 text-left hover:bg-slate-100 rounded-xl border border-black mb-2 dark:hover:text-black"
       >
         <p>회원 정보 수정</p>
         <ChevronRightIcon className="w-4 h-4 ml-auto" />
       </NavLink>
       <NavLink
         to={"notification"}
-        className="flex items-center w-full p-4 text-left hover:bg-slate-100 rounded-xl border border-black"
+        className="flex items-center w-full p-4 text-left hover:bg-slate-100 rounded-xl border border-black dark:hover:text-black"
       >
         <p>알림 권한 설정</p>
         <ChevronRightIcon className="w-4 h-4 ml-auto" />
