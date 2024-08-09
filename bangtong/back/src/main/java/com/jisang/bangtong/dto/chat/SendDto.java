@@ -25,13 +25,12 @@ public class SendDto {
 
   @Override
   public String toString() {
-    SimpleDateFormat formatter = new SimpleDateFormat("MM-dd HH:mm");
-    String formattedDate = formatter.format(chatTime);
-    return "SendDto{" +
+
+    return "{" +
         "chatRoom:" + chatRoom +
         ", sender:" + sender +
-        ", chatMessage:'" + chatMessage + '\'' +
-        ", chatTime:" + formattedDate +
+        ", chatMessage:"+'\'' + chatMessage + '\'' +
+        //", chatTime:" + formattedDate +
         '}';
   }
 }

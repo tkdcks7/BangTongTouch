@@ -14,8 +14,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -47,8 +50,32 @@ public class Chat {
   User sender;
 
   @Column(nullable = false)
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = "Asia/Seoul")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
   @Temporal(TemporalType.TIMESTAMP)
-  Date chatTime=new Date();
+  private Date chatTime = new Date();
+
+  // Other fields, methods, etc...
+
+  // Getter and Setter for chatTime
+  public Date getChatTime() {
+    return chatTime;
+  }
+
+  public void setChatTime(Date chatTime) {
+    this.chatTime = chatTime;
+  }
+
+  @PrePersist
+  @PreUpdate
+  private void onCreateOrUpdate() {
+    // Ensure seconds and milliseconds are zero
+    if (chatTime != null) {
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(chatTime);
+      calendar.set(Calendar.SECOND, 0);
+      calendar.set(Calendar.MILLISECOND, 0);
+      this.chatTime = calendar.getTime();
+    }
+  }
 
 }
