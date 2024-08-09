@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../../store/userStore";
 import Modal from "react-modal";
+import { motion } from "framer-motion";
 
 // 아이콘
-import { CheckOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  EditOutlined,
+  CloseSquareFilled,
+} from "@ant-design/icons";
 import { MapPinIcon } from "@heroicons/react/20/solid";
 
 import axios from "axios";
@@ -18,9 +23,14 @@ import { productSearchStore } from "../../store/productStore";
 
 interface ModalI {
   modalIsOpen: boolean;
+  selectedId: number;
   closeModal: () => void;
 }
-const ProfileModal: React.FC<ModalI> = ({ modalIsOpen, closeModal }) => {
+const ProfileModal: React.FC<ModalI> = ({
+  modalIsOpen,
+  selectedId,
+  closeModal,
+}) => {
   const customStyle = {
     content: {
       top: "50%",
@@ -33,9 +43,12 @@ const ProfileModal: React.FC<ModalI> = ({ modalIsOpen, closeModal }) => {
   };
 
   const { id } = useUserStore();
-
   const naviagte = useNavigate();
 
+  // 모달창에 뜨기 위한 state
+  const [preferenceName, setPreferenceName] = useState<string>("");
+
+  // 지역설정 부분
   const [locationTitle, setLocationTitle] = useState<string>("");
   const [open, setOpen] = useState(false); // 지역 선택 모달
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -43,9 +56,7 @@ const ProfileModal: React.FC<ModalI> = ({ modalIsOpen, closeModal }) => {
 
   const {
     order,
-    minDeposit,
     maxDeposit,
-    minRent,
     maxRent,
     homeType,
     infra,
@@ -54,9 +65,85 @@ const ProfileModal: React.FC<ModalI> = ({ modalIsOpen, closeModal }) => {
     furnitureSupportable,
     startDate,
     endDate,
-    setProductsList,
+    setDeposit,
+    setRent,
+    setHomeType,
     setAddress,
+    setRentSupportable,
+    setFurnitureSupportable,
+    setInfra,
+    setDate,
   } = productSearchStore();
+
+  // 영어 type(변환해야함.)
+  const homeCategoryEnglish: string[] = [
+    "ONEROOM",
+    "OFFICE",
+    "TWOROOM",
+    "VILLA",
+    "APARTMENT",
+  ];
+
+  // 문자열로 된 infra 정보로 store의 infra 배열을 변화시키는 함수
+  const infraSetter = (char: string): void => {
+    for (let i = 0; i < char.length; i++) {
+      if (char[i] === "1") {
+        setInfra(i);
+      }
+    }
+  };
+
+  // 배열을 문자열로 전환하는 함수
+  const infraStringfier = (inputArr: number[]): string => {
+    const arr: string[] = [];
+    inputArr.forEach((el) => arr.push(String(el)));
+    return arr.join("");
+  };
+
+  // 선호 옵션을 선택할 때마다(selectedId가 변경될 때마다) 다른 전송 후 모달에서 해당 ID의 선호 옵션을 띄워줌
+  useEffect(() => {
+    console.log("모달 useEffect 실행됨 주소는...");
+    console.log(
+      `${process.env.REACT_APP_BACKEND_URL}/preferences/${selectedId}`
+    );
+    authAxios({
+      method: "GET",
+      url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${selectedId}`,
+    })
+      .then((response) => {
+        const result = response.data.data;
+        console.log(response);
+        setAddress(result.regionId);
+        setPreferenceName(result.preferenceName);
+        setDeposit(0, result.preferenceDeposit);
+        setRent(0, result.preferenceRent);
+        setLocationTitle(result.regionAddress);
+        setHomeType(
+          homeCategoryEnglish.findIndex((el) => el === result.preferenceType)
+        );
+        infraSetter(result.preferenceInfra); // 반복문을 돌면서 infra 배열을 바꿔줌
+        setDate(result.preferenceStartDate, result.preferenceEndDate);
+        const regionId = result.regionId;
+        // regionId를 보내서 주소 상세를 받아온다.
+        authAxios({
+          method: "GET",
+          url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${regionId}`,
+        })
+          .then((res) => {
+            console.log(res);
+            // 받아온 상세 주소를 조립해 표시될 상세 주소를 변경한다.
+            const newLocationTitle =
+              res.data.data.region.regionSido +
+              " " +
+              res.data.data.region.regionDong +
+              " " +
+              res.data.data.region.regionGun;
+            setLocationTitle(newLocationTitle);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
+  }, [selectedId]);
 
   // 지역 설정 모달 오픈 핸들러
   const showRegionModal = () => {
@@ -136,15 +223,6 @@ const ProfileModal: React.FC<ModalI> = ({ modalIsOpen, closeModal }) => {
     "아파트",
   ];
 
-  // 영어 type(변환해야함.)
-  const homeCategoryEnglish: string[] = [
-    "ONEROOM",
-    "OFFICE",
-    "TWOROOM",
-    "VILLA",
-    "APARTMENT",
-  ];
-
   // infra
   const facilities: string[] = [
     "경찰서",
@@ -166,153 +244,151 @@ const ProfileModal: React.FC<ModalI> = ({ modalIsOpen, closeModal }) => {
     },
   };
 
-  // 편의시설 비트마스킹하는 함수
-  const bitMaskingInfra = (numArr: number[]): number => {
-    let val = 0;
-    numArr.forEach((el, idx) => {
-      if (el) {
-        val += 2 ** (7 - idx);
-      }
-    });
-    return val;
-  };
-
   // 방 타입을 반환하는 함수
   const roomTypeConverter = (numArr: number[]) =>
     homeCategoryEnglish[numArr.findIndex((el) => el)]; // 1인 index(0이 아닌 index) 반환
 
-  // 검색을 진행하는 함수
-  const handleSearch = () => {
-    console.log("검색 진행");
-    const searchData = {
-      order,
-      minDeposit,
-      maxDeposit,
-      minRent,
-      maxRent,
+  // 선호 설정 수정
+  const handleUpdate = (): void => {
+    const dataSet = {
+      name: preferenceName,
+      region: address,
+      deposit: maxDeposit,
+      rent: maxRent,
       type: roomTypeConverter(homeType),
-      address,
-      rentSupportable,
-      furnitureSupportable,
-      infra: bitMaskingInfra(infra),
+      infra: infraStringfier(infra),
       startDate,
       endDate,
     };
-    console.log(`searchData는...`);
-    console.log(searchData);
-    axios({
-      method: "POST",
-      url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
-      data: searchData,
+    authAxios({
+      method: "PUT",
+      url: `${process.env.REACT_APP_BACKEND_URL}/preferences/modify/${selectedId}`,
+      data: dataSet,
     })
       .then((response) => {
-        console.log("검색 완료!");
+        console.log("성공적으로 변경됐습니다.");
         console.log(response);
-        setProductsList(response.data.data);
+        closeModal();
       })
-      .catch((err) => console.log(err));
-  };
-
-  // 선호 설정 수정 페이지로 이동
-  const handleUpdate = (): void => {
-    naviagte(`/profile/${id}/preference/update`);
+      .catch((err) => {
+        console.log(err);
+        window.alert("변경 사항이 반영되지 않았습니다.");
+      });
   };
 
   return (
-    <div>
+    <>
       <Modal
         isOpen={modalIsOpen}
         style={customStyle}
         onRequestClose={closeModal}
         contentLabel="선택된 선호 조건"
       >
-        <div className="w-80 px-5 py-10 border-2 rounded-xl shadow-md max-h-[80vh] overflow-y-auto">
-          <h1 className="text-lime-500 text-center font-bold ml-3 text-xl">
-            선택된 선호 조건
-          </h1>
-          <hr className="border-2" />
-          <br />
-          <button
-            className="w-full bg-lime-500 text-white p-2 rounded-full"
-            onClick={showRegionModal}
-          >
-            {locationTitle ? (
-              locationTitle
-            ) : (
-              <div className="w-full flex items-center justify-center">
-                <MapPinIcon width={20} className="me-3" />
-                <p>지역을 선택해주세요.</p>
-              </div>
-            )}
-          </button>
-          <ConfigProvider theme={theme}>
-            <AntModal
-              title="지역을 선택해주세요."
-              open={open}
-              onOk={handleOk}
-              confirmLoading={confirmLoading}
-              onCancel={handleCancel}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.5,
+            delay: 0.1,
+            ease: [0, 0.5, 0.2, 1],
+          }}
+        >
+          <div className="w-80 relative px-5 py-10 border-2 rounded-xl shadow-md max-h-[80vh] overflow-y-auto">
+            <div
+              className="absolute top-1 right-1 hover:cursor-pointer"
+              onClick={closeModal}
             >
-              <div className="p-2 text-center">
-                {regions.map(
-                  (region: {
-                    regionId: string;
-                    regionSido?: string;
-                    regionGugun?: string;
-                    regionDong?: string;
-                  }) => (
-                    <button
-                      key={region.regionId}
-                      className={`p-2 border rounded-full m-1 border-gray-400 text-gray-400 hover:border-lime-500 hover:text-lime-500
+              <CloseSquareFilled
+                width={40}
+                style={{ color: "red", fontSize: "24px" }}
+              />
+            </div>
+            <h1 className="text-lime-500 text-center font-bold ml-3 text-xl">
+              {preferenceName}
+            </h1>
+            <hr className="border-2" />
+            <br />
+            <button
+              className="w-full bg-lime-500 text-white p-2 rounded-full"
+              onClick={showRegionModal}
+            >
+              {locationTitle ? (
+                locationTitle
+              ) : (
+                <div className="w-full flex items-center justify-center">
+                  <MapPinIcon width={20} className="me-3" />
+                  <p>지역을 선택해주세요.</p>
+                </div>
+              )}
+            </button>
+            <ConfigProvider theme={theme}>
+              <AntModal
+                title="지역을 선택해주세요."
+                open={open}
+                onOk={handleOk}
+                confirmLoading={confirmLoading}
+                onCancel={handleCancel}
+              >
+                <div className="p-2 text-center">
+                  {regions.map(
+                    (region: {
+                      regionId: string;
+                      regionSido?: string;
+                      regionGugun?: string;
+                      regionDong?: string;
+                    }) => (
+                      <button
+                        key={region.regionId}
+                        className={`p-2 border rounded-full m-1 border-gray-400 text-gray-400 hover:border-lime-500 hover:text-lime-500
                   `}
-                      onClick={() => {
-                        if (region.regionSido) {
-                          handleSidoClick(region.regionId, region.regionSido);
-                        } else if (region.regionGugun) {
-                          handleGugunClick(region.regionId, region.regionGugun);
-                        } else {
-                          handleDongClick(region.regionId, region.regionDong);
-                        }
-                      }}
-                    >
-                      {region.regionSido
-                        ? region.regionSido
-                        : region.regionGugun
-                          ? region.regionGugun
-                          : region.regionDong}
-                    </button>
-                  )
-                )}
-              </div>
-            </AntModal>
-          </ConfigProvider>
+                        onClick={() => {
+                          if (region.regionSido) {
+                            handleSidoClick(region.regionId, region.regionSido);
+                          } else if (region.regionGugun) {
+                            handleGugunClick(
+                              region.regionId,
+                              region.regionGugun
+                            );
+                          } else {
+                            handleDongClick(region.regionId, region.regionDong);
+                          }
+                        }}
+                      >
+                        {region.regionSido
+                          ? region.regionSido
+                          : region.regionGugun
+                            ? region.regionGugun
+                            : region.regionDong}
+                      </button>
+                    )
+                  )}
+                </div>
+              </AntModal>
+            </ConfigProvider>
 
-          <TextBtn title="보증금" text={`~${maxDeposit}만`} />
-          <TextBtn title="월세" text={`~${maxRent}만`} />
-          <BtnGroup title="집 유형" itemsArray={homeCategory} />
-          <BtnGroup title="편의시설" itemsArray={facilities} />
-          <BtnGroup
-            title="지원 여부"
-            itemsArray={["월세 지원", "가구도 승계"]}
-          />
-          <div className="text-end mr-2">
-            <button
-              className="mt-5 p-2 bg-yellow-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
-              onClick={handleUpdate}
-            >
-              <EditOutlined className="my-auto mx-auto" />
-            </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button
-              className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
-              onClick={handleUpdate}
-            >
-              <CheckOutlined className="my-auto mx-auto" />
-            </button>
+            <TextBtn title="보증금" text={`~${maxDeposit}만`} />
+            <TextBtn title="월세" text={`~${maxRent}만`} />
+            <BtnGroup title="집 유형" itemsArray={homeCategory} />
+            <BtnGroup title="편의시설" itemsArray={facilities} />
+            <div className="text-end mr-2">
+              <button
+                className="mt-5 p-2 bg-yellow-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
+                onClick={handleUpdate}
+              >
+                <EditOutlined className="my-auto mx-auto" />
+              </button>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <button
+                className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
+                onClick={handleUpdate}
+              >
+                <CheckOutlined className="my-auto mx-auto" />
+              </button>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </Modal>
-    </div>
+    </>
   );
 };
 
