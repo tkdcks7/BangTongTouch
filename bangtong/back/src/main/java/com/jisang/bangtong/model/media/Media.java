@@ -41,7 +41,7 @@ public class Media {
   private Product product;
 
   @OneToOne
-  @JoinColumn(name = "user_id")
+  @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name="fk_media_user"))
   @JsonProperty(access = Access.WRITE_ONLY)
   @JsonBackReference
   private User user;

@@ -13,17 +13,21 @@ import com.jisang.bangtong.model.chat.QChat;
 import com.jisang.bangtong.model.chatroom.Chatroom;
 import com.jisang.bangtong.model.chatroom.QChatroom;
 import com.jisang.bangtong.model.media.QMedia;
+import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.model.product.QProduct;
 import com.jisang.bangtong.model.region.QRegion;
 import com.jisang.bangtong.model.user.QUser;
+import com.jisang.bangtong.model.user.User;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,67 +51,93 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
   public List<ChatroomReturnDto> getChatroom(Long userId) {
     QChatroom qChatroom = QChatroom.chatroom;
     QProduct qProduct = QProduct.product;
-    QUser qUser = QUser.user;
-    QRegion qRegion = QRegion.region;
-    QMedia qMedia = QMedia.media;
+    QUser qMaker = new QUser("maker");
+    QUser qParticipant = new QUser("participant");
 
-    BooleanExpression makerCondition = qChatroom.Maker.userId.eq(userId)
+    // Conditions for checking the user role
+    BooleanExpression isMakerPresent = qChatroom.Maker.userId.eq(userId)
         .and(qChatroom.chatroomMakerIsOut.eq(false));
-    BooleanExpression participantCondition = qChatroom.Participant.userId.eq(userId)
+
+    BooleanExpression isParticipantPresent = qChatroom.Participant.userId.eq(userId)
         .and(qChatroom.chatroomParticipantIsOut.eq(false));
 
-    List<ChatroomReturnDto> chatrooms = queryFactory
-        .select(Projections.constructor(ChatroomReturnDto.class,
-            qChatroom.chatroomId.as("chatroomId"),
-            Projections.constructor(ProductReturnDto.class,
-                qProduct.productId,
-                qProduct.productType,
-                Projections.constructor(RegionReturnDto.class,
-                    qRegion.regionId,
-                    qRegion.regionSido,
-                    qRegion.regionGugun,
-                    qRegion.regionDong
-                ),
-                qProduct.productAddress,
-                qProduct.productDeposit,
-                qProduct.productRent,
-                qProduct.productMaintenance,
-                qProduct.productMaintenanceInfo,
-                qProduct.productIsRentSupportable,
-                qProduct.productIsFurnitureSupportable,
-                qProduct.productSquare,
-                qProduct.productRoom,
-                qProduct.productOption,
-                qProduct.productAdditionalOption,
-                qProduct.productIsBanned,
-                qProduct.productPostDate,
-                qProduct.productStartDate,
-                qProduct.productEndDate,
-                qProduct.lat,
-                qProduct.lng,
-                qProduct.productAddressDetail,
-                Expressions.constant(true), // productIsInterest (상수로 처리)
-                qProduct.productMedia,
-                qProduct.productIsDeleted
-            ),
-            Projections.constructor(IUser.class,
-                qUser.userId,
-                qUser.userNickname,
-                qUser.userIsBanned
-            ),
-            qChatroom.chatroomCreatedAt
-        ))
+    // Retrieve all chatrooms where user is active
+    List<Tuple> resultTuples = queryFactory
+        .select(
+            qChatroom.chatroomId,
+            qProduct,
+            qMaker,
+            qParticipant,
+            qChatroom.chatroomCreatedAt,
+            qChatroom.Maker.userId
+        )
         .from(qChatroom)
         .leftJoin(qChatroom.product, qProduct)
-        .leftJoin(qProduct.region, qRegion)
-        .leftJoin(qChatroom.Maker, qUser)
-        .leftJoin(qProduct.productMedia, qMedia)
-        //.leftJoin(qChatroom.Participant, qUser) // Participant에 대해 또 다른 별칭
-        .where(makerCondition.or(participantCondition))
+        .leftJoin(qChatroom.Maker, qMaker)
+        .leftJoin(qChatroom.Participant, qParticipant)
+        .where(isMakerPresent.or(isParticipantPresent))
         .fetch();
 
-    return chatrooms;
+    // Transform tuples to DTOs
+    return resultTuples.stream().map(tuple -> {
+      Long chatroomId = tuple.get(qChatroom.chatroomId);
+      Product product = tuple.get(qProduct);
+      User maker = tuple.get(qMaker);
+      User participant = tuple.get(qParticipant);
+      Date chatroomCreatedAt = tuple.get(qChatroom.chatroomCreatedAt);
+      Long makerId = tuple.get(qChatroom.Maker.userId);
+
+      // Determine the correct profile based on user role
+      ProfileDto profileDto;
+      if (userId.equals(makerId)) {
+        profileDto = new ProfileDto(
+            participant.getUserId(),
+            participant.getUserProfileImage() != null ? participant.getUserProfileImage().getMediaPath() : null,
+            participant.getUserNickname());
+      } else {
+        profileDto = new ProfileDto(maker.getUserId(),
+            maker.getUserProfileImage() != null ? maker.getUserProfileImage().getMediaPath() : null,
+            maker.getUserNickname()
+            );
+      }
+
+      // Construct ProductReturnDto
+      ProductReturnDto productDto = new ProductReturnDto(
+          product.getProductId(),
+          product.getProductType(),
+          product.getRegion() != null ? new RegionReturnDto(
+              product.getRegion().getRegionId(),
+              product.getRegion().getRegionSido(),
+              product.getRegion().getRegionGugun(),
+              product.getRegion().getRegionDong()
+          ) : null,
+          product.getProductAddress(),
+          product.getProductDeposit(),
+          product.getProductRent(),
+          product.getProductMaintenance(),
+          product.getProductMaintenanceInfo(),
+          product.isProductIsRentSupportable(),
+          product.isProductIsFurnitureSupportable(),
+          product.getProductSquare(),
+          product.getProductRoom(),
+          product.getProductOption(),
+          product.getProductAdditionalOption(),
+          product.isProductIsBanned(),
+          product.getProductPostDate(),
+          product.getProductStartDate(),
+          product.getProductEndDate(),
+          product.getLat(),
+          product.getLng(),
+          product.getProductAddressDetail(),
+          true,
+          product.getProductMedia(),
+          product.isProductIsDeleted()
+      );
+      return new ChatroomReturnDto(chatroomId, productDto, profileDto, chatroomCreatedAt);
+    }).collect(Collectors.toList());
   }
+
+
 
   @Override
   public ChatReturnDto getChats(Long chatroomId) {
@@ -124,7 +154,8 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
             Projections.constructor(ProfileDto.class,
                 chatroom.Participant.userId,
                 chatroom.Participant.userProfileImage.mediaPath.coalesce("default_path"),
-                chatroom.Participant.userNickname)
+                chatroom.Participant.userNickname
+            )
         )
         .from(chatroom)
         .where(chatroom.chatroomId.eq(chatroomId))
