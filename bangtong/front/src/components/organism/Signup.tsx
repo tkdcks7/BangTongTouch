@@ -19,6 +19,7 @@ const SignupPage: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [passwordVerification, setPasswordVerification] = useState<string>("");
   const [page, setPage] = useState(0); // 페이지 넘기기 위한 변수
+  const [form] = Form.useForm();
 
   const navigate = useNavigate();
   const regexPassword = new RegExp("^[a-zA-Z0-9()-+․!#$%<>]{2,32}$");
@@ -37,7 +38,6 @@ const SignupPage: React.FC = () => {
     "병아리",
     "댕댕이",
     "도야지",
-    "고슴도치",
   ];
   const adjectiveArr = [
     "귀여운",
@@ -50,7 +50,6 @@ const SignupPage: React.FC = () => {
     "신난",
     "멍한",
     "맹렬한",
-    "방황하는",
   ];
 
   // 랜덤 양의 정수 생성함수
@@ -112,11 +111,14 @@ const SignupPage: React.FC = () => {
         email,
       },
     })
-      .then((response) => alert("해당 이메일로 인증번호가 전송됐습니다."))
+      .then((response) => {
+        alert("해당 이메일로 인증번호가 전송됐습니다.");
+        setPage(page + 1);
+      })
       .catch((err) => {
         console.log(err);
         alert(
-          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요.",
+          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요."
         );
       });
   };
@@ -139,7 +141,7 @@ const SignupPage: React.FC = () => {
       .catch((err) => {
         console.log(err);
         alert(
-          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요.",
+          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요."
         );
       });
   };
@@ -176,130 +178,14 @@ const SignupPage: React.FC = () => {
     },
   };
 
-  const handleNext = () => {
-    setPage(() => page + 1);
-    console.log(page);
+  const handleNext = async () => {
+    try {
+      await form.validateFields();
+      setPage(page + 1);
+    } catch (error) {
+      console.log("유효성 검사 실패:", error);
+    }
   };
-
-  const eachPage = [
-    <>
-      <Form.Item
-        name="이름"
-        rules={[
-          { required: true, message: "이름을 입력해주세요." },
-          { type: "string" },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="이름"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </Form.Item>
-      <Form.Item
-        name="주민등록번호"
-        rules={[
-          { required: true, message: "주민등록번호를 입력해주세요." },
-          {
-            type: "number",
-            message: "올바른 주민등록번호를 입력해주세요.",
-          },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="주민등록번호"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={socialNumber}
-          onChange={(e) => setSocialNumber(e.target.value)}
-        />
-      </Form.Item>
-    </>,
-    <>
-      <Form.Item
-        name="휴대폰 번호"
-        rules={[
-          { required: true, message: "이름을 입력해주세요." },
-          { type: "string" },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="휴대폰 번호"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </Form.Item>
-      <Form.Item
-        name="이메일"
-        rules={[
-          { required: true, message: "주민등록번호를 입력해주세요." },
-          {
-            type: "number",
-            message: "올바른 주민등록번호를 입력해주세요.",
-          },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="이메일"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={socialNumber}
-          onChange={(e) => setSocialNumber(e.target.value)}
-        />
-      </Form.Item>
-    </>,
-    <>
-      <Form.Item
-        name="이름"
-        rules={[
-          { required: true, message: "이름을 입력해주세요." },
-          { type: "string" },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="이름"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </Form.Item>
-      <Form.Item
-        name="주민등록번호"
-        rules={[
-          { required: true, message: "주민등록번호를 입력해주세요." },
-          {
-            type: "number",
-            message: "올바른 주민등록번호를 입력해주세요.",
-          },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="주민등록번호"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={socialNumber}
-          onChange={(e) => setSocialNumber(e.target.value)}
-        />
-      </Form.Item>
-    </>,
-  ];
 
   return (
     <>
@@ -307,11 +193,6 @@ const SignupPage: React.FC = () => {
         <TextBox text="회원가입" size="2xl" />
       </div>
       <ConfigProvider theme={theme}>
-<<<<<<< HEAD
-        <Form>
-          {eachPage[page] ? eachPage[page] : ""}
-          <Form.Item className="text-center">
-=======
         <Form form={form}>
           {page > 5 ? (
             // 비밀번호 확인 input
@@ -567,18 +448,17 @@ const SignupPage: React.FC = () => {
             </Form.Item>
           ) : null}
           <div className="text-center">
->>>>>>> 151a4f39608a6adf238dc040b71c3a71e494d57f
             <Button
               type="primary"
               className="py-6 px-10 rounded-full text-lg"
-              onClick={page + 1 === eachPage.length ? handleSignUp : handleNext}
+              onClick={page + 1 === 6 ? handleSignUp : handleNext}
               htmlType="submit"
             >
-              {page + 1 === eachPage.length ? "회원가입" : "다음"}
+              {page + 1 === 6 ? "회원가입" : "다음"}
             </Button>
-          </Form.Item>
+          </div>
         </Form>
-        <div className="text-lime-500 text-sm md:text-base mt-3 text-start">
+        <div className="text-lime-500 text-sm md:text-base mt-3 text-center">
           <Link to={"/user/login"}>로그인 화면으로</Link>
         </div>
       </ConfigProvider>

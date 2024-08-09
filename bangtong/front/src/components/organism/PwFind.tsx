@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 // 컴포넌트 불러오기
 import TextBox from "../atoms/TextBox";

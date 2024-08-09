@@ -1,23 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // 컴포넌트
-import { Button, ConfigProvider } from "antd";
 
 // css 스타일
 import "./InformationPage.css";
 
 // 이미지, 동영상 소스
-import BlackLogo from "../../../assets/BlackLogo.png";
 import Room1 from "../../../assets/RoomCard1.png";
 import Room2 from "../../../assets/RoomCard2.png";
 import Room3 from "../../../assets/RoomCard3.png";
 import Room4 from "../../../assets/RoomCard4.png";
-import HomeExample from "../../../assets/HomeExample.jpg";
-import { hover } from "@testing-library/user-event/dist/hover";
-import { Hidden } from "@mui/material";
 
 const container = {
   hidden: { opacity: 1, scale: 0 },
