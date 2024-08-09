@@ -8,23 +8,11 @@ import {
   CalendarOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
 
-interface ChatAdditionalBarProps {
-  roomId: string;
-}
-
-const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({ roomId }) => {
-  const navigate = useNavigate();
-
+const ChatAdditionalBar: React.FC = () => {
   return (
     <div className="w-full bg-yellow-200 fixed bottom-16 left-0 flex justify-around p-2 md:hidden">
-      <button
-        className="text-center"
-        onClick={(e) => {
-          navigate(`/chats/videochat/${roomId}`);
-        }}
-      >
+      <button className="text-center">
         <VideoCameraOutlined />
         <p>라이브 시작</p>
       </button>
