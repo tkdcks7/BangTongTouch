@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/preferences")
 public class PreferenceController {
@@ -57,6 +59,13 @@ public class PreferenceController {
         } else {
             return ResponseDto.res(SERVER_ERROR);
         }
+    }
+
+    // 선호 설정 목록 조회
+    @GetMapping("{userId}/list")
+    public ResponseDto<List<PreferenceDto>> getPreferenceList(@PathVariable long userId) {
+        List<PreferenceDto> preferenceList = preferenceService.getPreferenceList(userId);
+        return ResponseDto.res(SUCCESS, preferenceList);
     }
 
 }

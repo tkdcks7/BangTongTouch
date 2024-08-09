@@ -16,7 +16,7 @@ const MultiBtn: React.FC<MultiBtnProps> = ({ setCategory = null }) => {
   }
 
   return (
-    <menu className="w-full flex justify-center bg-yellow-300 md:justify-around text-nowrap">
+    <menu className="w-full flex justify-center bg-yellow-300 md:justify-around text-nowrap dark:text-black">
       <TabBtn
         isSelected={selectedTopic === "전체 게시글"}
         onSelect={() => {

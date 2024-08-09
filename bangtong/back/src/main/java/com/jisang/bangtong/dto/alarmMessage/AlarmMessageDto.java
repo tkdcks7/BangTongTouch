@@ -12,6 +12,6 @@ import java.util.Date;
 public class AlarmMessageDto {
     private Long alarmMessageId;
     private Long userId;
-    private Date alarmMessageDate;
+    private String alarmMessageDate;
     private String alarmMessage;
 }
