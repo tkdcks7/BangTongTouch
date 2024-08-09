@@ -27,6 +27,4 @@ public class ProductSearchDto {
   @Temporal(TemporalType.DATE)
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   Date endDate;
-  double lat;
-  double lng;
 }
