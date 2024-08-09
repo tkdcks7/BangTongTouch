@@ -17,25 +17,6 @@ import Kakao from "../../assets/KakaoSocial.png";
 import Naver from "../../assets/NaverSocial.png";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 
-/**
- * 검증 오류가 발생하였을 경우 id 값을 "e" 검증이 되었을 경우 "q", 기본 상태 "" 처럼 빈 값 string 변수로 전달
- * password, email 등의 type 전달
- * placeholder 전달
- * size => 글자 크기
- * width, height 픽셀 단위 크기
- * 추후 상태 관리 추가하여 기본 상태에서 포커싱 될 때 초록색 아웃라인 설정과
- * X 버튼 눌렀을 때 input 값 지우는 로직 작성하여야 함.
- * 
- * <InputBox
-      placeholder="이메일 (아이디)"
-      size="small"
-      type="email"
-      id=""
-      width={400}
-      height={96}
-    />
-
- */
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -105,6 +86,7 @@ const LoginPage: React.FC = () => {
       username: email,
       password: password,
     };
+    console.log(payload);
     axios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/users/login`,
