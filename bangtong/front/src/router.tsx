@@ -42,10 +42,13 @@ import authAxios from "./utils/authAxios";
 import useAlarmInfoStore from "./store/alarmInfoStore";
 import NotFoundPage from "./components/page/NotFoundPage";
 
+// 비로그인시 보여줄 페이지
+import InformationPage from "./components/page/InformationPage/InformationPage";
+
 // 비로그인 사용자를 login으로 이동시키는 protectedRoute
 const ProtectedRoute: React.FC = () => {
   const isAuthenticated = useUserStore((state) => state.id);
-  return isAuthenticated ? <Outlet /> : <Navigate to="/user/login" />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/main" />;
 };
 
 const AppRoutes: React.FC = () => {
@@ -75,6 +78,7 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
+      <Route path="main" element={<InformationPage />} />
       {/* 로그인, 회원가입, 아이디, 비밀번호 찾기 네비게이션바 X */}
       <Route path="user" element={<UserPage />}>
         <Route path="login" element={<Login />} />
