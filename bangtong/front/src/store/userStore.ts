@@ -93,21 +93,10 @@ export const useAlarmStore = create<UserAlarmSetting>()((set) => ({
   },
 }));
 
-// public class PreferenceDto {
-//   private Long preferenceId;
-//   private String preferenceName;
-//   private Long userId;
-//   private String regionId;
-//   private String regionAddress;
-//   private Integer preferenceDeposit;
-//   private Integer preferenceRent;
-//   private String preferenceType;
-//   private String preferenceInfra;
-//   private Date preferenceStartDate;
-//   private Date preferenceEndDate;
-// }
-
 interface PreferenceI {
+  preferenceId: number;
+  preferenceName: string;
+  userId: number;
   regionId: string;
   regionAddress: string;
   preferenceDeposit: number;
@@ -124,6 +113,9 @@ interface PreferenceI {
 export const useUserPreferStore = create<PreferenceI>()(
   persist(
     (set) => ({
+      preferenceId: 0,
+      preferenceName: "",
+      userId: 0,
       regionId: "",
       regionAddress: "",
       preferenceDeposit: 0,

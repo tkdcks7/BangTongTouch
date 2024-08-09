@@ -30,6 +30,8 @@ import ProfilePwConfirm from "./components/molecules/ProfilePwConfirm"; // 비�
 import ProfileEdit from "./components/molecules/ProfileEdit"; // 회원정보 수정
 import ProfileNotification from "./components/organism/ProfilNotification"; // 알림 권한 설정
 import ProductMapBox from "./components/organism/ProductMapBox";
+import PreferenceList from "./components/organism/PreferenceList";
+import PreferenceUpdate from "./components/organism/PreferenceUpdate";
 
 // 커뮤니티
 import CommunityPage from "./components/page/CommunityPage"; // 페이지
@@ -102,7 +104,12 @@ const AppRoutes: React.FC = () => {
 
           {/* 마이페이지 */}
           <Route path="profile/:id" element={<ProfilePage />}>
+            <Route path="preference" element={<PreferenceList />} />
             <Route path="" element={<ProfileMain />} />
+            <Route
+              path="preference/update/:prefId"
+              element={<PreferenceUpdate />}
+            />
             <Route path="update" element={<ProfileUpdate />}>
               <Route path="" element={<ProfilePwConfirm />} />
               <Route path="confirmed" element={<ProfileEdit />} />
