@@ -1,5 +1,6 @@
 package com.jisang.bangtong.controller.chat;
 
+import com.jisang.bangtong.dto.chat.SendDto;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.chat.Chat;
 import com.jisang.bangtong.service.chat.ChatService;
@@ -31,9 +32,15 @@ public class ChatController {
   }
 
   @PostMapping("/save")
-  public ResponseDto<Void> sendMessage(@RequestBody Map<String, Object> chat, @RequestPart List<MultipartFile> chatMedia) {
-    chatService.send(chat, chatMedia);
-    return ResponseDto.res(SUCCESS);
+  public ResponseDto<Void> sendMessage(@RequestBody SendDto chat) {
+    log.info("ChatController 호출{}", chat.toString());
+    try {
+      chatService.send(chat);
+      return ResponseDto.res(SUCCESS);
+    }catch(RuntimeException e) {
+      return ResponseDto.res("NETWORK ERROR");
+    }
+
   }
 
   @GetMapping("/room/{chatroomId}")

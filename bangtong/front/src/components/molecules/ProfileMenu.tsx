@@ -15,15 +15,14 @@ const ProfileMenu: React.FC = () => {
     <div className="mx-2 my-4">
       <Accordion transition transitionTimeout={200}>
         <AccordionPart header="내 관심 매물">
-          <ProfileMyFavItems type="favorite" />
+          <ProfileMyFavItems />
         </AccordionPart>
 
         <AccordionPart header="내가 올린 매물">
-          {/* API 만들어지면 type을 mine으로 고쳐야함 */}
-          <ProfileMyFavItems type="favorite" />
+          <ProfileMyFavItems />
         </AccordionPart>
       </Accordion>
-      <ProfileModal />
+      {/* <ProfileModal /> */}
       <NavLink
         to={"update"}
         className="flex items-center w-full p-4 text-left hover:bg-slate-100 rounded-xl border border-black mb-2"

@@ -28,39 +28,16 @@ const useProductOptionStore = create<ProductStore>((set) => ({
     침대: false,
     티비: false,
   },
-  // 옵션 정보 setter
-  // setProductOption: (key) =>
-  //   set((state) => ({
-  //     optionObj: {
-  //       ...state.optionObj,
-  //       [key]: !state.optionObj[key],
-  //     },
-  //   })),
   setProductOption: (key) =>
-    set((state) => {
-      const productOptionKeys: (keyof ProductOption)[] = Object.keys(
-        state.optionObj
-      ) as (keyof ProductOption)[];
-      const newObj = { ...state.optionObj };
-      console.log(newObj);
-      // 풀옵션일 경우
-      if (key === "풀옵션") {
-        if (state.optionObj["풀옵션"]) {
-          console.log("all false");
-          productOptionKeys.forEach((el) => (newObj[el] = false)); // 풀옵션을 끌 경우, 전체를 false로
-        } else {
-          console.log("all true");
-          productOptionKeys.forEach((el) => (newObj[el] = true)); // 풀옵션을 켤 경우, 전체를 true로
-        }
-      } else {
-        newObj[key] = !newObj[key];
-      }
-      console.log("newObj는...");
-      console.log(newObj);
-      return { optionObj: newObj };
-    }),
+    set((state) => ({
+      optionObj: {
+        ...state.optionObj,
+        [key]: !state.optionObj[key],
+      },
+    })),
 }));
 
+// 검색 store 인터페이스
 interface ProductSearchParams {
   productsList: any[]; // 조회한 매물 목록
   order: number;
@@ -76,19 +53,36 @@ interface ProductSearchParams {
   startDate: string;
   endDate: string;
   setProductsList: (data: any) => void; // 매물 목록 갱신
-  setOrder: (idx: number) => void;
-  setDeposit: (min: number, max: number) => void;
-  setRent: (min: number, max: number) => void;
-  setHomeType: (index: number) => void;
-  setAddress: (ad: string) => void;
-  setRentSupportable: () => void;
-  setFurnitureSupportable: () => void;
-  setInfra: (index: number) => void;
-  setDate: (st: any, ed: any) => void;
+  setOrder: (idx: number) => void; // 검색 방법 setter
+  setDeposit: (min: number, max: number) => void; // 보증금 setter
+  setRent: (min: number, max: number) => void; // 월세 setter
+  setHomeType: (index: number) => void; // 집 유형 setter
+  setAddress: (ad: string) => void; // 주소 문자열 setter
+  setRentSupportable: () => void; // 월세 지원 여부 setter
+  setFurnitureSupportable: () => void; // 가구 지원 여부 setter
+  setInfra: (index: number) => void; // 주변 편의시설 setter
+  setDate: (st: any, ed: any) => void; // 날짜 start, end setter
+  setInitailize: () => void; // 옵션을 초기화하는 함수
 }
 
-// 검색 옵션 store
-export const productSearchStore = create<ProductSearchParams>((set) => ({
+// 검색 store 초기값 interface
+type ProductSearchParamsInitialI = Omit<
+  ProductSearchParams,
+  | "setProductsList"
+  | "setOrder"
+  | "setDeposit"
+  | "setRent"
+  | "setHomeType"
+  | "setAddress"
+  | "setRentSupportable"
+  | "setFurnitureSupportable"
+  | "setInfra"
+  | "setDate"
+  | "setInitailize"
+>;
+
+// 검색 store 초기값 선언
+const productSearchInitialState: ProductSearchParamsInitialI = {
   productsList: [],
   order: 0,
   minDeposit: 0,
@@ -102,6 +96,11 @@ export const productSearchStore = create<ProductSearchParams>((set) => ({
   infra: [0, 0, 0, 0, 0, 0, 0, 0],
   startDate: "0000-00-00",
   endDate: "0000-00-00",
+};
+
+// 검색 옵션 store
+export const productSearchStore = create<ProductSearchParams>((set) => ({
+  ...productSearchInitialState, // 초기값을 넣어줌
   setProductsList: (data: any) => set(() => ({ productsList: data })),
   setOrder: (idx: number) => set(() => ({ order: idx })),
   setDeposit: (min: number, max: number) =>
@@ -140,6 +139,8 @@ export const productSearchStore = create<ProductSearchParams>((set) => ({
       startDate: dayjs(st).format("YYYY-MM-DD"),
       endDate: dayjs(ed).format("YYYY-MM-DD"),
     })),
+  setInitailize: () =>
+    set((state) => ({ ...state, ...productSearchInitialState })),
 }));
 
 export default useProductOptionStore;

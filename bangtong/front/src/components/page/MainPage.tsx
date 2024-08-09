@@ -18,6 +18,7 @@ const MainPage: React.FC = () => {
       </div>
       <CarouselBox />
       <MainChatBox />
+      <div className="h-24" />
     </div>
   );
 };

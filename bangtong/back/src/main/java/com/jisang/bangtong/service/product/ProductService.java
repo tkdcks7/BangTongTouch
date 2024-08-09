@@ -23,5 +23,6 @@ public interface ProductService {
   void delete(Long productId, HttpServletRequest request);
 
   ProductReturnDto getRecentInterestProduct(Long userId);
-  
+
+  Integer getProductSize();
 }

@@ -5,10 +5,10 @@ import { Link, useNavigate } from "react-router-dom";
 
 // 컴포넌트 불러오기
 import TextBox from "../atoms/TextBox";
-import InputBox from "../molecules/InputBox";
-import Btn from "../atoms/Btn";
-import DropDown from "../molecules/DropDown";
-import { Form, Input, ConfigProvider, Button } from "antd";
+import { Form, Input, ConfigProvider, Button, Space } from "antd";
+
+// 아이콘
+import { SendOutlined } from "@ant-design/icons";
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -19,8 +19,10 @@ const SignupPage: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [passwordVerification, setPasswordVerification] = useState<string>("");
   const [page, setPage] = useState(0); // 페이지 넘기기 위한 변수
+  const [form] = Form.useForm();
 
   const navigate = useNavigate();
+  const regexPassword = new RegExp("^[a-zA-Z0-9()-+․!#$%<>]{2,32}$");
 
   // 닉네임 생성용 배열 만들기
   const animalArr = [
@@ -36,7 +38,6 @@ const SignupPage: React.FC = () => {
     "병아리",
     "댕댕이",
     "도야지",
-    "고슴도치",
   ];
   const adjectiveArr = [
     "귀여운",
@@ -49,7 +50,6 @@ const SignupPage: React.FC = () => {
     "신난",
     "멍한",
     "맹렬한",
-    "방황하는",
   ];
 
   // 랜덤 양의 정수 생성함수
@@ -66,6 +66,10 @@ const SignupPage: React.FC = () => {
 
   // 일반 회원가입 함수
   const handleSignUp = (e: any): void => {
+    if (password !== passwordVerification) {
+      window.alert("입력하신 비밀번호가 다릅니다.");
+      return;
+    }
     // 주민번호를 기반으로 출생년도와 성별을 산출
     let birthYear: number = Number(socialNumber.slice(0, 2)) + 1900;
     // 2000년 이후 주민 앞자리의 경우
@@ -97,21 +101,24 @@ const SignupPage: React.FC = () => {
   };
 
   // 이메일 인증 요청 함수
-  const handleMailSend = (e: any) => {
+  const handleMailSend = () => {
     console.log("이메일 인증 요청합니다");
     // 발송된 이메일이 없는 메일 혹은 존재하는 사용자이면 status 400번대 response
     axios({
       method: "POST",
-      url: `${process.env.REACT_APP_BACKEND_URL}/무언가의주소`, // url api 명세 만들고 바꿔주세요
+      url: `${process.env.REACT_APP_BACKEND_URL}/emails`, // url api 명세 만들고 바꿔주세요
       data: {
         email,
       },
     })
-      .then((response) => alert("해당 이메일로 인증번호가 전송됐습니다."))
+      .then((response) => {
+        alert("해당 이메일로 인증번호가 전송됐습니다.");
+        setPage(page + 1);
+      })
       .catch((err) => {
         console.log(err);
         alert(
-          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요.",
+          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요."
         );
       });
   };
@@ -121,16 +128,20 @@ const SignupPage: React.FC = () => {
     console.log("인증번호 확인 요청합니다.");
     axios({
       method: "POST",
-      url: `${process.env.REACT_APP_BACKEND_URL}/무언가의주소`, // url api 명세 만들고 바꿔주세요
+      url: `${process.env.REACT_APP_BACKEND_URL}/emails/verify`,
       data: {
-        certificationNumber, // 이것도 Dto랑 맞춰야함
+        email,
+        code: certificationNumber,
       },
     })
-      .then((response) => console.log("인증 성공!")) // 이후 framer-motion으로 UI 동작 이어서 진행
+      .then((response) => {
+        console.log("인증 성공!");
+        setPage(page + 1);
+      })
       .catch((err) => {
         console.log(err);
         alert(
-          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요.",
+          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요."
         );
       });
   };
@@ -167,130 +178,14 @@ const SignupPage: React.FC = () => {
     },
   };
 
-  const handleNext = () => {
-    setPage(() => page + 1);
-    console.log(page);
+  const handleNext = async () => {
+    try {
+      await form.validateFields();
+      setPage(page + 1);
+    } catch (error) {
+      console.log("유효성 검사 실패:", error);
+    }
   };
-
-  const eachPage = [
-    <>
-      <Form.Item
-        name="이름"
-        rules={[
-          { required: true, message: "이름을 입력해주세요." },
-          { type: "string" },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="이름"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </Form.Item>
-      <Form.Item
-        name="주민등록번호"
-        rules={[
-          { required: true, message: "주민등록번호를 입력해주세요." },
-          {
-            type: "number",
-            message: "올바른 주민등록번호를 입력해주세요.",
-          },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="주민등록번호"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={socialNumber}
-          onChange={(e) => setSocialNumber(e.target.value)}
-        />
-      </Form.Item>
-    </>,
-    <>
-      <Form.Item
-        name="휴대폰 번호"
-        rules={[
-          { required: true, message: "이름을 입력해주세요." },
-          { type: "string" },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="휴대폰 번호"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </Form.Item>
-      <Form.Item
-        name="이메일"
-        rules={[
-          { required: true, message: "주민등록번호를 입력해주세요." },
-          {
-            type: "number",
-            message: "올바른 주민등록번호를 입력해주세요.",
-          },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="이메일"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={socialNumber}
-          onChange={(e) => setSocialNumber(e.target.value)}
-        />
-      </Form.Item>
-    </>,
-    <>
-      <Form.Item
-        name="이름"
-        rules={[
-          { required: true, message: "이름을 입력해주세요." },
-          { type: "string" },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="이름"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </Form.Item>
-      <Form.Item
-        name="주민등록번호"
-        rules={[
-          { required: true, message: "주민등록번호를 입력해주세요." },
-          {
-            type: "number",
-            message: "올바른 주민등록번호를 입력해주세요.",
-          },
-        ]}
-        hasFeedback
-      >
-        <Input
-          placeholder="주민등록번호"
-          className="rounded-full border-2"
-          size="large"
-          allowClear
-          value={socialNumber}
-          onChange={(e) => setSocialNumber(e.target.value)}
-        />
-      </Form.Item>
-    </>,
-  ];
 
   return (
     <>
@@ -298,127 +193,275 @@ const SignupPage: React.FC = () => {
         <TextBox text="회원가입" size="2xl" />
       </div>
       <ConfigProvider theme={theme}>
-        <Form>
-          {eachPage[page] ? eachPage[page] : ""}
-          <Form.Item className="text-center">
+        <Form form={form}>
+          {page > 5 ? (
+            // 비밀번호 확인 input
+            <Form.Item
+              name="비밀번호 확인"
+              rules={[
+                { required: true, message: "비밀번호 확인을 입력해주세요" },
+              ]}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                <Space.Compact className="flex items-center">
+                  <Input.Password
+                    placeholder="비밀번호"
+                    className="rounded-full border-2"
+                    size="large"
+                    allowClear
+                    onChange={(e) => setPasswordVerification(e.target.value)}
+                  />
+                  <Button
+                    type="primary"
+                    size="large"
+                    className="text-sm rounded-full"
+                    onClick={() => setPage(page + 1)}
+                  >
+                    확인
+                  </Button>
+                </Space.Compact>
+              </motion.div>
+            </Form.Item>
+          ) : null}
+
+          {page > 4 ? (
+            // 비밀번호 input
+            <Form.Item
+              name="비밀번호"
+              rules={[{ required: true, message: "비밀번호를 입력해주세요" }]}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                <Space.Compact className="flex items-center">
+                  <Input.Password
+                    placeholder="비밀번호"
+                    className="rounded-full border-2"
+                    size="large"
+                    allowClear
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <Button
+                    type="primary"
+                    size="large"
+                    className="text-sm rounded-full"
+                    onClick={() => setPage(page + 1)}
+                  >
+                    확인
+                  </Button>
+                </Space.Compact>
+              </motion.div>
+            </Form.Item>
+          ) : null}
+
+          {page > 3 ? (
+            // 이메일 인증번호 input
+            <Form.Item
+              name="이메일 인증"
+              rules={[{ required: true, message: "이메일 인증이 필요합니다." }]}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                <Space.Compact className="flex items-center">
+                  <Input
+                    placeholder="이메일 인증번호"
+                    className="rounded-full border-2"
+                    size="large"
+                    allowClear
+                    onChange={(e) => setCertificationNumber(e.target.value)}
+                    onKeyDown={handleCertificateConfirm}
+                  />
+                  <Button
+                    type="primary"
+                    size="large"
+                    className="text-sm rounded-full"
+                    onClick={handleCertificateConfirm}
+                  >
+                    인증하기
+                  </Button>
+                </Space.Compact>
+              </motion.div>
+            </Form.Item>
+          ) : null}
+
+          {page > 2 ? (
+            // 이메일 입력 input
+            <Form.Item
+              name="이메일"
+              rules={[
+                { required: true, message: "이메일을 입력해주세요." },
+                {
+                  type: "email",
+                  message: "올바른 이메일을 입력해주세요.",
+                },
+              ]}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                <Input
+                  placeholder="이메일"
+                  className="rounded-full border-2 me-1"
+                  size="large"
+                  allowClear
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={page !== 3}
+                  onKeyDown={handleMailSend}
+                  suffix={
+                    <SendOutlined
+                      style={{ color: "rgba(0,0,0,.45)" }}
+                      className="cursor-pointer"
+                      onClick={handleMailSend}
+                    />
+                  }
+                />
+              </motion.div>
+            </Form.Item>
+          ) : null}
+          {page > 1 ? (
+            // 휴대폰 번호 input
+            <Form.Item
+              name="휴대폰 번호"
+              rules={[
+                { required: true, message: "휴대폰번호를 입력해주세요." },
+                { min: 11, max: 11, message: "휴대폰 번호는 11자리 입니다." },
+              ]}
+              hasFeedback
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                <Input
+                  placeholder="휴대폰 번호 (- 제외)"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  minLength={11}
+                  maxLength={11}
+                  disabled={page !== 2}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </motion.div>
+            </Form.Item>
+          ) : null}
+          {page > 0 ? (
+            // 주민번호 및 뒷자리 1자 입력
+            <Form.Item
+              name="주민등록번호"
+              rules={[
+                { required: true, message: "주민등록번호를 입력해주세요." },
+                { min: 7, max: 7, message: "앞 6자리 + 뒤 1자리" },
+                {
+                  type: "string",
+                  message: "올바른 주민등록번호를 입력해주세요.",
+                },
+              ]}
+              hasFeedback
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+                className="flex"
+              >
+                <Input
+                  placeholder="주민번호 (- 제외)"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  value={socialNumber}
+                  disabled={page !== 1}
+                  maxLength={7}
+                  onChange={(e) => setSocialNumber(e.target.value)}
+                />
+              </motion.div>
+            </Form.Item>
+          ) : null}
+          {page >= 0 ? (
+            // 실명 입력 input
+            <Form.Item
+              name="이름"
+              rules={[
+                { required: true, message: "이름을 입력해주세요." },
+                { type: "string" },
+              ]}
+              hasFeedback
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                <Input
+                  placeholder="이름"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={page !== 0}
+                />
+              </motion.div>
+            </Form.Item>
+          ) : null}
+          <div className="text-center">
             <Button
               type="primary"
               className="py-6 px-10 rounded-full text-lg"
-              onClick={page + 1 === eachPage.length ? handleSignUp : handleNext}
+              onClick={page + 1 === 6 ? handleSignUp : handleNext}
               htmlType="submit"
             >
-              {page + 1 === eachPage.length ? "회원가입" : "다음"}
+              {page + 1 === 6 ? "회원가입" : "다음"}
             </Button>
-          </Form.Item>
+          </div>
         </Form>
-        <div className="text-lime-500 text-sm md:text-base mt-3 text-start">
+        <div className="text-lime-500 text-sm md:text-base mt-3 text-center">
           <Link to={"/user/login"}>로그인 화면으로</Link>
         </div>
       </ConfigProvider>
-      {/* <Form
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-          }
-        }}
-      >
-        <InputBox
-          id=""
-          buttonType="cancel"
-          placeholder="이름"
-          size="large"
-          type="string"
-          height={50}
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-          onIconClick={(e) => setName("")}
-        />
-        <InputBox
-          placeholder="주민등록번호 뒷자리 첫 번째 숫자까지"
-          buttonType="cancel"
-          size="large"
-          type="number"
-          value={socialNumber}
-          onChange={(e) => {
-            if (e.target.value.length < 8) {
-              setSocialNumber(e.target.value);
-            }
-          }}
-          onIconClick={(e) => setSocialNumber("")}
-        />
-        <div className="flex items-center">
-          <DropDown />
-          <InputBox
-            placeholder="전화번호 - 없이 숫자만 입력"
-            buttonType="send"
-            size="large"
-            type="number"
-            value={phone}
-            onChange={(e) => {
-              if (e.target.value.length < 12) {
-                setPhone(e.target.value);
-              }
-            }}
-            onIconClick={(e) => setPhone("")}
-          />
-        </div>
-        <InputBox
-          placeholder="이메일"
-          buttonType="send"
-          size="large"
-          type="email"
-          width={"70vw"}
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-          }}
-          onIconClick={(e) => setEmail("")}
-        /> */}
-      {/* <InputBox
-          placeholder="인증번호 입력"
-          buttonType="send"
-          size="large"
-          type="text"
-          value={certificationNumber}
-          onChange={(e) => setCertificationNumber(e.target.value)}
-        /> */}
-      {/* <InputBox
-          placeholder="비밀번호"
-          buttonType="cancel"
-          size="large"
-          type="password"
-          maxLength={20}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onIconClick={(e) => setPassword("")}
-        />
-        <InputBox
-          placeholder="비밀번호 확인"
-          buttonType="cancel"
-          size="large"
-          maxLength={20}
-          type="password"
-          id={
-            password === "" ? "" : passwordVerification === password ? "q" : "e"
-          }
-          value={passwordVerification}
-          onChange={(e) => setPasswordVerification(e.target.value)}
-          onIconClick={(e) => setPasswordVerification("")}
-        />
-        <div className="text-lime-500 text-sm md:text-base mt-3 text-end">
-          <Link to={"/user/login"}>로그인 화면으로</Link>
-        </div>
-        <div className="flex justify-center mt-10">
-          <Btn
-            text="다음"
-            backgroundColor="bg-lime-500"
-            textColor="white"
-            onClick={handleSignUp}
-          />
-        </div> 
-      </Form> */}
     </>
   );
 };

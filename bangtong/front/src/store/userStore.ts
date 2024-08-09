@@ -94,4 +94,47 @@ export const useAlarmStore = create<UserAlarmSetting>()((set) => ({
   },
 }));
 
+interface PreferenceI {
+  preferenceId: number;
+  preferenceName: string;
+  userId: number;
+  regionId: string;
+  regionAddress: string;
+  preferenceDeposit: number;
+  preferenceRent: number;
+  preferenceType: string;
+  preferenceInfra: number;
+  preferenceStartDate: string;
+  preferenceEndDate: string;
+  preferenceOptions: number;
+  setPreferUpdate: (payload: Partial<PreferenceI>) => void;
+}
+
+// 유저 선호 설정 store
+export const useUserPreferStore = create<PreferenceI>()(
+  persist(
+    (set) => ({
+      preferenceId: 0,
+      preferenceName: "",
+      userId: 0,
+      regionId: "",
+      regionAddress: "",
+      preferenceDeposit: 0,
+      preferenceRent: 0,
+      preferenceType: "",
+      preferenceInfra: 0,
+      preferenceStartDate: "",
+      preferenceEndDate: "",
+      preferenceOptions: 0,
+      setPreferUpdate: (payload: Partial<PreferenceI>) => {
+        set((state) => ({ ...state, ...payload }));
+      },
+    }),
+    {
+      name: "user-preferences", // 저장될 키 이름
+      getStorage: () => localStorage, // 사용할 스토리지 (localStorage가 기본값)
+    }
+  )
+);
+
 export default useUserStore;

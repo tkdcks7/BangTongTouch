@@ -126,5 +126,5 @@ public class Product {
   private double productScore=0.0;
 
   @Column(nullable=true)
-  private String description;
+  private String productDescription;
 }

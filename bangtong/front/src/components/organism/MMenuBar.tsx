@@ -21,7 +21,7 @@ interface MMenuBarProps {
 
 const MMenuBar: React.FC<MMenuBarProps> = ({dark, toggleDark}) => {
   const navigate = useNavigate();
-  const { alarms, alarmNum } = useAlarmInfoStore();
+  const { alarms } = useAlarmInfoStore();
   const { token, id, setLogOut } = useUserStore();
   const alarmItems = useRef<Array<any>>();
 

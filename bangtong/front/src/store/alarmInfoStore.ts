@@ -12,6 +12,7 @@ interface alarm {
   alarmNum: number;
   alarms: Array<AlarmI> | null;
   setAlarmUpdate: (alarmNum: number, alarms: Array<AlarmI>) => void;
+  setAlarmDelete: () => void;
 }
 
 const userPersistOptions = {
@@ -26,6 +27,9 @@ const useAlarmInfoStore = create<alarm>()(
       alarms: null,
       setAlarmUpdate: (alarmNum, alarms) => {
         set(() => ({ alarmNum, alarms }));
+      },
+      setAlarmDelete: () => {
+        set({ alarmNum: 0, alarms: null });
       },
     }),
     userPersistOptions

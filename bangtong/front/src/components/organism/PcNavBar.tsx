@@ -6,6 +6,8 @@ import authAxios from "../../utils/authAxios";
 import { Dropdown, FloatButton, ConfigProvider } from "antd";
 import Btn from "../atoms/Btn";
 import IconBtn from "../atoms/IconBtn";
+import { DownOutlined } from "@ant-design/icons";
+import type { MenuProps } from "antd";
 
 // 이미지 소스
 import Bell from "../../assets/Bell.png";
@@ -25,7 +27,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
   const { token, id, setLogOut } = useUserStore();
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
-  const alarms = useAlarmInfoStore().alarms;
+  const { alarms, setAlarmDelete } = useAlarmInfoStore();
   const alarmItems = useRef<Array<any>>();
 
   // signup 페이지로 이동하는 함수
@@ -44,11 +46,17 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
       method: "PUT",
       url: `${process.env.REACT_APP_BACKEND_URL}/users/logout`,
     })
-        .then((response) => {
-          setLogOut(); // userInfo와 token을 초기화
-          navigate("/user/login");
-        })
-        .catch((err) => console.log(err));
+      .then((response) => {
+        setAlarmDelete();
+        setLogOut(); // userInfo와 token을 초기화
+        navigate("/user/login");
+      })
+      .catch((err) => console.log(err));
+  };
+
+  // Alert 표시하는 함수
+  const handleVisible = () => {
+    setVisible(!visible);
   };
 
   useEffect(() => {
@@ -56,13 +64,19 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
       alarmItems.current = alarms?.map((item, index) => {
         return {
           label: (
-              <div>
-                <div>{item.alarmMessageDate}</div>
-                <div>{item.alarmMessage}</div>
-              </div>
+            <div>
+              {item.alarmMessageDate} || {item.alarmMessage}
+            </div>
           ),
           key: index,
         };
+
+        // return (
+        //   <div>
+        //     <div>{item.alarmMessageDate}</div>
+        //     <div>{item.alarmMessage}</div>
+        //   </div>
+        // );
       });
     }
   }, [token, alarms]);
