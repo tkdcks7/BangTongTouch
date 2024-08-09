@@ -13,11 +13,7 @@ public class CodeRepository {
   private final RedisTemplate<String, String> redisTemplate;
 
   public void save(String email, String code) {
-    try {
-      redisTemplate.opsForValue().set(email, code);
-    } catch (Exception e) {
-      log.error(e.getMessage());
-    }
+    redisTemplate.opsForValue().set(email, code);
   }
 
   public String getCode(String email) {
