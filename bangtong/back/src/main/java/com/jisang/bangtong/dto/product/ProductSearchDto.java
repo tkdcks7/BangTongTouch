@@ -15,6 +15,7 @@ public class ProductSearchDto {
   int order;
   int minDeposit;
   int maxDeposit;
+  String regionId;
   int minRent;
   int maxRent;
   String type;

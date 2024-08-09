@@ -13,6 +13,7 @@ import com.jisang.bangtong.model.product.ProductType;
 import com.jisang.bangtong.model.product.QProduct;
 import com.jisang.bangtong.model.region.QRegion;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -39,27 +40,59 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
   public List<Product> searchList(ProductSearchDto productSearchDto) {
     log.info("productSearchDto:{}", productSearchDto);
 
+    BooleanExpression infraFilter = productSearchDto.getInfra() != null ?
+        Expressions.booleanTemplate("({0} & {1}) > 0", product.productOption, productSearchDto.getInfra()) : null;
+
     QRegion qRegion = QRegion.region;
 
     return queryFactory.selectFrom(product)
         .where(
-            product.productDeposit.lt(productSearchDto.getMaxDeposit())
-                .and(product.productMaintenance.lt(productSearchDto.getMaxRent()))
-                .and(product.productType.eq(ProductType.valueOf(productSearchDto.getType())))
-                .and(product.productIsRentSupportable.eq(productSearchDto.isRentSupportable()))
-                .and(product.productIsFurnitureSupportable.eq(productSearchDto.isFurnitureSupportable()))
-                .and(product.productStartDate.goe(productSearchDto.getStartDate()))
-                .and(product.productEndDate.loe(productSearchDto.getEndDate()))
-                .and(product.region.regionId.eq(qRegion.regionId))
-                .and(
-                    product.productOption.eq(
-                        numberTemplate(Integer.class, "({0} & {1})", productSearchDto.getInfra(), product.productOption)
-                    )
-                )
+            ltMaxDeposit(productSearchDto.getMaxDeposit()),
+            ltMaxRent(productSearchDto.getMaxRent()),
+            eqProductType(productSearchDto.getType()),
+            eqRentSupportable(productSearchDto.isRentSupportable()),
+            eqFurnitureSupportable(productSearchDto.isFurnitureSupportable()),
+            goeStartDate(productSearchDto.getStartDate()),
+            loeEndDate(productSearchDto.getEndDate()),
+            eqRegionId(productSearchDto.getRegionId()),
+            infraFilter
         )
         .orderBy(buildOrderSpecifiers(productSearchDto.getOrder()))
         .fetch();
   }
+
+  private BooleanExpression ltMaxDeposit(Integer maxDeposit) {
+    return maxDeposit != null ? product.productDeposit.lt(maxDeposit) : null;
+  }
+
+  private BooleanExpression ltMaxRent(Integer maxRent) {
+    return maxRent != null ? product.productMaintenance.lt(maxRent) : null;
+  }
+
+  private BooleanExpression eqProductType(String type) {
+    return type != null ? product.productType.eq(ProductType.valueOf(type)) : null;
+  }
+
+  private BooleanExpression eqRentSupportable(Boolean rentSupportable) {
+    return rentSupportable != null ? product.productIsRentSupportable.eq(rentSupportable) : null;
+  }
+
+  private BooleanExpression eqFurnitureSupportable(Boolean furnitureSupportable) {
+    return furnitureSupportable != null ? product.productIsFurnitureSupportable.eq(furnitureSupportable) : null;
+  }
+
+  private BooleanExpression goeStartDate(Date startDate) {
+    return startDate != null ? product.productStartDate.goe(startDate) : null;
+  }
+
+  private BooleanExpression loeEndDate(Date endDate) {
+    return endDate != null ? product.productEndDate.loe(endDate) : null;
+  }
+
+  private BooleanExpression eqRegionId(String regionId) {
+    return regionId != null ? product.region.regionId.eq(regionId) : null;
+  }
+
 
   private OrderSpecifier<?>[] buildOrderSpecifiers(int order) {
     switch (order) {
@@ -88,28 +121,3 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
         .fetch();
   }
 }
-/*
-Long productId;
-ProductType productType;
-RegionReturnDto regionReturnDto;
-String productAddress;
-Integer productDeposit;
-Integer productRent;
-Integer productMaintenance;
-String productMaintenanceInfo;
-boolean productIsRentSupportable;
-boolean productIsFurnitureSupportable;
-Float productSquare;
-Integer productRoom;
-Integer productOption;
-List<String> productAdditionalOption;  // List로 변환할 필드
-boolean productIsBanned;
-Date productPostDate;
-Date productStartDate;
-Date productEndDate;
-Double lat;
-Double lng;
-String productAdditionalDetail;
-boolean productIsInterest;
-List<Media> mediaList;
-boolean productIsDelete;*/
