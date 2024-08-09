@@ -12,6 +12,7 @@ interface alarm {
   alarmNum: number;
   alarms: Array<AlarmI> | null;
   setAlarmUpdate: (alarmNum: number, alarms: Array<AlarmI>) => void;
+  setAlarmDelete: () => void;
 }
 
 const userPersistOptions = {
