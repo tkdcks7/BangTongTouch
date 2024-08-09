@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import authAxios from "../../utils/authAxios";
 
 // 컴포넌트 불러오기
-import { Dropdown, FloatButton } from "antd";
+import { Dropdown, FloatButton, ConfigProvider } from "antd";
 import Btn from "../atoms/Btn";
 import IconBtn from "../atoms/IconBtn";
 
@@ -154,10 +154,10 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
         </header>
 
         <FloatButton
-            icon={!dark ? <MoonOutlined /> : <SunOutlined />}
+            icon={!dark ? <SunOutlined/> : <MoonOutlined/>}
             onClick={toggleDark}
-            tooltip={<div>{dark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}</div>}
-            // className={'dark:bg-yellow-300'}
+            tooltip={<div>{dark ? 'Switch to Dark Mode' : 'Switch to Light Mode'}</div>}
+            className={'bg-yellow-300'}
         />
       </>
   );

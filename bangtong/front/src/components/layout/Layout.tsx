@@ -18,7 +18,7 @@ const Layout: React.FC = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <div className="md:hidden">
-                <PcNavBar dark={!dark} toggleDark={toggleDark}/>
+                <MMenuBar dark={!dark} toggleDark={toggleDark}/>
             </div>
             <div className="hidden md:block">
                 <PcNavBar dark={!dark} toggleDark={toggleDark}/>
