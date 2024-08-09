@@ -45,7 +45,10 @@ const CommunityMain: React.FC = () => {
   const [contents, setContents] = useState<Array<Content>>([]);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [communityCategory, setCommunityCategory] = useState<boolean>(false);
+  const [keyword, setKeyword] = useState<string>("");
+  const keywordRef = useRef<string>("");
   const addr = useRef<number>(0);
+  const city = useRef<string>("");
 
   // pagination 글로벌 디자인 토큰
   const theme = {
@@ -70,6 +73,7 @@ const CommunityMain: React.FC = () => {
         pageNo: `${page - 1}`,
         size: "10",
         regionId: communityCategory === true ? addr.current : null,
+        keyword: `${keywordRef.current === "" ? "" : keywordRef.current}`,
       },
     })
       .then((response) => {
@@ -90,10 +94,12 @@ const CommunityMain: React.FC = () => {
       if (communityCategory === true) {
         setIsLoaded(false);
         const temp: any = await getUserAddressKr().catch((e) => {
+          console.log(e);
           alert("해당 서비스를 이용하시려면 위치 권한을 허용해주셔야합니다.");
           window.location.replace("");
         });
         addr.current = temp[3];
+        city.current = temp[1];
         loadData();
         setIsLoaded(true);
       }
@@ -103,14 +109,22 @@ const CommunityMain: React.FC = () => {
     } else {
       loadData();
     }
-  }, [page, communityCategory]);
+  }, [page, communityCategory, keywordRef.current]);
+
+  const onKeywordChange = () => {
+    keywordRef.current = keyword;
+    loadData();
+  };
 
   return (
     <>
       {isLoaded ? (
         <div className="flex flex-col items-center justify-center">
           <h2 className="my-5 text-4xl font-bold text-lime-500 hidden md:block text-nowrap">
-            <button className="text-yellow-400">구미시</button> 신통방통
+            <button className="text-yellow-400">
+              {communityCategory ? city.current : ""}
+            </button>{" "}
+            신통방통
           </h2>
           <div className="w-full md:w-4/5">
             <InputBox
@@ -118,6 +132,8 @@ const CommunityMain: React.FC = () => {
               buttonType="search"
               width="100%"
               height="100%"
+              setValue={setKeyword}
+              onIconClick={onKeywordChange}
             />
           </div>
           <div className="my-5 md:w-full">
