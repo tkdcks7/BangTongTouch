@@ -226,16 +226,14 @@ const SignupPage: React.FC = () => {
                   ease: [0, 0.71, 0.2, 1.01],
                 }}
               >
-                <Space.Compact className="flex items-center">
-                  <Input.Password
-                    placeholder="비밀번호 확인"
-                    className="rounded-full border-2"
-                    size="large"
-                    allowClear
-                    disabled={page !== 6}
-                    onChange={(e) => setPasswordVerification(e.target.value)}
-                  />
-                </Space.Compact>
+                <Input.Password
+                  placeholder="비밀번호 확인"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  disabled={page !== 6}
+                  onChange={(e) => setPasswordVerification(e.target.value)}
+                />
               </motion.div>
             </Form.Item>
           ) : null}
@@ -255,16 +253,14 @@ const SignupPage: React.FC = () => {
                   ease: [0, 0.71, 0.2, 1.01],
                 }}
               >
-                <Space.Compact className="flex items-center">
-                  <Input.Password
-                    placeholder="비밀번호"
-                    className="rounded-full border-2"
-                    size="large"
-                    allowClear
-                    disabled={page !== 5}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </Space.Compact>
+                <Input.Password
+                  placeholder="비밀번호"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  disabled={page !== 5}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </motion.div>
             </Form.Item>
           ) : null}
