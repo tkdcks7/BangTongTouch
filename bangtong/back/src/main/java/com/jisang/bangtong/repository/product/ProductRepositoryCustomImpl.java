@@ -2,11 +2,13 @@ package com.jisang.bangtong.repository.product;
 
 
 import static com.jisang.bangtong.model.product.QProduct.product;
+import static com.querydsl.core.types.dsl.Expressions.numberTemplate;
 
 import com.jisang.bangtong.dto.product.ProductSearchDto;
 import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.model.product.ProductType;
 import com.jisang.bangtong.model.product.QProduct;
+import com.jisang.bangtong.model.region.QRegion;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
@@ -32,10 +34,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
   public List<Product> searchList(ProductSearchDto productSearchDto) {
     log.info("productSearchDto:{}", productSearchDto);
 
-    NumberTemplate<Double> distanceExpression = Expressions.numberTemplate(Double.class,
-        "6371 * acos(cos(radians({0})) * cos(radians({1})) * cos(radians({2}) - radians({3})) + sin(radians({0})) * sin(radians({1})))",
-        productSearchDto.getLat(), product.lat, product.lng, productSearchDto.getLng()
-    );
+    QRegion qRegion = QRegion.region;
 
     return queryFactory.selectFrom(product)
         .where(
@@ -46,7 +45,12 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
                 .and(product.productIsFurnitureSupportable.eq(productSearchDto.isFurnitureSupportable()))
                 .and(product.productStartDate.goe(productSearchDto.getStartDate()))
                 .and(product.productEndDate.loe(productSearchDto.getEndDate()))
-                .and(distanceExpression.lt(1))
+                .and(product.region.regionId.eq(qRegion.regionId))
+                .and(
+                    product.productOption.eq(
+                        numberTemplate(Integer.class, "({0} & {1})", productSearchDto.getInfra(), product.productOption)
+                    )
+                )
         )
         .orderBy(buildOrderSpecifiers(productSearchDto.getOrder()))
         .fetch();
