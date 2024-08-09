@@ -21,7 +21,7 @@ public class ChatJdbcRepositoryImpl implements ChatJdbcRepository{
 
   public void saveAllListChats(List<Chat> messages) {
     String getNextIdSql = "SELECT NEXTVAL(chat_id_seq)";
-    String insertSql = "INSERT INTO chat (`chat_id`, `chat_content`, `chat_time`, `chatroom_id`, `receiver_id`) VALUES (?, ?, ?, ?, ?)";
+    String insertSql = "INSERT INTO chat (`chat_id`, `chat_content`, `chat_time`, `chatroom_id`, `sender_id`) VALUES (?, ?, ?, ?, ?)";
 
     for (Chat chat : messages) {
       Long nextId = jdbcTemplate.queryForObject(getNextIdSql, Long.class);
@@ -36,7 +36,7 @@ public class ChatJdbcRepositoryImpl implements ChatJdbcRepository{
         ps.setString(2, chat.getChatContent());
         ps.setTimestamp(3, new Timestamp(chat.getChatTime().getTime()));
         ps.setLong(4, chat.getChatRoom().getChatroomId());
-        ps.setLong(5, chat.getReceiver().getUserId());
+        ps.setLong(5, chat.getSender().getUserId());
       }
 
       @Override

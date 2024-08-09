@@ -3,12 +3,15 @@ package com.jisang.bangtong.controller.region;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.dto.region.RegionDongDto;
 import com.jisang.bangtong.dto.region.RegionGugunDto;
+import com.jisang.bangtong.dto.region.RegionReturnDto;
+import com.jisang.bangtong.dto.region.RegionSearchDto;
 import com.jisang.bangtong.dto.region.RegionSidoDto;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.service.region.RegionService;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,5 +65,17 @@ public class RegionController {
       return ResponseEntity.ok(ResponseDto.res(SUCCESS, regions));
     }
   }
+
+  @GetMapping("/search/{regionId}")
+  public ResponseDto<RegionReturnDto> getRegionCode(@PathVariable String regionId){
+    try {
+      RegionReturnDto returnDto = regionService.getRegionCode(regionId);
+      return ResponseDto.res("SUCCESS", returnDto);
+    }catch (IllegalArgumentException e){
+      String s = "데이터를 찾을 수 없습니다.";
+      return ResponseDto.res("FAIL");
+    }
+  }
+
 
 }

@@ -106,22 +106,6 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
         .where(makerCondition.or(participantCondition))
         .fetch();
 
-    log.info("chat {}", chatrooms);
-
-//    // 쿼리 결과 변환
-//    for (ChatroomReturnDto chatroom : chatrooms) {
-//      ProductReturnDto product = chatroom.getProductReturnDto();
-//      if (product != null) {
-//        String additionalOptionStr = product.getProductAdditionalOption() != null ?
-//            product.getProductAdditionalOption().toString() : "";
-//        List<String> additionalOptions = !additionalOptionStr.isEmpty() ?
-//            Arrays.stream(additionalOptionStr.split(","))
-//                .map(String::trim)
-//                .collect(Collectors.toList()) : null;
-//        product.setProductAdditionalOption(additionalOptions);
-//      }
-//    }
-    log.info("왜 안되지 ?{}", chatrooms);
     return chatrooms;
   }
 
@@ -152,6 +136,7 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
     // 채팅 내용을 가져옵니다.
     List<ChatContentDto> chatContents = queryFactory
         .select(Projections.constructor(ChatContentDto.class,
+            chat.sender.userId,
             chat.chatContent,
             chat.chatTime))
         .from(chat)

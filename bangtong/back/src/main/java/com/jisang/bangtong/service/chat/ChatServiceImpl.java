@@ -1,5 +1,6 @@
 package com.jisang.bangtong.service.chat;
 
+import com.jisang.bangtong.dto.chat.SendDto;
 import com.jisang.bangtong.model.chat.Chat;
 import com.jisang.bangtong.model.chatroom.Chatroom;
 import com.jisang.bangtong.model.media.Media;
@@ -39,44 +40,32 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional
-  public Chat send(Map<String, Object> chatDto) {
-    log.info("ChatService Impl {}", chatDto);
+  public Chat send(SendDto sendDto) {
+    log.info("ChatService Impl {}", sendDto);
 
     Chat chat = new Chat();
-    //chat 내용 가져오기
-    chat.setChatContent(chatDto.get("chatContent").toString());
-
     //사용자 가져오기
-    Long receiverId = Long.parseLong(chatDto.get("receiver").toString());
-    Long senderId = Long.parseLong(chatDto.get("sender").toString());
-    User receiver = userRepository.findById(receiverId).orElse(null);
+    Long senderId = sendDto.getSender();
     User sender = userRepository.findById(senderId).orElse(null);
-    List<MultipartFile> files = (List<MultipartFile>) chatDto.get("media");
-    log.info("{}", chat.getChatTime());
-    if(receiver == null || sender == null) {
+    if(sender == null) {
       throw new RuntimeException("ChatServiceImpl send receiver and sender is null");
     }else{
-      chat.setReceiver(receiver);
+      chat.setSender(sender);
     }
-    if(files != null && !files.isEmpty()) {
-      try {
-        List<Media> fileList= fileService.upload(fileService.getName(files));
-      } catch (IOException e) {
-        throw new RuntimeException("파일을 저장할 수 없습니다");
-      }
-    }
+
     //chatroom 가져오기
-    Long chatRoomId = Long.parseLong(chatDto.get("chatRoom").toString());
+    Long chatRoomId = sendDto.getChatRoom();
     Chatroom chatroom = chatroomRepository.findById(chatRoomId).orElse(null);
-    
     if(chatroom == null) {
       throw new RuntimeException("ChatServiceImpl chatroom is null");
     }else{  //chatroom이 형성되어 있으면
       chat.setChatRoom(chatroom);
     }
+    chat.setChatContent(sendDto.getChatMessage());
+    chat.setChatTime(sendDto.getChatTime());
     chats.add(chat);
 
-    if(chats.size() > 10){
+    if(chats.size() > 1){
       chatRepository.saveAllListChats(chats);
       chats.clear();
     }
@@ -90,6 +79,14 @@ public class ChatServiceImpl implements ChatService {
       return chats.get();
     }else{
       throw new RuntimeException("chatroom not found");
+    }
+  }
+
+  @Override
+  public void getOutOfRoom(Long roomId){
+    if(!chats.isEmpty()) {
+      chatRepository.saveAllListChats(chats);
+      chats.clear();
     }
   }
 }

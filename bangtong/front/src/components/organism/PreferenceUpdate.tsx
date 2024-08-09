@@ -1,41 +1,18 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import useUserStore from "../../store/userStore";
-import Modal from "react-modal";
-
-// 아이콘
-import { CheckOutlined, EditOutlined } from "@ant-design/icons";
-import { MapPinIcon } from "@heroicons/react/20/solid";
-
 import axios from "axios";
 import authAxios from "../../utils/authAxios";
 
 // 컴포넌트
 import TextBtn from "../atoms/TextBtn";
 import BtnGroup from "../molecules/BtnGroup";
-import { ConfigProvider, Modal as AntModal } from "antd";
+import { ConfigProvider, Modal } from "antd";
 import { productSearchStore } from "../../store/productStore";
 
-interface ModalI {
-  modalIsOpen: boolean;
-  closeModal: () => void;
-}
-const ProfileModal: React.FC<ModalI> = ({ modalIsOpen, closeModal }) => {
-  const customStyle = {
-    content: {
-      top: "50%",
-      left: "50%",
-      right: "auto",
-      bottom: "auto",
-      marginRight: "-50%",
-      transform: "translate(-50%, -50%)",
-    },
-  };
+// 이모티콘
+import { SearchOutlined } from "@ant-design/icons";
+import { MapPinIcon } from "@heroicons/react/20/solid";
 
-  const { id } = useUserStore();
-
-  const naviagte = useNavigate();
-
+const PreferenceUpdate: React.FC = () => {
   const [locationTitle, setLocationTitle] = useState<string>("");
   const [open, setOpen] = useState(false); // 지역 선택 모달
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -213,107 +190,78 @@ const ProfileModal: React.FC<ModalI> = ({ modalIsOpen, closeModal }) => {
       .catch((err) => console.log(err));
   };
 
-  // 선호 설정 수정 페이지로 이동
-  const handleUpdate = (): void => {
-    naviagte(`/profile/${id}/preference/update`);
-  };
-
   return (
-    <div>
-      <Modal
-        isOpen={modalIsOpen}
-        style={customStyle}
-        onRequestClose={closeModal}
-        contentLabel="선택된 선호 조건"
+    <div className="w-80 px-5 py-10 border border-2 rounded-xl shadow-md">
+      <button
+        className="w-full bg-lime-500 text-white p-2 rounded-full"
+        onClick={showRegionModal}
       >
-        <div className="w-80 px-5 py-10 border-2 rounded-xl shadow-md max-h-[80vh] overflow-y-auto">
-          <h1 className="text-lime-500 text-center font-bold ml-3 text-xl">
-            선택된 선호 조건
-          </h1>
-          <hr className="border-2" />
-          <br />
-          <button
-            className="w-full bg-lime-500 text-white p-2 rounded-full"
-            onClick={showRegionModal}
-          >
-            {locationTitle ? (
-              locationTitle
-            ) : (
-              <div className="w-full flex items-center justify-center">
-                <MapPinIcon width={20} className="me-3" />
-                <p>지역을 선택해주세요.</p>
-              </div>
-            )}
-          </button>
-          <ConfigProvider theme={theme}>
-            <AntModal
-              title="지역을 선택해주세요."
-              open={open}
-              onOk={handleOk}
-              confirmLoading={confirmLoading}
-              onCancel={handleCancel}
-            >
-              <div className="p-2 text-center">
-                {regions.map(
-                  (region: {
-                    regionId: string;
-                    regionSido?: string;
-                    regionGugun?: string;
-                    regionDong?: string;
-                  }) => (
-                    <button
-                      key={region.regionId}
-                      className={`p-2 border rounded-full m-1 border-gray-400 text-gray-400 hover:border-lime-500 hover:text-lime-500
-                  `}
-                      onClick={() => {
-                        if (region.regionSido) {
-                          handleSidoClick(region.regionId, region.regionSido);
-                        } else if (region.regionGugun) {
-                          handleGugunClick(region.regionId, region.regionGugun);
-                        } else {
-                          handleDongClick(region.regionId, region.regionDong);
-                        }
-                      }}
-                    >
-                      {region.regionSido
-                        ? region.regionSido
-                        : region.regionGugun
-                          ? region.regionGugun
-                          : region.regionDong}
-                    </button>
-                  )
-                )}
-              </div>
-            </AntModal>
-          </ConfigProvider>
-
-          <TextBtn title="보증금" text={`~${maxDeposit}만`} />
-          <TextBtn title="월세" text={`~${maxRent}만`} />
-          <BtnGroup title="집 유형" itemsArray={homeCategory} />
-          <BtnGroup title="편의시설" itemsArray={facilities} />
-          <BtnGroup
-            title="지원 여부"
-            itemsArray={["월세 지원", "가구도 승계"]}
-          />
-          <div className="text-end mr-2">
-            <button
-              className="mt-5 p-2 bg-yellow-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
-              onClick={handleUpdate}
-            >
-              <EditOutlined className="my-auto mx-auto" />
-            </button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button
-              className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
-              onClick={handleUpdate}
-            >
-              <CheckOutlined className="my-auto mx-auto" />
-            </button>
+        {locationTitle ? (
+          locationTitle
+        ) : (
+          <div className="w-full flex items-center justify-center">
+            <MapPinIcon width={20} className="me-3" />
+            <p>지역을 선택해주세요.</p>
           </div>
-        </div>
-      </Modal>
+        )}
+      </button>
+      <ConfigProvider theme={theme}>
+        <Modal
+          title="지역을 선택해주세요."
+          open={open}
+          onOk={handleOk}
+          confirmLoading={confirmLoading}
+          onCancel={handleCancel}
+        >
+          <div className="p-2 text-center">
+            {regions.map(
+              (region: {
+                regionId: string;
+                regionSido?: string;
+                regionGugun?: string;
+                regionDong?: string;
+              }) => (
+                <button
+                  key={region.regionId}
+                  className={`p-2 border rounded-full m-1 border-gray-400 text-gray-400 hover:border-lime-500 hover:text-lime-500
+                  `}
+                  onClick={() => {
+                    if (region.regionSido) {
+                      handleSidoClick(region.regionId, region.regionSido);
+                    } else if (region.regionGugun) {
+                      handleGugunClick(region.regionId, region.regionGugun);
+                    } else {
+                      handleDongClick(region.regionId, region.regionDong);
+                    }
+                  }}
+                >
+                  {region.regionSido
+                    ? region.regionSido
+                    : region.regionGugun
+                      ? region.regionGugun
+                      : region.regionDong}
+                </button>
+              )
+            )}
+          </div>
+        </Modal>
+      </ConfigProvider>
+
+      <TextBtn title="보증금" text={`${minDeposit}만~${maxDeposit}만`} />
+      <TextBtn title="월세 (관리비 포함)" text={`${minRent}만~${maxRent}만`} />
+      <BtnGroup title="집 유형" itemsArray={homeCategory} />
+      <BtnGroup title="편의시설" itemsArray={facilities} />
+      <BtnGroup title="지원 여부" itemsArray={["월세 지원", "가구도 승계"]} />
+      <div className="text-end mr-2">
+        <button
+          className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
+          onClick={handleSearch}
+        >
+          <SearchOutlined className="my-auto mx-auto" />
+        </button>
+      </div>
     </div>
   );
 };
 
-export default ProfileModal;
+export default PreferenceUpdate;
