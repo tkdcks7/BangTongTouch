@@ -41,11 +41,15 @@ import CommunityCreate from "./components/organism/CommunityCreate"; // 글 쓰�
 import authAxios from "./utils/authAxios";
 import useAlarmInfoStore from "./store/alarmInfoStore";
 import NotFoundPage from "./components/page/NotFoundPage";
+import VideoChat from "./components/page/VideoChatPage";
+
+// 비로그인시 보여줄 페이지
+import InformationPage from "./components/page/InformationPage/InformationPage";
 
 // 비로그인 사용자를 login으로 이동시키는 protectedRoute
 const ProtectedRoute: React.FC = () => {
   const isAuthenticated = useUserStore((state) => state.id);
-  return isAuthenticated ? <Outlet /> : <Navigate to="/user/login" />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/main" />;
 };
 
 const AppRoutes: React.FC = () => {
@@ -75,6 +79,7 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
+      <Route path="main" element={<InformationPage />} />
       {/* 로그인, 회원가입, 아이디, 비밀번호 찾기 네비게이션바 X */}
       <Route path="user" element={<UserPage />}>
         <Route path="login" element={<Login />} />
@@ -99,6 +104,7 @@ const AppRoutes: React.FC = () => {
           {/* 채팅 페이지 */}
           <Route path="chats" element={<ChattingPage />}>
             <Route path="" element={<ChatMain />} />
+            <Route path="videochat/:roomId" element={<VideoChat />} />
             <Route path=":roomId" element={<ChatDetail />} />
           </Route>
 
@@ -117,14 +123,14 @@ const AppRoutes: React.FC = () => {
             <Route path="notification" element={<ProfileNotification />} />
           </Route>
         </Route>
+        {/* 커뮤니티 페이지 */}
+        <Route path="boards" element={<CommunityPage />}>
+          <Route path="" element={<CommunityMain />} />
+          <Route path=":id" element={<CommunityDetail />} />
+          <Route path="write" element={<CommunityCreate />} />
+        </Route>
       </Route>
 
-      {/* 커뮤니티 페이지 */}
-      <Route path="boards" element={<CommunityPage />}>
-        <Route path="" element={<CommunityMain />} />
-        <Route path=":id" element={<CommunityDetail />} />
-        <Route path="write" element={<CommunityCreate />} />
-      </Route>
       <Route path="/*" element={<NotFoundPage />} />
     </Routes>
   );

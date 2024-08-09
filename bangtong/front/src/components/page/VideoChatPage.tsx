@@ -5,7 +5,7 @@ const VideoChatPage: React.FC = () => {
   return (
     <>
       <div className="w-screen h-screen">
-        <VideoChat roomId="1" />
+        <VideoChat />
         <VideoChatMenuBar />
       </div>
     </>

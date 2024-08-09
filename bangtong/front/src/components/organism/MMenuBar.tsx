@@ -4,17 +4,22 @@ import authAxios from "../../utils/authAxios";
 
 // 컴포넌트 불러오기
 import IconBtn from "../atoms/IconBtn";
-import { Button, Dropdown, MenuProps } from "antd";
+import { Button, Dropdown, MenuProps, FloatButton } from "antd";
 
 // 이미지 소스
 import Bell from "../../assets/Bell.png";
-import { MenuOutlined } from "@ant-design/icons";
+import {MenuOutlined, MoonOutlined, SunOutlined} from "@ant-design/icons";
 
 // 데이터
 import useUserStore from "../../store/userStore";
 import useAlarmInfoStore from "../../store/alarmInfoStore";
 
-const MMenuBar: React.FC = () => {
+interface MMenuBarProps {
+  dark: boolean;
+  toggleDark: () => void;
+}
+
+const MMenuBar: React.FC<MMenuBarProps> = ({dark, toggleDark}) => {
   const navigate = useNavigate();
   const { alarms } = useAlarmInfoStore();
   const { token, id, setLogOut } = useUserStore();
@@ -85,6 +90,7 @@ const MMenuBar: React.FC = () => {
   }, []);
 
   return (
+    <>
     <div className="flex justify-end items-center w-screen p-2">
       <div>
         {token ? (
@@ -110,6 +116,14 @@ const MMenuBar: React.FC = () => {
         </Dropdown>
       </div>
     </div>
+      <FloatButton
+          icon={!dark ? <SunOutlined/> : <MoonOutlined/>}
+          onClick={toggleDark}
+          tooltip={<div>{dark ? 'Switch to Dark Mode' : 'Switch to Light Mode'}</div>}
+          className={'bg-yellow-300'}
+          style={{ insetInlineEnd: 24, bottom: 82 }}
+      />
+    </>
   );
 };
 

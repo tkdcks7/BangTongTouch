@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Slf4j
 public class PreferenceService {
@@ -157,5 +160,39 @@ public class PreferenceService {
             return null;
         }
         return dto;
+    }
+
+    public List<PreferenceDto> getPreferenceList(long userId) {
+        List<PreferenceDto> resultDto = new ArrayList<>();
+        List<Preference> result = preferenceRepository.findAllByUser_UserId(userId);
+
+        for (Preference preference : result) {
+            PreferenceDto dto = new PreferenceDto();
+            dto.setPreferenceId(preference.getPreferenceId());
+            dto.setPreferenceName(preference.getPreferenceName());
+            dto.setUserId(preference.getUser().getUserId());
+            dto.setPreferenceDeposit(preference.getPreferenceDeposit());
+            dto.setPreferenceRent(preference.getPreferenceRent());
+            dto.setPreferenceType(preference.getPreferenceType());
+            dto.setPreferenceInfra(preference.getPreferenceInfra());
+            dto.setPreferenceStartDate(preference.getPreferenceStartDate());
+            dto.setPreferenceEndDate(preference.getPreferenceEndDate());
+            Region region = preference.getRegion();
+            if (region != null) {
+                dto.setRegionId(region.getRegionId());
+                StringBuilder sb = new StringBuilder();
+                sb.append(region.getRegionSido())
+                        .append(" ")
+                        .append(region.getRegionGugun())
+                        .append(" ")
+                        .append(region.getRegionDong());
+                dto.setRegionAddress(sb.toString().trim());
+            } else {
+                dto.setRegionId(null);
+                dto.setRegionAddress("");
+            }
+            resultDto.add(dto);
+        }
+        return resultDto;
     }
 }

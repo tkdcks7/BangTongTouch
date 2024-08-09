@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -29,7 +30,9 @@ public class AlarmMessageService {
             AlarmMessageDto dto = new AlarmMessageDto();
             dto.setAlarmMessageId(alarmMessage.getAlarmMessageId());
             dto.setUserId(alarmMessage.getUser().getUserId());
-            dto.setAlarmMessageDate(alarmMessage.getAlarmMessageDate());
+            String date = String.valueOf(alarmMessage.getAlarmMessageDate());
+            String formatDate = date.substring(0, 16);
+            dto.setAlarmMessageDate(formatDate);
             dto.setAlarmMessage(alarmMessage.getAlarmMessage());
             resultDto.add(dto);
         }
