@@ -27,6 +27,9 @@ const useAlarmInfoStore = create<alarm>()(
       setAlarmUpdate: (alarmNum, alarms) => {
         set(() => ({ alarmNum, alarms }));
       },
+      setAlarmDelete: () => {
+        set({ alarmNum: 0, alarms: null });
+      },
     }),
     userPersistOptions
   )
