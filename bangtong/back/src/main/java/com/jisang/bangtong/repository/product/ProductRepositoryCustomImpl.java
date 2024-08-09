@@ -36,63 +36,6 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
     this.entityManager = entityManager;
   }
 
-  @Override
-  public List<Product> searchList(ProductSearchDto productSearchDto) {
-    log.info("productSearchDto:{}", productSearchDto);
-
-    BooleanExpression infraFilter = productSearchDto.getInfra() != null ?
-        Expressions.booleanTemplate("({0} & {1}) > 0", product.productOption, productSearchDto.getInfra()) : null;
-
-    QRegion qRegion = QRegion.region;
-
-    return queryFactory.selectFrom(product)
-        .where(
-            ltMaxDeposit(productSearchDto.getMaxDeposit()),
-            ltMaxRent(productSearchDto.getMaxRent()),
-            eqProductType(productSearchDto.getType()),
-            eqRentSupportable(productSearchDto.isRentSupportable()),
-            eqFurnitureSupportable(productSearchDto.isFurnitureSupportable()),
-            goeStartDate(productSearchDto.getStartDate()),
-            loeEndDate(productSearchDto.getEndDate()),
-            eqRegionId(productSearchDto.getRegionId()),
-            infraFilter
-        )
-        .orderBy(buildOrderSpecifiers(productSearchDto.getOrder()))
-        .fetch();
-  }
-
-  private BooleanExpression ltMaxDeposit(Integer maxDeposit) {
-    return maxDeposit != null ? product.productDeposit.lt(maxDeposit) : null;
-  }
-
-  private BooleanExpression ltMaxRent(Integer maxRent) {
-    return maxRent != null ? product.productMaintenance.lt(maxRent) : null;
-  }
-
-  private BooleanExpression eqProductType(String type) {
-    return type != null ? product.productType.eq(ProductType.valueOf(type)) : null;
-  }
-
-  private BooleanExpression eqRentSupportable(Boolean rentSupportable) {
-    return rentSupportable != null ? product.productIsRentSupportable.eq(rentSupportable) : null;
-  }
-
-  private BooleanExpression eqFurnitureSupportable(Boolean furnitureSupportable) {
-    return furnitureSupportable != null ? product.productIsFurnitureSupportable.eq(furnitureSupportable) : null;
-  }
-
-  private BooleanExpression goeStartDate(Date startDate) {
-    return startDate != null ? product.productStartDate.goe(startDate) : null;
-  }
-
-  private BooleanExpression loeEndDate(Date endDate) {
-    return endDate != null ? product.productEndDate.loe(endDate) : null;
-  }
-
-  private BooleanExpression eqRegionId(String regionId) {
-    return regionId != null ? product.region.regionId.eq(regionId) : null;
-  }
-
 
   private OrderSpecifier<?>[] buildOrderSpecifiers(int order) {
     switch (order) {
