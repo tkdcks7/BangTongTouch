@@ -4,11 +4,15 @@ import authAxios from "../../utils/authAxios";
 
 // 컴포넌트 불러오기
 import IconBtn from "../atoms/IconBtn";
-import { Button, Dropdown, MenuProps, FloatButton } from "antd";
+import { Button, Dropdown, MenuProps, FloatButton, Badge } from "antd";
 
 // 이미지 소스
-import Bell from "../../assets/Bell.png";
-import {MenuOutlined, MoonOutlined, SunOutlined} from "@ant-design/icons";
+import {
+  BellOutlined,
+  MenuOutlined,
+  MoonOutlined,
+  SunOutlined,
+} from "@ant-design/icons";
 
 // 데이터
 import useUserStore from "../../store/userStore";
@@ -19,7 +23,7 @@ interface MMenuBarProps {
   toggleDark: () => void;
 }
 
-const MMenuBar: React.FC<MMenuBarProps> = ({dark, toggleDark}) => {
+const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
   const navigate = useNavigate();
   const { alarms } = useAlarmInfoStore();
   const { token, id, setLogOut } = useUserStore();
@@ -105,15 +109,18 @@ const MMenuBar: React.FC<MMenuBarProps> = ({dark, toggleDark}) => {
 
   return (
     <>
-    <div className="flex justify-end items-center w-screen p-2">
-      <div>
+      <div className="flex justify-end items-center w-screen p-2">
         {token ? (
           <Dropdown trigger={["click"]} menu={{ items: alarmItems.current }}>
-            <IconBtn imgSrc={Bell} size={30} />
+            <Badge
+              count={token ? useAlarmInfoStore.getState().alarmNum : null}
+              className="hover:cursor-pointer"
+            >
+              <BellOutlined className="text-2xl" />
+            </Badge>
           </Dropdown>
         ) : (
-          <IconBtn
-            imgSrc={Bell}
+          <BellOutlined
             size={30}
             onClick={() => {
               alert("로그인 후 이용해 주세요.");
@@ -121,21 +128,22 @@ const MMenuBar: React.FC<MMenuBarProps> = ({dark, toggleDark}) => {
             }}
           />
         )}
+        <div className="mx-3">
+          <Dropdown menu={menuProps} trigger={["click"]}>
+            <Button type="text" size="small">
+              <MenuOutlined className="text-2xl" />
+            </Button>
+          </Dropdown>
+        </div>
       </div>
-      <div className="mx-3">
-        <Dropdown menu={menuProps} trigger={["click"]}>
-          <Button type="text" size="small">
-            <MenuOutlined className="text-2xl" />
-          </Button>
-        </Dropdown>
-      </div>
-    </div>
       <FloatButton
-          icon={!dark ? <SunOutlined/> : <MoonOutlined/>}
-          onClick={toggleDark}
-          tooltip={<div>{dark ? 'Switch to Dark Mode' : 'Switch to Light Mode'}</div>}
-          className={'bg-yellow-300'}
-          style={{ insetInlineEnd: 24, bottom: 82 }}
+        icon={!dark ? <SunOutlined /> : <MoonOutlined />}
+        onClick={toggleDark}
+        tooltip={
+          <div>{dark ? "Switch to Dark Mode" : "Switch to Light Mode"}</div>
+        }
+        className={"bg-yellow-300"}
+        style={{ insetInlineEnd: 24, bottom: 82 }}
       />
     </>
   );
