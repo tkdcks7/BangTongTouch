@@ -121,6 +121,7 @@ const MMenuBar: React.FC<MMenuBarProps> = ({dark, toggleDark}) => {
           onClick={toggleDark}
           tooltip={<div>{dark ? 'Switch to Dark Mode' : 'Switch to Light Mode'}</div>}
           className={'bg-yellow-300'}
+          style={{ insetInlineEnd: 24, bottom: 82 }}
       />
     </>
   );
