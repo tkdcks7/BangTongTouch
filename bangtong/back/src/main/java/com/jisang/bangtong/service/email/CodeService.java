@@ -16,6 +16,7 @@ public class CodeService {
   private String createCode() {
     Random random = new Random();
     int code = random.nextInt(1000000);
+
     return String.format("%06d", code);
   }
 
@@ -23,12 +24,10 @@ public class CodeService {
     String code = createCode();
 
     if (codeRepository.getCode(email) != null) {
-      log.info(codeRepository.getCode(email));
       codeRepository.delete(email);
     }
 
     try {
-      log.info("save: {}, {}", email, code);
       codeRepository.save(email, code);
     } catch (Exception e) {
       log.error(e.getMessage());
@@ -40,15 +39,12 @@ public class CodeService {
   public boolean verifyCode(String email, String code) {
     String savedCode = codeRepository.getCode(email);
 
-    if (savedCode == null) {
-      return false;
+    if (code.equals(savedCode)) {
+      codeRepository.delete(email);
+      return true;
     }
 
-    return savedCode.equals(code);
-  }
-
-  public void deleteCode(String email) {
-    codeRepository.delete(email);
+    return false;
   }
 
 }
