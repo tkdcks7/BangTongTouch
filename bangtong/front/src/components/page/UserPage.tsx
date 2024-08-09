@@ -41,7 +41,7 @@ const UserPage: React.FC = () => {
           duration: 0.7,
           repeatDelay: 3,
         }}
-        className="h-mvh px-10 flex items-center justify-center"
+        className="px-10 flex items-center justify-center"
       >
         <div className="mr-20 lg:mr-40 hidden md:block w-96">
           <p className="text-xl lg:text-2xl font-bold mb-2 text-center text-nowrap">
@@ -62,7 +62,7 @@ const UserPage: React.FC = () => {
             duration: 0.7,
             repeatDelay: 3,
           }}
-          className="h-screen flex flex-col items-center justify-center"
+          className="h-lvh flex flex-col items-center justify-center"
         >
           <div className="w-full md:w-96 p-10 bg-white rounded-2xl my-20">
             <Outlet />

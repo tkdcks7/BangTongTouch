@@ -90,8 +90,9 @@ const SubComment: React.FC<iSubComment> = ({
     })
       .then((response) => {
         alert("신고가 완료되었습니다.");
+        reportRef.current = "";
       })
-      .then((error) => {
+      .catch((error) => {
         alert("로그인 후 이용하실 수 있습니다.");
       });
     changeModalStatus();

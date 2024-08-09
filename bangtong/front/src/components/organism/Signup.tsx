@@ -8,7 +8,13 @@ import TextBox from "../atoms/TextBox";
 import { Form, Input, ConfigProvider, Button, Space } from "antd";
 
 // 아이콘
-import { SendOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  CheckOutlined,
+  CloseCircleOutlined,
+  LoadingOutlined,
+  SendOutlined,
+} from "@ant-design/icons";
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -19,6 +25,7 @@ const SignupPage: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const [passwordVerification, setPasswordVerification] = useState<string>("");
   const [page, setPage] = useState(0); // 페이지 넘기기 위한 변수
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [form] = Form.useForm();
 
   const navigate = useNavigate();
@@ -104,19 +111,22 @@ const SignupPage: React.FC = () => {
   const handleMailSend = () => {
     console.log("이메일 인증 요청합니다");
     // 발송된 이메일이 없는 메일 혹은 존재하는 사용자이면 status 400번대 response
+    setIsLoading(true);
     axios({
       method: "POST",
-      url: `${process.env.REACT_APP_BACKEND_URL}/emails`, // url api 명세 만들고 바꿔주세요
+      url: `${process.env.REACT_APP_BACKEND_URL}/emails`,
       data: {
         email,
       },
     })
       .then((response) => {
         alert("해당 이메일로 인증번호가 전송됐습니다.");
+        setIsLoading(false);
         setPage(page + 1);
       })
       .catch((err) => {
         console.log(err);
+        setIsLoading(false);
         alert(
           "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요."
         );
@@ -135,13 +145,19 @@ const SignupPage: React.FC = () => {
       },
     })
       .then((response) => {
-        console.log("인증 성공!");
-        setPage(page + 1);
+        if (response.data.data) {
+          console.log("인증 성공!");
+          setPage(page + 1);
+        } else {
+          alert(
+            "이메일 인증에 실패했습니다. 인증번호를 다시 한 번 확인해주세요."
+          );
+        }
       })
       .catch((err) => {
         console.log(err);
         alert(
-          "인증번호 전송에 실패했습니다. 입력한 메일을 다시 한 번 확인해주세요."
+          "이메일 인증에 실패했습니다. 인증번호를 다시 한 번 확인해주세요."
         );
       });
   };
@@ -188,7 +204,7 @@ const SignupPage: React.FC = () => {
   };
 
   return (
-    <>
+    <div id="signup-block">
       <div className="text-3xl text-center font-bold m-6">
         <TextBox text="회원가입" size="2xl" />
       </div>
@@ -198,9 +214,8 @@ const SignupPage: React.FC = () => {
             // 비밀번호 확인 input
             <Form.Item
               name="비밀번호 확인"
-              rules={[
-                { required: true, message: "비밀번호 확인을 입력해주세요" },
-              ]}
+              dependencies={["비밀번호"]}
+              rules={[{ required: true, message: "비밀번호를 입력해주세요" }]}
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
@@ -211,23 +226,14 @@ const SignupPage: React.FC = () => {
                   ease: [0, 0.71, 0.2, 1.01],
                 }}
               >
-                <Space.Compact className="flex items-center">
-                  <Input.Password
-                    placeholder="비밀번호"
-                    className="rounded-full border-2"
-                    size="large"
-                    allowClear
-                    onChange={(e) => setPasswordVerification(e.target.value)}
-                  />
-                  <Button
-                    type="primary"
-                    size="large"
-                    className="text-sm rounded-full"
-                    onClick={() => setPage(page + 1)}
-                  >
-                    확인
-                  </Button>
-                </Space.Compact>
+                <Input.Password
+                  placeholder="비밀번호 확인"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  disabled={page !== 6}
+                  onChange={(e) => setPasswordVerification(e.target.value)}
+                />
               </motion.div>
             </Form.Item>
           ) : null}
@@ -247,23 +253,14 @@ const SignupPage: React.FC = () => {
                   ease: [0, 0.71, 0.2, 1.01],
                 }}
               >
-                <Space.Compact className="flex items-center">
-                  <Input.Password
-                    placeholder="비밀번호"
-                    className="rounded-full border-2"
-                    size="large"
-                    allowClear
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <Button
-                    type="primary"
-                    size="large"
-                    className="text-sm rounded-full"
-                    onClick={() => setPage(page + 1)}
-                  >
-                    확인
-                  </Button>
-                </Space.Compact>
+                <Input.Password
+                  placeholder="비밀번호"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  disabled={page !== 5}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </motion.div>
             </Form.Item>
           ) : null}
@@ -283,24 +280,15 @@ const SignupPage: React.FC = () => {
                   ease: [0, 0.71, 0.2, 1.01],
                 }}
               >
-                <Space.Compact className="flex items-center">
-                  <Input
-                    placeholder="이메일 인증번호"
-                    className="rounded-full border-2"
-                    size="large"
-                    allowClear
-                    onChange={(e) => setCertificationNumber(e.target.value)}
-                    onKeyDown={handleCertificateConfirm}
-                  />
-                  <Button
-                    type="primary"
-                    size="large"
-                    className="text-sm rounded-full"
-                    onClick={handleCertificateConfirm}
-                  >
-                    인증하기
-                  </Button>
-                </Space.Compact>
+                <Input
+                  placeholder="이메일 인증번호"
+                  className="rounded-full border-2"
+                  size="large"
+                  allowClear
+                  disabled={page !== 4}
+                  onChange={(e) => setCertificationNumber(e.target.value)}
+                  onPressEnter={handleCertificateConfirm}
+                />
               </motion.div>
             </Form.Item>
           ) : null}
@@ -334,14 +322,8 @@ const SignupPage: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={page !== 3}
-                  onKeyDown={handleMailSend}
-                  suffix={
-                    <SendOutlined
-                      style={{ color: "rgba(0,0,0,.45)" }}
-                      className="cursor-pointer"
-                      onClick={handleMailSend}
-                    />
-                  }
+                  onPressEnter={handleMailSend}
+                  suffix={isLoading ? <LoadingOutlined /> : null}
                 />
               </motion.div>
             </Form.Item>
@@ -353,6 +335,7 @@ const SignupPage: React.FC = () => {
               rules={[
                 { required: true, message: "휴대폰번호를 입력해주세요." },
                 { min: 11, max: 11, message: "휴대폰 번호는 11자리 입니다." },
+                { type: "string", message: "" },
               ]}
               hasFeedback
             >
@@ -388,10 +371,11 @@ const SignupPage: React.FC = () => {
                 { min: 7, max: 7, message: "앞 6자리 + 뒤 1자리" },
                 {
                   type: "string",
-                  message: "올바른 주민등록번호를 입력해주세요.",
+                  message: "",
                 },
               ]}
               hasFeedback
+              initialValue={socialNumber}
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
@@ -425,6 +409,7 @@ const SignupPage: React.FC = () => {
                 { type: "string" },
               ]}
               hasFeedback
+              initialValue={name}
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
@@ -451,10 +436,18 @@ const SignupPage: React.FC = () => {
             <Button
               type="primary"
               className="py-6 px-10 rounded-full text-lg"
-              onClick={page + 1 === 6 ? handleSignUp : handleNext}
+              onClick={
+                page === 6
+                  ? handleSignUp
+                  : page === 3
+                    ? handleMailSend
+                    : page === 4
+                      ? handleCertificateConfirm
+                      : handleNext
+              }
               htmlType="submit"
             >
-              {page + 1 === 6 ? "회원가입" : "다음"}
+              {page === 6 ? "회원가입" : "다음"}
             </Button>
           </div>
         </Form>
@@ -462,7 +455,7 @@ const SignupPage: React.FC = () => {
           <Link to={"/user/login"}>로그인 화면으로</Link>
         </div>
       </ConfigProvider>
-    </>
+    </div>
   );
 };
 

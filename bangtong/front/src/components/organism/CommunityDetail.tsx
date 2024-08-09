@@ -76,9 +76,11 @@ const CommunityDetail: React.FC = () => {
       method: "GET",
       url: `${process.env.REACT_APP_BACKEND_URL}/comments/${id}`,
       headers: {},
-    }).then((response) => {
-      setComments(response.data.data);
-    });
+    })
+      .then((response) => {
+        setComments(response.data.data);
+      })
+      .catch((e) => {});
   };
 
   // 댓글 작성 함수. 백엔드로 댓글을 전송하고 그 데이터를 활용해 댓글 리스트 state에 하나를 붙여 갱신
@@ -102,7 +104,6 @@ const CommunityDetail: React.FC = () => {
 
   // 상세 페이지로 이동 시, 페이지 정보를 받아오는 함수. board 안에 상세페이지의 모든 정보가 저장됨
   useEffect(() => {
-    handleCommentGet();
     axios({
       method: "GET",
       url: `${process.env.REACT_APP_BACKEND_URL}/boards/${id}`,
@@ -111,8 +112,10 @@ const CommunityDetail: React.FC = () => {
         setBoardContent(response.data.data);
       })
       .catch((err) => {
-        window.open(err);
+        alert("존재하지 않는 페이지입니다.");
+        navigate("/boards");
       });
+    handleCommentGet();
   }, []);
 
   const reportBoard = () => {
@@ -136,10 +139,10 @@ const CommunityDetail: React.FC = () => {
       },
     })
       .then((response) => {
-        console.log(response);
         alert("신고가 완료되었습니다.");
+        reportRef.current = "";
       })
-      .then((error) => {
+      .catch((error) => {
         alert("로그인 후 이용하실 수 있습니다.");
       });
     changeModalStatus();
