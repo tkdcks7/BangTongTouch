@@ -16,7 +16,7 @@ import useAlarmInfoStore from "../../store/alarmInfoStore";
 
 const MMenuBar: React.FC = () => {
   const navigate = useNavigate();
-  const { alarms, alarmNum } = useAlarmInfoStore();
+  const { alarms } = useAlarmInfoStore();
   const { token, id, setLogOut } = useUserStore();
   const alarmItems = useRef<Array<any>>();
 

@@ -12,5 +12,5 @@ public interface RegionService {
   List<RegionSidoDto> searchSido();
   List<RegionGugunDto> searchGugun(String sido);
   List<RegionDongDto> searchDong(String gugun);
-  RegionReturnDto getRegionCode(RegionSearchDto regionSearchDto);
+  RegionReturnDto getRegionCode(String regionId);
 }

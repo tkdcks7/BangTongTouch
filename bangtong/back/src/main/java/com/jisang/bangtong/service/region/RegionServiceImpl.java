@@ -33,12 +33,11 @@ public class RegionServiceImpl implements RegionService{
   }
 
   @Override
-  public RegionReturnDto getRegionCode(RegionSearchDto regionSearchDto) {
-    Region r = regionRepository.findByRegionDetails(regionSearchDto.getRegionSido(),
-        regionSearchDto.getRegionGugun(), regionSearchDto.getRegionDong()).orElse(null);
+  public RegionReturnDto getRegionCode(String regionId) {
+    Region r = regionRepository.findById(regionId).orElse(null);
 
     if (r == null) {
-      throw new IllegalArgumentException("해당하는 객체가 없습니다");
+      throw new IllegalArgumentException("해당하는 지역이 없습니다");
     }
     return RegionReturnDto.builder()
         .regionId(r.getRegionId())

@@ -22,7 +22,7 @@ const ProfileMenu: React.FC = () => {
           <ProfileMyFavItems />
         </AccordionPart>
       </Accordion>
-      <ProfileModal />
+      {/* <ProfileModal /> */}
       <NavLink
         to={"update"}
         className="flex items-center w-full p-4 text-left hover:bg-slate-100 rounded-xl border border-black mb-2"
