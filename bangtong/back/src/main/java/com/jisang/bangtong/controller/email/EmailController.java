@@ -19,19 +19,28 @@ public class EmailController {
 
   private final EmailService emailService;
 
+  // 이메일 인증 번호 발송
   @PostMapping
-  public ResponseDto<Void> sendCode(@RequestBody EmailDto emailDto) {
+  public ResponseDto<String> sendCode(@RequestBody EmailDto emailDto) {
     try {
       emailService.sendCode(emailDto.getEmail());
       return ResponseDto.res(ResponseMessageConstants.SUCCESS);
     } catch (Exception e) {
-      return ResponseDto.res(ResponseMessageConstants.SERVER_ERROR);
+      return ResponseDto.res(ResponseMessageConstants.SERVER_ERROR, e.getMessage());
     }
   }
 
+  // 인증 번호 확인
   @PostMapping("/verify")
   public ResponseDto<Boolean> verifyCode(@RequestBody EmailDto emailDto) {
     boolean result = emailService.verifyCode(emailDto);
+    return ResponseDto.res(ResponseMessageConstants.SUCCESS, result);
+  }
+
+  // 비밀번호 찾기: 인증 번호 확인
+  @PostMapping("/find/password")
+  public ResponseDto<Boolean> findPassword(@RequestBody EmailDto emailDto) {
+    boolean result = emailService.findPassword(emailDto);
     return ResponseDto.res(ResponseMessageConstants.SUCCESS, result);
   }
 

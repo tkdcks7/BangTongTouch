@@ -36,23 +36,23 @@ public class Chat {
   Long chatId;
 
   @ManyToOne
-  @JoinColumn(name="chatroomId", foreignKey = @ForeignKey(name="fk_chat_chatroom"), nullable = false)
+  @JoinColumn(name = "chatroomId", foreignKey = @ForeignKey(name = "fk_chat_chatroom"), nullable = false)
   Chatroom chatRoom;
 
-  @Column(length=1000, nullable = false)
+  @Column(length = 1000, nullable = false)
   String chatContent;
 
   @ManyToOne
-  @JoinColumn(name="senderId")
+  @JoinColumn(name = "senderId")
   User sender;
 
   @ManyToOne
-  @JoinColumn(name="receiverId")
+  @JoinColumn(name = "receiverId")
   User receiver;
 
   @Column(nullable = false)
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
   @Temporal(TemporalType.TIMESTAMP)
-  Date chatTime=new Date();
+  Date chatTime = new Date();
 
 }
