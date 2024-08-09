@@ -59,7 +59,7 @@ const VideoChat: React.FC = () => {
       if (event.candidate && camKey) {
         SocketService.send(
           `/app/peer/iceCandidate/${camKey}/${roomId}`,
-          event.candidate
+          event.candidate,
         );
       }
     };
@@ -77,14 +77,14 @@ const VideoChat: React.FC = () => {
     SocketService.subscribe(`/topic/peer/offer/${key}/${roomId}`, handleOffer);
     SocketService.subscribe(
       `/topic/peer/iceCandidate/${key}/${roomId}`,
-      handleIceCandidate
+      handleIceCandidate,
     );
   };
 
   const handleOffer = async (message: { body: string }) => {
     const offer = JSON.parse(message.body);
     await peerConnectionRef.current?.setRemoteDescription(
-      new RTCSessionDescription(offer)
+      new RTCSessionDescription(offer),
     );
     const answer = await peerConnectionRef.current?.createAnswer();
     await peerConnectionRef.current?.setLocalDescription(answer);

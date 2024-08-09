@@ -41,7 +41,7 @@ import CommunityCreate from "./components/organism/CommunityCreate"; // 글 쓰�
 import authAxios from "./utils/authAxios";
 import useAlarmInfoStore from "./store/alarmInfoStore";
 import NotFoundPage from "./components/page/NotFoundPage";
-import VideoChat from "./components/page/VideoChat";
+import VideoChat from "./components/page/VideoChatPage";
 
 // 비로그인시 보여줄 페이지
 import InformationPage from "./components/page/InformationPage/InformationPage";
