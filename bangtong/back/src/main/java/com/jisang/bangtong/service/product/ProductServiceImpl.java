@@ -280,11 +280,34 @@ public class ProductServiceImpl implements ProductService {
     if(!isValidUser(u)){
       throw new NotFoundException("사용자를 찾을 수 없습니다");
     }
+    Preference preference = preferenceRepository.findFirstByUser_UserId(userId);
+    String regionId = preference.getRegion().getRegionId();
+    log.info("getRecentProduct preference {}", preference);
 
-    List<PreferenceDto> preferenceDtoList = preferenceRepository.
+    List<Product> plist= productRepository.getRecentProducts(regionId);
+    List<ProductReturnDto> productReturnDtoList = new ArrayList<>();
+    for(Product p : plist){
+      ProductReturnDto productReturnDto = ProductReturnDto.builder()
+          .productId(p.getProductId())
+          .productType(p.getProductType()).regionReturnDto(getRegionReturnDto(p))
+          .productAddress(p.getProductAddress()).productDeposit(p.getProductDeposit())
+          .productRent(p.getProductRent()).productMaintenance(p.getProductMaintenance())
+          .productMaintenanceInfo(p.getProductMaintenanceInfo())
+          .productIsRentSupportable(p.isProductIsRentSupportable())
+          .productIsFurnitureSupportable(p.isProductIsFurnitureSupportable())
+          .productSquare(p.getProductSquare()).productRoom(p.getProductRoom())
+          .productOption(p.getProductOption()).productAdditionalOption(getAdditionalOptionList(p))
+          .productPostDate(p.getProductPostDate()).productStartDate(p.getProductStartDate())
+          .productEndDate(p.getProductEndDate()).lat(p.getLat()).lng(p.getLng())
+          .productAdditionalDetail(p.getProductAddressDetail())
+          .productIsInterest(false)
+          .mediaList(p.getProductMedia())
+          .productIsDelete(p.isProductIsDeleted())
+          .build();
+      productReturnDtoList.add(productReturnDto);
+    }
 
-
-    return productRepository.getRecentProducts();
+    return productReturnDtoList;
   }
 
   @Override
