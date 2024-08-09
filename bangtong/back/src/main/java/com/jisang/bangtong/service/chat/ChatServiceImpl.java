@@ -65,7 +65,7 @@ public class ChatServiceImpl implements ChatService {
     chat.setChatTime(sendDto.getChatTime());
     chats.add(chat);
 
-    if(chats.size() > 999){
+    if(chats.size() > 1){
       chatRepository.saveAllListChats(chats);
       chats.clear();
     }

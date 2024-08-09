@@ -66,10 +66,10 @@ public class RegionController {
     }
   }
 
-  @GetMapping("/search/dongCode")
-  public ResponseDto<RegionReturnDto> getRegionCode(RegionSearchDto regionSearchDto){
+  @GetMapping("/search/{regionId}")
+  public ResponseDto<RegionReturnDto> getRegionCode(@PathVariable String regionId){
     try {
-      RegionReturnDto returnDto = regionService.getRegionCode(regionSearchDto);
+      RegionReturnDto returnDto = regionService.getRegionCode(regionId);
       return ResponseDto.res("SUCCESS", returnDto);
     }catch (IllegalArgumentException e){
       String s = "데이터를 찾을 수 없습니다.";

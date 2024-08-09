@@ -14,8 +14,9 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class ChatContentDto {
+  Long writerId;
   String chatContent;
   @Temporal(TemporalType.TIMESTAMP)
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
   Date chatTime;
 }
