@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import SocketService from "../../utils/SocketService";
+import { useParams } from "react-router-dom";
 
-interface VideoChatProps {
-  roomId: string;
-}
-
-const VideoChat: React.FC<VideoChatProps> = ({ roomId }) => {
+const VideoChat: React.FC = () => {
+  const { roomId } = useParams<{ roomId: string }>();
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);

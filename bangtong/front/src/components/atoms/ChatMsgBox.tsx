@@ -16,7 +16,11 @@ const ChatMsgBox: React.FC<ChatMsgBoxProps> = ({
   return (
     <div className={`${backgroundColor} border-solid p-3 rounded-lg`}>
       <p className={`${flag === true ? "text-right" : null}`}>{message}</p>
-      <p className="text-xs text-gray-500">{date}</p>
+      <p
+        className={`text-xs text-gray-500 ${flag === true ? "text-right" : null}`}
+      >
+        {date}
+      </p>
     </div>
   );
 };
