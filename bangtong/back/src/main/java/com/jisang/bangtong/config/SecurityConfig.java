@@ -83,7 +83,7 @@ public class SecurityConfig {
                 .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService)
                     .userAuthoritiesMapper(grantedAuthoritiesMapper()))
                 .successHandler(oAuth2SuccessHandler))
-        .logout(logout -> logout.logoutSuccessUrl("https://i11d206.p.ssafy.io/user/login"))
+        .logout(logout -> logout.logoutSuccessUrl("https://i11d206.p.ssafy.io"))
         .httpBasic(hbc -> hbc.authenticationEntryPoint(new BasicAuthenticationEntryPoint()))
         .exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 
