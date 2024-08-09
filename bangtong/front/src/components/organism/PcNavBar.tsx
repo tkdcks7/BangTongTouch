@@ -58,7 +58,21 @@ const PcNavBar: React.FC = () => {
       alarmItems.current = alarms?.map((item, index) => {
         return {
           label: (
-            <div>
+            <div
+              onClick={() => {
+                authAxios({
+                  method: "DELETE",
+                  url: `${process.env.REACT_APP_BACKEND_URL}/alarms/delete/${item.alarmMessageId}`,
+                })
+                  .then((response) => {
+                    console.log(response);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    alert("에러가 발생했습니다.");
+                  });
+              }}
+            >
               {item.alarmMessageDate} || {item.alarmMessage}
             </div>
           ),

@@ -24,7 +24,7 @@ interface ChatI {
 interface ShowMessage {
   chatContent: string;
   chatTime: string;
-  userId?: number;
+  writerId: number;
 }
 
 const ChatDetail: React.FC = () => {
@@ -45,23 +45,22 @@ const ChatDetail: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
 
+  const isComposing = useRef<boolean>(false); // IME 입력 상태를 저장하는 ref
+
   const addMessage = (message: string) => {
     console.log(message);
     const parsedJson = JSON.parse(message);
     console.log(parsedJson);
-    const data = JSON.parse(parsedJson.data);
+    const jsonStr = parsedJson.data.toString().replace(/^.|.$/g, "");
+    console.log(jsonStr);
+    const data = JSON.parse("{" + jsonStr + "}");
     console.log(data);
-    // const jsonStr = parsedJson.data
-    //   .toString()
-    //   .replace(/=/g, ":")
-    //   .replace(/([{,]\s*)(\w+)(\s*:)/g, '$1"$2"$3')
-    //   .replace(/:\s*([^",}\s]+)/g, ': "$1"');
-    // const content = JSON.parse(jsonStr);
-    // const chat: ShowMessage = {
-    //   chatContent: content.chatContent,
-    //   chatTime: now.toString(),
-    // };
-    // setMessages((prev) => [...(prev || []), chat]);
+    const chat: ShowMessage = {
+      chatContent: data.chatMessage,
+      chatTime: data.chatTime,
+      writerId: data.sender,
+    };
+    setMessages((prev) => [...(prev || []), chat]);
   };
 
   useEffect(() => {
@@ -136,7 +135,7 @@ const ChatDetail: React.FC = () => {
       const chat: ChatI = {
         chatRoom: parseInt(roomId!!),
         sender: userId,
-        chatContent: chatMessage!!,
+        chatContent: chatMessage!! + " ",
       };
       clientRef.current?.publish({
         destination: sendUrl,
@@ -160,31 +159,19 @@ const ChatDetail: React.FC = () => {
           maxHeight: "400px",
         }}
       >
-        <div className="flex mt-3">
-          <img
-            src={defaultProfile}
-            alt="프로필 사진"
-            className="w-10 h-10 rounded-full me-3"
-          />
-          <ChatMsgBox message="안녕하세요~" date="2024-07-26 17:41" />
-        </div>
         {messages.map((item, index) => (
           <Chat
             chatContent={item.chatContent}
             chatTime={item.chatTime}
             key={index}
-            imgUrl={process.env.REACT_APP_BACKEND_SRC_URL + pfpSrc}
-            flag={true}
+            imgUrl={
+              item.writerId === userId
+                ? undefined
+                : process.env.REACT_APP_BACKEND_SRC_URL + "/" + pfpSrc
+            }
+            flag={item.writerId === userId}
           />
         ))}
-        <div className="flex mt-3 justify-end">
-          <ChatMsgBox
-            message="안녕하세요~"
-            backgroundColor="bg-lime-500"
-            date="2024-07-26 17:41"
-            flag={true}
-          />
-        </div>
         <div ref={messagesEndRef} /> {/* 스크롤 이동을 위한 빈 div */}
       </div>
       <div className="mt-10">
@@ -194,8 +181,10 @@ const ChatDetail: React.FC = () => {
           onChange={(e) => setChatMessage(e.target.value)}
           width={"auto"}
           buttonType="send"
+          onCompositionStart={() => (isComposing.current = true)} // 한글 입력 시작 시 IME 상태 시작
+          onCompositionEnd={() => (isComposing.current = false)} // 한글 입력 완료 시 IME 상태 종료
           onKeyDown={(e) => {
-            if (e.code === "Enter") {
+            if (e.code === "Enter" && !isComposing.current) {
               if (connected) sendMessage();
               else alert("연결중입니다. 잠시만 기다려주세요.");
             }
@@ -203,7 +192,7 @@ const ChatDetail: React.FC = () => {
           onIconClick={sendMessage}
         />
       </div>
-      <ChatAdditionalBar />
+      <ChatAdditionalBar roomId={roomId!!} />
     </div>
   );
 };
