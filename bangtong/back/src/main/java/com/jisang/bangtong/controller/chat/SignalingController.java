@@ -34,19 +34,7 @@ public class SignalingController {
   @MessageMapping("/send/key")
   @SendTo("/topic/send/key")
   public String sendKey(@Payload String message) {
-    return generateUniqueKey();
-  }
-
-  @MessageMapping("/peer/answer/{camKey}/{roomId}")
-  @SendTo("/topic/peer/answer/{camKey}/{roomId}")
-  public String PeerHandleAnswer(@Payload String answer,
-      @DestinationVariable(value = "roomId") String roomId,
-      @DestinationVariable(value = "camKey") String camKey) {
-    return answer;
-  }
-
-  private String generateUniqueKey() {
-    return "abc";
+    return message;
   }
 
 }

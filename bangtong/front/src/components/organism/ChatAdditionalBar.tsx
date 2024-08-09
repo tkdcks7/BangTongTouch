@@ -18,10 +18,51 @@ interface ChatAdditionalBarProps {
   reportUserNickname: string;
 }
 
-const ChatAdditionalBar: React.FC = () => {
+const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
+  roomId,
+  reportUserId,
+  reportUserNickname,
+}) => {
+  const navigate = useNavigate();
+  const reportRef = useRef<string>("");
+  const reportTypeRef = useRef<number>(0);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const changeModalStatus = () => {
+    reportRef.current = "";
+    setIsModalOpen(!isModalOpen);
+  };
+  const reportComment = () => {
+    if (reportTypeRef.current === 0) {
+      alert("신고 유형을 선택해주세요.");
+      return;
+    }
+
+    if (reportRef.current === "") {
+      alert("사유를 입력해주세요.");
+      return;
+    }
+    authAxios({
+      method: "POST",
+      url: `${process.env.REACT_APP_BACKEND_URL}/reports`,
+      data: {
+        reportSubjectTypeId: 2,
+        reportTypeId: reportTypeRef.current,
+        content: reportRef.current,
+        subjectId: reportUserId,
+      },
+    })
+      .then((response) => {
+        alert("신고가 완료되었습니다.");
+        reportRef.current = "";
+      })
+      .catch((error) => {
+        alert("로그인 후 이용하실 수 있습니다.");
+      });
+    changeModalStatus();
+  };
+
   return (
     <div className="w-full bg-yellow-200 fixed bottom-16 left-0 flex justify-around p-2 md:hidden">
-      <button className="text-center">
       <Modal
         title="댓글 신고"
         open={isModalOpen}

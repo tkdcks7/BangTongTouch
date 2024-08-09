@@ -25,6 +25,4 @@ public interface ProductService {
   ProductReturnDto getRecentInterestProduct(Long userId);
 
   Integer getProductSize();
-
-  List<ProductReturnDto> getRecentProducts(HttpServletRequest request);
 }

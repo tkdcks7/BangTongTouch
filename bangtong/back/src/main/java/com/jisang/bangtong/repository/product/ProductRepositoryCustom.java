@@ -9,5 +9,4 @@ import org.springframework.stereotype.Repository;
 public interface ProductRepositoryCustom {
 
   List<Product> searchList(ProductSearchDto productSearchDto);
-  List<Product> getRecentProducts(String regionId);
 }

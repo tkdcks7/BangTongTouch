@@ -22,9 +22,9 @@ public class PreferenceController {
 
     // 선호 설정 등록
     @PostMapping("/add/{userId}")
-    public ResponseDto<PreferenceDto> addPreference(@PathVariable long userId, @RequestBody PreferenceDto preferenceDto) {
+    public ResponseDto<Void> addPreference(@PathVariable long userId, @RequestBody PreferenceDto preferenceDto) {
         preferenceService.addPreference(userId, preferenceDto);
-        return ResponseDto.res(SUCCESS, preferenceDto);
+        return ResponseDto.res(SUCCESS);
     }
 
     // 선호 설정 수정

@@ -90,10 +90,4 @@ public class ProductController {
     return ResponseDto.res("SUCCESS", productSize);
   }
 
-  @GetMapping("/recent/product")
-  public ResponseDto<List<ProductReturnDto>> getRecentProduct(HttpServletRequest request) {
-    List<ProductReturnDto> productReturnDto = productService.getRecentProducts(request);
-    return ResponseDto.res("SUCCESS", productReturnDto);
-  }
-
 }
