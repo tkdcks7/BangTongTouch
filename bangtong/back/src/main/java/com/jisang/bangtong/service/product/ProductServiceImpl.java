@@ -1,6 +1,7 @@
 package com.jisang.bangtong.service.product;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.jisang.bangtong.dto.preference.PreferenceDto;
 import com.jisang.bangtong.dto.product.ProductReturnDto;
 import com.jisang.bangtong.dto.product.ProductSearchDto;
 import com.jisang.bangtong.dto.product.ProductUpdateDto;
@@ -265,6 +266,25 @@ public class ProductServiceImpl implements ProductService {
         .productAddressDetail(productUploadDto.getProductDetailAddress())
         .productDescription(productUploadDto.getProductDescription())
         .lat(productUploadDto.getLat()).lng(productUploadDto.getLng()).build();
+  }
+
+
+  @Override
+  public List<ProductReturnDto> getRecentProducts(HttpServletRequest request){
+    String token = jwtUtil.getAccessToken(request);
+    if(token.isEmpty()){
+      throw new IllegalArgumentException("토큰이 만료되었습니다.");
+    }
+    Long userId = jwtUtil.getUserIdFromToken(token);
+    User u = userRepository.findById(userId).orElse(null);
+    if(!isValidUser(u)){
+      throw new NotFoundException("사용자를 찾을 수 없습니다");
+    }
+
+    List<PreferenceDto> preferenceDtoList = preferenceRepository.
+
+
+    return productRepository.getRecentProducts();
   }
 
   @Override

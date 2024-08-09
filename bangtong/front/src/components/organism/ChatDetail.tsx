@@ -24,7 +24,7 @@ interface ChatI {
 interface ShowMessage {
   chatContent: string;
   chatTime: string;
-  userId?: number;
+  writerId: number;
 }
 
 const ChatDetail: React.FC = () => {
@@ -49,19 +49,16 @@ const ChatDetail: React.FC = () => {
     console.log(message);
     const parsedJson = JSON.parse(message);
     console.log(parsedJson);
-    const data = JSON.parse(parsedJson.data);
+    const jsonStr = parsedJson.data.toString().replace(/^.|.$/g, "");
+    console.log(jsonStr);
+    const data = JSON.parse("{" + jsonStr + "}");
     console.log(data);
-    // const jsonStr = parsedJson.data
-    //   .toString()
-    //   .replace(/=/g, ":")
-    //   .replace(/([{,]\s*)(\w+)(\s*:)/g, '$1"$2"$3')
-    //   .replace(/:\s*([^",}\s]+)/g, ': "$1"');
-    // const content = JSON.parse(jsonStr);
-    // const chat: ShowMessage = {
-    //   chatContent: content.chatContent,
-    //   chatTime: now.toString(),
-    // };
-    // setMessages((prev) => [...(prev || []), chat]);
+    const chat: ShowMessage = {
+      chatContent: data.chatMessage,
+      chatTime: data.chatTime,
+      writerId: data.sender,
+    };
+    setMessages((prev) => [...(prev || []), chat]);
   };
 
   useEffect(() => {
