@@ -21,7 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -145,6 +144,13 @@ public class UserController {
     }
 
     return ResponseDto.res(ResponseMessageConstants.SUCCESS);
+  }
+
+  // 아이디 찾기
+  @PostMapping("/find/id")
+  public ResponseDto<String> findUserEmail(@RequestBody Map<String, String> map) {
+    String email = userService.findUserEmail(map.get("phone"));
+    return ResponseDto.res(ResponseMessageConstants.SUCCESS, email);
   }
 
 }
