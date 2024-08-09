@@ -35,7 +35,7 @@ const BtnGroup: React.FC<BtnGroupProps> = ({ title, itemsArray }) => {
         <button
           key={index}
           onClick={() => onClickFtn(index)}
-          className={`p-2 px-4 border rounded-full m-1 ${
+          className={`p-2 px-4 border rounded-full m-1 dark:text-white ${
             idxArr[index]
               ? "border-lime-400 text-lime-400"
               : "text-gray-400 hover:border-lime-400 hover:text-lime-400"
