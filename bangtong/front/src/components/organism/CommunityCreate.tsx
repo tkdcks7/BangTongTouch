@@ -31,6 +31,7 @@ const CommunityCreate: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get("id");
   const { token } = useUserStore();
+  const userId = useUserStore().id;
 
   const [category, setCategory] = useState<string>("게시판 종류 선택");
   const addr = useRef<number>();
@@ -112,24 +113,22 @@ const CommunityCreate: React.FC = () => {
                 return;
               }
 
-              if (category !== "전체") {
-              }
-
               const data = new FormData();
               data.append("boardTitle", titleValue);
               data.append("boardContent", textEditorValue);
-              data.append("boardWriter", "1");
+              data.append("boardWriter", userId.toString());
               if (id === null) {
+                console.log(category === "전체");
                 authAxios({
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json; charset=UTF-8",
                   },
-                  url: `${process.env.REACT_APP_BACKEND_URL}/boards/write${category !== "전체" ? "/" + addr.current : ""}`,
+                  url: `${process.env.REACT_APP_BACKEND_URL}/boards/write${category === "내 지역" ? "/" + addr.current : ""}`,
                   data: {
                     boardTitle: titleValue,
                     boardContent: textEditorValue,
-                    boardWriter: 1,
+                    boardWriter: userId,
                   },
                 })
                   .then((response) => {
@@ -138,7 +137,10 @@ const CommunityCreate: React.FC = () => {
                       redirectToBoards();
                     } else alert("오류가 발생하였습니다.");
                   })
-                  .catch((error) => console.log("전송 실패", error));
+                  .catch((error) => {
+                    alert("로그인 후 이용해주세요.");
+                    navigate("/user/login");
+                  });
               } else {
                 authAxios({
                   method: "PUT",

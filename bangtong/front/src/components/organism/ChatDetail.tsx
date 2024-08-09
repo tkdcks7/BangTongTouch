@@ -27,14 +27,19 @@ interface ShowMessage {
   writerId: number;
 }
 
+interface OpponentUser {
+  profileImage: string;
+  nickname: string;
+  userId: number;
+}
+
 const ChatDetail: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const userId = useUserStore().id;
   const url: string = `${process.env.REACT_APP_BACKEND_URL}/ws`;
   const connectUrl: string = `/topic/greetings/${roomId}`;
   const sendUrl: string = `/app/hello/${roomId}`;
-  const [pfpSrc, setPfpSrc] = useState<string>("");
-  const [nickName, setNickName] = useState<string>("");
+  const [opponentUser, setOpponentUser] = useState<OpponentUser>();
   const navigate = useNavigate();
 
   const [connected, setConnected] = useState<boolean>(false);
@@ -77,13 +82,14 @@ const ChatDetail: React.FC = () => {
         url: `${process.env.REACT_APP_BACKEND_URL}/chatrooms/chat/1`,
       })
         .then((response) => {
+          console.log(response.data.data);
+          let userData: OpponentUser;
           if (response.data.data.maker.userId === userId) {
-            setPfpSrc(response.data.data.maker.profileImage);
-            setNickName(response.data.data.maker.nickname);
+            userData = response.data.data.participant;
           } else {
-            setPfpSrc(response.data.data.participant.profileImage);
-            setNickName(response.data.data.participant.nickname);
+            userData = response.data.data.maker;
           }
+          setOpponentUser(userData);
           setMessages(response.data.data.content);
         })
         .catch((error) => {
@@ -149,7 +155,9 @@ const ChatDetail: React.FC = () => {
     <div>
       <div className="flex items-center">
         <RollBackBtn />
-        <div className="inline-block text-center h-10 ms-3">{nickName}</div>
+        <div className="inline-block text-center h-10 ms-3">
+          {opponentUser?.nickname}
+        </div>
       </div>
       <div
         className="flex-row"
@@ -167,7 +175,9 @@ const ChatDetail: React.FC = () => {
             imgUrl={
               item.writerId === userId
                 ? undefined
-                : process.env.REACT_APP_BACKEND_SRC_URL + "/" + pfpSrc
+                : process.env.REACT_APP_BACKEND_SRC_URL +
+                  "/" +
+                  opponentUser?.profileImage
             }
             flag={item.writerId === userId}
           />
@@ -192,7 +202,11 @@ const ChatDetail: React.FC = () => {
           onIconClick={sendMessage}
         />
       </div>
-      <ChatAdditionalBar roomId={roomId!!} />
+      <ChatAdditionalBar
+        roomId={roomId!!}
+        reportUserId={opponentUser?.userId!!}
+        reportUserNickname={opponentUser?.nickname!!}
+      />
     </div>
   );
 };
