@@ -4,9 +4,11 @@ import AppRoutes from "./router";
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <AppRoutes />
-    </Router>
+    <div className="dark:bg-gray-800 dark:text-white">
+        <Router>
+            <AppRoutes />
+        </Router>
+    </div>
   );
 };
 

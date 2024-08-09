@@ -55,6 +55,13 @@ const CommunityMain: React.FC = () => {
     },
   };
 
+  const darkTheme = {
+    token: {
+      colorBgTextHover: "#FFFFFF",
+      colorPrimary: "#FFFDD0",
+    },
+  };
+
   const loadData = () => {
     axios({
       method: "POST",

@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -59,14 +60,14 @@ public class WebSocketChatController {
     try {
       chatService.send(sendDto);
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-      // 디코딩된 데이터를 사용하여 클라이언트에 보내기 위해 JSON 문자열 작성
-      String responseData = String.format("{chatRoom:%d, sender:%d, chatMessage:%s, chatTime:%s}",
-          sendDto.getChatRoom(),
-          sendDto.getSender(),
-          HtmlUtils.htmlEscape(sendDto.getChatMessage()), // this will escape any additional HTML characters
-          formatter.format(sendDto.getChatTime())
-           // 또는 필요에 맞게 시간을 포맷
-      );
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put("chatRoom", sendDto.getChatRoom());
+      jsonObject.put("sender", sendDto.getSender());
+      jsonObject.put("chatMessage", HtmlUtils.htmlEscape(sendDto.getChatMessage())); // escapes HTML characters
+      jsonObject.put("chatTime", formatter.format(sendDto.getChatTime()));
+
+// Convert the JSONObject to a string
+      String responseData = jsonObject.toString();
       return new ResponseDto<>("SUCCESS", responseData);
     }catch (RuntimeException e){
       return new ResponseDto<>("ERROR", HtmlUtils.htmlEscape(decodeHtmlEntities(e.getMessage())));
