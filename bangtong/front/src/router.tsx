@@ -41,6 +41,7 @@ import CommunityCreate from "./components/organism/CommunityCreate"; // 글 쓰�
 import authAxios from "./utils/authAxios";
 import useAlarmInfoStore from "./store/alarmInfoStore";
 import NotFoundPage from "./components/page/NotFoundPage";
+import VideoChat from "./components/page/VideoChat";
 
 // 비로그인시 보여줄 페이지
 import InformationPage from "./components/page/InformationPage/InformationPage";
@@ -103,6 +104,7 @@ const AppRoutes: React.FC = () => {
           {/* 채팅 페이지 */}
           <Route path="chats" element={<ChattingPage />}>
             <Route path="" element={<ChatMain />} />
+            <Route path="videochat/:roomId" element={<VideoChat />} />
             <Route path=":roomId" element={<ChatDetail />} />
           </Route>
 
@@ -121,14 +123,14 @@ const AppRoutes: React.FC = () => {
             <Route path="notification" element={<ProfileNotification />} />
           </Route>
         </Route>
+        {/* 커뮤니티 페이지 */}
+        <Route path="boards" element={<CommunityPage />}>
+          <Route path="" element={<CommunityMain />} />
+          <Route path=":id" element={<CommunityDetail />} />
+          <Route path="write" element={<CommunityCreate />} />
+        </Route>
       </Route>
 
-      {/* 커뮤니티 페이지 */}
-      <Route path="boards" element={<CommunityPage />}>
-        <Route path="" element={<CommunityMain />} />
-        <Route path=":id" element={<CommunityDetail />} />
-        <Route path="write" element={<CommunityCreate />} />
-      </Route>
       <Route path="/*" element={<NotFoundPage />} />
     </Routes>
   );

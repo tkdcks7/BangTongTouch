@@ -25,7 +25,7 @@ const Chat: React.FC<ChatProps> = ({
       <ChatMsgBox message={chatContent} date={chatTime} />
     </div>
   ) : (
-    <div>
+    <div className="flex mt-3 chattingMessage justify-end" key={key}>
       <ChatMsgBox
         message={chatContent}
         backgroundColor="bg-lime-500"

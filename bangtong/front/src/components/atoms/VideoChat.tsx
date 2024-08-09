@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import SocketService from "../../utils/SocketService";
+import { useParams } from "react-router-dom";
 
-interface VideoChatProps {
-  roomId: string;
-}
-
-const VideoChat: React.FC<VideoChatProps> = ({ roomId }) => {
+const VideoChat: React.FC = () => {
+  const { roomId } = useParams<{ roomId: string }>();
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
@@ -61,7 +59,7 @@ const VideoChat: React.FC<VideoChatProps> = ({ roomId }) => {
       if (event.candidate && camKey) {
         SocketService.send(
           `/app/peer/iceCandidate/${camKey}/${roomId}`,
-          event.candidate,
+          event.candidate
         );
       }
     };
@@ -79,14 +77,14 @@ const VideoChat: React.FC<VideoChatProps> = ({ roomId }) => {
     SocketService.subscribe(`/topic/peer/offer/${key}/${roomId}`, handleOffer);
     SocketService.subscribe(
       `/topic/peer/iceCandidate/${key}/${roomId}`,
-      handleIceCandidate,
+      handleIceCandidate
     );
   };
 
   const handleOffer = async (message: { body: string }) => {
     const offer = JSON.parse(message.body);
     await peerConnectionRef.current?.setRemoteDescription(
-      new RTCSessionDescription(offer),
+      new RTCSessionDescription(offer)
     );
     const answer = await peerConnectionRef.current?.createAnswer();
     await peerConnectionRef.current?.setLocalDescription(answer);
