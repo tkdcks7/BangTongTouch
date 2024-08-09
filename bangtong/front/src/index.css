@@ -16,3 +16,7 @@ body {
 #product-list::-webkit-scrollbar {
   display: none;
 }
+
+#signup-block {
+  max-height: 80%;
+}
