@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
+import { productSearchStore } from "../../store/productStore";
 
 // 컴포넌트
 import PreferenceBox from "../molecules/PreferenceBox";
@@ -22,13 +23,11 @@ interface PreferenceI {
 
 const PreferenceList: React.FC = () => {
   const { id } = useUserStore();
+  const { setInitailize } = productSearchStore();
   const [preferenceArr, setPreferenceArr] = useState<PreferenceI[]>([]);
   const navigate = useNavigate();
   const [modalIsOpen, setModalIsOpen] = useState(false);
-
-  function openModal() {
-    setModalIsOpen(true);
-  }
+  const [selectedId, setSelectedId] = useState<number>(0);
 
   function closeModal() {
     setModalIsOpen(false);
@@ -51,7 +50,9 @@ const PreferenceList: React.FC = () => {
   // 클릭 시 상세 페이지로 이동하는 핸들러
   const handlePreferenceDetail = (prefId: number): void => {
     console.log("선호 상세 모달 띄우기!");
-    navigate(`/profile/${id}/preference/${prefId}`);
+    setSelectedId(prefId);
+    setInitailize(); // 선호 상세 모달 오픈 시 searchStore 초기화
+    setModalIsOpen(true);
   };
 
   // 클릭 시 삭제하는 핸들러
@@ -72,24 +73,26 @@ const PreferenceList: React.FC = () => {
 
   return (
     <>
-      <div className="w-full flex text-nowrap items-center mt-5">
+      <div className="w-full flex text-nowrap items-center justify-between mt-5">
         <h2 className="text-xl text-left text-lime-500 font-bold">
           회원 선호 설정 관리
         </h2>
-        <Link
-          to={`/profile/${id}`}
-          className="bg-yellow-400 ml-auto py-1 px-4 rounded-md text-white"
-        >
-          만들기
-        </Link>
-        <Link
-          to={`/profile/${id}`}
-          className="bg-gray-400 ml-auto py-1 px-4 rounded-md text-white"
-        >
-          메뉴로
-        </Link>
+        <div>
+          <button
+            className="bg-yellow-400 ml-auto py-1 px-4 rounded-md text-white"
+            onClick={() => navigate(`/profile/${id}`)}
+          >
+            만들기
+          </button>
+          &nbsp;&nbsp;
+          <button
+            className="bg-gray-400 ml-auto py-1 px-4 rounded-md text-white"
+            onClick={() => navigate(`/profile/${id}`)}
+          >
+            메뉴로
+          </button>
+        </div>
       </div>
-      <button onClick={openModal}>모달테스트용버튼</button>
       <div className="flex flex-col mt-5 items-center justify-center text-center">
         {preferenceArr.map((pref: PreferenceI) => {
           return (
@@ -97,13 +100,20 @@ const PreferenceList: React.FC = () => {
               key={pref.preferenceId}
               preferenceId={pref.preferenceId}
               preferenceName={pref.preferenceName}
+              preferenceDeposit={pref.preferenceDeposit}
+              preferenceRent={pref.preferenceRent}
+              regionAddress={pref.regionAddress}
               handlePreferenceDetail={handlePreferenceDetail}
               handlePreferenceDelete={handlePreferenceDelete}
             />
           );
         })}
       </div>
-      <ProfileModal modalIsOpen={modalIsOpen} closeModal={closeModal} />
+      <ProfileModal
+        modalIsOpen={modalIsOpen}
+        closeModal={closeModal}
+        selectedId={selectedId}
+      />
     </>
   );
 };
