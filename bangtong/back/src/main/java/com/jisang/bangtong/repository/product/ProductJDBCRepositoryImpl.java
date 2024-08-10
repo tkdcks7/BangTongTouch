@@ -6,6 +6,8 @@ import com.jisang.bangtong.model.product.Product;
 import com.jisang.bangtong.model.product.ProductType;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.model.user.User;
+import com.jisang.bangtong.repository.file.FileRepository;
+import com.jisang.bangtong.repository.region.RegionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -23,12 +25,14 @@ import java.util.List;
 public class ProductJDBCRepositoryImpl implements ProductJDBCRepository{
 
     private final DataSource dataSource;
-
+    private final FileRepository fileRepository;
+    private final RegionRepository regionRepository;
     @Autowired
-    public ProductJDBCRepositoryImpl(DataSource dataSource) {
+    public ProductJDBCRepositoryImpl(DataSource dataSource, FileRepository fileRepository, RegionRepository regionRepository) {
         this.dataSource = dataSource;
+        this.fileRepository = fileRepository;
+        this.regionRepository = regionRepository;
     }
-
 
     public List<Product> searchList(ProductSearchDto productSearchDto) {
         List<Product> products = new ArrayList<>();
@@ -142,8 +146,7 @@ public class ProductJDBCRepositoryImpl implements ProductJDBCRepository{
         }
 
         // You might need to load Region and User separately if they are complex objects
-        Region region = new Region(); // You'll need to map this appropriately
-        region.setRegionId(rs.getString("region_id"));
+        Region region = regionRepository.findById(rs.getString("region_id")).orElse(null); // You'll need to map this appropriately
         product.setRegion(region);
 
         User user = new User(); // Similarly map User object
@@ -173,7 +176,7 @@ public class ProductJDBCRepositoryImpl implements ProductJDBCRepository{
         product.setProductDescription(rs.getString("product_description"));
 
         // For productMedia, you might need to perform a separate query to get the media list
-        List<Media> mediaList = new ArrayList<>();
+        List<Media> mediaList = fileRepository.findByProduct_ProductId(product.getProductId());
         // Populate Media list with appropriate logic
         product.setProductMedia(mediaList);
 
