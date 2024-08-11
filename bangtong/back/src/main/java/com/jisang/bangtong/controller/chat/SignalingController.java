@@ -1,5 +1,6 @@
 package com.jisang.bangtong.controller.chat;
 
+import java.util.UUID;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -11,42 +12,33 @@ public class SignalingController {
 
   @MessageMapping("/peer/offer/{camKey}/{roomId}")
   @SendTo("/topic/peer/offer/{camKey}/{roomId}")
-  public String PeerHandleOffer(@Payload String offer,
-      @DestinationVariable(value = "roomId") String roomId,
-      @DestinationVariable(value = "camKey") String camKey) {
+  public String peerHandleOffer(@Payload String offer, @DestinationVariable String roomId,
+      @DestinationVariable String camKey) {
     return offer;
-  }
-
-  @MessageMapping("/peer/iceCandidate/{camKey}/{roomId}")
-  @SendTo("/topic/peer/iceCandidate/{camKey}/{roomId}")
-  public String PeerHandleIceCandidate(@Payload String answer,
-      @DestinationVariable(value = "roomId") String roomId,
-      @DestinationVariable(value = "camKey") String camKey) {
-    return answer;
-  }
-
-  @MessageMapping("/call/key")
-  @SendTo("/topic/call/key")
-  public String callKey(@Payload String message) {
-    return message;
-  }
-
-  @MessageMapping("/send/key")
-  @SendTo("/topic/send/key")
-  public String sendKey(@Payload String message) {
-    return generateUniqueKey();
   }
 
   @MessageMapping("/peer/answer/{camKey}/{roomId}")
   @SendTo("/topic/peer/answer/{camKey}/{roomId}")
-  public String PeerHandleAnswer(@Payload String answer,
-      @DestinationVariable(value = "roomId") String roomId,
-      @DestinationVariable(value = "camKey") String camKey) {
+  public String peerHandleAnswer(@Payload String answer, @DestinationVariable String roomId,
+      @DestinationVariable String camKey) {
     return answer;
   }
 
+  @MessageMapping("/peer/iceCandidate/{camKey}/{roomId}")
+  @SendTo("/topic/peer/iceCandidate/{camKey}/{roomId}")
+  public String peerHandleIceCandidate(@Payload String candidate,
+      @DestinationVariable String roomId, @DestinationVariable String camKey) {
+    return candidate;
+  }
+
+  @MessageMapping("/send/key")
+  @SendTo("/topic/call/key")
+  public String sendKey(@Payload String message) {
+    return generateUniqueKey();
+  }
+
   private String generateUniqueKey() {
-    return "abc";
+    return UUID.randomUUID().toString().replace("-", "").substring(0, 16);
   }
 
 }

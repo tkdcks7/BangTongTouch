@@ -65,6 +65,16 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
           String accessToken = jwtUtil.generateAccessToken(user,
               String.valueOf(e.getClaims().get("authorities")), new Date());
+          jwtUtil.generateRefreshToken(user, String.valueOf(e.getClaims().get("authorities")),
+              new Date());
+
+          Authentication authentication = new UsernamePasswordAuthenticationToken(
+              user.getUserEmail(), null,
+              AuthorityUtils.commaSeparatedStringToAuthorityList(
+                  String.valueOf(e.getClaims().get("authorities"))));
+
+          SecurityContextHolder.getContext().setAuthentication(authentication);
+          response.setHeader(SecurityConstants.JWT_HEADER, accessToken);
         }
       } catch (Exception e) {
         throw new BadCredentialsException(SecurityConstants.JWT_INVALID_TOKEN);

@@ -20,6 +20,7 @@ import org.springframework.security.authentication.password.CompromisedPasswordC
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -49,6 +50,7 @@ public class SecurityConfig {
 
     http.sessionManagement(
             sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .headers(header -> header.frameOptions(FrameOptionsConfig::sameOrigin))
         .cors(corsConfig -> corsConfig.configurationSource(request -> {
           CorsConfiguration config = new CorsConfiguration();
 
