@@ -10,6 +10,7 @@ import com.jisang.bangtong.dto.user.UserDto;
 import com.jisang.bangtong.dto.user.UserInformationDto;
 import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.user.User;
+import com.jisang.bangtong.repository.user.TokenRepository;
 import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.common.FileService;
 import com.jisang.bangtong.util.JwtUtil;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,15 +34,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class UserService {
 
-  private UserRepository userRepository;
+  private final UserRepository userRepository;
+  private final TokenRepository tokenRepository;
   private final AuthenticationManager authenticationManager;
-  private JwtUtil jwtUtil;
-  private PasswordEncoder passwordEncoder;
-  private FileService fileService;
+  private final JwtUtil jwtUtil;
+  private final PasswordEncoder passwordEncoder;
+  private final FileService fileService;
 
   public void register(RegisterRequestDto registerRequestDto) {
     String password = passwordEncoder.encode(registerRequestDto.password());
@@ -95,10 +98,7 @@ public class UserService {
           .map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
 
       accessToken = jwtUtil.generateAccessToken(user, authorities, currentDate);
-      String refreshToken = jwtUtil.generateRefreshToken(user, authorities, currentDate);
-      user.setUserRefreshToken(refreshToken);
-
-      userRepository.saveAndFlush(user);
+      jwtUtil.generateRefreshToken(user, authorities, currentDate);
     }
 
     map.put("accessToken", accessToken);
@@ -107,9 +107,13 @@ public class UserService {
     return map;
   }
 
-  //  TODO: logout
   public void logout(HttpServletRequest request, HttpServletResponse response) {
-    String header = request.getHeader(SecurityConstants.JWT_HEADER);
+    String token = request.getHeader(SecurityConstants.JWT_HEADER);
+
+    if (token != null && !token.isEmpty()) {
+      String email = jwtUtil.getUserEmailFromToken(token);
+      tokenRepository.delete(email);
+    }
   }
 
   public User getUser(Long userId) {
