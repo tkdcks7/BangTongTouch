@@ -8,17 +8,21 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import javax.crypto.SecretKey;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class JwtUtil {
 
   private final String secret = SecurityConstants.JWT_SECRET_DEFAULT_VALUE;
   private final SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+  private final RedisTemplate<String, String> redisTemplate;
 
   public String generateAccessToken(User user, String authorities, Date currentDate) {
     return Jwts.builder()
@@ -34,7 +38,7 @@ public class JwtUtil {
   }
 
   public String generateRefreshToken(User user, String authorities, Date currentDate) {
-    return Jwts.builder()
+    String refreshToken = Jwts.builder()
         .issuer("bangtong")
         .subject(user.getUserEmail())
         .claim("id", user.getUserId())
@@ -44,6 +48,12 @@ public class JwtUtil {
         .expiration(new Date(currentDate.getTime() + SecurityConstants.JWT_REFRESH_EXPIRES_IN))
         .signWith(secretKey)
         .compact();
+
+    redisTemplate.opsForValue()
+        .set(user.getUserEmail(), refreshToken, SecurityConstants.JWT_REFRESH_EXPIRES_IN,
+            TimeUnit.MILLISECONDS);
+
+    return refreshToken;
   }
 
   public Claims parseToken(String token) {

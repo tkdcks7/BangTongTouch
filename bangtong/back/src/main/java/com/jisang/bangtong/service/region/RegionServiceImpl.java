@@ -8,9 +8,11 @@ import com.jisang.bangtong.dto.region.RegionSidoDto;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.repository.region.RegionRepository;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class RegionServiceImpl implements RegionService{
 
@@ -34,6 +36,7 @@ public class RegionServiceImpl implements RegionService{
 
   @Override
   public RegionReturnDto getRegionCode(String regionId) {
+    log.info("getRegionCode ServiceImpl {}", regionId);
     Region r = regionRepository.findById(regionId).orElse(null);
 
     if (r == null) {

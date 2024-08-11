@@ -124,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
   public List<ProductReturnDto> searchList(ProductSearchDto productSearchDto,
       HttpServletRequest request) {
     List<Product> productList = productRepository.searchList(productSearchDto);
-    log.info("SearchList Test {}", productSearchDto);
+    log.info("SearchList Test {}", productList);
     List<ProductReturnDto> productReturnDtoList = new ArrayList<>();
     Set<Long> interestSet = new HashSet<>();
     boolean isLike = getInterestSet(interestSet, request);
