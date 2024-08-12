@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import dayjs from "dayjs";
 
 interface ProductOption {
@@ -118,7 +119,8 @@ const productSearchInitialState: ProductSearchParamsInitialI = {
 // 검색 옵션 store
 export const productSearchStore = create<ProductSearchParams>((set) => ({
   ...productSearchInitialState,
-  setProductsList: (data: any) => set(() => ({ productsList: data })),
+  setProductsList: (data: any) =>
+    set((state) => ({ productsList: [...state.productsList, ...data] })),
   setOrder: (idx: number) => set(() => ({ order: idx })),
   setDeposit: (min: number, max: number) =>
     set(() => ({
@@ -183,23 +185,34 @@ const preferenceDefault: Omit<
   "setPreference" | "reSetPreference"
 > = {
   preferenceId: 0,
-  preferenceName: "서울에서 살래~!!!",
+  preferenceName: "선호 설정 제목",
   userId: 0,
   regionId: "1150010400",
   regionAddress: "서울특별시 강서구 가양동",
-  preferenceDeposit: 5000,
-  preferenceRent: 70,
-  preferenceType: "00111",
-  preferenceInfra: "11111111",
+  preferenceDeposit: 10000,
+  preferenceRent: 1000,
+  preferenceType: "10000",
+  preferenceInfra: "00000000",
   preferenceStartDate: "2024-09-06T04:54:15.802+00:00",
   preferenceEndDate: "2025-08-18T06:27:35.802+00:00",
 };
 
 // 선호 설정 store
-export const preferenceStore = create<PreferenceI>((set) => ({
-  ...preferenceDefault,
-  setPreference: (payload) => set((state) => ({ ...state, ...payload })),
-  reSetPreference: () => set((state) => ({ ...state, ...preferenceDefault })),
-}));
+export const preferenceStore = create<PreferenceI>()(
+  persist(
+    (set) => ({
+      ...preferenceDefault,
+      setPreference: (payload: Partial<PreferenceI>) =>
+        set((state) => ({ ...state, ...payload })),
+      reSetPreference: () => set(() => ({ ...preferenceDefault })),
+    }),
+    {
+      name: "preference-storage", // 로컬 스토리지에 저장될 키
+      getStorage: () => localStorage, // 기본값이 로컬 스토리지
+      // 또는 세션 스토리지를 사용할 경우
+      // getStorage: () => sessionStorage,
+    }
+  )
+);
 
 export default useProductOptionStore;
