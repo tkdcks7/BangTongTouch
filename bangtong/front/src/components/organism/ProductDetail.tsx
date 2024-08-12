@@ -191,7 +191,10 @@ const ProductDetail: React.FC = () => {
         <ImgCarousel />
         <h2 className="text-2xl font-bold text-center">{`${productInfo.boardRegion.regionSido} ${productInfo.boardRegion.regionGugun} ${productInfo.boardRegion.regionDong}`}</h2>
         {/* 유저 프로필, 연락하기 */}
-        <ProductProfile userinfo={productInfo.user} />
+        <ProductProfile
+          userinfo={productInfo.user}
+          productId={productInfo.productId}
+        />
         <p className="mt-2">간단한 설명 (유저 입력)</p>
         {/* 구분선 */}
         <Devider />
