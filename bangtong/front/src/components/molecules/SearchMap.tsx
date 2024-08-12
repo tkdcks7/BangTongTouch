@@ -12,6 +12,8 @@ import MapBank from "../../assets/MapBank.png"; // 은행
 import MapLaundry from "../../assets/MapLaundry.png"; // 세탁소
 import MapGym from "../../assets/MapGym.png"; // 헬스장
 import { FilterOutlined } from "@ant-design/icons";
+import { productSearchStore } from "../../store/productStore";
+import authAxios from "../../utils/authAxios";
 
 interface MapProps {
   basePos: Pos; // 초기 위치(매물 좌표 or 사용자의 위치)
@@ -55,6 +57,20 @@ const SearchMap: React.FC<MapProps> = ({
   const [subModalIsOpen, setSubModalIsOpen] = useState(false);
   const [selectedSubModalData, setSelectedSubModalData] = useState<string>("");
   const [zoomLevel, setZoomLevel] = useState<number>(13);
+  const {
+    order,
+    minDeposit,
+    maxDeposit,
+    minRent,
+    maxRent,
+    homeType,
+    infra,
+    address,
+    rentSupportable,
+    furnitureSupportable,
+    startDate,
+    endDate,
+  } = productSearchStore();
   let map: any;
   let markers: naver.maps.Marker[] = [];
 
@@ -168,6 +184,32 @@ const SearchMap: React.FC<MapProps> = ({
           src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
         });
       } else {
+        authAxios({
+          method: "POST",
+          url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
+          data: {
+            order,
+            minDeposit,
+            maxDeposit,
+            minRent,
+            maxRent,
+            type: "ONEROOM",
+            regionId: "" + 1111000000,
+            rentSupportable,
+            furnitureSupportable,
+            infra: 255,
+            startDate,
+            endDate,
+            lat: posRef.current.lat,
+            lng: posRef.current.lng,
+          },
+        })
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
         for (let i = 0; i < 10; i++) {
           markerDatas.push({
             productId: i,
