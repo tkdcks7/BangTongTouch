@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
-import { productSearchStore } from "../../store/productStore";
+import { productSearchStore, preferenceStore } from "../../store/productStore";
 
 // 컴포넌트
 import PreferenceBox from "../molecules/PreferenceBox";
@@ -23,11 +23,12 @@ interface PreferenceI {
 
 const PreferenceList: React.FC = () => {
   const { id } = useUserStore();
-  const { setInitailize } = productSearchStore();
   const [preferenceArr, setPreferenceArr] = useState<PreferenceI[]>([]);
   const navigate = useNavigate();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number>(0);
+
+  const { setPreference } = preferenceStore();
 
   function closeModal() {
     setModalIsOpen(false);
@@ -47,11 +48,17 @@ const PreferenceList: React.FC = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  // 클릭 시 상세 페이지로 이동하는 핸들러
+  // 클릭 시 선호 상세 모달을 띄우는 핸들러
   const handlePreferenceDetail = (prefId: number): void => {
     console.log("선호 상세 모달 띄우기!");
     setSelectedId(prefId);
-    setInitailize(); // 선호 상세 모달 오픈 시 searchStore 초기화
+    setModalIsOpen(true);
+  };
+
+  // 클릭 시 선호 생성 모달을 띄우는 핸들러
+  const handlePreferenceCreate = (): void => {
+    console.log("선호 상세 모달 띄우기!");
+    setSelectedId(0);
     setModalIsOpen(true);
   };
 
@@ -71,16 +78,29 @@ const PreferenceList: React.FC = () => {
       .catch((err) => console.log(err));
   };
 
+  const handlePreferenceApplicate = (prefId: number) => {
+    console.log("선호설정 등록");
+    preferenceArr.forEach((el, idx) => {
+      if (el.preferenceId === prefId) {
+        setPreference(preferenceArr[idx]);
+      }
+    });
+  };
+
+  const addpreferenceArr = (prefArr: any) => {
+    setPreferenceArr([...preferenceArr, prefArr]);
+  };
+
   return (
     <>
       <div className="w-full flex text-nowrap items-center justify-between mt-5">
         <h2 className="text-xl text-left text-lime-500 font-bold">
-          회원 선호 설정 관리
+          나의 선호 설정 관리
         </h2>
         <div>
           <button
             className="bg-yellow-400 ml-auto py-1 px-4 rounded-md text-white"
-            onClick={() => navigate(`/profile/${id}`)}
+            onClick={handlePreferenceCreate}
           >
             만들기
           </button>
@@ -104,6 +124,7 @@ const PreferenceList: React.FC = () => {
               preferenceRent={pref.preferenceRent}
               regionAddress={pref.regionAddress}
               handlePreferenceDetail={handlePreferenceDetail}
+              handlePreferenceApplicate={handlePreferenceApplicate}
               handlePreferenceDelete={handlePreferenceDelete}
             />
           );
@@ -113,6 +134,7 @@ const PreferenceList: React.FC = () => {
         modalIsOpen={modalIsOpen}
         closeModal={closeModal}
         selectedId={selectedId}
+        addpreferenceArr={addpreferenceArr}
       />
     </>
   );
