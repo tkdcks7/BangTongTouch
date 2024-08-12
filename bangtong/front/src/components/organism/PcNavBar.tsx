@@ -96,46 +96,44 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
   }, [token, alarms]);
 
   return (
-    <>
-      <header
-        className={`flex justify-between items-center w-full p-5 mb-10 ${!dark ? "bg-gray-800 text-white" : "bg-white text-black"}`}
-      >
-        <Link to="/" className="text-start">
-          <img src={Logo} alt="로고" className="w-40" />
-        </Link>
-        <div className="flex items-center justify-between">
-          <NavLink
-            className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap ${isActive ? "text-black" : "text-gray-400"} ${dark ? "dark:text-white" : ""}`
-            }
-            to="/products"
-          >
-            방통터치
-          </NavLink>
-          <NavLink
-            className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap ${isActive ? "text-black" : "text-gray-400"} ${dark ? "dark:text-white" : ""}`
-            }
-            to="/chats"
-          >
-            채팅
-          </NavLink>
-          <NavLink
-            className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap ${isActive ? "text-black" : "text-gray-400"} ${dark ? "dark:text-white" : ""}`
-            }
-            to={`/profile/${id}`}
-          >
-            마이방통
-          </NavLink>
-          <NavLink
-            className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap ${isActive ? "text-black" : "text-gray-400"} ${dark ? "dark:text-white" : ""}`
-            }
-            to="/boards"
-          >
-            신통방톡
-          </NavLink>
+      <>
+        <header className={`flex justify-between items-center w-full p-5 mb-10 ${!dark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
+          <Link to="/" className="text-start">
+            <img src={Logo} alt="로고" className="w-40"/>
+          </Link>
+          <div className="flex items-center justify-between">
+            <NavLink
+                className={({ isActive }) =>
+                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} `
+                }
+                to="/products"
+            >
+              방통터치
+            </NavLink>
+            <NavLink
+                className={({ isActive }) =>
+                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
+                }
+                to="/chats"
+            >
+              채팅
+            </NavLink>
+            <NavLink
+                className={({ isActive }) =>
+                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
+                }
+                to={`/profile/${id}`}
+            >
+              마이방통
+            </NavLink>
+            <NavLink
+                className={({ isActive }) =>
+                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
+                }
+                to="/boards"
+            >
+              신통방톡
+            </NavLink>
 
           <div className="flex items-center justify-center mx-3 w-10 h-10">
             {token ? (
@@ -193,15 +191,14 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
         </div>
       </header>
 
-      <FloatButton
-        icon={!dark ? <SunOutlined /> : <MoonOutlined />}
-        onClick={toggleDark}
-        tooltip={
-          <div>{dark ? "Switch to Dark Mode" : "Switch to Light Mode"}</div>
-        }
-        className={"bg-yellow-300"}
-      />
-    </>
+        <FloatButton
+            icon={!dark ? <SunOutlined/> : <MoonOutlined/>}
+            onClick={toggleDark}
+            tooltip={<div>{dark ? 'Switch to Dark Mode' : 'Switch to Light Mode'}</div>}
+            className={'bg-yellow-300'}
+            style={{ insetInlineEnd: 24, bottom: 24 }}
+        />
+      </>
   );
 };
 
