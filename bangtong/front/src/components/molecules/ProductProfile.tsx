@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 
 // 컴포넌트
 import Btn from "../atoms/Btn";
 import ProfileImgBox from "../atoms/ProfileImgBox";
+import { Button } from "antd";
+import { WechatOutlined } from "@ant-design/icons";
 
 // 이미지 소스
 
@@ -10,17 +12,38 @@ interface ProductProps {
   userinfo: any;
 }
 
+// text="연락하기"
+//         width="w-20"
+//         textSize="text-sm"
+//         backgroundColor="bg-yellow-300"
+
 const ProductProfile: React.FC<ProductProps> = ({ userinfo }) => {
+  const [hover, setHover] = useState<boolean>(false);
+
+  const buttonStyle = {
+    backgroundColor: hover ? "#facc15" : "#fef08a",
+    borderColor: hover ? "#facc15" : "",
+    color: hover ? "#ffffff" : "",
+  };
+
   return (
     <div className="flex justify-between items-center mt-5">
       <ProfileImgBox src={userinfo.profileImage} profileId={userinfo.id} />
       {/* 유저 닉네임 받아오도록 조치 (현재 데이터 내 유저 정보가 없어서 미작성) */}
       <h2 className="text-xl font-bold">{userinfo.nickname}</h2>
-      <Btn
-        text="연락하기"
-        width="w-20"
-        textSize="text-sm"
-        backgroundColor="bg-yellow-300"
+      <Button
+        className={"bg-yellow-200 hover:bg-color-400"}
+        style={buttonStyle}
+        size="large"
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        icon={
+          <WechatOutlined
+            style={{ fontSize: "24px" }}
+            disabled={true}
+            type="primary"
+          />
+        }
       />
     </div>
   );
