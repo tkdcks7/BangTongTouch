@@ -6,6 +6,7 @@ import MMenuBar from "../organism/MMenuBar"; // 모바일 메뉴바 (알림, 햄
 import MNavBar from "../organism/MNavBar"; // 모바일 네비게이션바
 import PcNavBar from "../organism/PcNavBar"; // PC 네비게이션바
 import PcFooter from "../organism/PcFooter"; // PC 푸터
+import ScrollToTop from "../atoms/ScrollToTop";
 
 const Layout: React.FC = () => {
   const [dark, setDark] = React.useState(false);
@@ -16,6 +17,7 @@ const Layout: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
+      <ScrollToTop />
       <div className="md:hidden">
         <MMenuBar dark={!dark} toggleDark={toggleDark} />
       </div>

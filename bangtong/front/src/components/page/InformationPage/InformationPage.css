@@ -19,7 +19,7 @@
 .header {
   font-size: 180px;
   font-weight: bolder;
-  margin-bottom: 200px;
+  margin-bottom: 250px;
 }
 
 .footer {
@@ -46,7 +46,7 @@
   .header {
     font-size: 60px;
     font-weight: bolder;
-    margin-top: 200px;
+    margin-top: 100px;
     margin-bottom: 350px;
   }
 
@@ -63,6 +63,35 @@
     font-weight: bold;
     color: white;
     width: 150px;
+    padding: 15px;
+    border-radius: 50px;
+    margin: auto;
+    margin-bottom: 100px;
+    background: #129b07;
+  }
+}
+
+@media screen and (min-width: 1600px) {
+  .header {
+    font-size: 180px;
+    font-weight: bolder;
+    margin-bottom: 400px;
+  }
+
+  .footer {
+    color: #000000;
+    font-size: 40px;
+    font-weight: bold;
+    margin-top: 350px;
+    margin-bottom: 100px;
+  }
+
+  #start-button {
+    font-size: large;
+    font-weight: bold;
+    font-size: 30px;
+    color: white;
+    width: 200px;
     padding: 15px;
     border-radius: 50px;
     margin: auto;

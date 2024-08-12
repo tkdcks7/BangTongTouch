@@ -78,8 +78,11 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
         .where(isMakerPresent.or(isParticipantPresent))
         .fetch();
 
+
     // Transform tuples to DTOs
     return resultTuples.stream().map(tuple -> {
+
+      log.info(tuple.toString());
       Long chatroomId = tuple.get(qChatroom.chatroomId);
       Product product = tuple.get(qProduct);
       User maker = tuple.get(qMaker);

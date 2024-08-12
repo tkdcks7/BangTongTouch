@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useDaumPostcodePopup } from "react-daum-postcode";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import authAxios, { formDataAxios } from "../../utils/authAxios";
 import { getUserAddressNum } from "../../utils/services";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 // 컴포넌트
 import InputBox from "../molecules/InputBox";
 import Attachment from "../atoms/Attachment";
 import Btn from "../atoms/Btn";
 import OptionBtnGroup from "../molecules/OptionBtnGroup";
-import RadioGroup from "../molecules/RadioGroup";
-import Datepicker from "react-tailwindcss-datepicker";
 import useProductOptionStore from "../../store/productStore";
 import { Form, Input, DatePicker, ConfigProvider, Radio } from "antd";
 import { CloseCircleOutlined } from "@ant-design/icons";
@@ -45,14 +43,18 @@ const ProductUpload: React.FC = () => {
   // 옵션그룹을 상태관리하기 위한 store
   const { optionObj } = useProductOptionStore();
 
+  const navigate = useNavigate();
+
   // 백엔드에 넘겨줄 데이터를 위한 state
   const [address, setAddress] = useState<string>("");
   const [addressDetail, setAddressDetail] = useState<string>("");
+  const [regionId, setRegionId] = useState<string>("");
   const [deposit, setDeposit] = useState<string>("");
   const [charge, setCharge] = useState<string>("");
   const [maintanence, setMaintanence] = useState<string>("");
   const [maintanenceInfo, setMaintanenceInfo] = useState<string>("");
   const [area, setArea] = useState<string>("");
+  const [typeRoom, setTypeRoom] = useState<string>("ONEROOM");
   const [room, setRoom] = useState<number>(1);
   const [furniture, setFurniture] = useState<string>("");
   const [furnitureList, setFurnitureList] = useState<string[]>([]);
@@ -92,16 +94,21 @@ const ProductUpload: React.FC = () => {
       headers: {},
     })
       .then((response) => {
-        setAddress(() => response.data.productAddress); // 문자열 처리를 해줘서 상세주소 분리해서 setState
-        setDeposit(() => response.data.productDeposit); // 보증금
-        setCharge(() => response.data.productRent); // 월세
-        setMaintanence(() => response.data.productMaintenence); //관리비
-        setMaintanenceInfo(() => response.data.productMaintenenceInfo); // 관리비항목
-        setArea(() => response.data.productSquare); // 방 면적
-        setRoom(() => response.data.productRoom); // 방 개수
-        setFurniture(() => response.data.productIsFurnitureSupportable); // 승계 가능 가구 및 물품
-        // setAddress(() => response.data.productIsSupportable); // 지원가능여부
-        // setAddress(() => response.data.productOption); // 방 옵션
+        setAddress(response.data.data.productAddress); // 문자열 처리를 해줘서 상세주소 분리해서 setState
+        setDeposit(response.data.data.productDeposit); // 보증금
+        setCharge(response.data.data.productRent); // 월세
+        setMaintanence(response.data.data.productMaintenence); //관리비
+        setMaintanenceInfo(response.data.data.productMaintenenceInfo); // 관리비항목
+        setArea(response.data.data.productSquare); // 방 면적
+        setTypeRoom(response.data.data.type); // 방 면적
+        setRoom(response.data.data.productRoom); // 방 개수
+        setDate([
+          response.data.data.productStartDate,
+          response.data.data.productEndDate,
+        ]);
+        if (response.data.data.productAdditionalOption) {
+          setFurnitureList(response.data.data.productAdditionalOption);
+        }
       })
       .catch((err) => console.log(err));
   }
@@ -110,6 +117,7 @@ const ProductUpload: React.FC = () => {
   const open = useDaumPostcodePopup();
   const handleComplete = (data: any) => {
     let fullAddress = data.address;
+    let bcode = data.bcode;
     let extraAddress = "";
 
     if (data.addressType === "R") {
@@ -122,10 +130,15 @@ const ProductUpload: React.FC = () => {
       }
       fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
     }
-
-    console.log(data);
-    console.log(fullAddress); // e.g. '서울 성동구 왕십리로2길 20 (성수동1가)'
     setAddress(() => fullAddress);
+    setRegionId(bcode);
+  };
+
+  // ex. 서울 성동구 왕십리로2길 20 (성수동1가)
+  // 주소를 바탕으로 regionId를 반환하는 함수
+  const addressToRegionId = (ads: string) => {
+    const sidoMagicTable = {};
+    const [sido, gugun] = ads.split(" ");
   };
 
   // 주소검색 팝업 열기
@@ -133,6 +146,12 @@ const ProductUpload: React.FC = () => {
     open({ onComplete: handleComplete });
   };
 
+  // 방 유형 설정
+  const handleTypeRoomOption = (e: any) => {
+    setTypeRoom(() => e.target.value);
+  };
+
+  // 방 갯수 설정
   const handleRoomOption = (e: any) => {
     setRoom(() => e.target.value);
   };
@@ -201,7 +220,7 @@ const ProductUpload: React.FC = () => {
     const productUploadDto: ProductUploadDto = {
       productType: "ONEROOM", // 지금 값을 입력할 컴포넌트 없음
       productAddress: address,
-      regionId: "1111010100", // 임시로 고정값을 넣어줬는데 로직 짜야함
+      regionId, // daum postcode에서 나오는 bcode를 넣어줌.
       productDeposit: Number(deposit),
       productRent: Number(charge),
       productMaintenance: Number(maintanence),
@@ -236,16 +255,32 @@ const ProductUpload: React.FC = () => {
     }
 
     // 검증을 위한 부분
+    let sendMethod = "POST";
+    let sendUrl = `${process.env.REACT_APP_BACKEND_URL}/products/upload`;
+    if (id) {
+      sendMethod = "PUT";
+      sendUrl = `${process.env.REACT_APP_BACKEND_URL}/modify/${id}`;
+    }
     formData.forEach((value, key) => {
       console.log(`${key}: ${value}`);
     });
     console.log(formData.get("productMedia[0]"));
+    console.log(sendMethod);
+    console.log(sendUrl);
     formDataAxios({
-      method: "POST",
-      url: `${process.env.REACT_APP_BACKEND_URL}/products/upload`,
+      method: sendMethod,
+      url: sendUrl,
       data: formData,
     })
-      .then((response) => console.log(response, "detailPage로 이동합니다."))
+      .then((response) => {
+        console.log(response);
+        // 수정일 경우에는 id를, 생성일 경우에는 response data에서 오는 productId를 받아 매물 상세 페이지로 이동
+        if (id) {
+          navigate(`/products/${id}`);
+        } else {
+          navigate(`/products/${response.data.data.productId}`);
+        }
+      })
       .catch((err) => console.log(err));
   };
 
@@ -355,6 +390,19 @@ const ProductUpload: React.FC = () => {
             </Form.Item>
           </div>
         </Form>
+
+        <div className="mt-5" id="roomType">
+          <p className="text-lg">방 유형</p>
+          <div className="flex justify-center items-center">
+            <Radio.Group onChange={handleTypeRoomOption} value={typeRoom}>
+              <Radio value={"ONEROOM"}>원룸</Radio>
+              <Radio value={"TWOROOM"}>투룸+</Radio>
+              <Radio value={"OFFICE"}>오피스텔</Radio>
+              <Radio value={"VILLA"}>빌라</Radio>
+              <Radio value={"APARTMENT"}>아파트</Radio>
+            </Radio.Group>
+          </div>
+        </div>
         <div className="mt-5" id="how-many-room">
           <p className="text-lg">방 갯수</p>
           <div className="flex justify-center items-center">
@@ -408,13 +456,24 @@ const ProductUpload: React.FC = () => {
             <Attachment fileType="사진" onFileChange={onFileChange} />
             <Attachment fileType="동영상" onFileChange={onFileChange} />
           </div>
-          <div className="text-center mt-5">
+          <div className={"text-center mt-5"}>
             <Btn
               text="등록하기"
               backgroundColor="bg-yellow-300 hover:bg-yellow-400"
               height="h-10"
               onClick={handleUploadClick}
             />
+            {id ? (
+              <>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <Btn
+                  text="삭제하기"
+                  backgroundColor="bg-red-300 hover:bg-red-400"
+                  height="h-10"
+                  onClick={handleUploadClick}
+                />
+              </>
+            ) : null}
           </div>
         </div>
       </ConfigProvider>

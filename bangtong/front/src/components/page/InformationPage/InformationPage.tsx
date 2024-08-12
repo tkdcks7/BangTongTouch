@@ -13,6 +13,7 @@ import Room1 from "../../../assets/RoomCard1.png";
 import Room2 from "../../../assets/RoomCard2.png";
 import Room3 from "../../../assets/RoomCard3.png";
 import Room4 from "../../../assets/RoomCard4.png";
+import { duration } from "@mui/material";
 
 const container = {
   hidden: { opacity: 1, scale: 0 },
@@ -48,6 +49,8 @@ const InformationPage: React.FC = () => {
   const rounded = useTransform(count, Math.round);
   const countRef = useRef<HTMLSpanElement>(null);
   const [productCount, setProductCount] = useState(0);
+  const [index, setIndex] = useState(0);
+  const textArray = ["원룸", "투룸", "오피스텔", "빌라", "아파트"];
   let animation: any = null;
 
   useEffect(() => {
@@ -60,6 +63,14 @@ const InformationPage: React.FC = () => {
       })
       .catch((err) => console.log(err));
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prevIndex) => (prevIndex + 1) % textArray.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [textArray.length]);
 
   const startCounting = () => {
     if (animation) {
@@ -81,6 +92,7 @@ const InformationPage: React.FC = () => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             startCounting();
+            setIndex(0);
           } else {
             resetCount();
           }
@@ -142,7 +154,17 @@ const InformationPage: React.FC = () => {
             duration: 0.3,
           }}
         >
-          원룸승계,
+          <motion.span
+            key={index}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="green"
+          >
+            {textArray[index]}
+          </motion.span>
+          승계,
         </motion.h1>
       </motion.div>
       <motion.div

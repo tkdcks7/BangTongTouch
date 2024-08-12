@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import useUserStore from "../../store/userStore";
-import Modal from "react-modal";
 import { motion } from "framer-motion";
 
 // 아이콘
@@ -12,24 +10,26 @@ import {
 } from "@ant-design/icons";
 import { MapPinIcon } from "@heroicons/react/20/solid";
 
-import axios from "axios";
 import authAxios from "../../utils/authAxios";
 
 // 컴포넌트
 import TextBtn from "../atoms/TextBtn";
 import BtnGroup from "../molecules/BtnGroup";
-import { ConfigProvider, Modal as AntModal } from "antd";
-import { productSearchStore } from "../../store/productStore";
+import Modal from "react-modal";
+import { Input, ConfigProvider, Modal as AntModal } from "antd";
+import { productSearchStore, preferenceStore } from "../../store/productStore";
 
 interface ModalI {
   modalIsOpen: boolean;
-  selectedId: number;
+  selectedId?: number;
   closeModal: () => void;
+  addpreferenceArr: (rslt: any) => void;
 }
 const ProfileModal: React.FC<ModalI> = ({
   modalIsOpen,
   selectedId,
   closeModal,
+  addpreferenceArr,
 }) => {
   const customStyle = {
     content: {
@@ -43,7 +43,6 @@ const ProfileModal: React.FC<ModalI> = ({
   };
 
   const { id } = useUserStore();
-  const naviagte = useNavigate();
 
   // 모달창에 뜨기 위한 state
   const [preferenceName, setPreferenceName] = useState<string>("");
@@ -53,27 +52,26 @@ const ProfileModal: React.FC<ModalI> = ({
   const [open, setOpen] = useState(false); // 지역 선택 모달
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [regions, setRegions] = useState([]); // 지역 선택 모달에 뜰 버튼들 갱신
+  const [regionId, setRegionId] = useState<string>("");
 
   const {
-    order,
     maxDeposit,
     maxRent,
     homeType,
     infra,
     address,
-    rentSupportable,
-    furnitureSupportable,
     startDate,
     endDate,
     setDeposit,
     setRent,
     setHomeType,
     setAddress,
-    setRentSupportable,
-    setFurnitureSupportable,
     setInfra,
     setDate,
+    setInitailize,
   } = productSearchStore();
+
+  const { setPreference } = preferenceStore();
 
   // 영어 type(변환해야함.)
   const homeCategoryEnglish: string[] = [
@@ -102,47 +100,48 @@ const ProfileModal: React.FC<ModalI> = ({
 
   // 선호 옵션을 선택할 때마다(selectedId가 변경될 때마다) 다른 전송 후 모달에서 해당 ID의 선호 옵션을 띄워줌
   useEffect(() => {
-    console.log("모달 useEffect 실행됨 주소는...");
-    console.log(
-      `${process.env.REACT_APP_BACKEND_URL}/preferences/${selectedId}`
-    );
-    authAxios({
-      method: "GET",
-      url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${selectedId}`,
-    })
-      .then((response) => {
-        const result = response.data.data;
-        console.log(response);
-        setAddress(result.regionId);
-        setPreferenceName(result.preferenceName);
-        setDeposit(0, result.preferenceDeposit);
-        setRent(0, result.preferenceRent);
-        setLocationTitle(result.regionAddress);
-        setHomeType(
-          homeCategoryEnglish.findIndex((el) => el === result.preferenceType)
-        );
-        infraSetter(result.preferenceInfra); // 반복문을 돌면서 infra 배열을 바꿔줌
-        setDate(result.preferenceStartDate, result.preferenceEndDate);
-        const regionId = result.regionId;
-        // regionId를 보내서 주소 상세를 받아온다.
-        authAxios({
-          method: "GET",
-          url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${regionId}`,
-        })
-          .then((res) => {
-            console.log(res);
-            // 받아온 상세 주소를 조립해 표시될 상세 주소를 변경한다.
-            const newLocationTitle =
-              res.data.data.region.regionSido +
-              " " +
-              res.data.data.region.regionDong +
-              " " +
-              res.data.data.region.regionGun;
-            setLocationTitle(newLocationTitle);
-          })
-          .catch((err) => console.log(err));
+    setInitailize(); // 일단 productSearchStore의 값들을 초기화
+
+    // 조회 및 수정이라면(selectedId가 있다면) 불러오기, 아니면(selectedId가 없다면) 빈 form을 보여주기
+    if (selectedId) {
+      authAxios({
+        method: "GET",
+        url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${selectedId}`,
       })
-      .catch((err) => console.log(err));
+        .then((response) => {
+          const result = response.data.data;
+          console.log(response);
+          setRegionId(result.regionId);
+          setPreferenceName(result.preferenceName);
+          setDeposit(0, result.preferenceDeposit);
+          setRent(0, result.preferenceRent);
+          setLocationTitle(result.regionAddress);
+          setHomeType(
+            homeCategoryEnglish.findIndex((el) => el === result.preferenceType)
+          );
+          infraSetter(result.preferenceInfra); // 반복문을 돌면서 infra 배열을 바꿔줌
+          setDate(result.preferenceStartDate, result.preferenceEndDate);
+          const regionId = result.regionId;
+          // regionId를 보내서 주소 상세를 받아온다.
+          authAxios({
+            method: "GET",
+            url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${regionId}`,
+          })
+            .then((res) => {
+              console.log(res);
+              // 받아온 상세 주소를 조립해 표시될 상세 주소를 변경한다.
+              const newLocationTitle =
+                res.data.data.region.regionSido +
+                " " +
+                res.data.data.region.regionDong +
+                " " +
+                res.data.data.region.regionGun;
+              setLocationTitle(newLocationTitle);
+            })
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => console.log(err));
+    }
   }, [selectedId]);
 
   // 지역 설정 모달 오픈 핸들러
@@ -210,7 +209,8 @@ const ProfileModal: React.FC<ModalI> = ({
   // 읍면동 단위 버튼을 눌렀을 시
   const handleDongClick = (regionId: string, regionDong: any) => {
     setLocationTitle(() => locationTitle + " " + regionDong);
-    setAddress(regionId);
+    setRegionId(regionId);
+    setAddress(locationTitle);
     setOpen(false); // 모달 닫기
   };
 
@@ -252,7 +252,8 @@ const ProfileModal: React.FC<ModalI> = ({
   const handleUpdate = (): void => {
     const dataSet = {
       name: preferenceName,
-      region: address,
+      regionId,
+      regionAddress: address,
       deposit: maxDeposit,
       rent: maxRent,
       type: roomTypeConverter(homeType),
@@ -268,6 +269,56 @@ const ProfileModal: React.FC<ModalI> = ({
       .then((response) => {
         console.log("성공적으로 변경됐습니다.");
         console.log(response);
+        closeModal();
+      })
+      .catch((err) => {
+        console.log(err);
+        window.alert("변경 사항이 반영되지 않았습니다.");
+      });
+  };
+
+  // 선호설정 적용
+  const handleApplicate = () => {
+    const dataSet = {
+      preferenceId: selectedId,
+      preferenceName: preferenceName,
+      regionId,
+      regionAddress: address,
+      preferenceDeposit: maxDeposit,
+      preferenceRent: maxRent,
+      preferenceType: roomTypeConverter(homeType),
+      preferenceInfra: infraStringfier(infra),
+      preferenceStartDate: startDate,
+      preferenceEndDate: endDate,
+    };
+    setPreference(dataSet); // productSearchStore의 데이터를 이용해서 현재 선호설정 변경
+    closeModal();
+  };
+
+  // 선호 설정 생성
+  const handleCreate = (): void => {
+    const dataSet = {
+      name: preferenceName,
+      regionId,
+      regionAddress: address,
+      deposit: maxDeposit,
+      rent: maxRent,
+      type: roomTypeConverter(homeType),
+      infra: infraStringfier(infra),
+      startDate,
+      endDate,
+    };
+    authAxios({
+      method: "POST",
+      url: `${process.env.REACT_APP_BACKEND_URL}/preferences/add/${id}`,
+      data: dataSet,
+    })
+      .then((response) => {
+        console.log("성공적으로 추가됐습니다..");
+        console.log(response);
+        const rslt = response.data.data;
+        addpreferenceArr(rslt);
+
         closeModal();
       })
       .catch((err) => {
@@ -294,6 +345,7 @@ const ProfileModal: React.FC<ModalI> = ({
           }}
         >
           <div className="w-80 relative px-5 py-10 border-2 rounded-xl shadow-md max-h-[80vh] overflow-y-auto">
+            {/* 모달의 x버튼 */}
             <div
               className="absolute top-1 right-1 hover:cursor-pointer"
               onClick={closeModal}
@@ -303,9 +355,20 @@ const ProfileModal: React.FC<ModalI> = ({
                 style={{ color: "red", fontSize: "24px" }}
               />
             </div>
-            <h1 className="text-lime-500 text-center font-bold ml-3 text-xl">
-              {preferenceName}
-            </h1>
+            {selectedId ? (
+              <h1 className="text-lime-500 text-center font-bold ml-3 text-xl">
+                {preferenceName}
+              </h1>
+            ) : (
+              <Input
+                placeholder="설정 이름을 입력하세요"
+                size="large"
+                type="text"
+                value={preferenceName}
+                onChange={(e) => setPreferenceName(e.target.value)}
+              />
+            )}
+
             <hr className="border-2" />
             <br />
             <button
@@ -365,25 +428,35 @@ const ProfileModal: React.FC<ModalI> = ({
                 </div>
               </AntModal>
             </ConfigProvider>
-
             <TextBtn title="보증금" text={`~${maxDeposit}만`} />
             <TextBtn title="월세" text={`~${maxRent}만`} />
             <BtnGroup title="집 유형" itemsArray={homeCategory} />
             <BtnGroup title="편의시설" itemsArray={facilities} />
             <div className="text-end mr-2">
-              <button
-                className="mt-5 p-2 bg-yellow-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
-                onClick={handleUpdate}
-              >
-                <EditOutlined className="my-auto mx-auto" />
-              </button>
+              {selectedId ? (
+                <>
+                  <button
+                    className="mt-5 p-2 bg-yellow-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
+                    onClick={handleUpdate}
+                  >
+                    <EditOutlined className="my-auto mx-auto" />
+                  </button>
+                  <button
+                    className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
+                    onClick={handleApplicate}
+                  >
+                    <CheckOutlined className="my-auto mx-auto" />
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
+                  onClick={handleCreate}
+                >
+                  <CheckOutlined className="my-auto mx-auto" />
+                </button>
+              )}
               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <button
-                className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
-                onClick={handleUpdate}
-              >
-                <CheckOutlined className="my-auto mx-auto" />
-              </button>
             </div>
           </div>
         </motion.div>

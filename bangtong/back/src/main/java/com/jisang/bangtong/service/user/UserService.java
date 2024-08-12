@@ -108,11 +108,16 @@ public class UserService {
   }
 
   public void logout(HttpServletRequest request, HttpServletResponse response) {
-    String token = request.getHeader(SecurityConstants.JWT_HEADER);
+    String token = jwtUtil.getAccessToken(request);
 
     if (token != null && !token.isEmpty()) {
       String email = jwtUtil.getUserEmailFromToken(token);
-      tokenRepository.delete(email);
+
+      try {
+        tokenRepository.delete(email);
+      } catch (Exception e) {
+        log.error(e.getMessage());
+      }
     }
   }
 
