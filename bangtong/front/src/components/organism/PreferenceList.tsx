@@ -135,6 +135,7 @@ const PreferenceList: React.FC = () => {
         closeModal={closeModal}
         selectedId={selectedId}
         addpreferenceArr={addpreferenceArr}
+        className={"dark:text-black dark:bg-gray-800"}
       />
     </>
   );
