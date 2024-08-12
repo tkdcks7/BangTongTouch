@@ -182,9 +182,9 @@ const preferenceDefault: Omit<
   PreferenceI,
   "setPreference" | "reSetPreference"
 > = {
-  preferenceId: 2,
+  preferenceId: 0,
   preferenceName: "서울에서 살래~!!!",
-  userId: 1,
+  userId: 0,
   regionId: "1150010400",
   regionAddress: "서울특별시 강서구 가양동",
   preferenceDeposit: 5000,
