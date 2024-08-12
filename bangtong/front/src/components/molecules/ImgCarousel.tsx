@@ -58,6 +58,7 @@ const ImgCarousel: React.FC<imgSrcProps> = ({
         {imgSrc.map((img) => {
           return (
             <div
+              key={img}
               onClick={isCanClick ? handleImgClick : undefined}
               className={`${isCanClick ? "hover:cursor-pointer" : ""}`}
             >

@@ -59,7 +59,13 @@ const ProductOptions: React.FC<ProductProps> = ({ options, isPc }) => {
       <div className="flex flex-wrap justify-start items-center mt-5">
         {numberArray.map((el: any, idx: number) => {
           if (el) {
-            return <OptionIcon src={iconList[idx]} text={optionList[idx]} />;
+            return (
+              <OptionIcon
+                key={optionList[idx]}
+                src={iconList[idx]}
+                text={optionList[idx]}
+              />
+            );
           } else {
             return null;
           }

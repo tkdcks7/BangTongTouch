@@ -33,6 +33,7 @@ interface ModalI {
   selectedId?: number;
   closeModal: () => void;
   addpreferenceArr: (rslt: any) => void;
+  className: string;
 }
 
 const ProfileModal: React.FC<ModalI> = ({
@@ -40,6 +41,7 @@ const ProfileModal: React.FC<ModalI> = ({
   selectedId,
   closeModal,
   addpreferenceArr,
+  className,
 }) => {
   const customStyle = {
     content: {
@@ -126,6 +128,8 @@ const ProfileModal: React.FC<ModalI> = ({
 
   // 선호 옵션을 선택할 때마다(selectedId가 변경될 때마다) 다른 전송 후 모달에서 해당 ID의 선호 옵션을 띄워줌
   useEffect(() => {
+    console.log(startDate);
+    console.log(endDate);
     setInitailize(); // 일단 productSearchStore의 값들을 초기화
 
     // 조회 및 수정이라면(selectedId가 있다면) 불러오기, 아니면(selectedId가 없다면) 빈 form을 보여주기

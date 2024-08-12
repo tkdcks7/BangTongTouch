@@ -15,7 +15,12 @@ import { Button, Card, Carousel, Col, ConfigProvider, Modal, Row } from "antd";
 
 // 이미지 소스
 import defaltHomeImg from "../../assets/defaulthome.png";
-import { HeartOutlined, HeartFilled, DeleteOutlined } from "@ant-design/icons";
+import {
+  HeartOutlined,
+  HeartFilled,
+  DeleteOutlined,
+  WechatOutlined,
+} from "@ant-design/icons";
 import { error } from "console";
 
 const ProductDetail: React.FC = () => {
@@ -75,10 +80,14 @@ const ProductDetail: React.FC = () => {
   // 글쓴이가 나인지 확인
   const [isMe, setIsMe] = useState<boolean>();
 
+  // 1:1 채팅 아이콘 hover 처리
+  const [hover, setHover] = useState<boolean>(false);
+
   // 백엔드에서 상세 페이지 정보 받아오기
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log("매물 상세정보 받아오는 중!");
         const response = await authAxios({
           method: "GET",
           url: `${process.env.REACT_APP_BACKEND_URL}/products/${id}`,
@@ -92,11 +101,17 @@ const ProductDetail: React.FC = () => {
           url: `${process.env.REACT_APP_BACKEND_URL}/interests/${userId}`,
         })
           .then((response) => {
-            if (response.data.productReturnDto.includes(id)) {
+            console.log(response);
+            if (
+              response.data.data.product &&
+              id in response.data.data.product
+            ) {
               setIsInterest(true);
+            } else {
+              setIsInterest(false);
             }
           })
-          .catch((err) => console.log(err));
+          .catch((err) => console.log("에러남"));
       } catch (err) {
         console.log(err);
         setConnectionFailed(true);
@@ -133,7 +148,7 @@ const ProductDetail: React.FC = () => {
   // 관심 매물 등록(좋아요). 관심매물 좋아요 상태도 같이 보내줄 것.
   const handleInterestBtn = (): void => {
     let method: string = "POST";
-    let url: string = `${process.env.REACT_APP_BACKEND_URL}/interest/add`;
+    let url: string = `${process.env.REACT_APP_BACKEND_URL}/interests/add`;
     let data: any = { userId, productId: id };
     if (isInterest) {
       method = "DELETE";
@@ -146,6 +161,27 @@ const ProductDetail: React.FC = () => {
         setIsInterest(() => !isInterest); // 관심 매물 true/false 상태를 반전
       })
       .catch((err) => console.log(err));
+  };
+
+  // 채팅방 생성
+  const makeChatRoom = () => {
+    authAxios({
+      method: "POST",
+      url: `${process.env.REACT_APP_BACKEND_URL}/chatrooms/save`,
+      data: {
+        title: "끼얏호우",
+        maker: productInfo.profileDto.id,
+        participant: userId,
+        productId: productInfo.productReturnDto.productId,
+      },
+    })
+      .then((response) => {
+        console.log(response.data.data);
+        navigate(`/chats/${response.data.data}`);
+      })
+      .catch((response) => {
+        console.log(response);
+      });
   };
 
   // 일자를 파싱하는 함수
@@ -196,6 +232,21 @@ const ProductDetail: React.FC = () => {
   if (loading) return <div>Loading...</div>;
   // if (connectionFailed) return <div>데이터를 불러오는 데 실패했습니다.</div>;
 
+  const homeTypeNameTable: any = {
+    ONEROOM: "원룸",
+    TWOROOM: "투룸+",
+    OFFICE: "오피스텔",
+    VILLA: "빌라",
+    APARTMENT: "아파트",
+  };
+
+  // 1:1 채팅 버튼 스타일
+  const oneToOneButtonStyle = {
+    backgroundColor: hover ? "#facc15" : "#fef08a",
+    borderColor: hover ? "#facc15" : "",
+    color: hover ? "#ffffff" : "",
+  };
+
   return (
     <>
       <div className="hidden md:block w-4/5 mx-auto">
@@ -217,9 +268,11 @@ const ProductDetail: React.FC = () => {
                 )}
               </Carousel>
               <h2 className="text-xl font-bold mt-5 ">
-                보증금 {productInfo.productReturnDto.productDeposit}/월세{" "}
+                보증금 {productInfo.productReturnDto.productDeposit}
+                &nbsp;/&nbsp;월세&nbsp;
                 {productInfo.productReturnDto.productRent}
               </h2>
+              {/* 지역 표시 */}
               <p className="text-gray-400 mt-4">
                 {productInfo.productReturnDto.regionReturnDto.regionSido}{" "}
                 {productInfo.productReturnDto.regionReturnDto.regionGugun}{" "}
@@ -243,7 +296,9 @@ const ProductDetail: React.FC = () => {
                     ""
                   )}
                 </div>
-                <HeartOutlined className="text-2xl" />
+                <button onClick={handleInterestBtn} className="text-xl">
+                  {isInterest ? <HeartFilled /> : <HeartOutlined />}
+                </button>
               </div>
             </Card>
             <Card style={{ width: 280 }} className="mb-5 shadow-lg">
@@ -266,44 +321,56 @@ const ProductDetail: React.FC = () => {
               />
               <p className="me-5">{productInfo.profileDto.nickname}</p>
               <ConfigProvider theme={theme}>
-                <Button type="primary" ghost className="rounded-full p-5">
-                  1:1채팅 시작
-                </Button>
+                <Button
+                  className={"bg-yellow-200 hover:bg-color-400"}
+                  style={oneToOneButtonStyle}
+                  size="large"
+                  onMouseEnter={() => setHover(true)}
+                  onMouseLeave={() => setHover(false)}
+                  icon={
+                    <WechatOutlined
+                      style={{ fontSize: "24px" }}
+                      disabled={true}
+                      type="primary"
+                    />
+                  }
+                  onClick={makeChatRoom}
+                />
               </ConfigProvider>
             </div>
             <div className="p-10 pt-20 mt-20 rounded-2xl border border-slate-200">
               <Row>
-                <Col span={8} className="text-xl">
+                <Col span={12} className="text-xl">
                   <span className="font-bold">관리비 | </span>
-                  {productInfo.productReturnDto.productMaintenance}
+                  {productInfo.productReturnDto.productMaintenance} 원
                 </Col>
-                <Col span={8} offset={8} className="text-xl">
-                  <span className="font-bold">집 유형 | </span>
-                  {productInfo.productReturnDto.productType}
+                <Col span={12} className="text-xl">
+                  <span className="font-bold">관리비 포함 | </span>
+                  {productInfo.productReturnDto.productMaintenanceInfo}
                 </Col>
               </Row>
               <Row className="mt-10">
                 <Col span={8} className="text-xl">
-                  <span className="font-bold">관리비 포함 | </span>
-                  {productInfo.productReturnDto.productMaintenanceInfo}
+                  <span className="font-bold">집 유형 | </span>
+                  {homeTypeNameTable[productInfo.productReturnDto.productType]}
                 </Col>
-                <Col span={8} offset={8} className="text-xl">
+                <Col span={8} className="text-xl">
+                  <span className="font-bold">방 개수 | </span>
+                  {productInfo.productReturnDto.productRoom} 개
+                </Col>
+                <Col span={8} className="text-xl">
                   <span className="font-bold">면적 | </span>
-                  {productInfo.productReturnDto.productSquare}m²
+                  {productInfo.productReturnDto.productSquare} m²
                 </Col>
               </Row>
-              <Row className="items-center">
-                <Col span={12} className="text-xl flex items-center">
+              <Row className="items-center mt-10">
+                <Col span={24} className="text-xl flex items-center">
                   <span className="font-bold">기본 옵션 | </span>
                   <ProductOptions options={options} isPc />
                 </Col>
-                <Col span={8} offset={4} className="text-xl">
-                  <span className="font-bold">방 개수 | </span>
-                  {productInfo.productReturnDto.productRoom}개
-                </Col>
               </Row>
-              <Row className="mt-5">
-                <Col span={8} className="text-xl">
+              <Row className="mt-10">
+                <Col span={24} className="text-xl">
                   <span className="font-bold">추가 옵션 | </span>
                   {productInfo.productReturnDto.productAdditionalOption}
                 </Col>
