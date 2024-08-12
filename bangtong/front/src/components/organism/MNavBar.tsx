@@ -22,23 +22,23 @@ const MNavBar: React.FC = () => {
     <div className="flex justify-around w-full fixed bottom-0 left-0 bg-lime-500 dark:bg-lime-600 p-2 pb-5">
       <Link to="/" className="w-14 flex flex-col items-center">
         <IconBtn imgSrc={Home} size={20} />
-        <TextBox text="홈" size="sm" />
+        <TextBox text="홈" size="sm" color="black" />
       </Link>
       <Link to="/products/" className="w-14 flex flex-col items-center">
         <IconBtn imgSrc={MapPin} size={20} />
-        <TextBox text="지도" size="sm" />
+        <TextBox text="지도" size="sm" color="black"/>
       </Link>
       <Link to="/chats" className="w-14 flex flex-col items-center">
         <IconBtn imgSrc={Message} size={20} />
-        <TextBox text="채팅" size="sm" />
+        <TextBox text="채팅" size="sm" color="black" />
       </Link>
       <Link to={`/profile/${id}`} className="w-14 flex flex-col items-center">
         <IconBtn imgSrc={Profile} size={20} />
-        <TextBox text="나의 방통" size="sm" />
+        <TextBox text="나의 방통" size="sm" color="black" />
       </Link>
       <Link to="/boards" className="w-14 flex flex-col items-center">
         <IconBtn imgSrc={Community} size={20} />
-        <TextBox text="커뮤니티" size="sm" />
+        <TextBox text="커뮤니티" size="sm" color="black" />
       </Link>
     </div>
   );
