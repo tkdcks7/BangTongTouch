@@ -104,7 +104,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
           <div className="flex items-center justify-between">
             <NavLink
                 className={({ isActive }) =>
-                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
+                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} `
                 }
                 to="/products"
             >
@@ -112,7 +112,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
             </NavLink>
             <NavLink
                 className={({ isActive }) =>
-                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
+                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
                 }
                 to="/chats"
             >
@@ -120,7 +120,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
             </NavLink>
             <NavLink
                 className={({ isActive }) =>
-                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
+                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
                 }
                 to={`/profile/${id}`}
             >
@@ -128,7 +128,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
             </NavLink>
             <NavLink
                 className={({ isActive }) =>
-                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
+                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
                 }
                 to="/boards"
             >
@@ -186,6 +186,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
             onClick={toggleDark}
             tooltip={<div>{dark ? 'Switch to Dark Mode' : 'Switch to Light Mode'}</div>}
             className={'bg-yellow-300'}
+            style={{ insetInlineEnd: 24, bottom: 24 }}
         />
       </>
   );
