@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useUserStore from "../../store/userStore";
+import axios from "axios";
 
 // 컴포넌트
 import ImgCarousel from "../molecules/ImgCarousel";
@@ -35,19 +36,21 @@ const ProductDetail: React.FC = () => {
     productIsFurnitureSupportable: true,
     productSquare: 44.55,
     productRoom: 2,
-    productOption: "1111111",
+    productOption: 84,
     productAdditionalOption: [],
     productIsBanned: false,
     productIsDeleted: false,
     productPostDate: "2024-07-19 04:01:15.256",
     productStartDate: "2024-08-01",
     productEndDate: "2024-12-30",
+    productAdditionalDetail: "",
     boardRegion: {
       regionId: "1111010900",
       regionSido: "서울특별시",
       regionGugun: "종로구",
       regionDong: "누상동",
     },
+    mediaList: undefined,
   };
   let { id }: any = useParams(); // 상품 번호
   const navigate = useNavigate();
@@ -60,6 +63,7 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [connectionFailed, setConnectionFailed] = useState(false);
   const [isInterest, setIsInterest] = useState(false);
+  const [isMe, setIsMe] = useState<boolean>(false);
 
   // state와 초기값 선언. 나중에 null, 0 혹은 빈 문자열로 바꿀거임.
   const [productInfo, setProductInfo] = useState(tempObj);
@@ -74,11 +78,12 @@ const ProductDetail: React.FC = () => {
         });
         // status code가 200번으로 유지돼서 설정했는데, 이후 변경할 것.
         if (response.config.data) {
-          setProductInfo(response.data);
+          setProductInfo(response.data.data);
+          setIsMe(userId === response.data.data.userId); // 유저 Id
           // 관심 매물 등록이 돼있는지 조회 후, 그렇다면 관심 상태를 true로
-          authAxios({
+          axios({
             method: "GET",
-            url: `${process.env.REACT_APP_BACKEND_URL}/interest/${userId}`,
+            url: `${process.env.REACT_APP_BACKEND_URL}/interests/${userId}`,
           })
             .then((response) => {
               if (response.data.data.includes(id)) {
@@ -102,11 +107,12 @@ const ProductDetail: React.FC = () => {
 
   // 수정 페이지(작성 페이지에서 기본값이 다 설정된 페이지?)로 이동
   // Dto 때문에 userId를 비교하는 로직을 작성 못함.
-  // const handleToUpdate = (): void => {
-  //   if (productInfo.userId === userId) {
-  //     navigate(`/products/update/${id}`)
-  //   }
-  // }
+  // 되면 조건문에 true 대신 productInfo.userId === userId 넣을 것.
+  const handleToUpdate = (): void => {
+    if (true) {
+      navigate(`/products/update/${id}`);
+    }
+  };
 
   // 매물 게시글 삭제 함수
   const handleDelete = (): void => {
@@ -126,11 +132,11 @@ const ProductDetail: React.FC = () => {
   // 관심 매물 등록(좋아요). 관심매물 좋아요 상태도 같이 보내줄 것.
   const handleInterestBtn = (): void => {
     let method: string = "POST";
-    let url: string = `${process.env.REACT_APP_BACKEND_URL}/interest/add`;
+    let url: string = `${process.env.REACT_APP_BACKEND_URL}/interests/add`;
     let data: any = { userId, productId: id };
     if (isInterest) {
       method = "DELETE";
-      url = `${process.env.REACT_APP_BACKEND_URL}/interest/delete/${userId}/${id}`;
+      url = `${process.env.REACT_APP_BACKEND_URL}/interests/delete/${userId}/${id}`;
       data = {};
     }
     authAxios({ method, url, data })
@@ -177,7 +183,7 @@ const ProductDetail: React.FC = () => {
   const remainMonth = (endYear - startYear) * 12 + (endMonth - startMonth);
 
   // 비트마스킹된 기본옵션들 뽑아오기
-  const options: string = productInfo.productOption || "";
+  const options: number = productInfo.productOption || 0;
 
   // 문자열 리스트로 들어오는 추가옵션 받아오기
   const additionalOption: string[] = productInfo.productAdditionalOption || [];
@@ -188,14 +194,20 @@ const ProductDetail: React.FC = () => {
   return (
     <div>
       <div className="mt-10 w-full md:w-2/5 mx-auto">
-        <ImgCarousel />
+        <ImgCarousel imgSrcArray={productInfo.mediaList} />
         <h2 className="text-2xl font-bold text-center">{`${productInfo.boardRegion.regionSido} ${productInfo.boardRegion.regionGugun} ${productInfo.boardRegion.regionDong}`}</h2>
         {/* 유저 프로필, 연락하기 */}
         <ProductProfile
           userinfo={productInfo.user}
           productId={productInfo.productId}
         />
-        <p className="mt-2">간단한 설명 (유저 입력)</p>
+        <Devider />
+        <h2 className="text-2xl font-black">매물 설명 </h2>
+        <p className="mt-2">
+          {productInfo.productAdditionalDetail
+            ? productInfo.productAdditionalDetail
+            : "등록된 상세 설명이 없습니다"}
+        </p>
         {/* 구분선 */}
         <Devider />
         {/* 기본정보 */}
