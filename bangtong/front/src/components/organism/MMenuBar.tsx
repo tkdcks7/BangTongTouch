@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import authAxios from "../../utils/authAxios";
 
 // 컴포넌트 불러오기
-import IconBtn from "../atoms/IconBtn";
 import { Button, Dropdown, MenuProps, FloatButton, Badge } from "antd";
 
 // 이미지 소스
@@ -17,6 +16,7 @@ import {
 // 데이터
 import useUserStore from "../../store/userStore";
 import useAlarmInfoStore from "../../store/alarmInfoStore";
+import { preferenceStore } from "../../store/productStore";
 
 interface MMenuBarProps {
   dark: boolean;
@@ -25,8 +25,9 @@ interface MMenuBarProps {
 
 const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
   const navigate = useNavigate();
-  const { alarms } = useAlarmInfoStore();
+  const { alarms, setAlarmDelete } = useAlarmInfoStore();
   const { token, id, setLogOut } = useUserStore();
+  const { reSetPreference } = preferenceStore();
   const alarmItems = useRef<Array<any>>();
 
   // logout 실행 함수
@@ -36,10 +37,18 @@ const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
       url: `${process.env.REACT_APP_BACKEND_URL}/users/logout`,
     })
       .then((response) => {
+        setAlarmDelete();
+        reSetPreference();
         setLogOut(); // userInfo와 token을 초기화
         navigate("/user/login");
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        setAlarmDelete();
+        reSetPreference();
+        setLogOut(); // userInfo와 token을 초기화
+        navigate("/user/login");
+      });
   };
 
   // signup 페이지로 이동하는 함수

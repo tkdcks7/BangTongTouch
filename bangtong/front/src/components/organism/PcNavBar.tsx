@@ -1,21 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import authAxios from "../../utils/authAxios";
 
 // 컴포넌트 불러오기
-import { Dropdown, FloatButton, ConfigProvider, Badge } from "antd";
+import { Dropdown, FloatButton, Badge } from "antd";
 import Btn from "../atoms/Btn";
-import IconBtn from "../atoms/IconBtn";
-import { DownOutlined } from "@ant-design/icons";
-import type { MenuProps } from "antd";
 
 // 이미지 소스
-import Bell from "../../assets/Bell.png";
 import Logo from "../../assets/GreenLogo.png";
 
 // Store
 import useAlarmInfoStore from "../../store/alarmInfoStore";
 import useUserStore from "../../store/userStore";
+import { preferenceStore } from "../../store/productStore";
 import { BellOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
 
 interface PcNavBarProps {
@@ -26,7 +23,7 @@ interface PcNavBarProps {
 const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
   const { token, id, setLogOut } = useUserStore();
   const navigate = useNavigate();
-  const [visible, setVisible] = useState(false);
+  const { reSetPreference } = preferenceStore();
   const { alarms, setAlarmDelete } = useAlarmInfoStore();
   const alarmItems = useRef<Array<any>>();
 
@@ -48,15 +45,17 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
     })
       .then((response) => {
         setAlarmDelete();
+        reSetPreference();
         setLogOut(); // userInfo와 token을 초기화
         navigate("/user/login");
       })
-      .catch((err) => console.log(err));
-  };
-
-  // Alert 표시하는 함수
-  const handleVisible = () => {
-    setVisible(!visible);
+      .catch((err) => {
+        console.log(err);
+        setAlarmDelete();
+        reSetPreference();
+        setLogOut(); // userInfo와 token을 초기화
+        navigate("/user/login");
+      });
   };
 
   useEffect(() => {
@@ -84,56 +83,51 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
           ),
           key: index,
         };
-
-        // return (
-        //   <div>
-        //     <div>{item.alarmMessageDate}</div>
-        //     <div>{item.alarmMessage}</div>
-        //   </div>
-        // );
       });
     }
   }, [token, alarms]);
 
   return (
-      <>
-        <header className={`flex justify-between items-center w-full p-5 mb-10 ${!dark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
-          <Link to="/" className="text-start">
-            <img src={Logo} alt="로고" className="w-40"/>
-          </Link>
-          <div className="flex items-center justify-between">
-            <NavLink
-                className={({ isActive }) =>
-                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} `
-                }
-                to="/products"
-            >
-              방통터치
-            </NavLink>
-            <NavLink
-                className={({ isActive }) =>
-                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
-                }
-                to="/chats"
-            >
-              채팅
-            </NavLink>
-            <NavLink
-                className={({ isActive }) =>
-                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
-                }
-                to={`/profile/${id}`}
-            >
-              마이방통
-            </NavLink>
-            <NavLink
-                className={({ isActive }) =>
-                    `text-lg mx-3 text-nowrap ${isActive ? 'text-black dark:text-white' : 'text-gray-400'} ${dark ? 'dark:text-white' : ''}`
-                }
-                to="/boards"
-            >
-              신통방톡
-            </NavLink>
+    <>
+      <header
+        className={`flex justify-between items-center w-full p-5 mb-10 ${!dark ? "bg-gray-800 text-white" : "bg-white text-black"}`}
+      >
+        <Link to="/" className="text-start">
+          <img src={Logo} alt="로고" className="w-40" />
+        </Link>
+        <div className="flex items-center justify-between">
+          <NavLink
+            className={({ isActive }) =>
+              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"} `
+            }
+            to="/products"
+          >
+            방통터치
+          </NavLink>
+          <NavLink
+            className={({ isActive }) =>
+              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"} ${dark ? "dark:text-white" : ""}`
+            }
+            to="/chats"
+          >
+            채팅
+          </NavLink>
+          <NavLink
+            className={({ isActive }) =>
+              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"} ${dark ? "dark:text-white" : ""}`
+            }
+            to={`/profile/${id}`}
+          >
+            마이방통
+          </NavLink>
+          <NavLink
+            className={({ isActive }) =>
+              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"} ${dark ? "dark:text-white" : ""}`
+            }
+            to="/boards"
+          >
+            신통방톡
+          </NavLink>
 
           <div className="flex items-center justify-center mx-3 w-10 h-10">
             {token ? (
@@ -191,14 +185,16 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
         </div>
       </header>
 
-        <FloatButton
-            icon={!dark ? <SunOutlined/> : <MoonOutlined/>}
-            onClick={toggleDark}
-            tooltip={<div>{dark ? 'Switch to Dark Mode' : 'Switch to Light Mode'}</div>}
-            className={'bg-yellow-300'}
-            style={{ insetInlineEnd: 24, bottom: 24 }}
-        />
-      </>
+      <FloatButton
+        icon={!dark ? <SunOutlined /> : <MoonOutlined />}
+        onClick={toggleDark}
+        tooltip={
+          <div>{dark ? "Switch to Dark Mode" : "Switch to Light Mode"}</div>
+        }
+        className={"bg-yellow-300"}
+        style={{ insetInlineEnd: 24, bottom: 24 }}
+      />
+    </>
   );
 };
 

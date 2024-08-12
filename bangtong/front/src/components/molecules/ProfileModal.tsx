@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 // 아이콘
 import {
   CheckOutlined,
+  CalendarOutlined,
   EditOutlined,
   CloseSquareFilled,
 } from "@ant-design/icons";
@@ -16,15 +17,24 @@ import authAxios from "../../utils/authAxios";
 import TextBtn from "../atoms/TextBtn";
 import BtnGroup from "../molecules/BtnGroup";
 import Modal from "react-modal";
-import { Input, ConfigProvider, Modal as AntModal } from "antd";
+import {
+  Button,
+  Input,
+  ConfigProvider,
+  DatePicker,
+  Popover,
+  Modal as AntModal,
+} from "antd";
 import { productSearchStore, preferenceStore } from "../../store/productStore";
 
+// modal 상속값을 정의하는 인터페이스. 수정일 경우 selectedId가 있고, 작성일 경우에는 없다.
 interface ModalI {
   modalIsOpen: boolean;
   selectedId?: number;
   closeModal: () => void;
   addpreferenceArr: (rslt: any) => void;
 }
+
 const ProfileModal: React.FC<ModalI> = ({
   modalIsOpen,
   selectedId,
@@ -73,6 +83,22 @@ const ProfileModal: React.FC<ModalI> = ({
 
   const { setPreference } = preferenceStore();
 
+  const { RangePicker } = DatePicker;
+
+  // 변경된 날짜 set
+  const handelChange = (dates: any) => {
+    setDate(dates[0], dates[1]);
+  };
+
+  // 날자 입력을 위한 설정
+  const datePicker = (
+    <RangePicker
+      className="w-full"
+      placeholder={["입주 일자", "퇴거 일자"]}
+      onChange={handelChange}
+    />
+  );
+
   // 영어 type(변환해야함.)
   const homeCategoryEnglish: string[] = [
     "ONEROOM",
@@ -110,7 +136,6 @@ const ProfileModal: React.FC<ModalI> = ({
       })
         .then((response) => {
           const result = response.data.data;
-          console.log(response);
           setRegionId(result.regionId);
           setPreferenceName(result.preferenceName);
           setDeposit(0, result.preferenceDeposit);
@@ -154,8 +179,6 @@ const ProfileModal: React.FC<ModalI> = ({
       url: `${process.env.REACT_APP_BACKEND_URL}/regions`,
     })
       .then((res) => {
-        console.log(res);
-        console.log(`받아온 지역은 ${res} 입니다.`);
         setRegions(res.data.data);
       })
       .catch((e) => console.log(`지역을 못받아옴. ${e}`));
@@ -183,8 +206,6 @@ const ProfileModal: React.FC<ModalI> = ({
       url: `${process.env.REACT_APP_BACKEND_URL}/regions/${regionId}`,
     })
       .then((res) => {
-        console.log(res);
-        console.log(`받아온 하위지역은 ${res.data.data} 입니다.`);
         setRegions(res.data.data);
       })
       .catch((err) => console.log(`지역을 못받아옴. ${err}`));
@@ -199,8 +220,6 @@ const ProfileModal: React.FC<ModalI> = ({
       url: `${process.env.REACT_APP_BACKEND_URL}/regions/gugun/${regionId}`,
     })
       .then((res) => {
-        console.log(res);
-        console.log(`받아온 최하위지역은 ${res.data.data} 입니다.`);
         setRegions(res.data.data);
       })
       .catch((err) => console.log(`지역을 못받아옴. ${err}`));
@@ -245,21 +264,26 @@ const ProfileModal: React.FC<ModalI> = ({
   };
 
   // 방 타입을 반환하는 함수
-  const roomTypeConverter = (numArr: number[]) =>
-    homeCategoryEnglish[numArr.findIndex((el) => el)]; // 1인 index(0이 아닌 index) 반환
+  const roomTypeConverter = (numArr: number[]): string => {
+    const tempArr: string[] = [];
+    numArr.forEach((el) => tempArr.push(String(el)));
+    return tempArr.join("");
+  };
 
   // 선호 설정 수정
   const handleUpdate = (): void => {
+    const stDate = new Date(startDate).getTime();
+    const edDate = new Date(endDate).getTime();
     const dataSet = {
-      name: preferenceName,
-      regionId,
-      regionAddress: address,
-      deposit: maxDeposit,
-      rent: maxRent,
-      type: roomTypeConverter(homeType),
-      infra: infraStringfier(infra),
-      startDate,
-      endDate,
+      preferenceName: preferenceName,
+      regionAddress: locationTitle,
+      preferenceRegionAddress: address,
+      preferenceDeposit: maxDeposit,
+      preferenceRent: maxRent,
+      preferenceType: roomTypeConverter(homeType),
+      preferenceInfra: infraStringfier(infra),
+      preferenceStartDate: stDate,
+      preferenceEndDate: edDate,
     };
     authAxios({
       method: "PUT",
@@ -267,12 +291,9 @@ const ProfileModal: React.FC<ModalI> = ({
       data: dataSet,
     })
       .then((response) => {
-        console.log("성공적으로 변경됐습니다.");
-        console.log(response);
         closeModal();
       })
       .catch((err) => {
-        console.log(err);
         window.alert("변경 사항이 반영되지 않았습니다.");
       });
   };
@@ -282,8 +303,7 @@ const ProfileModal: React.FC<ModalI> = ({
     const dataSet = {
       preferenceId: selectedId,
       preferenceName: preferenceName,
-      regionId,
-      regionAddress: address,
+      regionAddress: locationTitle,
       preferenceDeposit: maxDeposit,
       preferenceRent: maxRent,
       preferenceType: roomTypeConverter(homeType),
@@ -297,16 +317,18 @@ const ProfileModal: React.FC<ModalI> = ({
 
   // 선호 설정 생성
   const handleCreate = (): void => {
+    const stDate = new Date(startDate).getTime();
+    const edDate = new Date(endDate).getTime();
     const dataSet = {
-      name: preferenceName,
-      regionId,
-      regionAddress: address,
-      deposit: maxDeposit,
-      rent: maxRent,
-      type: roomTypeConverter(homeType),
-      infra: infraStringfier(infra),
-      startDate,
-      endDate,
+      preferenceName: preferenceName,
+      regionAddress: locationTitle,
+      preferenceRegionAddress: address,
+      preferenceDeposit: maxDeposit,
+      preferenceRent: maxRent,
+      preferenceType: roomTypeConverter(homeType),
+      preferenceInfra: infraStringfier(infra),
+      preferenceStartDate: stDate,
+      preferenceEndDate: edDate,
     };
     authAxios({
       method: "POST",
@@ -314,11 +336,9 @@ const ProfileModal: React.FC<ModalI> = ({
       data: dataSet,
     })
       .then((response) => {
-        console.log("성공적으로 추가됐습니다..");
         console.log(response);
         const rslt = response.data.data;
         addpreferenceArr(rslt);
-
         closeModal();
       })
       .catch((err) => {
@@ -430,6 +450,32 @@ const ProfileModal: React.FC<ModalI> = ({
             </ConfigProvider>
             <TextBtn title="보증금" text={`~${maxDeposit}만`} />
             <TextBtn title="월세" text={`~${maxRent}만`} />
+            <br />
+            <div className="flex">
+              <p className="text-center text-lime-600 font-bold">
+                날짜{" "}
+                <span className="text-sm">
+                  {startDate.slice(2)} ~ {endDate.slice(2)}
+                </span>
+              </p>
+              <Popover
+                trigger="click"
+                placement="bottom"
+                title={
+                  <p className="text-center mb-3">
+                    희망 주거기간을 설정해주세요.
+                  </p>
+                }
+                content={datePicker}
+              >
+                <Button
+                  type="text"
+                  size="large"
+                  icon={<CalendarOutlined className="text-lime-500" />}
+                ></Button>
+              </Popover>
+            </div>
+
             <BtnGroup title="집 유형" itemsArray={homeCategory} />
             <BtnGroup title="편의시설" itemsArray={facilities} />
             <div className="text-end mr-2">

@@ -9,7 +9,7 @@ interface PreferenceBoxProps extends React.HTMLAttributes<HTMLDivElement> {
   preferenceDeposit: number;
   preferenceRent: number;
   regionAddress: string;
-  handlePreferenceDetail: (prefId: number) => void;
+  handlePreferenceDetail: (e: any, prefId: number) => void;
   handlePreferenceApplicate: (prefId: number) => void;
   handlePreferenceDelete: (prefId: number) => void;
 }
@@ -32,7 +32,7 @@ const PreferenceBox: React.FC<PreferenceBoxProps> = ({
       className={`mt-4 relative flex items-center justify-center 
       rounded-lg border-2 border-lime-400 bg-lime-100 w-full h-20
       transition-colors duration-500 hover:cursor-pointer ${!isBtnHovered ? "hover:bg-lime-400" : ""}`}
-      onClick={() => handlePreferenceDetail(preferenceId)}
+      onClick={(e) => handlePreferenceDetail(e, preferenceId)}
     >
       <div className="flex-1 w-1/4 text-base font-bold">{preferenceName}</div>
       <div className="flex flex-initial flex-col w-7/12 text-left min-w-0">
@@ -48,7 +48,7 @@ const PreferenceBox: React.FC<PreferenceBoxProps> = ({
           onMouseEnter={() => setIsBtnHovered(true)} // hover될 시 isBtnHovered를 true로 만들어 상단 div의 색 변경을 방지
           onMouseLeave={() => setIsBtnHovered(false)}
           onClick={() => handlePreferenceApplicate(preferenceId)}
-          className={`border-2 border-yellow-300 w-4/5 hover:bg-yellow-300 transition-colors duration-300 ${isSelected ? "border-yellow-300" : "bg-yellow-100"}`}
+          className={`border-2 border-yellow-300 w-4/5 hover:bg-yellow-300 transition-colors duration-300 ${isSelected ? "border-yellow-300 bg-yellow-300" : "bg-yellow-100"}`}
         >
           {isSelected ? <CheckOutlined /> : "적용"}
         </button>
