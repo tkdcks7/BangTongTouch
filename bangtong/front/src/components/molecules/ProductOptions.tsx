@@ -14,9 +14,10 @@ import Tv from "../../assets/Tv.png";
 
 interface ProductProps {
   options: number;
+  isPc: boolean;
 }
 
-const ProductOptions: React.FC<ProductProps> = ({ options }) => {
+const ProductOptions: React.FC<ProductProps> = ({ options, isPc }) => {
   const optionList = [
     "텔레비전",
     "침대",
@@ -54,11 +55,17 @@ const ProductOptions: React.FC<ProductProps> = ({ options }) => {
 
   return (
     <div>
-      <h1 className="text-2xl font-black">옵션</h1>
+      <h1 className={isPc ? "hidden" : "text-2xl font-black"}>옵션</h1>
       <div className="flex flex-wrap justify-start items-center mt-5">
         {numberArray.map((el: any, idx: number) => {
           if (el) {
-            return <OptionIcon src={iconList[idx]} text={optionList[idx]} />;
+            return (
+              <OptionIcon
+                key={optionList[idx]}
+                src={iconList[idx]}
+                text={optionList[idx]}
+              />
+            );
           } else {
             return null;
           }

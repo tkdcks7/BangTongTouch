@@ -88,7 +88,7 @@ const AppRoutes: React.FC = () => {
         <Route path="register" element={<Signup />} />
         <Route path="FindSelectPage" element={<FindSelect />} />
       </Route>
-
+      <Route path="search" element={<ProductSearchPage />} />
       {/* 네비게이션바가 있는 페이지의 최상단 */}
       <Route path="/" element={<Layout />}>
         {/* userStore에 id가 없으면 login으로 navigate 시키는 라우터 */}
@@ -102,7 +102,6 @@ const AppRoutes: React.FC = () => {
             <Route path=":id" element={<ProductDetail />} />
             <Route path="category" element={<ProductChoicePage />} />
             <Route path="upload" element={<ProductUpload />} />
-            <Route path="search" element={<ProductSearchPage />} />
           </Route>
 
           {/* 채팅 페이지 */}
