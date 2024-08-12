@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ChatroomService {
 
-  void createChatroom(ChatroomDto chatroomDto);
+  Long createChatroom(ChatroomDto chatroomDto);
   void exitChatroom(Long chatroomIId, Long userId);
   List<ChatroomReturnDto> getChatroom(Long userId);
   ChatReturnDto getChats(Long chatroomId);

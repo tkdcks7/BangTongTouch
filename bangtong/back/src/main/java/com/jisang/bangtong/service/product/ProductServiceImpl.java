@@ -1,6 +1,7 @@
 package com.jisang.bangtong.service.product;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.jisang.bangtong.dto.preference.PreferenceDto;
 import com.jisang.bangtong.dto.product.ProductReturnDto;
 import com.jisang.bangtong.dto.product.ProductSearchDto;
 import com.jisang.bangtong.dto.product.ProductUpdateDto;
@@ -123,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
   public List<ProductReturnDto> searchList(ProductSearchDto productSearchDto,
       HttpServletRequest request) {
     List<Product> productList = productRepository.searchList(productSearchDto);
-    log.info("SearchList Test {}", productSearchDto);
+    log.info("SearchList Test {}", productList);
     List<ProductReturnDto> productReturnDtoList = new ArrayList<>();
     Set<Long> interestSet = new HashSet<>();
     boolean isLike = getInterestSet(interestSet, request);
@@ -265,6 +266,48 @@ public class ProductServiceImpl implements ProductService {
         .productAddressDetail(productUploadDto.getProductDetailAddress())
         .productDescription(productUploadDto.getProductDescription())
         .lat(productUploadDto.getLat()).lng(productUploadDto.getLng()).build();
+  }
+
+
+  @Override
+  public List<ProductReturnDto> getRecentProducts(HttpServletRequest request){
+    String token = jwtUtil.getAccessToken(request);
+    if(token.isEmpty()){
+      throw new IllegalArgumentException("토큰이 만료되었습니다.");
+    }
+    Long userId = jwtUtil.getUserIdFromToken(token);
+    User u = userRepository.findById(userId).orElse(null);
+    if(!isValidUser(u)){
+      throw new NotFoundException("사용자를 찾을 수 없습니다");
+    }
+    Preference preference = preferenceRepository.findFirstByUser_UserId(userId);
+    String regionId = preference.getRegion().getRegionId();
+    log.info("getRecentProduct preference {}", preference);
+
+    List<Product> plist= productRepository.getRecentProducts(regionId);
+    List<ProductReturnDto> productReturnDtoList = new ArrayList<>();
+    for(Product p : plist){
+      ProductReturnDto productReturnDto = ProductReturnDto.builder()
+          .productId(p.getProductId())
+          .productType(p.getProductType()).regionReturnDto(getRegionReturnDto(p))
+          .productAddress(p.getProductAddress()).productDeposit(p.getProductDeposit())
+          .productRent(p.getProductRent()).productMaintenance(p.getProductMaintenance())
+          .productMaintenanceInfo(p.getProductMaintenanceInfo())
+          .productIsRentSupportable(p.isProductIsRentSupportable())
+          .productIsFurnitureSupportable(p.isProductIsFurnitureSupportable())
+          .productSquare(p.getProductSquare()).productRoom(p.getProductRoom())
+          .productOption(p.getProductOption()).productAdditionalOption(getAdditionalOptionList(p))
+          .productPostDate(p.getProductPostDate()).productStartDate(p.getProductStartDate())
+          .productEndDate(p.getProductEndDate()).lat(p.getLat()).lng(p.getLng())
+          .productAdditionalDetail(p.getProductAddressDetail())
+          .productIsInterest(false)
+          .mediaList(p.getProductMedia())
+          .productIsDelete(p.isProductIsDeleted())
+          .build();
+      productReturnDtoList.add(productReturnDto);
+    }
+
+    return productReturnDtoList;
   }
 
   @Override

@@ -37,6 +37,23 @@ const useProductOptionStore = create<ProductStore>((set) => ({
     })),
 }));
 
+// 검색 store 기본값 인터페이스
+interface ProductSearchParams {
+  productsList: any[]; // 조회한 매물 목록
+  order: number;
+  minDeposit: number;
+  maxDeposit: number;
+  minRent: number;
+  maxRent: number;
+  homeType: number[]; // type은 빌드업 네임이므로 바꿔준다
+  address: string;
+  rentSupportable: Boolean;
+  furnitureSupportable: Boolean;
+  infra: number[]; // 비트마스킹용 array
+  startDate: string;
+  endDate: string;
+}
+
 // 검색 store 인터페이스
 interface ProductSearchParams {
   productsList: any[]; // 조회한 매물 목록
@@ -100,7 +117,7 @@ const productSearchInitialState: ProductSearchParamsInitialI = {
 
 // 검색 옵션 store
 export const productSearchStore = create<ProductSearchParams>((set) => ({
-  ...productSearchInitialState, // 초기값을 넣어줌
+  ...productSearchInitialState,
   setProductsList: (data: any) => set(() => ({ productsList: data })),
   setOrder: (idx: number) => set(() => ({ order: idx })),
   setDeposit: (min: number, max: number) =>
@@ -141,6 +158,48 @@ export const productSearchStore = create<ProductSearchParams>((set) => ({
     })),
   setInitailize: () =>
     set((state) => ({ ...state, ...productSearchInitialState })),
+}));
+
+// 선호 설정을 위한 인터페이스
+interface PreferenceI {
+  preferenceId: number;
+  preferenceName: string;
+  userId: number;
+  regionId: string;
+  regionAddress: string;
+  preferenceDeposit: number;
+  preferenceRent: number;
+  preferenceType: string;
+  preferenceInfra: string;
+  preferenceStartDate: string;
+  preferenceEndDate: string;
+  setPreference: (payload: any) => void; // 선호값 변경
+  reSetPreference: () => void; // 초기화
+}
+
+// 선호 설정 기본값 인터페이스
+const preferenceDefault: Omit<
+  PreferenceI,
+  "setPreference" | "reSetPreference"
+> = {
+  preferenceId: 2,
+  preferenceName: "서울에서 살래~!!!",
+  userId: 1,
+  regionId: "1150010400",
+  regionAddress: "서울특별시 강서구 가양동",
+  preferenceDeposit: 5000,
+  preferenceRent: 70,
+  preferenceType: "00111",
+  preferenceInfra: "11111111",
+  preferenceStartDate: "2024-09-06T04:54:15.802+00:00",
+  preferenceEndDate: "2025-08-18T06:27:35.802+00:00",
+};
+
+// 선호 설정 store
+export const preferenceStore = create<PreferenceI>((set) => ({
+  ...preferenceDefault,
+  setPreference: (payload) => set((state) => ({ ...state, ...payload })),
+  reSetPreference: () => set((state) => ({ ...state, ...preferenceDefault })),
 }));
 
 export default useProductOptionStore;

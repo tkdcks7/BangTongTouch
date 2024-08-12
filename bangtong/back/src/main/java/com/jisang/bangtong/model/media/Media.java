@@ -41,14 +41,8 @@ public class Media {
   private Product product;
 
   @OneToOne
-  @JoinColumn(name = "user_id")
+  @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name="fk_media_user"))
   @JsonProperty(access = Access.WRITE_ONLY)
   @JsonBackReference
   private User user;
-
-  // TODO 미디어 쿼리 작성해야됨
-  @ManyToOne
-  @JoinColumn(foreignKey = @ForeignKey(name="fk_media_chat"))
-  @JsonProperty(access = Access.WRITE_ONLY)
-  private Chat chat;
 }

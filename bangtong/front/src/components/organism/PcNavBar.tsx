@@ -3,7 +3,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import authAxios from "../../utils/authAxios";
 
 // 컴포넌트 불러오기
-import { Dropdown, FloatButton, ConfigProvider } from "antd";
+import { Dropdown, FloatButton, ConfigProvider, Badge } from "antd";
 import Btn from "../atoms/Btn";
 import IconBtn from "../atoms/IconBtn";
 import { DownOutlined } from "@ant-design/icons";
@@ -135,51 +135,61 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
               신통방톡
             </NavLink>
 
-            <div className="flex items-center justify-center mx-3 w-10 h-10">
-              {token ? (
-                  <Dropdown trigger={["click"]} menu={{ items: alarmItems.current }}>
-                    <BellOutlined className="text-xl" />
-                  </Dropdown>
-               ) :
-                  <BellOutlined className="text-xl" onClick={() => {
-                      alert("로그인 후 이용해 주세요.")
-                      navigate("/user/login");
-                  }}/>
-              }
-              {token ? useAlarmInfoStore.getState().alarmNum : null}
-            </div>
-
-            {/* 로그인 되면 로그아웃 버튼이 뜨도록 */}
-            <div className="mx-1">
-              {token ? (
-                  <Btn
-                      text="로그아웃"
-                      backgroundColor="bg-red-400"
-                      onClick={handleLogOutBtnClick}
-                  />
-              ) : (
-                  <>
-                    <div className="flex">
-                      <div className="me-3">
-                        <Btn
-                            text="로그인"
-                            backgroundColor="bg-lime-500"
-                            onClick={handleLogInBtnClick}
-                        />
-                      </div>
-                      <div>
-                        <Btn
-                            text="회원가입"
-                            backgroundColor="bg-yellow-300"
-                            onClick={handleSignUpBtnClick}
-                        />
-                      </div>
-                    </div>
-                  </>
-              )}
-            </div>
+          <div className="flex items-center justify-center mx-3 w-10 h-10">
+            {token ? (
+              <Dropdown
+                trigger={["click"]}
+                menu={{ items: alarmItems.current }}
+              >
+                <Badge
+                  count={token ? useAlarmInfoStore.getState().alarmNum : null}
+                  className="hover:cursor-pointer"
+                >
+                  <BellOutlined className="text-xl" />
+                </Badge>
+              </Dropdown>
+            ) : (
+              <BellOutlined
+                className="text-xl"
+                onClick={() => {
+                  alert("로그인 후 이용해 주세요.");
+                  navigate("/user/login");
+                }}
+              />
+            )}
           </div>
-        </header>
+
+          {/* 로그인 되면 로그아웃 버튼이 뜨도록 */}
+          <div className="mx-1">
+            {token ? (
+              <Btn
+                text="로그아웃"
+                backgroundColor="bg-red-400"
+                onClick={handleLogOutBtnClick}
+              />
+            ) : (
+              <>
+                <div className="flex">
+                  <div className="me-3">
+                    <Btn
+                      text="로그인"
+                      backgroundColor="bg-lime-500"
+                      onClick={handleLogInBtnClick}
+                    />
+                  </div>
+                  <div>
+                    <Btn
+                      text="회원가입"
+                      backgroundColor="bg-yellow-300"
+                      onClick={handleSignUpBtnClick}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </header>
 
         <FloatButton
             icon={!dark ? <SunOutlined/> : <MoonOutlined/>}

@@ -28,4 +28,13 @@ public enum ProductType implements IEnum<String> {
       super(ProductType.class);
     }
   }
+
+  public static ProductType fromDbValue(String dbValue) {
+    for (ProductType type : ProductType.values()) {
+      if (type.getValue().equals(dbValue)) {
+        return type;
+      }
+    }
+    throw new IllegalArgumentException("Unknown db value: " + dbValue);
+  }
 }

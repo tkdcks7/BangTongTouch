@@ -2,6 +2,8 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 
+import ScrollToTop from "../atoms/ScrollToTop";
+
 // 이미지 소스
 import homeImg from "../../assets/homeImg.png";
 import BlackLogo from "../../assets/BlackLogo.png";
@@ -19,6 +21,7 @@ const UserPage: React.FC = () => {
 
   return (
     <div className="bg-yellow-200">
+      <ScrollToTop />
       <div className="flex justify-between items-center w-full h-20 px-5 hidden md:flex">
         <Link to="/" className="text-start">
           <img src={BlackLogo} alt="로고" className="w-40" />
@@ -41,7 +44,7 @@ const UserPage: React.FC = () => {
           duration: 0.7,
           repeatDelay: 3,
         }}
-        className="h-mvh px-10 flex items-center justify-center"
+        className="px-10 flex items-center justify-center"
       >
         <div className="mr-20 lg:mr-40 hidden md:block w-96">
           <p className="text-xl lg:text-2xl font-bold mb-2 text-center text-nowrap">
@@ -62,7 +65,7 @@ const UserPage: React.FC = () => {
             duration: 0.7,
             repeatDelay: 3,
           }}
-          className="h-screen flex flex-col items-center justify-center"
+          className="h-lvh flex flex-col items-center justify-center"
         >
           <div className="w-full md:w-96 p-10 bg-white rounded-2xl my-20">
             <Outlet />
