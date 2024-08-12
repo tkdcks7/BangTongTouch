@@ -107,10 +107,12 @@ public class ProductServiceImpl implements ProductService {
     regionReturnDto.setRegionSido(sido);
 
     User u = product.getUser();
+
     ProfileDto profileDto = new ProfileDto();
     profileDto.setProfileImage(u.getUserProfileImage().getMediaPath());
     profileDto.setNickname(u.getUserNickname());
     profileDto.setUserId(u.getUserId());
+
     ProductReturnDto productReturnDto = ProductReturnDto.builder()
         .productId(product.getProductId())
         .productType(product.getProductType())
