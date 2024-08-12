@@ -25,7 +25,7 @@ interface MMenuBarProps {
 
 const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
   const navigate = useNavigate();
-  const { alarms } = useAlarmInfoStore();
+  const { alarms, setAlarmDelete } = useAlarmInfoStore();
   const { token, id, setLogOut } = useUserStore();
   const alarmItems = useRef<Array<any>>();
 
@@ -36,6 +36,7 @@ const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
       url: `${process.env.REACT_APP_BACKEND_URL}/users/logout`,
     })
       .then((response) => {
+        setAlarmDelete();
         setLogOut(); // userInfo와 token을 초기화
         navigate("/user/login");
       })
