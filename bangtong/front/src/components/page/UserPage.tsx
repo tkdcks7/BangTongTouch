@@ -2,6 +2,8 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 
+import ScrollToTop from "../atoms/ScrollToTop";
+
 // 이미지 소스
 import homeImg from "../../assets/homeImg.png";
 import BlackLogo from "../../assets/BlackLogo.png";
@@ -19,6 +21,7 @@ const UserPage: React.FC = () => {
 
   return (
     <div className="bg-yellow-200">
+      <ScrollToTop />
       <div className="flex justify-between items-center w-full h-20 px-5 hidden md:flex">
         <Link to="/" className="text-start">
           <img src={BlackLogo} alt="로고" className="w-40" />

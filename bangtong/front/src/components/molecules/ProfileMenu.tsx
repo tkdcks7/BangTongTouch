@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Accordion } from "@szhsin/react-accordion";
 import { NavLink } from "react-router-dom";
 import useUserStore from "../../store/userStore";
@@ -9,18 +9,38 @@ import ProfileMyFavItems from "./ProfileMyFavItems";
 
 // 아이콘
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
+import axios from "axios";
 
 const ProfileMenu: React.FC = () => {
   const { id } = useUserStore();
+
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: `${process.env.REACT_APP_BACKEND_URL}/interest/${id}`,
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   return (
     <div className="mx-2 my-4">
-      <Accordion transition transitionTimeout={200} className="dark:hover:text-black">
+      <Accordion
+        transition
+        transitionTimeout={200}
+        className="dark:hover:text-black"
+      >
         <AccordionPart header="내 관심 매물">
           <ProfileMyFavItems />
         </AccordionPart>
       </Accordion>
-        <Accordion transition transitionTimeout={200} className="dark:hover:text-black">
-
+      <Accordion
+        transition
+        transitionTimeout={200}
+        className="dark:hover:text-black"
+      >
         <AccordionPart header="내가 올린 매물">
           <ProfileMyFavItems />
         </AccordionPart>

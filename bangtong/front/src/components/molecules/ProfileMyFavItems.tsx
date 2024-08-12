@@ -29,8 +29,8 @@ const ProfileMyFavItems: React.FC = () => {
             />
           </Link>
           <div>
-            <p className="text-sm">{`${item.data.boardRegion.regionDong} ${roomType[item.data.productType]}`}</p>
-            <p className="text-sm">{`${item.data.productDeposit}/${item.data.productRent}`}</p>
+            <p className="text-sm dark:text-white">{`${item.data.boardRegion.regionDong} ${roomType[item.data.productType]}`}</p>
+            <p className="text-sm dark:text-white">{`${item.data.productDeposit}/${item.data.productRent}`}</p>
           </div>
         </div>
       ))}

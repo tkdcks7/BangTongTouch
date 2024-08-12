@@ -75,10 +75,13 @@ public class UserController {
 
   //  로그아웃
   @PutMapping("/logout")
-  public ResponseDto<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+  public ResponseEntity<ResponseDto<Void>> logout(HttpServletRequest request,
+      HttpServletResponse response) {
     userService.logout(request, response);
 
-    return ResponseDto.res(ResponseMessageConstants.SUCCESS);
+    return ResponseEntity.status(HttpStatus.OK)
+        .header(SecurityConstants.JWT_HEADER, "")
+        .body(ResponseDto.res(ResponseMessageConstants.SUCCESS));
   }
 
   // 내 프로필 조회
