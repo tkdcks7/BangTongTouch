@@ -22,6 +22,12 @@ interface ProductProps {
 
 const ProductProfile: React.FC<ProductProps> = ({ userinfo, productId }) => {
   const [hover, setHover] = useState<boolean>(false);
+
+  const buttonStyle = {
+    backgroundColor: hover ? "#facc15" : "#fef08a",
+    borderColor: hover ? "#facc15" : "",
+    color: hover ? "#ffffff" : "",
+  };
   const { id } = useUserStore();
 
   const makeChatRoom = () => {
@@ -42,12 +48,6 @@ const ProductProfile: React.FC<ProductProps> = ({ userinfo, productId }) => {
         console.log(response);
       });
   };
-  const buttonStyle = {
-    backgroundColor: hover ? "#facc15" : "#fef08a",
-    borderColor: hover ? "#facc15" : "",
-    color: hover ? "#ffffff" : "",
-  };
-
   return (
     <div className="flex justify-between items-center mt-5">
       <ProfileImgBox src={userinfo.profileImage} profileId={userinfo.id} />

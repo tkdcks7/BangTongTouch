@@ -42,6 +42,7 @@ const ProductDetail: React.FC = () => {
     productPostDate: "2024-07-19 04:01:15.256",
     productStartDate: "2024-08-01",
     productEndDate: "2024-12-30",
+    productAdditionalDetail: "책상",
     boardRegion: {
       regionId: "1111010900",
       regionSido: "서울특별시",
@@ -191,8 +192,17 @@ const ProductDetail: React.FC = () => {
         <ImgCarousel />
         <h2 className="text-2xl font-bold text-center">{`${productInfo.boardRegion.regionSido} ${productInfo.boardRegion.regionGugun} ${productInfo.boardRegion.regionDong}`}</h2>
         {/* 유저 프로필, 연락하기 */}
-        <ProductProfile userinfo={productInfo.user} />
-        <p className="mt-2">간단한 설명 (유저 입력)</p>
+        <ProductProfile
+          userinfo={productInfo.user}
+          productId={productInfo.productId}
+        />
+        <Devider />
+        <h2 className="text-2xl font-black">매물 설명 </h2>
+        <p className="mt-2">
+          {productInfo.productAdditionalDetail
+            ? productInfo.productAdditionalDetail
+            : "등록된 상세 설명이 없습니다"}
+        </p>
         {/* 구분선 */}
         <Devider />
         {/* 기본정보 */}
@@ -224,7 +234,7 @@ const ProductDetail: React.FC = () => {
         {/* 구분선 */}
         <Devider />
         {/* 옵션 */}
-        <ProductOptions options={options} />
+        <ProductOptions options={parseInt(options)} />
         {/* 구분선 */}
         <Devider />
         {/* 추가옵션 */}
