@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @Entity
 @RequiredArgsConstructor
 @AllArgsConstructor
-public class ProductAlgorithm {
+public class Productalgorithm {
 
   @Id
   Long productId;
@@ -36,7 +36,17 @@ public class ProductAlgorithm {
   Integer supermarketCount;
   Double normalHospitalDist;  //병원
   Integer normalHospitalCount; //일반병원 0.5km 개수
-  Double publicHealthDist;  //
+  Double publicHealthDist;  //보건소 개수
+  Integer publicHealthCount; //보건소 0.5km 개수
+  Double publicUnderPublicHealth; //보건지소
+  Integer publicUnderPublicHealthCount;
+  Double nursingHospitalDist; //요양병원
+  Integer nursingHospitalCount;
+  Double smallHospitalDist; //의원
+  Integer smallHospitalCount;
+  Double mediumHospitalDist;
+
+
 
 
 }
