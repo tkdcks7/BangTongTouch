@@ -23,7 +23,7 @@ public class Interest {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long interest_id;
+  private Long interestId;
 
   @ManyToOne
   @JoinColumn(name="user_id", foreignKey = @ForeignKey(name="fk_interest_user"), nullable = false)

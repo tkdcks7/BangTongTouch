@@ -1,6 +1,7 @@
 package com.jisang.bangtong.controller.interest;
 
 import com.jisang.bangtong.dto.Interest.InterestDto;
+import com.jisang.bangtong.dto.Interest.InterestReturnDto;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.model.interest.Interest;
 import com.jisang.bangtong.service.interest.InterestService;
@@ -45,13 +46,12 @@ public class InterestController {
   }
 
   @GetMapping("/{userId}")
-  public ResponseDto<List<Interest>> getList(@PathVariable Long userId){
+  public ResponseDto<List<InterestReturnDto>> getList(@PathVariable Long userId){
     log.info("찜 목록 가져오는 쿼리 실행");
-    Optional<List<Interest>> optionalInterestList = interestService.getList(userId);
-    List<Interest> interestList;
-    if (optionalInterestList.isPresent()){
-      interestList = optionalInterestList.get();
-      return ResponseDto.res(SUCCESS,interestList);
+    List<InterestReturnDto> optionalInterestList = interestService.getList(userId);
+    if (!optionalInterestList.isEmpty()){
+      log.info("asdfasdf {}", optionalInterestList);
+      return ResponseDto.res(SUCCESS,optionalInterestList);
     }
     else{
       log.info("찜 목록이 없습니다");
