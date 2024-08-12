@@ -1,6 +1,7 @@
 package com.jisang.bangtong.service.product;
 
 import com.jisang.bangtong.dto.product.ProductReturnDto;
+import com.jisang.bangtong.dto.product.ProductReturnDtoWIthProfile;
 import com.jisang.bangtong.dto.product.ProductSearchDto;
 import com.jisang.bangtong.dto.product.ProductUpdateDto;
 import com.jisang.bangtong.dto.product.ProductUploadDto;
@@ -16,13 +17,13 @@ public interface ProductService {
 
   void update(ProductUpdateDto product, Long productId, HttpServletRequest request);
 
-  ProductReturnDto getProduct(long productId);
+  ProductReturnDtoWIthProfile getProduct(long productId);
 
   List<ProductReturnDto> searchList(ProductSearchDto productSearchDto, HttpServletRequest request);
 
   void delete(Long productId, HttpServletRequest request);
 
-  ProductReturnDto getRecentInterestProduct(Long userId);
+  ProductReturnDtoWIthProfile getRecentInterestProduct(Long userId);
 
   Integer getProductSize();
 
