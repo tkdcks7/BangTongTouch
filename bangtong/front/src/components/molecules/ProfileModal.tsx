@@ -379,7 +379,7 @@ const ProfileModal: React.FC<ModalI> = ({
                 locationTitle
               ) : (
                 <div className="w-full flex items-center justify-center">
-                  <MapPinIcon width={20} className="me-3" />
+                  <MapPinIcon width={20} className="me-3"/>
                   <p>지역을 선택해주세요.</p>
                 </div>
               )}
