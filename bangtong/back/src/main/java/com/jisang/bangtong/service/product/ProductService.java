@@ -1,5 +1,6 @@
 package com.jisang.bangtong.service.product;
 
+import com.jisang.bangtong.dto.Interest.InterestProductDto;
 import com.jisang.bangtong.dto.product.ProductReturnDto;
 import com.jisang.bangtong.dto.product.ProductReturnDtoWIthProfile;
 import com.jisang.bangtong.dto.product.ProductSearchDto;
@@ -28,4 +29,6 @@ public interface ProductService {
   Integer getProductSize();
 
   List<ProductReturnDto> getRecentProducts(HttpServletRequest request);
+
+  InterestProductDto getInterestProduct(Long productId);
 }

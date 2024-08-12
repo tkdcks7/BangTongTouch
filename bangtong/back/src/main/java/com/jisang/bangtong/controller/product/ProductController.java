@@ -1,6 +1,7 @@
 package com.jisang.bangtong.controller.product;
 
 import com.jisang.bangtong.constants.ResponseMessageConstants;
+import com.jisang.bangtong.dto.Interest.InterestProductDto;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.dto.product.ProductReturnDto;
 import com.jisang.bangtong.dto.product.ProductReturnDtoWIthProfile;
@@ -95,6 +96,11 @@ public class ProductController {
   public ResponseDto<List<ProductReturnDto>> getRecentProduct(HttpServletRequest request) {
     List<ProductReturnDto> productReturnDto = productService.getRecentProducts(request);
     return ResponseDto.res("SUCCESS", productReturnDto);
+  }
+
+  @GetMapping("/interest/{productId}")
+  public ResponseDto<InterestProductDto> getInterestProduct(@PathVariable Long productId){
+    return ResponseDto.res("SUCCESS", productService.getInterestProduct(productId));
   }
 
 }

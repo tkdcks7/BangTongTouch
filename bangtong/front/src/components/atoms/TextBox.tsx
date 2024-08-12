@@ -5,17 +5,19 @@ interface TextBoxProps {
   size?: string; // 텍스트 크기 (xs, sm, base, lg, xl, 2xl, ...)
   color?: string; // 텍스트 색
   weight?: string; // 텍스트 굵기
+  darkColor?: string;
 }
 
 const TextBox: React.FC<TextBoxProps> = ({
   text,
   size = "sm",
-  color = "black",
+  color,
   weight = "normal",
+    darkColor,
   ...props
 }) => {
   return (
-    <div className={`text-${size} text-${color} font-${weight}`}>
+    <div className={`text-${size} text-${color} font-${weight} dark:text-${darkColor}`} {...props}>
       <p>{text}</p>
     </div>
   );

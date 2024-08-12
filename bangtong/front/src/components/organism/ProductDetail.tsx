@@ -68,10 +68,12 @@ const ProductDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [connectionFailed, setConnectionFailed] = useState(false);
   const [isInterest, setIsInterest] = useState(false);
-  const [isMe, setIsMe] = useState<boolean>(false);
 
   // state와 초기값 선언. 나중에 null, 0 혹은 빈 문자열로 바꿀거임.
   const [productInfo, setProductInfo] = useState(tempObj);
+
+  // 글쓴이가 나인지 확인
+  const [isMe, setIsMe] = useState<boolean>();
 
   // 백엔드에서 상세 페이지 정보 받아오기
   useEffect(() => {
@@ -107,12 +109,11 @@ const ProductDetail: React.FC = () => {
 
   // 수정 페이지(작성 페이지에서 기본값이 다 설정된 페이지?)로 이동
   // Dto 때문에 userId를 비교하는 로직을 작성 못함.
-  // 되면 조건문에 true 대신 productInfo.userId === userId 넣을 것.
-  const handleToUpdate = (): void => {
-    if (true) {
-      navigate(`/products/update/${id}`);
-    }
-  };
+  // const handleToUpdate = (): void => {
+  //   if (productInfo.userId === userId) {
+  //     navigate(`/products/update/${id}`)
+  //   }
+  // }
 
   // 매물 게시글 삭제 함수
   const handleDelete = (): void => {
@@ -132,11 +133,11 @@ const ProductDetail: React.FC = () => {
   // 관심 매물 등록(좋아요). 관심매물 좋아요 상태도 같이 보내줄 것.
   const handleInterestBtn = (): void => {
     let method: string = "POST";
-    let url: string = `${process.env.REACT_APP_BACKEND_URL}/interests/add`;
+    let url: string = `${process.env.REACT_APP_BACKEND_URL}/interest/add`;
     let data: any = { userId, productId: id };
     if (isInterest) {
       method = "DELETE";
-      url = `${process.env.REACT_APP_BACKEND_URL}/interests/delete/${userId}/${id}`;
+      url = `${process.env.REACT_APP_BACKEND_URL}/interest/delete/${userId}/${id}`;
       data = {};
     }
     authAxios({ method, url, data })
@@ -326,7 +327,10 @@ const ProductDetail: React.FC = () => {
           <ImgCarousel imgSrcArray={productInfo.productReturnDto.mediaList} />
           <h2 className="text-2xl font-bold text-center">{`${productInfo.productReturnDto.regionReturnDto.regionSido} ${productInfo.productReturnDto.regionReturnDto.regionGugun} ${productInfo.productReturnDto.regionReturnDto.regionDong}`}</h2>
           {/* 유저 프로필, 연락하기 */}
-          <ProductProfile userinfo={productInfo.profileDto} />
+          <ProductProfile
+            userinfo={productInfo.profileDto}
+            productId={productInfo.productReturnDto.productId}
+          />
           <Devider />
           <h2 className="text-2xl font-black">매물 설명 </h2>
           <p className="mt-2">
