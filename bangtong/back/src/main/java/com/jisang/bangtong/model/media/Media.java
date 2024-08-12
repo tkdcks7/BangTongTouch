@@ -1,6 +1,8 @@
 package com.jisang.bangtong.model.media;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.jisang.bangtong.model.board.Board;
@@ -21,6 +23,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -38,11 +41,13 @@ public class Media {
   @ManyToOne
   @JoinColumn(name = "product_id", foreignKey = @ForeignKey(name = "fk_media_product"))
   @JsonProperty(access = Access.WRITE_ONLY)
+  @ToString.Exclude
   private Product product;
 
   @OneToOne
   @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name="fk_media_user"))
   @JsonProperty(access = Access.WRITE_ONLY)
-  @JsonBackReference
+  @JsonManagedReference
+  @ToString.Exclude
   private User user;
 }
