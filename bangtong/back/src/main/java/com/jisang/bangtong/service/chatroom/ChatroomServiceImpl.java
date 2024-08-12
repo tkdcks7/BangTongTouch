@@ -44,7 +44,7 @@ public class ChatroomServiceImpl implements ChatroomService {
   private ProductRepository productRepository;
 
 
-  public void createChatroom(ChatroomDto roomName){
+  public Long createChatroom(ChatroomDto roomName){
     Chatroom chatroom = new Chatroom();
     chatroom.setChatroomTitle(roomName.getTitle());
     Optional<User> maker = userRepository.findById(roomName.getMaker());
@@ -54,7 +54,8 @@ public class ChatroomServiceImpl implements ChatroomService {
     maker.ifPresent(chatroom::setMaker);
     participant.ifPresent(chatroom::setParticipant);
     product.ifPresent(chatroom::setProduct);
-    chatroomRepository.save(chatroom);
+    Chatroom chatrooms = chatroomRepository.save(chatroom);
+    return chatrooms.getChatroomId();
   }
 
   public void exitChatroom(Long chatroomId, Long userId){

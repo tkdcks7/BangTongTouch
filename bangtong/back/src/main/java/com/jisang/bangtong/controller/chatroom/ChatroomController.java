@@ -29,10 +29,10 @@ public class ChatroomController {
   private ChatroomService chatroomService;
 
   @PostMapping("/save")
-  public ResponseDto<Void> save(@RequestBody ChatroomDto chatroomDto) {
+  public ResponseDto<Long> save(@RequestBody ChatroomDto chatroomDto) {
     log.info("{}", chatroomDto);
-    chatroomService.createChatroom(chatroomDto);
-    return ResponseDto.res(SUCCESS);
+    Long chatroomId = chatroomService.createChatroom(chatroomDto);
+    return ResponseDto.res(SUCCESS, chatroomId);
   }
 
   @PutMapping("/end/{chattoomId}/{userId}")
