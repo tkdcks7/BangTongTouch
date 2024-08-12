@@ -47,7 +47,7 @@ public class Chatroom {
   User Participant;
 
   @Column(nullable = false)
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
   @Temporal(TemporalType.TIMESTAMP)
   Date chatroomCreatedAt = new Date();
 

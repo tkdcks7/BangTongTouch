@@ -2,6 +2,7 @@ package com.jisang.bangtong.controller.preference;
 
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.dto.preference.PreferenceDto;
+import com.jisang.bangtong.model.preference.Preference;
 import com.jisang.bangtong.service.preference.PreferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,8 @@ public class PreferenceController {
     // 선호 설정 등록
     @PostMapping("/add/{userId}")
     public ResponseDto<PreferenceDto> addPreference(@PathVariable long userId, @RequestBody PreferenceDto preferenceDto) {
-        preferenceService.addPreference(userId, preferenceDto);
-        return ResponseDto.res(SUCCESS, preferenceDto);
+        PreferenceDto preference = preferenceService.addPreference(userId, preferenceDto);
+        return ResponseDto.res(SUCCESS, preference);
     }
 
     // 선호 설정 수정

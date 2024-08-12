@@ -31,7 +31,7 @@ const PreferenceBox: React.FC<PreferenceBoxProps> = ({
     <div
       className={`mt-4 relative flex items-center justify-center 
       rounded-lg border-2 border-lime-400 bg-lime-100 w-full h-20
-      transition-colors duration-500 hover:cursor-pointer ${!isBtnHovered ? "hover:bg-lime-400" : ""}`}
+      transition-colors duration-500 hover:cursor-pointer dark:text-black ${!isBtnHovered ? "hover:bg-lime-400" : ""}`}
       onClick={(e) => handlePreferenceDetail(e, preferenceId)}
     >
       <div className="flex-1 w-1/4 text-base font-bold">{preferenceName}</div>
@@ -40,7 +40,8 @@ const PreferenceBox: React.FC<PreferenceBoxProps> = ({
         <div className="flex-1 h-1/2 truncate">
           <span className="text-bold">보증금:&nbsp;</span>
           {preferenceDeposit}만원 &nbsp;&nbsp;
-          <span className="text-bold">월세:&nbsp;</span> {preferenceRent}만원
+          <span className="text-bold dark:text-black">월세:&nbsp;</span>{" "}
+          {preferenceRent}만원
         </div>
       </div>
       <div className="flex flex-1 flex-col w-2/12">

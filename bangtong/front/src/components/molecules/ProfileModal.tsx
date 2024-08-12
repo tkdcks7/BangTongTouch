@@ -86,7 +86,7 @@ const ProfileModal: React.FC<ModalI> = ({
   const { RangePicker } = DatePicker;
 
   // 변경된 날짜 set
-  const handelChange = (dates: any) => {
+  const handleChange = (dates: any) => {
     setDate(dates[0], dates[1]);
   };
 
@@ -95,7 +95,7 @@ const ProfileModal: React.FC<ModalI> = ({
     <RangePicker
       className="w-full"
       placeholder={["입주 일자", "퇴거 일자"]}
-      onChange={handelChange}
+      onChange={handleChange}
     />
   );
 
@@ -165,6 +165,7 @@ const ProfileModal: React.FC<ModalI> = ({
             })
             .catch((err) => console.log(err));
         })
+
         .catch((err) => console.log(err));
     }
   }, [selectedId]);
@@ -510,5 +511,4 @@ const ProfileModal: React.FC<ModalI> = ({
     </>
   );
 };
-
 export default ProfileModal;
