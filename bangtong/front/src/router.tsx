@@ -16,6 +16,7 @@ import MainPage from "./components/page/MainPage"; // 메인 페이지
 import ProductPage from "./components/page/ProductPage"; // 페이지
 import ProductDetail from "./components/organism/ProductDetail"; // 매물 상세
 import ProductUpload from "./components/organism/ProductUpload"; // 매물 업로드
+import ProductChoicePage from "./components/page/ProductChoicePage";
 
 // 채팅
 import ChattingPage from "./components/page/ChattingPage"; // 페이지
@@ -46,7 +47,6 @@ import VideoChat from "./components/page/VideoChatPage";
 // 비로그인시 보여줄 페이지
 import InformationPage from "./components/page/InformationPage/InformationPage";
 import ProductSearchPage from "./components/page/ProductSearchPage";
-import ProductChoicePage from "./components/page/ProductChoicePage";
 
 // 비로그인 사용자를 login으로 이동시키는 protectedRoute
 const ProtectedRoute: React.FC = () => {
