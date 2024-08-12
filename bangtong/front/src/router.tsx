@@ -45,6 +45,7 @@ import VideoChat from "./components/page/VideoChatPage";
 
 // 비로그인시 보여줄 페이지
 import InformationPage from "./components/page/InformationPage/InformationPage";
+import ProductSearchPage from "./components/page/ProductSearchPage";
 
 // 비로그인 사용자를 login으로 이동시키는 protectedRoute
 const ProtectedRoute: React.FC = () => {
@@ -99,6 +100,7 @@ const AppRoutes: React.FC = () => {
             <Route path="" element={<ProductMapBox />} />
             <Route path=":id" element={<ProductDetail />} />
             <Route path="upload" element={<ProductUpload />} />
+            <Route path="search" element={<ProductSearchPage />} />
           </Route>
 
           {/* 채팅 페이지 */}
