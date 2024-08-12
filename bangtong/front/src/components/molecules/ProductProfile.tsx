@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 
 // 컴포넌트
 import Btn from "../atoms/Btn";
 import ProfileImgBox from "../atoms/ProfileImgBox";
 import authAxios from "../../utils/authAxios";
 import useUserStore from "../../store/userStore";
+import { Button } from "antd";
+import { WechatOutlined } from "@ant-design/icons";
 
 // 이미지 소스
 
@@ -13,7 +15,13 @@ interface ProductProps {
   productId: number;
 }
 
+// text="연락하기"
+//         width="w-20"
+//         textSize="text-sm"
+//         backgroundColor="bg-yellow-300"
+
 const ProductProfile: React.FC<ProductProps> = ({ userinfo, productId }) => {
+  const [hover, setHover] = useState<boolean>(false);
   const { id } = useUserStore();
 
   const makeChatRoom = () => {
@@ -34,6 +42,11 @@ const ProductProfile: React.FC<ProductProps> = ({ userinfo, productId }) => {
         console.log(response);
       });
   };
+  const buttonStyle = {
+    backgroundColor: hover ? "#facc15" : "#fef08a",
+    borderColor: hover ? "#facc15" : "",
+    color: hover ? "#ffffff" : "",
+  };
 
   return (
     <div className="flex justify-between items-center mt-5">
@@ -46,6 +59,20 @@ const ProductProfile: React.FC<ProductProps> = ({ userinfo, productId }) => {
         textSize="text-sm"
         backgroundColor="bg-yellow-300"
         onClick={makeChatRoom}
+      />
+      <Button
+        className={"bg-yellow-200 hover:bg-color-400"}
+        style={buttonStyle}
+        size="large"
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        icon={
+          <WechatOutlined
+            style={{ fontSize: "24px" }}
+            disabled={true}
+            type="primary"
+          />
+        }
       />
     </div>
   );

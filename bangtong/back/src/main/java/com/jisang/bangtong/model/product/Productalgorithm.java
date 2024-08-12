@@ -44,9 +44,16 @@ public class Productalgorithm {
   Integer nursingHospitalCount;
   Double smallHospitalDist; //의원
   Integer smallHospitalCount;
-  Double mediumHospitalDist;
-
-
-
-
+  Double medHospitalDist; //조산사
+  Integer medHospitalCount; //조산사 숫자
+  Double generalHospitalDist; //종합 병원
+  Integer generalHospitalCount; //종합 병원 개수
+  Double dentalHospitalDist; //치과
+  Integer dentalHospitalCount;
+  Double smallDentalHospitalDist;
+  Integer smallDentalHospitalCount;
+  Double smallOrientalHospitalDist;
+  Integer smallOrientalHospitalCount;
+  Double originalHospitalDist;
+  Integer originalHospitalCount;
 }

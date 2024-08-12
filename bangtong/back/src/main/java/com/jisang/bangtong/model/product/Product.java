@@ -30,6 +30,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
@@ -119,6 +120,7 @@ public class Product {
   @Column(length = 100)
   private String productAddressDetail;    //몇동 몇호
 
+  @ToString.Exclude
   @OneToMany // mappedBy 속성 사용
   private List<Media> productMedia;
 
