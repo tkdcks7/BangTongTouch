@@ -346,6 +346,7 @@ const ProductUpload: React.FC = () => {
                 type="number"
                 value={deposit}
                 onChange={(e) => setDeposit(e.target.value)}
+                suffix="만원"
               />
             </Form.Item>
             <Form.Item required>
@@ -355,6 +356,7 @@ const ProductUpload: React.FC = () => {
                 type="text"
                 value={charge}
                 onChange={(e) => setCharge(e.target.value)}
+                suffix="만원"
               />
             </Form.Item>
           </div>
@@ -366,6 +368,7 @@ const ProductUpload: React.FC = () => {
                 type="text"
                 value={maintanence}
                 onChange={(e) => setMaintanence(e.target.value)}
+                suffix="만원"
               />
             </Form.Item>
             <Form.Item required>
@@ -373,6 +376,7 @@ const ProductUpload: React.FC = () => {
                 placeholder="관리비 항목"
                 size="large"
                 type="text"
+                className="w-60"
                 value={maintanenceInfo}
                 onChange={(e) => setMaintanenceInfo(e.target.value)}
               />
@@ -386,6 +390,7 @@ const ProductUpload: React.FC = () => {
                 type="text"
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
+                suffix="m²"
               />
             </Form.Item>
           </div>
