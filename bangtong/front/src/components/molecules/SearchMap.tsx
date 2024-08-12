@@ -230,6 +230,7 @@ const SearchMap: React.FC<MapProps> = ({
         posRef.current.lng + 0.01
       );
 
+      // test
       const bbox = `${southWest.x},${southWest.y},${northEast.x},${northEast.y}`;
       for (let i = 0; i < subMarkerDatas.length; i++) {
         axios({
