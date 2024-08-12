@@ -1,6 +1,7 @@
 package com.jisang.bangtong.service.product;
 
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.jisang.bangtong.dto.Interest.InterestProductDto;
 import com.jisang.bangtong.dto.preference.PreferenceDto;
 import com.jisang.bangtong.dto.product.ProductReturnDto;
 import com.jisang.bangtong.dto.product.ProductReturnDtoWIthProfile;
@@ -336,6 +337,17 @@ public class ProductServiceImpl implements ProductService {
 
     return productReturnDtoList;
   }
+
+  @Override
+  public InterestProductDto getInterestProduct(Long productId){
+
+    if(productRepository.findById(productId).orElse(null) == null){
+      throw new NotFoundException("해당 매물이 없습니다");
+    }
+
+    return productRepository.getInterestProduct(productId);
+  }
+
 
   @Override
   public Integer getProductSize(){
