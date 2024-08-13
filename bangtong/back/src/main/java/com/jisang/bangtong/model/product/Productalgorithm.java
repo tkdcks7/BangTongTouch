@@ -68,14 +68,14 @@ public class Productalgorithm {
   Long mentalHospitalCount;
   Double generalHospitalDist; //종합 병원
   Long generalHospitalCount; //종합 병원 개수
-  Double dentalHospitalDist; //치과
+  Double dentalHospitalDist; //치과 //ok
   Long dentalHospitalCount;
-  Double smallDentalHospitalDist;
+  Double smallDentalHospitalDist; //치과의원 ok
   Long smallDentalHospitalCount;
   Double smallOrientalHospitalDist;
   Long smallOrientalHospitalCount;
   Double orientalHospitalDist;
   Long orientalHospitalCount;
-  Double superGeneralHospitalDist;
+  Double superGeneralHospitalDist;//상급종합병원
   Long superGeneralHospitalCount;
 }
