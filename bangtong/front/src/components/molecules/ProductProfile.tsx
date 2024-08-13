@@ -39,7 +39,7 @@ const ProductProfile: React.FC<ProductProps> = ({ userinfo, productId }) => {
       url: `${process.env.REACT_APP_BACKEND_URL}/chatrooms/save`,
       data: {
         title: "끼얏호우",
-        maker: userinfo.id,
+        maker: userinfo.userId,
         participant: id,
         productId,
       },

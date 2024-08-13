@@ -129,8 +129,14 @@ const SearchMap: React.FC<MapProps> = ({
     },
   };
 
-  const openModal = (title: number) => {
-    setSelectedMarkerData(markerDatas[title]);
+  const openModal = (i: number) => {
+    setSelectedMarkerData({
+      title: markerDatas[i].title,
+      lat: markerDatas[i].lat,
+      lng: markerDatas[i].lng,
+      productId: markerDatas[i].productId,
+      src: markerDatas[i].src,
+    });
     setIsOpen(true);
   };
 
@@ -306,7 +312,9 @@ const SearchMap: React.FC<MapProps> = ({
           },
         });
         naver.maps.Event.addListener(marker, "click", () => {
-          openModal(markerDatas[i].title);
+          console.log(i);
+          console.log(markerDatas);
+          openModal(i);
         });
         markers.push(marker);
       }
