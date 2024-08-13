@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 
 import SubComment from "./SubComment";
 import SubCommentInput from "./SubCommentInput";
-import { Modal, Select } from "antd";
+import { Dropdown, Modal, Select } from "antd";
 import authAxios from "../../utils/authAxios";
 import useUserStore from "../../store/userStore";
+import menuImg from "../../assets/Menu.png";
 /**
  *    예시   <Comment comment_id="까치" content="그건 좀;;" date={273890147923} />
  *  comment_id 작성자명 content 내용 date 시간 long long 형 milisec 단위
@@ -47,6 +48,7 @@ const Comment: React.FC<IComment> = ({
     useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
   const [isEditClicked, setIsEditClicked] = useState<boolean>(false);
+  const userId = useUserStore().id;
   const editContent = useRef<string>(content);
   const reportRef = useRef<string>("");
   const reportTypeRef = useRef<number>(0);
@@ -117,6 +119,28 @@ const Comment: React.FC<IComment> = ({
       });
     changeModalStatus();
   };
+
+  const myMenuItem = [
+    {
+      label: "수정",
+      key: 1,
+      onClick: changeIsEditClicked,
+    },
+    {
+      label: "삭제",
+      key: 2,
+      onClick: deleteComment,
+    },
+  ];
+
+  const otherMenuItem = [
+    {
+      label: "신고",
+      key: 1,
+      onClick: changeModalStatus,
+    },
+  ];
+
   return (
     <React.Fragment>
       <Modal
@@ -183,24 +207,16 @@ const Comment: React.FC<IComment> = ({
               {formatTimestamp(commentDate)}
             </div>
             {deleted === false ? (
-              <button onClick={changeMenuVisible}>…</button>
+              <Dropdown
+                className="w-6 h-6 rounded-xl mb-3"
+                trigger={["click"]}
+                menu={{
+                  items: iuser.userId === userId ? myMenuItem : otherMenuItem,
+                }}
+              >
+                <img src={menuImg} alt="" />
+              </Dropdown>
             ) : null}
-            {menuVisible === true ? (
-              <div className="absolute bg-gray-300 right-2">
-                {iuser.userId === useUserStore.getState().id ? (
-                  <ul className="flex-col">
-                    <button onClick={changeIsEditClicked}>수정</button>
-                    <button onClick={deleteComment}>삭제</button>
-                  </ul>
-                ) : (
-                  <ul className="flex-col">
-                    <button onClick={changeModalStatus}>신고</button>
-                  </ul>
-                )}
-              </div>
-            ) : (
-              ""
-            )}
           </React.Fragment>
         )}
       </div>

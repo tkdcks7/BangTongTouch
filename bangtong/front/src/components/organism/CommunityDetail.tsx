@@ -6,11 +6,12 @@ import axios from "axios";
 import RollBackBtn from "../atoms/RollBackBtn";
 import Comment from "../atoms/Comment";
 import MenuBtn from "../atoms/MenuBtn";
+import menuImg from "../../assets/Menu.png";
 
 // Store
 import useUserStore from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
-import { Modal, Select } from "antd";
+import { Dropdown, Modal, Select } from "antd";
 
 interface region {
   regionId: string;
@@ -172,6 +173,27 @@ const CommunityDetail: React.FC = () => {
     navigate(`/boards/write?id=${id}`);
   };
 
+  const myMenuItem = [
+    {
+      label: "수정",
+      key: 1,
+      onClick: editBoard,
+    },
+    {
+      label: "삭제",
+      key: 2,
+      onClick: deleteBoard,
+    },
+  ];
+
+  const otherMenuItem = [
+    {
+      label: "신고",
+      key: 1,
+      onClick: changeModalStatus,
+    },
+  ];
+
   return (
     <div>
       <Modal
@@ -213,14 +235,18 @@ const CommunityDetail: React.FC = () => {
           <div>
             <div className="flex justify-between">
               <RollBackBtn />
-              {boardContent.boardWriter.userId === userId ? (
-                <MenuBtn
-                  onDeleteClicked={deleteBoard}
-                  onEditClicked={editBoard}
-                />
-              ) : (
-                <button onClick={changeModalStatus}>신고</button>
-              )}
+              <Dropdown
+                className="w-10 rounded-xl mb-3"
+                trigger={["click"]}
+                menu={{
+                  items:
+                    boardContent.boardWriter.userId === userId
+                      ? myMenuItem
+                      : otherMenuItem,
+                }}
+              >
+                <img src={menuImg} alt="" />
+              </Dropdown>
             </div>
             <h1 className="text-2xl font-bold">{boardContent.boardTitle}</h1>
             <div className="mt-2 flex justify-between">

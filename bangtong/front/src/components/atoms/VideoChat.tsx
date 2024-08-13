@@ -89,7 +89,7 @@ const VideoChat: React.FC = () => {
   };
 
   const handleCallKey = (message: { body: string }) => {
-    const key = JSON.parse(message.body);
+    const key = message.body;
     setCamKey(key);
     subscribeToRoom(key);
 
