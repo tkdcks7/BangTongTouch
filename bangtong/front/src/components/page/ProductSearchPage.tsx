@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { productSearchStore } from "../../store/productStore";
+
 import ProductSearchSideBar from "../organism/ProductSearchSideBar";
 import ProductSearch from "../organism/ProductSearch";
 import ProductSearch1 from "../organism/ProductSearch1";
@@ -9,6 +11,12 @@ const ProductSearchPage: React.FC = () => {
   const [isDone2, setIsDone2] = React.useState(false);
   const [isDone3, setIsDone3] = React.useState(false);
   const [currentPage, setCurrentPage] = React.useState(1);
+
+  const { setInitailize } = productSearchStore();
+
+  useEffect(() => {
+    setInitailize();
+  }, []);
 
   const goNextStep = () => {
     setCurrentPage((prev) => Math.min(prev + 1, 3));

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import authAxios from "../../utils/authAxios";
-import useUserStore from "../../store/userStore";
+import useUserStore, { useUserPreferStore } from "../../store/userStore";
 import { productSearchStore } from "../../store/productStore";
 
 import BtnGroup from "../molecules/BtnGroup";
@@ -39,19 +39,10 @@ const facilities: string[] = [
 const ProductSearch3: React.FC<IProductSearch3Props> = ({ onPrev }) => {
   const navigate = useNavigate();
   const { id } = useUserStore();
+  const { setPreferUpdate } = useUserPreferStore();
 
-  const {
-    maxDeposit,
-    maxRent,
-    homeType,
-    infra,
-    address,
-    startDate,
-    endDate,
-    setHomeType,
-    setAddress,
-    setInfra,
-  } = productSearchStore();
+  const { maxDeposit, maxRent, homeType, infra, address, startDate, endDate } =
+    productSearchStore();
 
   // 배열을 문자열로 전환하는 함수
   const infraStringfier = (inputArr: number[]): string => {
@@ -88,7 +79,16 @@ const ProductSearch3: React.FC<IProductSearch3Props> = ({ onPrev }) => {
     })
       .then((response) => {
         console.log(response);
-        navigate(`/`);
+        authAxios({
+          method: "GET",
+          url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${id}/list`,
+        })
+          .then((response) => {
+            console.log(response);
+            setPreferUpdate(response.data.data[0]); // 기본 선호 설정을 첫번째 선호 설정으로 변경
+            navigate(`/`); // 메인 화면으로 이동
+          })
+          .catch((err) => console.log(err));
       })
       .catch((err) => {
         console.log(err);

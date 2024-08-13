@@ -1,13 +1,14 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
 import authAxios from "../../utils/authAxios";
-import {motion} from "framer-motion";
+import { motion } from "framer-motion";
 
 // 컴포넌트
 import TextBtn from "../atoms/TextBtn";
 import BtnGroup from "../molecules/BtnGroup";
-import {ConfigProvider, Modal} from "antd";
-import {productSearchStore, preferenceStore} from "../../store/productStore";
+import { ConfigProvider, Modal } from "antd";
+import { productSearchStore, preferenceStore } from "../../store/productStore";
+import { useUserPreferStore } from "../../store/userStore";
 
 // 이모티콘
 import {SearchOutlined} from "@ant-design/icons";
@@ -43,35 +44,35 @@ const FilterBox: React.FC = () => {
         setInitailize,
     } = productSearchStore();
 
-    const {
-        preferenceId,
-        regionId,
-        regionAddress,
-        preferenceDeposit,
-        preferenceRent,
-        preferenceType,
-        preferenceInfra,
-        preferenceStartDate,
-        preferenceEndDate,
-    } = preferenceStore();
+  const {
+    preferenceId,
+    regionAddress,
+    preferenceDeposit,
+    preferenceRent,
+    preferenceType,
+    preferenceInfra,
+    preferenceStartDate,
+    preferenceEndDate,
+    setPreferUpdate,
+  } = useUserPreferStore();
 
-    // 설정된 선호 설정이 있을 시(preferenceStore의 데이터), 이 값들을 searchStore의 각 항목들에 넣어준다
-    useEffect(() => {
-        setInitailize();
-        if (preferenceId) {
-            setLocationTitle(regionAddress);
-            setAddress(regionId);
-            setDeposit(0, preferenceDeposit);
-            setRent(0, preferenceRent);
-            setHomeType(preferenceType.indexOf("1"));
-            for (let idx = 0; idx < preferenceInfra.length; idx++) {
-                if (preferenceInfra[idx] === "1") {
-                    setInfra(idx);
-                }
-            }
-            setDate(preferenceStartDate, preferenceEndDate);
+  // 설정된 선호 설정이 있을 시(preferenceStore의 데이터), 이 값들을 searchStore의 각 항목들에 넣어준다
+  useEffect(() => {
+    setInitailize();
+    if (preferenceId) {
+      setLocationTitle(regionAddress);
+      setAddress(address);
+      setDeposit(0, preferenceDeposit);
+      setRent(0, preferenceRent);
+      setHomeType(preferenceType.indexOf("1"));
+      for (let idx = 0; idx < preferenceInfra.length; idx++) {
+        if (preferenceInfra[idx] === "1") {
+          setInfra(idx);
         }
-    }, [preferenceId]);
+      }
+      setDate(preferenceStartDate, preferenceEndDate);
+    }
+  }, [preferenceId]);
 
     // 지역 설정 모달 오픈 핸들러
     const showRegionModal = () => {
@@ -115,19 +116,19 @@ const FilterBox: React.FC = () => {
             .catch((err) => console.log(`지역을 못받아옴. ${err}`));
     };
 
-    // 기초지자체 단위 버튼을 눌렀을 시
-    const handleGugunClick = (regionId: string, regionGugun: string) => {
-        setLocationTitle(() => locationTitle + " " + regionGugun);
-        // 읍면동 단위 버튼을 받아온다.
-        authAxios({
-            method: "GET",
-            url: `${process.env.REACT_APP_BACKEND_URL}/regions/gugun/${regionId}`,
-        })
-            .then((res) => {
-                setRegions(res.data.data);
-            })
-            .catch((err) => console.log(`지역을 못받아옴. ${err}`));
-    };
+  // 기초지자체 단위 버튼을 눌렀을 시
+  const handleGugunClick = (regionId: string, regionGugun: string) => {
+    setLocationTitle(() => locationTitle + " " + regionGugun);
+    // 읍면동 단위 버튼을 받아온다.
+    authAxios({
+      method: "GET",
+      url: `${process.env.REACT_APP_BACKEND_URL}/regions/gugun/${regionId}`,
+    })
+      .then((res) => {
+        setRegions(res.data.data);
+      })
+      .catch((err) => console.log(`지역을 못받아옴. ${err}`));
+  };
 
     // 읍면동 단위 버튼을 눌렀을 시
     const handleDongClick = (regionId: string, regionDong: any) => {

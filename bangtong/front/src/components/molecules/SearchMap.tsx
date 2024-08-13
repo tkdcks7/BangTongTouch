@@ -235,7 +235,7 @@ const SearchMap: React.FC<MapProps> = ({
       for (let i = 0; i < subMarkerDatas.length; i++) {
         axios({
           method: "GET",
-          url: `req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=10&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
+          url: `/vworld/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=10&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
         })
           .then((response) => {
             if (response.data.response.result.items) {

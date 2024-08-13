@@ -139,7 +139,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
                   count={token ? useAlarmInfoStore.getState().alarmNum : null}
                   className="hover:cursor-pointer"
                 >
-                  <BellOutlined className="text-xl"/>
+                  <BellOutlined className="text-xl dark:text-white"/>
                 </Badge>
               </Dropdown>
             ) : (

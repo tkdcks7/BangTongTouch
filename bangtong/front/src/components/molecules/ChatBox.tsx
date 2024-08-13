@@ -3,16 +3,19 @@ import authAxios from "../../utils/authAxios";
 import useUserStore from "../../store/userStore";
 
 // 컴포넌트
-// import Chatroom from "./Chatroom";
+import ImgCarousel from "./ImgCarousel";
 
 // 이미지 소스
 import Room from "../../assets/Room1.jpg";
 import { useNavigate } from "react-router-dom";
+import { RightOutlined } from "@ant-design/icons";
+import Devider from "../atoms/Devider";
 
 interface ChatBoxI {
   userNickname: string;
   chatRoomId: number;
   productAddress: string;
+  productId: string;
 }
 
 const ChatBox: React.FC = () => {
@@ -34,6 +37,7 @@ const ChatBox: React.FC = () => {
               response.data.data[i].productReturnDto.productAddress,
             chatRoomId: response.data.data[i].chatroomId,
             userNickname: response.data.data[i].profileDto.nickname,
+            productId: response.data.data[i].productReturnDto.productId,
           });
         }
         setChatBoxData(tempChatData);
@@ -46,14 +50,21 @@ const ChatBox: React.FC = () => {
       {chatBoxData.length > 0 ? (
         chatBoxData.map((room) => {
           return (
-            <div
-              className="hover:pointer"
-              onClick={() => {
-                navigate(`${room.chatRoomId}`);
-              }}
-            >
-              <p>{room.productAddress}</p>
-              <p>{room.userNickname}</p>
+            <div>
+              <div
+                className="my-5 flex justify-between items-center px-4 hover:cursor-pointer"
+                onClick={() => {
+                  navigate(`${room.chatRoomId}`);
+                }}
+              >
+                <div>
+                  <p className="font-bold mb-1">{room.productAddress}</p>
+                  <p>{room.userNickname}</p>
+                </div>
+                <div>
+                  <RightOutlined />
+                </div>
+              </div>
             </div>
           );
         })

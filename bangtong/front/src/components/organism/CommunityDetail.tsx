@@ -258,6 +258,14 @@ const CommunityDetail: React.FC = () => {
                   rows={4}
                   className="block p-2.5 w-full text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-lime-300 focus:border-lime-500 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500 resize-none"
                   onChange={(e) => (commentRef.current = e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      if (!e.shiftKey) {
+                        e.preventDefault();
+                        handleCommentCreate(Number(id), commentRef.current);
+                      }
+                    }
+                  }}
                 ></textarea>
                 <button
                   className="bg-lime-400 p-2 rounded-lg mt-3 ms-3 px-5 text-white"

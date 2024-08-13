@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Routes, useLocation, Outlet, Navigate } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import useUserStore from "./store/userStore";
 
@@ -8,10 +8,8 @@ import UserPage from "./components/page/UserPage";
 import Login from "./components/organism/Login"; // 로그인
 import Signup from "./components/organism/Signup"; // 회원가입
 import FindSelect from "./components/organism/FindSelect"; // 아이디, 비밀번호 찾기
-
 // 메인
 import MainPage from "./components/page/MainPage"; // 메인 페이지
-
 // 매물
 import ProductPage from "./components/page/ProductPage"; // 페이지
 import ProductDetail from "./components/organism/ProductDetail"; // 매물 상세
@@ -22,7 +20,6 @@ import ProductChoicePage from "./components/page/ProductChoicePage";
 import ChattingPage from "./components/page/ChattingPage"; // 페이지
 import ChatMain from "./components/organism/ChatMain"; // 채팅 목록
 import ChatDetail from "./components/organism/ChatDetail"; // 채팅창
-
 // 마이방통
 import ProfilePage from "./components/page/ProfilePage"; // 페이지
 import ProfileMain from "./components/organism/ProfileMain"; // 나의 거래

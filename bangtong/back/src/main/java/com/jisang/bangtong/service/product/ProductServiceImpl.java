@@ -74,9 +74,10 @@ public class ProductServiceImpl implements ProductService {
     try {
       Product p = productRepository.save(product);
       List<Media> fileList = fileService.upload(fileService.getName(productMedia));
-      productRepository.save(product);
       product.setProductMedia(fileList);
+      productRepository.save(product);
       Productalgorithm productAlgorithm = productAlgorithmRepository.getProductalgorithm(p.getLat(), p.getLng());
+      productAlgorithm.setProduct(product);
       productAlgorithmRepository.save(productAlgorithm);
     } catch (IOException e) {
       throw new IllegalArgumentException("파일을 저장할 수 없습니다");
