@@ -11,4 +11,5 @@ public interface ProductRepositoryCustom {
 
   InterestProductDto getInterestProduct(Long productId);
   List<Product> getRecentProducts(String regionId);
+  
 }

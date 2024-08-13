@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class Pharmseoul {
   @Id
-  private String id;
-  private Double lat;   //위도
-  private Double lng;   //경도
+  Long id;
+  Double lat;   //위도
+  Double lng;   //경도
 }

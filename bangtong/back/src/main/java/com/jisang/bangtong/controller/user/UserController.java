@@ -156,4 +156,15 @@ public class UserController {
     return ResponseDto.res(ResponseMessageConstants.SUCCESS, email);
   }
 
+  // 비밀번호 확인
+  @PostMapping("/password")
+  public ResponseDto<Boolean> verifyPassword(@RequestBody Map<String, String> map) {
+    Long userId = Long.valueOf(map.get("userId"));
+    String password = map.get("password");
+
+    boolean result = userService.verifyPassword(userId, password);
+
+    return ResponseDto.res(ResponseMessageConstants.SUCCESS, result);
+  }
+
 }

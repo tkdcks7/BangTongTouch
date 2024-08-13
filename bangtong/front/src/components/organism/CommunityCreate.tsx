@@ -48,7 +48,7 @@ const CommunityCreate: React.FC = () => {
   }
   useEffect(() => {
     const getAddress = async () => {
-      if (category !== "전체") {
+      if (category === "내 지역") {
         const temp: any = await getUserAddressKr().catch((e) => {
           alert("해당 서비스를 이용하시려면 위치 권한을 허용해주셔야합니다.");
           window.location.replace("");

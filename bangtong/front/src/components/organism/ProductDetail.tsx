@@ -85,6 +85,8 @@ const ProductDetail: React.FC = () => {
   // 1:1 채팅 아이콘 hover 처리
   const [hover, setHover] = useState<boolean>(false);
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
   // 백엔드에서 상세 페이지 정보 받아오기
   useEffect(() => {
     const fetchData = async () => {
@@ -383,7 +385,7 @@ const ProductDetail: React.FC = () => {
               <Row className="items-center mt-20">
                 <Col span={12} className="text-2xl flex items-center">
                   <span className="font-bold">기본 옵션 | </span>
-                  <ProductOptions options={options} isPc />
+                  <ProductOptions options={options} isPc  dark/>
                 </Col>
                 <Col span={8} offset={2} className="text-2xl">
                   <span className="font-bold">방 개수 | </span>
@@ -457,7 +459,7 @@ const ProductDetail: React.FC = () => {
           {/* 구분선 */}
           <Devider />
           {/* 옵션 */}
-          <ProductOptions options={options} isPc={false} />
+          <ProductOptions options={options} isPc={false}  dark/>
           {/* 구분선 */}
           <Devider />
           {/* 추가옵션 */}
