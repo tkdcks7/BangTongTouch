@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useUserStore from "../../store/userStore";
+import useUserStore, { useUserPreferStore } from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
 import { productSearchStore, preferenceStore } from "../../store/productStore";
 
@@ -11,12 +11,11 @@ import ProfileModal from "../molecules/ProfileModal";
 interface PreferenceI {
   preferenceId: number;
   preferenceName: string;
-  regionId: string;
   regionAddress: string;
   preferenceDeposit: number;
   preferenceRent: number;
   preferenceType: string;
-  preferenceInfra: number;
+  preferenceInfra: string;
   preferenceStartDate: string;
   preferenceEndDate: string;
 }
@@ -28,7 +27,7 @@ const PreferenceList: React.FC = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number>(0);
 
-  const { setPreference } = preferenceStore();
+  const { setPreferUpdate } = useUserPreferStore();
 
   function closeModal() {
     setModalIsOpen(false);
@@ -41,8 +40,6 @@ const PreferenceList: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${id}/list`,
     })
       .then((response) => {
-        console.log("목록을 불러옵니다.");
-        console.log(response.data.data);
         setPreferenceArr([...response.data.data]);
       })
       .catch((err) => console.log(err));
@@ -84,13 +81,14 @@ const PreferenceList: React.FC = () => {
       .catch((err) => console.log(err));
   };
 
+  // 선호 설정 적용하는 핸들러
   const handlePreferenceApplicate = (prefId: number) => {
-    console.log("선호설정 등록");
-    preferenceArr.forEach((el, idx) => {
-      if (el.preferenceId === prefId) {
-        setPreference(preferenceArr[idx]);
-      }
-    });
+    const selectedPreference = preferenceArr.find(
+      (el) => el.preferenceId === prefId
+    );
+    if (selectedPreference) {
+      setPreferUpdate(selectedPreference);
+    }
   };
 
   const addpreferenceArr = (prefArr: any) => {
