@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import SocketService from "../../utils/SocketService";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const VideoChat: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
@@ -173,9 +173,20 @@ const VideoChat: React.FC = () => {
     }
   };
 
+  const navigate = useNavigate();
+
+  const leaveChat = () => {
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+    }
+    SocketService.disconnect();
+    navigate("/");
+  };
+
   return (
     <div>
       <h2>Room: {roomId}</h2>
+      <button onClick={leaveChat}>Leave Chat</button>
       <div>
         <h3>Local Video</h3>
         <video
@@ -184,6 +195,7 @@ const VideoChat: React.FC = () => {
           muted
           playsInline
           className={`scale-x-[-1]`}
+          width="300px"
         />
       </div>
       <div>
@@ -193,6 +205,7 @@ const VideoChat: React.FC = () => {
           autoPlay
           playsInline
           className={`scale-x-[-1]`}
+          width={"300px"}
         />
       </div>
     </div>
