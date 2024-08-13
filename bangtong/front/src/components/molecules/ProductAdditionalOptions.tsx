@@ -11,7 +11,7 @@ const ProductAdditionalOptions: React.FC<Props> = ({ additionalOptions }) => {
       <div className="flex flex-wrap text-center mt-5">
         {additionalOptions.length > 0 ? (
           additionalOptions.map((item: any) => (
-            <div className="m-2">
+            <div className="m-2" key={item}>
               <p>{item}</p>
             </div>
           ))

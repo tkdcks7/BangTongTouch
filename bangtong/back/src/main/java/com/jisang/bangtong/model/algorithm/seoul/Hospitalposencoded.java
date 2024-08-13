@@ -3,33 +3,32 @@ package com.jisang.bangtong.model.algorithm.seoul;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import java.io.Serializable;
 import lombok.Data;
 
-@Embeddable
-class HospitalPositionId implements Serializable {
-  private Double lat;   //위도
-  private Double lng;   //경도
-}
+
 
 @Entity
 @Data
 public class Hospitalposencoded {
 
-  @EmbeddedId
-  private HospitalPositionId id;
+  @Id
+  Long id;
+  Double lat;
+  Double lng;
 
-  Boolean isHospital; //병원
-  Boolean isPublicHealth; //
-  Boolean isUnderPublicHealth;  //보건의원
-  Boolean isSuperPublicHealth;  //대형종합
-  Boolean isNursingHospital;  //요양
-  Boolean isSmallHospital;  //의원
-  Boolean isMentalHospital; //정신병원
-  Boolean isMidwifeHospital; //조산원
-  Boolean isGeneralHospital; //종합병원
-  Boolean isDentalHospital; //치과
-  Boolean isSmallDentalHospital;  //치과 의원
-  Boolean isSmallOrientalHospital; //한방병원
-  Boolean isOrientalHospital; // 한의원
+  Integer isHospital; //병원
+  Integer isPublicHealth; //
+  Integer isUnderPublicHealth;  //보건의원
+  Integer isSuperPublicHealth;  //대형종합
+  Integer isNursingHospital;  //요양
+  Integer isSmallHospital;  //의원
+  Integer isMentalHospital; //정신병원
+  Integer isMidwifeHospital; //조산원
+  Integer isGeneralHospital; //종합병원
+  Integer isDentalHospital; //치과
+  Integer isSmallDentalHospital;  //치과 의원
+  Integer isSmallOrientalHospital; //한방병원
+  Integer isOrientalHospital; // 한의원
 }

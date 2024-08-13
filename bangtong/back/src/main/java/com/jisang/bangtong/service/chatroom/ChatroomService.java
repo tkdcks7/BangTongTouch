@@ -7,7 +7,7 @@ import com.jisang.bangtong.dto.chatroom.ChatroomReturnDto;
 import com.jisang.bangtong.model.chatroom.Chatroom;
 import java.util.List;
 
-public interface ChatroomService {
+public interface ChatroomService{
 
   Long createChatroom(ChatroomDto chatroomDto);
   void exitChatroom(Long chatroomIId, Long userId);

@@ -1,8 +1,10 @@
 package com.jisang.bangtong.controller.product;
 
 import com.jisang.bangtong.constants.ResponseMessageConstants;
+import com.jisang.bangtong.dto.Interest.InterestProductDto;
 import com.jisang.bangtong.dto.common.ResponseDto;
 import com.jisang.bangtong.dto.product.ProductReturnDto;
+import com.jisang.bangtong.dto.product.ProductReturnDtoWIthProfile;
 import com.jisang.bangtong.dto.product.ProductSearchDto;
 import com.jisang.bangtong.dto.product.ProductUpdateDto;
 import com.jisang.bangtong.dto.product.ProductUploadDto;
@@ -57,8 +59,8 @@ public class ProductController {
   //매물 조회
   @Transactional
   @GetMapping("/{productId}")
-  public ResponseDto<ProductReturnDto> getProduct(@PathVariable("productId") Long productId) {
-    ProductReturnDto product = productService.getProduct(productId);
+  public ResponseDto<ProductReturnDtoWIthProfile> getProduct(@PathVariable("productId") Long productId) {
+    ProductReturnDtoWIthProfile product = productService.getProduct(productId);
     return new ResponseDto<>(SUCCESS, product);
   }
 
@@ -77,9 +79,9 @@ public class ProductController {
   }
 
   @GetMapping("/recent/{userId}")
-  public ResponseDto<ProductReturnDto> getRecentInterestProduct(
+  public ResponseDto<ProductReturnDtoWIthProfile> getRecentInterestProduct(
       @PathVariable("userId") Long userId) {
-    ProductReturnDto productReturnDto = productService.getRecentInterestProduct(userId);
+    ProductReturnDtoWIthProfile productReturnDto = productService.getRecentInterestProduct(userId);
     return ResponseDto.res(ResponseMessageConstants.SUCCESS, productReturnDto);
   }
 
@@ -94,6 +96,11 @@ public class ProductController {
   public ResponseDto<List<ProductReturnDto>> getRecentProduct(HttpServletRequest request) {
     List<ProductReturnDto> productReturnDto = productService.getRecentProducts(request);
     return ResponseDto.res("SUCCESS", productReturnDto);
+  }
+
+  @GetMapping("/interest/{productId}")
+  public ResponseDto<InterestProductDto> getInterestProduct(@PathVariable Long productId){
+    return ResponseDto.res("SUCCESS", productService.getInterestProduct(productId));
   }
 
 }

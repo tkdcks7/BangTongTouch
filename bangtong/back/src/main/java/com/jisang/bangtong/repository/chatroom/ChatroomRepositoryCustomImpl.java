@@ -148,21 +148,29 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
     QChatroom chatroom = QChatroom.chatroom;
 
     // 채팅방의 발신자와 수신자 정보를 가져옵니다.
-    Tuple chatroomInfo = queryFactory
-        .select(
-            Projections.constructor(ProfileDto.class,
-                chatroom.Maker.userId,
-                chatroom.Maker.userProfileImage.mediaPath.coalesce("default_path"),
-                chatroom.Maker.userNickname),
-            Projections.constructor(ProfileDto.class,
-                chatroom.Participant.userId,
-                chatroom.Participant.userProfileImage.mediaPath.coalesce("default_path"),
-                chatroom.Participant.userNickname
-            )
-        )
-        .from(chatroom)
+
+
+//    Tuple chatroomInfo = queryFactory
+//        .select(
+//            Projections.constructor(ProfileDto.class,
+//                chatroom.Maker.userId,
+//                chatroom.Maker.userProfileImage.mediaPath.coalesce("default_path"),
+//                chatroom.Maker.userNickname),
+//            Projections.constructor(ProfileDto.class,
+//                chatroom.Participant.userId,
+//                chatroom.Participant.userProfileImage.mediaPath.coalesce("default_path"),
+//                chatroom.Participant.userNickname
+//            )
+//        )
+//        .from(chatroom)
+//        .where(chatroom.chatroomId.eq(chatroomId))
+//        .fetchOne();
+
+    Chatroom chatroomInfo = queryFactory
+        .selectFrom(chatroom)
         .where(chatroom.chatroomId.eq(chatroomId))
         .fetchOne();
+    log.info(chatroomInfo.toString());
     if (chatroomInfo == null) {
       log.warn("Chatroom not found: {}", chatroomId);
       throw new RuntimeException("채팅방을 찾을 수 없습니다: " + chatroomId);
@@ -179,11 +187,12 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
         .fetch();
 
     // ChatReturnDto를 구성합니다.
-    return ChatReturnDto.builder()
-        .participant(chatroomInfo.get(0, ProfileDto.class))
-        .maker(chatroomInfo.get(1, ProfileDto.class))
-        .content(chatContents)
-        .build();
+//    return ChatReturnDto.builder()
+//        .participant(chatroomInfo.get(0, ProfileDto.class))
+//        .maker(chatroomInfo.get(1, ProfileDto.class))
+//        .content(chatContents)
+//        .build();
+    return null;
   }
 
 

@@ -15,12 +15,12 @@ import DarkModeTv from "../../assets/DarkModeTv.png";
 
 
 interface ProductProps {
-  options: string;
   dark: boolean;
-
+  options: number;
+  isPc: boolean;
 }
 
-const ProductOptions: React.FC<ProductProps> = ({ options, dark }) => {
+const ProductOptions: React.FC<ProductProps> = ({ options, isPc, dark }) => {
   const optionList = [
     "텔레비전",
     "침대",
@@ -53,32 +53,36 @@ const ProductOptions: React.FC<ProductProps> = ({ options, dark }) => {
 
   const numberArray: number[] = [0, 0, 0, 0, 0, 0, 0];
 
-  for (let i = 0; i < 7; i++) {
-    if (options[i] === "1") {
-      numberArray[i] = 1;
-    }
-  }
+  // 편의시설 비트마스킹하는 함수
+  const bitMaskDecode = (num: number) => {
+    let val = num;
+    numberArray.forEach((el, idx) => {
+      if (val >= 2 ** (7 - idx)) {
+        numberArray[idx] = 1;
+        val -= 2 ** (7 - idx);
+      }
+    });
+    return val;
+  };
+  bitMaskDecode(options);
 
   return (
     <div>
-      <h1 className="text-2xl font-black">옵션</h1>
+      <h1 className={isPc ? "hidden" : "text-2xl font-black"}>옵션</h1>
       <div className="flex flex-wrap justify-start items-center mt-5">
         {numberArray.map((el: any, idx: number) => {
-          return (
-            <OptionIcon
-              src={iconList[idx]}
-              text={optionList[idx]}
-              show={el ? "" : "hidden"}
-            />
-          );
+          if (el) {
+            return (
+              <OptionIcon
+                key={optionList[idx]}
+                src={iconList[idx]}
+                text={optionList[idx]}
+              />
+            );
+          } else {
+            return null;
+          }
         })}
-        {/* <OptionIcon src={AirConditioner} text="에어컨" show={options[0]} />
-        <OptionIcon src={Stove} text="가스레인지" show={options[1]} />
-        <OptionIcon src={Fridge} text="냉장고" show={options[2]} />
-        <OptionIcon src={WashingMachine} text="세탁기" show={options[3]} />
-        <OptionIcon src={Microwave} text="전자레인지" show={options[4]} />
-        <OptionIcon src={Bed} text="침대" show={options[5]} />
-        <OptionIcon src={Tv} text="텔레비전" show={options[6]} /> */}
       </div>
     </div>
   );

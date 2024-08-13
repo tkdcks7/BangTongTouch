@@ -24,7 +24,7 @@ interface UserAlarmSetting {
   alarmEmailInterest: boolean;
   alarmEmailComplete: boolean;
   setAlarmToggle: (
-    alarm: keyof Omit<UserAlarmSetting, "setTotalAlarm" | "setAlarmToggle">
+    alarm: keyof Omit<UserAlarmSetting, "setTotalAlarm" | "setAlarmToggle">,
   ) => void;
 }
 
@@ -74,8 +74,8 @@ const useUserStore = create<User>()(
         }));
       },
     }),
-    userPersistOptions
-  )
+    userPersistOptions,
+  ),
 );
 
 // 유저 알람 설정 store
@@ -133,8 +133,8 @@ export const useUserPreferStore = create<PreferenceI>()(
     {
       name: "user-preferences", // 저장될 키 이름
       getStorage: () => localStorage, // 사용할 스토리지 (localStorage가 기본값)
-    }
-  )
+    },
+  ),
 );
 
 export default useUserStore;

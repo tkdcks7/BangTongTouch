@@ -1,20 +1,24 @@
 package com.jisang.bangtong.service.product;
 
 import com.amazonaws.services.kms.model.NotFoundException;
-import com.jisang.bangtong.dto.preference.PreferenceDto;
+import com.jisang.bangtong.dto.Interest.InterestProductDto;
 import com.jisang.bangtong.dto.product.ProductReturnDto;
+import com.jisang.bangtong.dto.product.ProductReturnDtoWIthProfile;
 import com.jisang.bangtong.dto.product.ProductSearchDto;
 import com.jisang.bangtong.dto.product.ProductUpdateDto;
 import com.jisang.bangtong.dto.product.ProductUploadDto;
 import com.jisang.bangtong.dto.region.RegionReturnDto;
+import com.jisang.bangtong.dto.user.ProfileDto;
 import com.jisang.bangtong.model.interest.Interest;
 import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.preference.Preference;
 import com.jisang.bangtong.model.product.Product;
+import com.jisang.bangtong.model.product.Productalgorithm;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.interest.InterestRepository;
 import com.jisang.bangtong.repository.preference.PreferenceRepository;
+import com.jisang.bangtong.repository.product.algorithm.ProductAlgorithmRepository;
 import com.jisang.bangtong.repository.product.ProductRepository;
 import com.jisang.bangtong.repository.region.RegionRepository;
 import com.jisang.bangtong.repository.user.UserRepository;
@@ -52,6 +56,8 @@ public class ProductServiceImpl implements ProductService {
   private InterestRepository interestRepository;
   @Autowired
   private PreferenceRepository preferenceRepository;
+  @Autowired
+  private ProductAlgorithmRepository productAlgorithmRepository;
 
   @Transactional
   @Override
@@ -66,11 +72,12 @@ public class ProductServiceImpl implements ProductService {
     }
     Product product = getProductWhenUpload(productUploadDto, u);
     try {
-
-      productRepository.save(product);
+      Product p = productRepository.save(product);
       List<Media> fileList = fileService.upload(fileService.getName(productMedia));
       productRepository.save(product);
       product.setProductMedia(fileList);
+      Productalgorithm productAlgorithm = productAlgorithmRepository.getProductalgorithm(p.getLat(), p.getLng());
+      productAlgorithmRepository.save(productAlgorithm);
     } catch (IOException e) {
       throw new IllegalArgumentException("파일을 저장할 수 없습니다");
     }
@@ -97,19 +104,44 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Transactional
-  public ProductReturnDto getProduct(long productId) {
+  public ProductReturnDtoWIthProfile getProduct(long productId) {
     Product product = productRepository.findById(productId);
     List<String> additionalOption = getAdditionalOptionList(product);
     RegionReturnDto regionReturnDto = getRegionReturnDto(product);
-    return ProductReturnDto.builder().productId(product.getProductId())
-        .productType(product.getProductType()).regionReturnDto(regionReturnDto)
-        .productAddress(product.getProductAddress()).productDeposit(product.getProductDeposit())
+    String sido = regionReturnDto.getRegionSido().replace("특별", "");
+    regionReturnDto.setRegionSido(sido);
+
+    User u = product.getUser();
+
+    ProfileDto profileDto = new ProfileDto();
+    profileDto.setProfileImage(u.getUserProfileImage().getMediaPath());
+    profileDto.setNickname(u.getUserNickname());
+    profileDto.setUserId(u.getUserId());
+
+    ProductReturnDto productReturnDto = ProductReturnDto.builder()
+        .productId(product.getProductId())
+        .productType(product.getProductType())
+        .regionReturnDto(regionReturnDto)
+        .productAddress(product.getProductAddress())
+        .productDeposit(product.getProductDeposit())
+        .productRent(product.getProductRent())
+        .productPostDate(product.getProductPostDate())
+        .productStartDate(product.getProductStartDate())
+        .productEndDate(product.getProductEndDate())
+        .lat(product.getLat())
+        .lng(product.getLng())
+        .productAdditionalDetail(product.getProductAdditionalOption())
+        .mediaList(product.getProductMedia())
         .productMaintenance(product.getProductMaintenance())
         .productMaintenanceInfo(product.getProductMaintenanceInfo())
         .productIsRentSupportable(product.isProductIsRentSupportable())
         .productIsFurnitureSupportable(product.isProductIsFurnitureSupportable())
         .productSquare(product.getProductSquare()).productRoom(product.getProductRoom())
         .productAdditionalOption(additionalOption).productOption(product.getProductOption())
+        .build();
+    return ProductReturnDtoWIthProfile.builder()
+        .productReturnDto(productReturnDto)
+        .profileDto(profileDto)
         .build();
   }
 
@@ -182,7 +214,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
-  public ProductReturnDto getRecentInterestProduct(Long userId) {
+  public ProductReturnDtoWIthProfile getRecentInterestProduct(Long userId) {
     Preference preference = preferenceRepository.findFirstByUser_UserId(userId);
 
     if (preference == null) {
@@ -309,6 +341,17 @@ public class ProductServiceImpl implements ProductService {
 
     return productReturnDtoList;
   }
+
+  @Override
+  public InterestProductDto getInterestProduct(Long productId){
+
+    if(productRepository.findById(productId).orElse(null) == null){
+      throw new NotFoundException("해당 매물이 없습니다");
+    }
+
+    return productRepository.getInterestProduct(productId);
+  }
+
 
   @Override
   public Integer getProductSize(){

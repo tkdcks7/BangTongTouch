@@ -106,12 +106,20 @@ public class ChatroomServiceImpl implements ChatroomService {
   @Override
   public List<ChatroomReturnDto> getChatroom(Long userId) {
     log.info("chatroomServiceImpl getChatroom 실행");
+    if(!userRepository.findById(userId).isPresent()){
+      throw new NotFoundException("사용자가 없습니다");
+    }
     return chatroomRepository.getChatroom(userId);
   }
 
   @Override
   public ChatReturnDto getChats(Long chatroomId) {
-    log.info("ChatroomServiceImpl. getChats 시작");
+    log.info("ChatroomServiceImpl. getChats 시작{}", chatroomId);
+
+    if(!chatroomRepository.findById(chatroomId).isPresent()){
+      throw new NotFoundException("채팅방이 존재하지 않습니다");
+    }
+
     return chatroomRepository.getChats(chatroomId);
   }
 

@@ -35,7 +35,7 @@ public class User {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long userId;
 
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "media_id")
   private Media userProfileImage;
 
