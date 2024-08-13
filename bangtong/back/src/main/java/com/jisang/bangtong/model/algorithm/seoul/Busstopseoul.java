@@ -8,7 +8,7 @@ import lombok.Data;
 @Entity
 public class Busstopseoul {
   @Id
-  String id;
+  Long id;
   Double lat;   //위도
   Double lng;   //경도
 }
