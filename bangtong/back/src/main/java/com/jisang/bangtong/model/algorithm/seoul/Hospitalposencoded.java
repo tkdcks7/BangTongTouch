@@ -18,17 +18,17 @@ public class Hospitalposencoded {
   Double lat;
   Double lng;
 
-  Integer isHospital; //병원
-  Integer isPublicHealth; //
-  Integer isUnderPublicHealth;  //보건의원
-  Integer isSuperPublicHealth;  //대형종합
-  Integer isNursingHospital;  //요양
-  Integer isSmallHospital;  //의원
-  Integer isMentalHospital; //정신병원
-  Integer isMidwifeHospital; //조산원
-  Integer isGeneralHospital; //종합병원
-  Integer isDentalHospital; //치과
-  Integer isSmallDentalHospital;  //치과 의원
-  Integer isSmallOrientalHospital; //한방병원
-  Integer isOrientalHospital; // 한의원
+  Long isHospital; //병원
+  Long isPublicHealth; //
+  Long isUnderPublicHealth;  //보건의원
+  Long isSuperPublicHealth;  //대형종합
+  Long isNursingHospital;  //요양
+  Long isSmallHospital;  //의원
+  Long isMentalHospital; //정신병원
+  Long isMidwifeHospital; //조산원
+  Long isGeneralHospital; //종합병원
+  Long isDentalHospital; //치과
+  Long isSmallDentalHospital;  //치과 의원
+  Long isSmallOrientalHospital; //한방병원
+  Long isOrientalHospital; // 한의원
 }

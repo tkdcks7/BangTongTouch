@@ -90,7 +90,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
   return (
     <>
       <header
-        className={`flex justify-between items-center w-full p-5 mb-10 ${!dark ? "bg-white text-black" : "bg-gray-800 text-white"}`}
+        className={`flex justify-between items-center w-full p-5 mb-10 ${dark ? "bg-white text-black" : "bg-gray-800 text-white"}`}
       >
         <Link to="/" className="text-start">
           <img src={Logo} alt="로고" className="w-40" />
@@ -139,7 +139,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
                   count={token ? useAlarmInfoStore.getState().alarmNum : null}
                   className="hover:cursor-pointer"
                 >
-                  <BellOutlined className="text-xl" />
+                  <BellOutlined className="text-xl dark:text-white"/>
                 </Badge>
               </Dropdown>
             ) : (

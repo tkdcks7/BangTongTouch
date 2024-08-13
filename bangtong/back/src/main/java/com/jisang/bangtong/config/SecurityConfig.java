@@ -9,7 +9,6 @@ import com.jisang.bangtong.repository.user.UserRepository;
 import com.jisang.bangtong.service.user.OAuth2UserServiceImpl;
 import com.jisang.bangtong.util.JwtUtil;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +32,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -53,13 +53,15 @@ public class SecurityConfig {
         .headers(header -> header.frameOptions(FrameOptionsConfig::sameOrigin))
         .cors(corsConfig -> corsConfig.configurationSource(request -> {
           CorsConfiguration config = new CorsConfiguration();
+          UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-          config.setAllowedOriginPatterns(List.of("*"));
+          config.addAllowedOriginPattern("*");
           config.setAllowCredentials(true);
-          config.setAllowedMethods(List.of("*"));
-          config.setAllowedHeaders(List.of("*"));
-          config.setExposedHeaders(List.of("Authorization"));
-          config.setMaxAge(3600L);
+          config.addAllowedMethod("*");
+          config.addAllowedHeader("*");
+          config.addExposedHeader("*");
+
+          source.registerCorsConfiguration("/**", config);
 
           return config;
         }))

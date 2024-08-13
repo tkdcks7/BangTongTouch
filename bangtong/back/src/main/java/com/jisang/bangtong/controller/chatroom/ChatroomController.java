@@ -94,7 +94,7 @@ public class ChatroomController {
     log.info("{}", chatroomId);
     String token = jwtUtil.getAccessToken(request);
     if(token == null || token.isEmpty()){
-      throw new IllegalArgumentException(SERVER_ERROR);
+      throw new IllegalArgumentException("토큰이 유효하지 않습니다");
     }
     ChatReturnDto chatReturnDto =  chatroomService.getChats(chatroomId);
 

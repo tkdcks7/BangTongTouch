@@ -10,7 +10,7 @@ import ToSignup from "../molecules/ToSignup";
 // 아이콘
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/20/solid";
 
-const ChatBox: React.FC = () => {
+const MainChatBox: React.FC = () => {
   const { id } = useUserStore();
 
   return (
@@ -42,4 +42,4 @@ const ChatBox: React.FC = () => {
   );
 };
 
-export default ChatBox;
+export default MainChatBox;
