@@ -2,7 +2,7 @@ import React from "react";
 
 // 컴포넌트
 import TextBox from "../atoms/TextBox";
-import ChatBox from "../molecules/ChatBox";
+import ChatDetail from "./ChatDetail";
 
 const ChatMain: React.FC = () => {
   return (
@@ -15,7 +15,7 @@ const ChatMain: React.FC = () => {
           weight="bold"
         />
       </div>
-      <ChatBox />
+      <ChatDetail />
     </div>
   );
 };
