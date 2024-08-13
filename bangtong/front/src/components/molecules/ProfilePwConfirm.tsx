@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useUserStore from "../../store/userStore";
+import authAxios from "../../utils/authAxios";
 
 // 컴포넌트
-import InputBox from "../molecules/InputBox";
 import { ConfigProvider, Input } from "antd";
 
 const ProfilePwConfirm: React.FC = () => {
+  const { id } = useUserStore();
+  const navigate = useNavigate();
+  const [password, setPassword] = useState<string>("");
+
   // ant design 글로벌 디자인 토큰
   const theme = {
     token: {
@@ -12,6 +18,27 @@ const ProfilePwConfirm: React.FC = () => {
       colorPrimary: "#129B07",
       colorPrimaryBorder: "#129B07",
     },
+  };
+
+  // 비밀번호를 이용해 유효한 유저인지 판별하는 함수
+  const handlePwVerify = () => {
+    authAxios({
+      method: "POST",
+      url: `${process.env.REACT_APP_BACKEND_URL}/users/password`,
+      data: {
+        userId: id,
+        password,
+      },
+    })
+      .then((response) => {
+        console.log(response);
+        if (response.data.data) {
+          // navigate(`/profile/${id}/update/confirmed`); // 유효할경우 수정 페이지로 이동
+        } else {
+          console.log("비밀번호 검증에 실패했습니다.");
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -23,10 +50,15 @@ const ProfilePwConfirm: React.FC = () => {
           allowClear
           className="rounded-full"
           size="large"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
       </ConfigProvider>
       <div className="text-end">
-        <button className="bg-lime-500 py-1 px-4 mt-5 rounded-full text-white">
+        <button
+          className="bg-lime-500 py-1 px-4 mt-5 rounded-full text-white"
+          onClick={handlePwVerify}
+        >
           확인
         </button>
       </div>
