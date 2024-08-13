@@ -80,8 +80,16 @@ const TextBtn: React.FC<TextBtnProps> = ({ title, text }) => {
   return (
     <div className="flex justify-between mt-7">
       <p className="text-lime-600 font-bold">{title}</p>
-      <button onClick={() => setModalOpen(true)}>{text}</button>
-      <ConfigProvider theme={theme}>
+      <button className={"dark:text-white"} onClick={() => setModalOpen(true)}>{text}</button>
+      <ConfigProvider theme={{
+        components: {
+          Modal: {
+            contentBg: "#1F2937",
+            headerBg: "#1F2937",
+            footerBg: "#1F2937",
+          }
+        }
+      }}>
         <Modal
           title={`${title} 범위 설정 (단위: 만원)`}
           open={modalOpen}

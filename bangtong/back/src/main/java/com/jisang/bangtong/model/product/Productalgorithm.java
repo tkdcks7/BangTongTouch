@@ -37,42 +37,45 @@ public class Productalgorithm {
   Double busstopSeoulClosestDistance;
   Long busstopSeoulCount;
   Double cctvSeoulClosestDistance;
-  Integer cctvSeoulCount;
+  Long cctvSeoulCount;
   Double convSeoulClosestDistance;
-  Integer convSeoulCount;
-  Integer hospitalCount; //0.5 km에 병원 개수
+  Long convSeoulCount;
   Double laundryCoinSeoulClosestDistance;
-  Integer laundryCoinSeoul;
+  Long laundryCoinSeoul;
   Double pharmDistance;
-  Integer pharmCount;
+  Long pharmCount;
   Double policeDistance;
-  Integer policeCount;
+  Long policeCount;
   Double starbuckDist;
-  Integer starbuckCount;
+  Long starbuckCount;
   Double subwayDist;
-  Integer subwayCount;
+  Long subwayCount;
   Double supermarketDist;
-  Integer supermarketCount;
+  Long supermarketCount;
   Double normalHospitalDist;  //병원
-  Integer normalHospitalCount; //일반병원 0.5km 개수
+  Long normalHospitalCount; //일반병원 0.5km 개수
   Double publicHealthDist;  //보건소 개수
-  Integer publicHealthCount; //보건소 0.5km 개수
+  Long publicHealthCount; //보건소 0.5km 개수
   Double publicUnderPublicHealth; //보건지소
-  Integer publicUnderPublicHealthCount;
+  Long publicUnderPublicHealthCount;
   Double nursingHospitalDist; //요양병원
-  Integer nursingHospitalCount;
+  Long nursingHospitalCount;
   Double smallHospitalDist; //의원
-  Integer smallHospitalCount;
+  Long smallHospitalCount;
   Double medHospitalDist; //조산사
-  Integer medHospitalCount; //조산사 숫자
+  Long medHospitalCount; //조산사 숫자
+  Double mentalHospitalDist;  //정신과
+  Long mentalHospitalCount;
   Double generalHospitalDist; //종합 병원
-  Integer generalHospitalCount; //종합 병원 개수
-  Double dentalHospitalDist; //치과
-  Integer dentalHospitalCount;
-  Double smallDentalHospitalDist;
-  Integer smallDentalHospitalCount;
+  Long generalHospitalCount; //종합 병원 개수
+  Double dentalHospitalDist; //치과 //ok
+  Long dentalHospitalCount;
+  Double smallDentalHospitalDist; //치과의원 ok
+  Long smallDentalHospitalCount;
   Double smallOrientalHospitalDist;
-  Integer smallOrientalHospitalCount;
-  Double originalHospitalDist;
-  Integer originalHospitalCount;
+  Long smallOrientalHospitalCount;
+  Double orientalHospitalDist;
+  Long orientalHospitalCount;
+  Double superGeneralHospitalDist;//상급종합병원
+  Long superGeneralHospitalCount;
 }

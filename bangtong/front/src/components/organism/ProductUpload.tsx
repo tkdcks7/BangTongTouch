@@ -37,6 +37,25 @@ interface ProductUploadDto {
   lng: number;
 }
 
+const sidoMagicTable: any = {
+  서울: "서울특별시",
+  부산: "부산광역시",
+  대구: "대구광역시",
+  인천: "인천광역시",
+  광주: "광주광역시",
+  대전: "대전광역시",
+  울산: "울산광역시",
+  경기: "경기도",
+  강원특별자치도: "강원도",
+  충북: "충청북도",
+  충남: "충청남도",
+  전북특별자치도: "전라북도",
+  전남: "전라남도",
+  경북: "경상북도",
+  경남: "경상남도",
+  제주특별자치도: "제주도",
+};
+
 const ProductUpload: React.FC = () => {
   let { id }: any = useParams(); // 상품 번호. 있으면 update, 없으면 create
 
@@ -61,9 +80,9 @@ const ProductUpload: React.FC = () => {
   const [coordinate, setCoordinate] = useState<number[]>([]);
   const [date, setDate] = useState<[any, any]>([null, null]);
 
-  // 사진, 영상 state
-  const [imgFile, setImgFile] = useState<File | null>(null);
-  const [movieFile, setMovieFile] = useState<File | null>(null);
+  // 사진 state
+  const [imgFile, setImgFile] = useState<File[]>([]);
+  const [fileNameList, setFileNameList] = useState<string[]>([]);
 
   // ant design Search 컴포넌트
   const { Search } = Input;
@@ -115,30 +134,12 @@ const ProductUpload: React.FC = () => {
 
   // 주소검색 팝업 부분
   const open = useDaumPostcodePopup();
+
   const handleComplete = (data: any) => {
-    let fullAddress = data.address;
-    let bcode = data.bcode;
-    let extraAddress = "";
-
-    if (data.addressType === "R") {
-      if (data.bname !== "") {
-        extraAddress += data.bname;
-      }
-      if (data.buildingName !== "") {
-        extraAddress +=
-          extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
-      }
-      fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
-    }
-    setAddress(() => fullAddress);
+    const { sido, sigungu, bname2, bcode } = data;
+    const newAddress = sidoMagicTable[sido] + " " + sigungu + " " + bname2;
+    setAddress(newAddress);
     setRegionId(bcode);
-  };
-
-  // ex. 서울 성동구 왕십리로2길 20 (성수동1가)
-  // 주소를 바탕으로 regionId를 반환하는 함수
-  const addressToRegionId = (ads: string) => {
-    const sidoMagicTable = {};
-    const [sido, gugun] = ads.split(" ");
   };
 
   // 주소검색 팝업 열기
@@ -157,22 +158,28 @@ const ProductUpload: React.FC = () => {
   };
 
   // 파일 등록 시 확장자 유효성판정 후 업로드
-  const onFileChange = (fileInput: any, fileType: string) => {
-    if (fileInput) {
-      const extensionName = fileInput.name.split(".").pop().toLowerCase(); // 파일명에서 확장자명 추출
-      if (
-        ["jpg", "png", "gif"].includes(extensionName) &&
-        fileType === "사진"
-      ) {
-        setImgFile(fileInput);
-      } else if (extensionName === "mp4" && fileType === "동영상") {
-        setMovieFile(fileInput);
+  const onFileChange = (e: any) => {
+    const selectedFiles: any = Array.from(e.target.files);
+    if (selectedFiles) {
+      const extensionName = selectedFiles[0].name
+        .split(".")
+        .pop()
+        .toLowerCase(); // 파일명에서 확장자명 추출
+      if (["jpg", "png", "gif"].includes(extensionName)) {
+        setImgFile((prevImages) => [...prevImages, ...selectedFiles]);
+        setFileNameList((prev) => [...prev, selectedFiles[0].name]);
       } else {
         window.alert(
-          "지원하지 않는 형식의 파일입니다\n*확장자가 jpg, png, gif, mp4인 파일만 등록 가능"
+          "지원하지 않는 형식의 파일입니다\n*확장자가 jpg, png, gif인 파일만 등록 가능"
         );
       }
     }
+  };
+
+  // 이미지 제거 핸들러
+  const handleRemoveImage = (index: number) => {
+    setImgFile((prevImages) => prevImages.filter((_, idx) => idx !== index));
+    setFileNameList((prevList) => prevList.filter((_, idx) => idx !== index));
   };
 
   // 추가 옵션 등록 함수
@@ -206,17 +213,17 @@ const ProductUpload: React.FC = () => {
       );
     }
 
-    // 주소로 위경도 반환
+    // 주소로 위경도 반환: CORS 에러 해결 필요
     if (address) {
-      console.log("주소 있음!");
-      getUserAddressNum(address).then((res) => {
-        setCoordinate(res);
-      });
+      getUserAddressNum(address)
+        .then((res) => {
+          setCoordinate(res);
+        })
+        .catch((err) => console.log("위경도를 받아오지 못하고 있음!!!"));
     } else {
       window.alert("주소가 있어야 위도/경도를 반환할 수 있습니다.");
     }
 
-    // 이부분 수정중!!!!
     const productUploadDto: ProductUploadDto = {
       productType: "ONEROOM", // 지금 값을 입력할 컴포넌트 없음
       productAddress: address,
@@ -244,14 +251,11 @@ const ProductUpload: React.FC = () => {
     }); // blob으로 변환 후 타입 명시적으로 지정
     formData.append("productUploadDto", jsonBlob); // productUploadDto라는 key에 productUploadDto 반환
 
-    // 이미지와 영상 업로드
-    if (imgFile) {
-      const imgBlob = new Blob([imgFile]);
-      formData.append(`productMedia`, imgBlob, imgFile.name);
-    }
-    if (movieFile) {
-      const blob = new Blob([movieFile]);
-      formData.append(`productMedia`, blob, movieFile.name);
+    // 이미지 업로드
+    if (imgFile.length > 0) {
+      imgFile.forEach((singleImg) => {
+        formData.append(`productMedia`, singleImg);
+      });
     }
 
     // 검증을 위한 부분
@@ -264,9 +268,6 @@ const ProductUpload: React.FC = () => {
     formData.forEach((value, key) => {
       console.log(`${key}: ${value}`);
     });
-    console.log(formData.get("productMedia[0]"));
-    console.log(sendMethod);
-    console.log(sendUrl);
     formDataAxios({
       method: sendMethod,
       url: sendUrl,
@@ -458,8 +459,21 @@ const ProductUpload: React.FC = () => {
             </div>
           </div>
           <div id="attachment-group">
-            <Attachment fileType="사진" onFileChange={onFileChange} />
-            <Attachment fileType="동영상" onFileChange={onFileChange} />
+            {imgFile.length ? (
+              <div className="flex justify-center items-center text-center mt-5 w-full h-12 bg-lime-200 rounded-lg">
+                {fileNameList.map((el, index) => (
+                  <button
+                    key={index}
+                    className={`mx-5 text-xs w-20 h-4/5 truncate border-2 border-yellow-200 rounded-md bg-yellow-100 hover:bg-yellow-300 transition-colors duration-200`}
+                    onClick={() => handleRemoveImage(index)}
+                  >
+                    {el}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            <Attachment onFileChange={onFileChange} />
           </div>
           <div className={"text-center mt-5"}>
             <Btn

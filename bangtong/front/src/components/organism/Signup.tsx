@@ -5,16 +5,10 @@ import { Link, useNavigate } from "react-router-dom";
 
 // 컴포넌트 불러오기
 import TextBox from "../atoms/TextBox";
-import { Form, Input, ConfigProvider, Button, Space } from "antd";
+import { Form, Input, ConfigProvider, Button } from "antd";
 
 // 아이콘
-import {
-  CheckCircleOutlined,
-  CheckOutlined,
-  CloseCircleOutlined,
-  LoadingOutlined,
-  SendOutlined,
-} from "@ant-design/icons";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -29,7 +23,6 @@ const SignupPage: React.FC = () => {
   const [form] = Form.useForm();
 
   const navigate = useNavigate();
-  const regexPassword = new RegExp("^[a-zA-Z0-9()-+․!#$%<>]{2,32}$");
 
   // 닉네임 생성용 배열 만들기
   const animalArr = [
@@ -102,7 +95,7 @@ const SignupPage: React.FC = () => {
       .then((response) => {
         console.log("성공적으로 전송됐습니다.", response.data);
         alert("회원 가입이 완료됐습니다."); // 확인용. refactoring 시 지울 것
-        navigate("/user/login");
+        navigate("/search"); // 첫 선호 옵션 생성 페이지로 이동
       })
       .catch((err) => console.log(err));
   };

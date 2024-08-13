@@ -173,6 +173,11 @@ const LoginPage: React.FC = () => {
               allowClear
               prefix={<LockOutlined />}
               value={password}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleLogIn(e);
+                }
+              }}
               onChange={(e) => setPassword(e.target.value)}
             />
           </Form.Item>

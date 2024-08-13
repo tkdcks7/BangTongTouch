@@ -11,6 +11,8 @@ import ProductProfile from "../molecules/ProductProfile";
 import ProductOptions from "../molecules/ProductOptions";
 import ProductAdditionalOptions from "../molecules/ProductAdditionalOptions";
 import LocationAround from "../molecules/LocationAround";
+import ProductDetailInterest from "../molecules/ProductDetailInterest";
+import Loading from "../atoms/Loading";
 import { Button, Card, Carousel, Col, ConfigProvider, Modal, Row } from "antd";
 
 // 이미지 소스
@@ -55,7 +57,7 @@ const ProductDetail: React.FC = () => {
       mediaList: [""],
     },
     profileDto: {
-      id: 13,
+      userId: 13,
       userEmail: "test@naver.com",
       profileImage: "",
       nickname: "매콤한 호랑이143",
@@ -83,7 +85,7 @@ const ProductDetail: React.FC = () => {
   // 1:1 채팅 아이콘 hover 처리
   const [hover, setHover] = useState<boolean>(false);
 
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [dark, setDark] = useState(true);
 
   // 백엔드에서 상세 페이지 정보 받아오기
   useEffect(() => {
@@ -134,7 +136,7 @@ const ProductDetail: React.FC = () => {
 
   // 매물 게시글 삭제 함수
   const handleDelete = (): void => {
-    if (productInfo.profileDto.id === userId) {
+    if (productInfo.profileDto.userId === userId) {
       authAxios({
         method: "DELETE",
         url: `${process.env.REACT_APP_BACKEND_URL}/products/delete/${id}`,
@@ -167,12 +169,13 @@ const ProductDetail: React.FC = () => {
 
   // 채팅방 생성
   const makeChatRoom = () => {
+    console.log(productInfo.profileDto);
     authAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/chatrooms/save`,
       data: {
         title: "끼얏호우",
-        maker: productInfo.profileDto.id,
+        maker: productInfo.profileDto.userId,
         participant: userId,
         productId: productInfo.productReturnDto.productId,
       },
@@ -231,7 +234,7 @@ const ProductDetail: React.FC = () => {
   const additionalOption: string[] =
     productInfo.productReturnDto.productAdditionalOption || [];
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading />;
   // if (connectionFailed) return <div>데이터를 불러오는 데 실패했습니다.</div>;
 
   const homeTypeNameTable: any = {
@@ -290,7 +293,8 @@ const ProductDetail: React.FC = () => {
                   ) : (
                     ""
                   )}
-                  {productInfo.productReturnDto.productIsRentSupportable ? (
+                  {productInfo.productReturnDto
+                    .productIsFurnitureSupportable ? (
                     <p className="w-auto p-2 font-bold text-black bg-yellow-300 rounded-full text-center text-nowrap">
                       가구도 승계
                     </p>
@@ -302,6 +306,13 @@ const ProductDetail: React.FC = () => {
                   {isInterest ? <HeartFilled /> : <HeartOutlined />}
                 </button>
               </div>
+            </Card>
+            <Card style={{ width: 280 }} className="mb-5 shadow-lg">
+              <ProductDetailInterest
+                productId={productInfo.productReturnDto.productId}
+                chatOnClick={makeChatRoom}
+                isMe={isMe}
+              />
             </Card>
             <Card style={{ width: 280 }} className="mb-5 shadow-lg">
               <LocationAround />
@@ -321,58 +332,68 @@ const ProductDetail: React.FC = () => {
                 alt="프로필 이미지"
                 className="w-10 h-10 me-5 rounded-full"
               />
-              <p className="me-5">{productInfo.profileDto.nickname}</p>
-              <ConfigProvider theme={theme}>
-                <Button
-                  className={"bg-yellow-200 hover:bg-color-400"}
-                  style={oneToOneButtonStyle}
-                  size="large"
-                  onMouseEnter={() => setHover(true)}
-                  onMouseLeave={() => setHover(false)}
-                  icon={
-                    <WechatOutlined
-                      style={{ fontSize: "24px" }}
-                      disabled={true}
-                      type="primary"
-                    />
-                  }
-                  onClick={makeChatRoom}
-                />
-              </ConfigProvider>
+              <p className={isMe ? "me-2" : "me-5"}>
+                {productInfo.profileDto.nickname}
+              </p>
+              {isMe ? (
+                <span>(본인)</span>
+              ) : (
+                <ConfigProvider theme={theme}>
+                  <Button
+                    className={"bg-yellow-200 hover:bg-color-400"}
+                    style={oneToOneButtonStyle}
+                    size="large"
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
+                    icon={
+                      <WechatOutlined
+                        style={{ fontSize: "24px" }}
+                        disabled={true}
+                        type="primary"
+                      />
+                    }
+                    onClick={makeChatRoom}
+                  />
+                </ConfigProvider>
+              )}
             </div>
-            <div className="p-10 pt-20 mt-20 rounded-2xl border border-slate-200">
+            <div className="h-3/5 p-10 pt-20 mt-10 rounded-2xl border border-slate-200">
               <Row>
-                <Col span={12} className="text-xl">
+                <Col span={8} className="text-2xl">
                   <span className="font-bold">관리비 | </span>
                   {productInfo.productReturnDto.productMaintenance} 원
                 </Col>
-                <Col span={12} className="text-xl">
-                  <span className="font-bold">관리비 포함 | </span>
-                  {productInfo.productReturnDto.productMaintenanceInfo}
-                </Col>
-              </Row>
-              <Row className="mt-10">
-                <Col span={8} className="text-xl">
+                <Col span={8} offset={6} className="text-2xl">
                   <span className="font-bold">집 유형 | </span>
                   {homeTypeNameTable[productInfo.productReturnDto.productType]}
                 </Col>
-                <Col span={8} className="text-xl">
+              </Row>
+              <Row className="mt-20">
+                <Col span={8} className="text-2xl">
+                  <span className="font-bold">관리비 포함 | </span>
+                  {productInfo.productReturnDto.productMaintenanceInfo}
+                </Col>
+                <Col span={8} offset={6} className="text-2xl">
+                  <span className="font-bold">면적 | </span>
+                  {productInfo.productReturnDto.productSquare} m² (
+                  {Math.round(
+                    0.3025 * productInfo.productReturnDto.productSquare
+                  )}
+                  평)
+                </Col>
+              </Row>
+              <Row className="items-center mt-20">
+                <Col span={12} className="text-2xl flex items-center">
+                  <span className="font-bold">기본 옵션 | </span>
+                  <ProductOptions options={options} isPc dark />
+                </Col>
+                <Col span={8} offset={2} className="text-2xl">
                   <span className="font-bold">방 개수 | </span>
                   {productInfo.productReturnDto.productRoom} 개
                 </Col>
-                <Col span={8} className="text-xl">
-                  <span className="font-bold">면적 | </span>
-                  {productInfo.productReturnDto.productSquare} m²
-                </Col>
               </Row>
-              <Row className="items-center mt-10">
-                <Col span={24} className="text-xl flex items-center">
-                  <span className="font-bold">기본 옵션 | </span>
-                  <ProductOptions options={options} isPc  dark/>
-                </Col>
-              </Row>
-              <Row className="mt-10">
-                <Col span={24} className="text-xl">
+              <Row className="mt-20">
+                <Col span={24} className="text-2xl">
                   <span className="font-bold">추가 옵션 | </span>
                   {productInfo.productReturnDto.productAdditionalOption}
                 </Col>
@@ -438,7 +459,7 @@ const ProductDetail: React.FC = () => {
           {/* 구분선 */}
           <Devider />
           {/* 옵션 */}
-          <ProductOptions options={options} isPc={false}  dark/>
+          <ProductOptions options={options} isPc={false} dark />
           {/* 구분선 */}
           <Devider />
           {/* 추가옵션 */}

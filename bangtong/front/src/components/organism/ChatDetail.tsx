@@ -45,6 +45,7 @@ const ChatDetail: React.FC = () => {
   const [connected, setConnected] = useState<boolean>(false);
   const [messages, setMessages] = useState<Array<ShowMessage>>([]);
   const [chatMessage, setChatMessage] = useState<string>();
+  const [isChatLoaded, setIsChatLoaded] = useState<boolean>();
 
   const clientRef = useRef<Client | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -83,19 +84,19 @@ const ChatDetail: React.FC = () => {
       })
         .then((response) => {
           console.log(response.data.data);
-          // let userData: OpponentUser;
-          // if (response.data.data.maker.userId === userId) {
-          //   userData = response.data.data.participant;
-          // } else {
-          //   userData = response.data.data.maker;
-          // }
-          // setOpponentUser(userData);
-          // setMessages(response.data.data.content);
+          let userData: OpponentUser;
+          setIsChatLoaded(true);
+          if (response.data.data.maker.userId === userId) {
+            userData = response.data.data.participant;
+          } else {
+            userData = response.data.data.maker;
+          }
+          setOpponentUser(userData);
+          setMessages(response.data.data.content);
         })
         .catch((error) => {
           console.log(error);
-          // alert("잘못된 접근입니다.");
-          // navigate("/");
+          setIsChatLoaded(false);
         });
     };
 
@@ -125,7 +126,7 @@ const ChatDetail: React.FC = () => {
         clientRef.current.deactivate();
       }
     };
-  }, []);
+  }, [roomId]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -152,62 +153,75 @@ const ChatDetail: React.FC = () => {
   };
 
   return (
-    <div>
-      <div className="flex items-center">
-        <RollBackBtn />
-        <div className="inline-block text-center h-10 ms-3">
-          {opponentUser?.nickname}
+    <>
+      {isChatLoaded ? (
+        <div className="h-[650px] md:h-[700px] w-[80vw] md:w-[800px] p-5">
+          <div className="flex items-center">
+            <div className="md:hidden">
+              <RollBackBtn />
+            </div>
+            <div className="inline-block text-center h-10 ms-3">
+              {opponentUser?.nickname}
+            </div>
+          </div>
+          <div
+            id="product-list"
+            className="flex-row"
+            ref={chatContainerRef}
+            style={{
+              overflowY: "auto",
+              height: "480px",
+            }}
+          >
+            {messages.map((item, index) => (
+              <Chat
+                chatContent={item.chatContent}
+                chatTime={item.chatTime}
+                key={index}
+                imgUrl={
+                  item.writerId === userId
+                    ? undefined
+                    : process.env.REACT_APP_BACKEND_SRC_URL +
+                      "/" +
+                      opponentUser?.profileImage
+                }
+                flag={item.writerId === userId}
+              />
+            ))}
+            <div ref={messagesEndRef} /> {/* 스크롤 이동을 위한 빈 div */}
+          </div>
+          <div className="mt-5">
+            <ChatAdditionalBar
+              roomId={roomId!!}
+              reportUserId={opponentUser?.userId!!}
+              reportUserNickname={opponentUser?.nickname!!}
+            />
+          </div>
+          <div>
+            <InputBox
+              placeholder="채팅 입력"
+              value={chatMessage}
+              onChange={(e) => setChatMessage(e.target.value)}
+              width={"auto"}
+              buttonType="send"
+              onCompositionStart={() => (isComposing.current = true)} // 한글 입력 시작 시 IME 상태 시작
+              onCompositionEnd={() => (isComposing.current = false)} // 한글 입력 완료 시 IME 상태 종료
+              onKeyDown={(e) => {
+                if (e.code === "Enter" && !isComposing.current) {
+                  if (connected) sendMessage();
+                  else alert("연결중입니다. 잠시만 기다려주세요.");
+                }
+              }}
+              onIconClick={sendMessage}
+            />
+          </div>
         </div>
-      </div>
-      <div
-        className="flex-row"
-        ref={chatContainerRef}
-        style={{
-          overflowY: "auto",
-          maxHeight: "400px",
-        }}
-      >
-        {messages.map((item, index) => (
-          <Chat
-            chatContent={item.chatContent}
-            chatTime={item.chatTime}
-            key={index}
-            imgUrl={
-              item.writerId === userId
-                ? undefined
-                : process.env.REACT_APP_BACKEND_SRC_URL +
-                  "/" +
-                  opponentUser?.profileImage
-            }
-            flag={item.writerId === userId}
-          />
-        ))}
-        <div ref={messagesEndRef} /> {/* 스크롤 이동을 위한 빈 div */}
-      </div>
-      <div className="mt-10">
-        <InputBox
-          placeholder="채팅 입력"
-          value={chatMessage}
-          onChange={(e) => setChatMessage(e.target.value)}
-          width={"auto"}
-          buttonType="send"
-          onCompositionStart={() => (isComposing.current = true)} // 한글 입력 시작 시 IME 상태 시작
-          onCompositionEnd={() => (isComposing.current = false)} // 한글 입력 완료 시 IME 상태 종료
-          onKeyDown={(e) => {
-            if (e.code === "Enter" && !isComposing.current) {
-              if (connected) sendMessage();
-              else alert("연결중입니다. 잠시만 기다려주세요.");
-            }
-          }}
-          onIconClick={sendMessage}
-        />
-      </div>
-      <ChatAdditionalBar
-        roomId={roomId!!}
-        reportUserId={opponentUser?.userId!!}
-        reportUserNickname={opponentUser?.nickname!!}
-      />
-    </div>
+      ) : (
+        <div className="w-[800px] h-[700px] flex justify-center items-center hidden md:block">
+          <p className="text-2xl">채팅창을 선택해주세요.</p>
+        </div>
+      )}
+    </>
   );
 };
 

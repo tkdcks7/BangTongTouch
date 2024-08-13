@@ -24,7 +24,7 @@ interface UserAlarmSetting {
   alarmEmailInterest: boolean;
   alarmEmailComplete: boolean;
   setAlarmToggle: (
-    alarm: keyof Omit<UserAlarmSetting, "setTotalAlarm" | "setAlarmToggle">,
+    alarm: keyof Omit<UserAlarmSetting, "setTotalAlarm" | "setAlarmToggle">
   ) => void;
 }
 
@@ -74,8 +74,8 @@ const useUserStore = create<User>()(
         }));
       },
     }),
-    userPersistOptions,
-  ),
+    userPersistOptions
+  )
 );
 
 // 유저 알람 설정 store
@@ -97,16 +97,13 @@ export const useAlarmStore = create<UserAlarmSetting>()((set) => ({
 interface PreferenceI {
   preferenceId: number;
   preferenceName: string;
-  userId: number;
-  regionId: string;
   regionAddress: string;
   preferenceDeposit: number;
   preferenceRent: number;
   preferenceType: string;
-  preferenceInfra: number;
+  preferenceInfra: string;
   preferenceStartDate: string;
   preferenceEndDate: string;
-  preferenceOptions: number;
   setPreferUpdate: (payload: Partial<PreferenceI>) => void;
 }
 
@@ -116,16 +113,13 @@ export const useUserPreferStore = create<PreferenceI>()(
     (set) => ({
       preferenceId: 0,
       preferenceName: "",
-      userId: 0,
-      regionId: "",
       regionAddress: "",
       preferenceDeposit: 0,
       preferenceRent: 0,
       preferenceType: "",
-      preferenceInfra: 0,
+      preferenceInfra: "",
       preferenceStartDate: "",
       preferenceEndDate: "",
-      preferenceOptions: 0,
       setPreferUpdate: (payload: Partial<PreferenceI>) => {
         set((state) => ({ ...state, ...payload }));
       },
@@ -133,8 +127,8 @@ export const useUserPreferStore = create<PreferenceI>()(
     {
       name: "user-preferences", // 저장될 키 이름
       getStorage: () => localStorage, // 사용할 스토리지 (localStorage가 기본값)
-    },
-  ),
+    }
+  )
 );
 
 export default useUserStore;

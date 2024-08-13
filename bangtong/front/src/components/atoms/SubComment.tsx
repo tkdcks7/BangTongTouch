@@ -1,7 +1,8 @@
 import React, { useRef, useState } from "react";
 import authAxios from "../../utils/authAxios";
-import { Modal, Select } from "antd";
+import { Dropdown, Modal, Select } from "antd";
 import useUserStore from "../../store/userStore";
+import menuImg from "../../assets/Menu.png";
 
 /**
  *    예시   <SubComment comment_id="까치" content="그건 좀;;" date={273890147923} />
@@ -30,6 +31,7 @@ const SubComment: React.FC<iSubComment> = ({
   commentDate,
 }) => {
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
+  const userId = useUserStore().id;
   const [isEditClicked, setIsEditClicked] = useState<boolean>(false);
   const editContent = useRef<string>(content);
   const reportRef = useRef<string>(content);
@@ -97,6 +99,26 @@ const SubComment: React.FC<iSubComment> = ({
       });
     changeModalStatus();
   };
+  const myMenuItem = [
+    {
+      label: "수정",
+      key: 1,
+      onClick: changeIsEditClicked,
+    },
+    {
+      label: "삭제",
+      key: 2,
+      onClick: deleteComment,
+    },
+  ];
+
+  const otherMenuItem = [
+    {
+      label: "신고",
+      key: 1,
+      onClick: changeModalStatus,
+    },
+  ];
   return (
     <div className="flex pl-4 py-0.5">
       <Modal
@@ -164,21 +186,15 @@ const SubComment: React.FC<iSubComment> = ({
               {formatTimestamp(commentDate)}
             </div>
             {deleted === false ? (
-              <button onClick={changeMenuVisible}>…</button>
-            ) : null}
-            {menuVisible === true ? (
-              <div className="absolute bg-gray-300 right-2">
-                {iuser.userId === useUserStore.getState().id ? (
-                  <ul className="flex-col">
-                    <button onClick={changeIsEditClicked}>수정</button>
-                    <button onClick={deleteComment}>삭제</button>
-                  </ul>
-                ) : (
-                  <ul className="flex-col">
-                    <button onClick={changeModalStatus}>신고</button>
-                  </ul>
-                )}
-              </div>
+              <Dropdown
+                className="w-6 h-6 rounded-xl mb-3"
+                trigger={["click"]}
+                menu={{
+                  items: iuser.userId === userId ? myMenuItem : otherMenuItem,
+                }}
+              >
+                <img src={menuImg} alt="" />
+              </Dropdown>
             ) : null}
           </React.Fragment>
         )}

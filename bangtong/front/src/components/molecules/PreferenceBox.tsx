@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { preferenceStore } from "../../store/productStore";
+import React, { useEffect, useState } from "react";
+import { useUserPreferStore } from "../../store/userStore";
 
 import { CheckOutlined } from "@ant-design/icons";
 
@@ -25,7 +25,14 @@ const PreferenceBox: React.FC<PreferenceBoxProps> = ({
   handlePreferenceDelete,
 }) => {
   const [isBtnHovered, setIsBtnHovered] = useState<boolean>(false); //버튼의 hover 상태를 나타내는 state
-  const isSelected = preferenceId === preferenceStore().preferenceId;
+  const userPrefId = useUserPreferStore().preferenceId;
+  const [isSelected, setIsSelected] = useState<boolean>(
+    preferenceId === userPrefId
+  );
+
+  useEffect(() => {
+    setIsSelected(preferenceId === userPrefId);
+  }, [userPrefId, preferenceId]);
 
   return (
     <div
@@ -48,7 +55,10 @@ const PreferenceBox: React.FC<PreferenceBoxProps> = ({
         <button
           onMouseEnter={() => setIsBtnHovered(true)} // hover될 시 isBtnHovered를 true로 만들어 상단 div의 색 변경을 방지
           onMouseLeave={() => setIsBtnHovered(false)}
-          onClick={() => handlePreferenceApplicate(preferenceId)}
+          onClick={() => {
+            handlePreferenceApplicate(preferenceId);
+            setIsSelected(() => preferenceId === userPrefId);
+          }}
           className={`border-2 border-yellow-300 w-4/5 hover:bg-yellow-300 transition-colors duration-300 ${isSelected ? "border-yellow-300 bg-yellow-300" : "bg-yellow-100"}`}
         >
           {isSelected ? <CheckOutlined /> : "적용"}
