@@ -35,9 +35,7 @@ class SocketService {
 
   send(destination: string, body: any): void {
     console.log("send()");
-    console.log(
-      "destination: " + destination + ", body: " + JSON.stringify(body),
-    );
+    console.log("destination: " + destination + ", body: " + body);
 
     this.client.publish({
       destination,
