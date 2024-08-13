@@ -24,10 +24,13 @@ public class PreferenceService {
     @Autowired
     private UserRepository userRepository;
 
-    public void addPreference(long userId, PreferenceDto preferenceDto) {
+    public PreferenceDto addPreference(long userId, PreferenceDto preferenceDto) {
         // 선호 설정 등록
         // String 자료형 / 넘어오는 형태: (예) 서울특별시 / 서울특별시 강서구 / 서울특별시 강서구 가양동
         // 1. '주소' 띄어쓰기 ' ' split = []
+
+        log.info("preferenceDto:{}", preferenceDto);
+
         String[] addressParts = preferenceDto.getRegionAddress().split(" ");
 
         Region region = null;  // Initialize as null
@@ -44,19 +47,38 @@ public class PreferenceService {
                 break;
         }
 
+
         User user = userRepository.findById(userId).orElse(null);
+        log.info("region:{}", region);
+        log.info("user:{}", user);
 
         Preference preference = new Preference();
         preference.setPreferenceName(preferenceDto.getPreferenceName());
         preference.setPreferenceDeposit(preferenceDto.getPreferenceDeposit());
         preference.setRegion(region);
-        preference.setUser(user);
         preference.setPreferenceRent(preferenceDto.getPreferenceRent());
         preference.setPreferenceType(preferenceDto.getPreferenceType());
         preference.setPreferenceInfra(preferenceDto.getPreferenceInfra());
         preference.setPreferenceStartDate(preferenceDto.getPreferenceStartDate());
         preference.setPreferenceEndDate(preferenceDto.getPreferenceEndDate());
-        preferenceRepository.save(preference);
+        preference.setPreferenceId(preferenceDto.getPreferenceId());
+
+        Preference savedPreference = preferenceRepository.save(preference);
+
+        PreferenceDto resultDto = new PreferenceDto();
+        resultDto.setPreferenceId(savedPreference.getPreferenceId());
+        resultDto.setPreferenceName(savedPreference.getPreferenceName());
+        resultDto.setUserId(user.getUserId());
+        resultDto.setRegionId(region.getRegionId());
+        resultDto.setRegionAddress(preferenceDto.getRegionAddress());
+        resultDto.setPreferenceDeposit(savedPreference.getPreferenceDeposit());
+        resultDto.setPreferenceRent(savedPreference.getPreferenceRent());
+        resultDto.setPreferenceType(savedPreference.getPreferenceType());
+        resultDto.setPreferenceInfra(savedPreference.getPreferenceInfra());
+        resultDto.setPreferenceStartDate(savedPreference.getPreferenceStartDate());
+        resultDto.setPreferenceEndDate(savedPreference.getPreferenceEndDate());
+
+        return resultDto;
     }
 
     // 선호 설정 수정

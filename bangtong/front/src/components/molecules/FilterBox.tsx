@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import authAxios from "../../utils/authAxios";
+import { motion } from "framer-motion";
 
 // 컴포넌트
 import TextBtn from "../atoms/TextBtn";
 import BtnGroup from "../molecules/BtnGroup";
 import { ConfigProvider, Modal } from "antd";
-import { productSearchStore } from "../../store/productStore";
+import { productSearchStore, preferenceStore } from "../../store/productStore";
 
 // 이모티콘
 import { SearchOutlined } from "@ant-design/icons";
@@ -17,6 +18,7 @@ const FilterBox: React.FC = () => {
   const [open, setOpen] = useState(false); // 지역 선택 모달
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [regions, setRegions] = useState([]); // 지역 선택 모달에 뜰 버튼들 갱신
+  const [isShake, setIsShake] = useState<boolean>(false); // 검색 버튼 애니메이션 상태
 
   const {
     order,
@@ -31,9 +33,45 @@ const FilterBox: React.FC = () => {
     furnitureSupportable,
     startDate,
     endDate,
+    setDeposit,
+    setRent,
+    setHomeType,
+    setInfra,
+    setDate,
     setProductsList,
     setAddress,
+    setInitailize,
   } = productSearchStore();
+
+  const {
+    preferenceId,
+    regionId,
+    regionAddress,
+    preferenceDeposit,
+    preferenceRent,
+    preferenceType,
+    preferenceInfra,
+    preferenceStartDate,
+    preferenceEndDate,
+  } = preferenceStore();
+
+  // 설정된 선호 설정이 있을 시(preferenceStore의 데이터), 이 값들을 searchStore의 각 항목들에 넣어준다
+  useEffect(() => {
+    setInitailize();
+    if (preferenceId) {
+      setLocationTitle(regionAddress);
+      setAddress(regionId);
+      setDeposit(0, preferenceDeposit);
+      setRent(0, preferenceRent);
+      setHomeType(preferenceType.indexOf("1"));
+      for (let idx = 0; idx < preferenceInfra.length; idx++) {
+        if (preferenceInfra[idx] === "1") {
+          setInfra(idx);
+        }
+      }
+      setDate(preferenceStartDate, preferenceEndDate);
+    }
+  }, [preferenceId]);
 
   // 지역 설정 모달 오픈 핸들러
   const showRegionModal = () => {
@@ -45,11 +83,9 @@ const FilterBox: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/regions`,
     })
       .then((res) => {
-        console.log(res);
-        console.log(`받아온 지역은 ${res} 입니다.`);
         setRegions(res.data.data);
       })
-      .catch((e) => console.log(`지역을 못받아옴. ${e}`));
+      .catch((err) => console.log(err));
   };
 
   const handleOk = () => {
@@ -74,8 +110,6 @@ const FilterBox: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/regions/${regionId}`,
     })
       .then((res) => {
-        console.log(res);
-        console.log(`받아온 하위지역은 ${res.data.data} 입니다.`);
         setRegions(res.data.data);
       })
       .catch((err) => console.log(`지역을 못받아옴. ${err}`));
@@ -90,8 +124,6 @@ const FilterBox: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/regions/gugun/${regionId}`,
     })
       .then((res) => {
-        console.log(res);
-        console.log(`받아온 최하위지역은 ${res.data.data} 입니다.`);
         setRegions(res.data.data);
       })
       .catch((err) => console.log(`지역을 못받아옴. ${err}`));
@@ -160,6 +192,8 @@ const FilterBox: React.FC = () => {
 
   // 검색을 진행하는 함수
   const handleSearch = () => {
+    setIsShake(true);
+    setTimeout(() => setIsShake(false), 500); // 애니메이션 지속 시간과 동일하게
     const searchData = {
       order,
       minDeposit,
@@ -191,7 +225,9 @@ const FilterBox: React.FC = () => {
         .then((response) => {
           if (response.data.data === null || response.data.data.length === 0)
             alert("검색 결과가 없습니다.");
-          else setProductsList(response.data.data);
+          else {
+            setProductsList(response.data.data);
+          }
         })
         .catch((err) => console.log(err));
     }
@@ -248,7 +284,7 @@ const FilterBox: React.FC = () => {
                       ? region.regionGugun
                       : region.regionDong}
                 </button>
-              ),
+              )
             )}
           </div>
         </Modal>
@@ -259,12 +295,14 @@ const FilterBox: React.FC = () => {
       <BtnGroup title="편의시설" itemsArray={facilities} />
       <BtnGroup title="지원 여부" itemsArray={["월세 지원", "가구도 승계"]} />
       <div className="text-end mr-2">
-        <button
+        <motion.button
           className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
           onClick={handleSearch}
+          animate={isShake ? { y: [0, -5, 5, -5, 5, 0] } : {}}
+          transition={{ duration: 0.5 }}
         >
           <SearchOutlined className="my-auto mx-auto" />
-        </button>
+        </motion.button>
       </div>
     </div>
   );

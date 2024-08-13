@@ -17,7 +17,7 @@ const ProfileMenu: React.FC = () => {
   useEffect(() => {
     axios({
       method: "GET",
-      url: `${process.env.REACT_APP_BACKEND_URL}/interest/${id}`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/interests/${id}`,
     })
       .then((res) => {
         console.log(res);

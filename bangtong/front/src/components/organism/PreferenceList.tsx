@@ -49,7 +49,13 @@ const PreferenceList: React.FC = () => {
   }, []);
 
   // 클릭 시 선호 상세 모달을 띄우는 핸들러
-  const handlePreferenceDetail = (prefId: number): void => {
+  const handlePreferenceDetail = (
+    e: React.MouseEvent<HTMLDivElement>,
+    prefId: number
+  ): void => {
+    if ((e.target as HTMLElement).tagName === "BUTTON") {
+      return; // button이 클릭된 경우 div의 클릭 이벤트를 무시
+    }
     console.log("선호 상세 모달 띄우기!");
     setSelectedId(prefId);
     setModalIsOpen(true);
@@ -114,27 +120,34 @@ const PreferenceList: React.FC = () => {
         </div>
       </div>
       <div className="flex flex-col mt-5 items-center justify-center text-center">
-        {preferenceArr.map((pref: PreferenceI) => {
-          return (
-            <PreferenceBox
-              key={pref.preferenceId}
-              preferenceId={pref.preferenceId}
-              preferenceName={pref.preferenceName}
-              preferenceDeposit={pref.preferenceDeposit}
-              preferenceRent={pref.preferenceRent}
-              regionAddress={pref.regionAddress}
-              handlePreferenceDetail={handlePreferenceDetail}
-              handlePreferenceApplicate={handlePreferenceApplicate}
-              handlePreferenceDelete={handlePreferenceDelete}
-            />
-          );
-        })}
+        {preferenceArr.length > 0 ? (
+          preferenceArr.map((pref: PreferenceI) => {
+            return (
+              <PreferenceBox
+                key={pref.preferenceId}
+                preferenceId={pref.preferenceId}
+                preferenceName={pref.preferenceName}
+                preferenceDeposit={pref.preferenceDeposit}
+                preferenceRent={pref.preferenceRent}
+                regionAddress={pref.regionAddress}
+                handlePreferenceDetail={handlePreferenceDetail}
+                handlePreferenceApplicate={handlePreferenceApplicate}
+                handlePreferenceDelete={handlePreferenceDelete}
+              />
+            );
+          })
+        ) : (
+          <div className="flex items-center justify-center h-24 w-64 bg-yellow-200 text-gray-800 font-semibold text-lg rounded-lg shadow-md">
+            등록된 설정이 없습니다.
+          </div>
+        )}
       </div>
       <ProfileModal
         modalIsOpen={modalIsOpen}
         closeModal={closeModal}
         selectedId={selectedId}
         addpreferenceArr={addpreferenceArr}
+        className={"dark:text-black dark:bg-gray-800"}
       />
     </>
   );
