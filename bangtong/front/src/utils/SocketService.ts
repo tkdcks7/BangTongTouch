@@ -6,8 +6,8 @@ class SocketService {
 
   constructor() {
     this.client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/api/signaling"),
-      // new SockJS(`${process.env.REACT_APP_BACKEND_URL}/signaling`),
+      webSocketFactory: () =>
+        new SockJS(`${process.env.REACT_APP_BACKEND_URL}/signaling`),
       onConnect: () => {
         console.log("Socket Connected");
       },
