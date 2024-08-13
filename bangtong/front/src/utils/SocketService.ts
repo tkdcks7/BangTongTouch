@@ -7,7 +7,8 @@ class SocketService {
   constructor() {
     this.client = new Client({
       webSocketFactory: () =>
-        new SockJS(`${process.env.REACT_APP_BACKEND_URL}/signaling`),
+        // new SockJS(`${process.env.REACT_APP_BACKEND_URL}/signaling`),
+        new SockJS(`http://localhost:8080/api/signaling`),
       onConnect: () => {
         console.log("Socket Connected");
       },
@@ -35,9 +36,7 @@ class SocketService {
 
   send(destination: string, body: any): void {
     console.log("send()");
-    console.log(
-      "destination: " + destination + ", body: " + JSON.stringify(body),
-    );
+    console.log("destination: " + destination + ", body: " + body);
 
     this.client.publish({
       destination,

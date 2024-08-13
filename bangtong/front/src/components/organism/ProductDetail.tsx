@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import useUserStore from "../../store/userStore";
 import axios from "axios";
 import authAxios from "../../utils/authAxios";
@@ -18,12 +18,12 @@ import { Button, Card, Carousel, Col, ConfigProvider, Modal, Row } from "antd";
 // 이미지 소스
 import defaltHomeImg from "../../assets/defaulthome.png";
 import {
-    HeartOutlined,
-    HeartFilled,
-    DeleteOutlined,
-    WechatOutlined,
+  HeartOutlined,
+  HeartFilled,
+  DeleteOutlined,
+  WechatOutlined,
 } from "@ant-design/icons";
-import {error} from "console";
+import { error } from "console";
 
 const ProductDetail: React.FC = () => {
   // 기본값 선언
@@ -68,71 +68,71 @@ const ProductDetail: React.FC = () => {
   const navigate = useNavigate();
   const userId: number = useUserStore().id;
 
-    // 신고 모달 상태관리
-    const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
+  // 신고 모달 상태관리
+  const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
 
-    // 로딩과 에러를 처리하는 state
-    const [loading, setLoading] = useState(true);
-    const [connectionFailed, setConnectionFailed] = useState(false);
-    const [isInterest, setIsInterest] = useState(false);
+  // 로딩과 에러를 처리하는 state
+  const [loading, setLoading] = useState(true);
+  const [connectionFailed, setConnectionFailed] = useState(false);
+  const [isInterest, setIsInterest] = useState(false);
 
-    // state와 초기값 선언. 나중에 null, 0 혹은 빈 문자열로 바꿀거임.
-    const [productInfo, setProductInfo] = useState(tempObj);
+  // state와 초기값 선언. 나중에 null, 0 혹은 빈 문자열로 바꿀거임.
+  const [productInfo, setProductInfo] = useState(tempObj);
 
-    // 글쓴이가 나인지 확인
-    const [isMe, setIsMe] = useState<boolean>();
+  // 글쓴이가 나인지 확인
+  const [isMe, setIsMe] = useState<boolean>();
 
-    // 1:1 채팅 아이콘 hover 처리
-    const [hover, setHover] = useState<boolean>(false);
+  // 1:1 채팅 아이콘 hover 처리
+  const [hover, setHover] = useState<boolean>(false);
 
-    const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(true);
 
-    // 백엔드에서 상세 페이지 정보 받아오기
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                console.log("매물 상세정보 받아오는 중!");
-                const response = await authAxios({
-                    method: "GET",
-                    url: `${process.env.REACT_APP_BACKEND_URL}/products/${id}`,
-                });
-                setProductInfo(response.data.data);
-                console.log(response);
-                setIsMe(userId === response.data.data.profileDto.userId); // 유저 Id
-                // 관심 매물 등록이 돼있는지 조회 후, 그렇다면 관심 상태를 true로
-                axios({
-                    method: "GET",
-                    url: `${process.env.REACT_APP_BACKEND_URL}/interests/${userId}`,
-                })
-                    .then((response) => {
-                        console.log(response);
-                        if (
-                            response.data.data.product &&
-                            id in response.data.data.product
-                        ) {
-                            setIsInterest(true);
-                        } else {
-                            setIsInterest(false);
-                        }
-                    })
-                    .catch((err) => console.log("에러남"));
-            } catch (err) {
-                console.log(err);
-                setConnectionFailed(true);
-            } finally {
-                setLoading(false);
+  // 백엔드에서 상세 페이지 정보 받아오기
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log("매물 상세정보 받아오는 중!");
+        const response = await authAxios({
+          method: "GET",
+          url: `${process.env.REACT_APP_BACKEND_URL}/products/${id}`,
+        });
+        setProductInfo(response.data.data);
+        console.log(response);
+        setIsMe(userId === response.data.data.profileDto.userId); // 유저 Id
+        // 관심 매물 등록이 돼있는지 조회 후, 그렇다면 관심 상태를 true로
+        axios({
+          method: "GET",
+          url: `${process.env.REACT_APP_BACKEND_URL}/interests/${userId}`,
+        })
+          .then((response) => {
+            console.log(response);
+            if (
+              response.data.data.product &&
+              id in response.data.data.product
+            ) {
+              setIsInterest(true);
+            } else {
+              setIsInterest(false);
             }
-        };
-        fetchData();
-    }, [id]);
+          })
+          .catch((err) => console.log("에러남"));
+      } catch (err) {
+        console.log(err);
+        setConnectionFailed(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [id]);
 
-    // 수정 페이지(작성 페이지에서 기본값이 다 설정된 페이지?)로 이동
-    // Dto 때문에 userId를 비교하는 로직을 작성 못함.
-    // const handleToUpdate = (): void => {
-    //   if (productInfo.userId === userId) {
-    //     navigate(`/products/update/${id}`)
-    //   }
-    // }
+  // 수정 페이지(작성 페이지에서 기본값이 다 설정된 페이지?)로 이동
+  // Dto 때문에 userId를 비교하는 로직을 작성 못함.
+  // const handleToUpdate = (): void => {
+  //   if (productInfo.userId === userId) {
+  //     navigate(`/products/update/${id}`)
+  //   }
+  // }
 
   // 매물 게시글 삭제 함수
   const handleDelete = (): void => {
@@ -149,27 +149,27 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-    // 관심 매물 등록(좋아요). 관심매물 좋아요 상태도 같이 보내줄 것.
-    const handleInterestBtn = (): void => {
-        let method: string = "POST";
-        let url: string = `${process.env.REACT_APP_BACKEND_URL}/interests/add`;
-        let data: any = {userId, productId: id};
-        if (isInterest) {
-            method = "DELETE";
-            url = `${process.env.REACT_APP_BACKEND_URL}/interest/delete/${userId}/${id}`;
-            data = {};
-        }
-        authAxios({method, url, data})
-            .then((response) => {
-                console.log("관심 매물 등록/취소됐음!");
-                setIsInterest(() => !isInterest); // 관심 매물 true/false 상태를 반전
-            })
-            .catch((err) => console.log(err));
-    };
+  // 관심 매물 등록(좋아요). 관심매물 좋아요 상태도 같이 보내줄 것.
+  const handleInterestBtn = (): void => {
+    let method: string = "POST";
+    let url: string = `${process.env.REACT_APP_BACKEND_URL}/interests/add`;
+    let data: any = { userId, productId: id };
+    if (isInterest) {
+      method = "DELETE";
+      url = `${process.env.REACT_APP_BACKEND_URL}/interest/delete/${userId}/${id}`;
+      data = {};
+    }
+    authAxios({ method, url, data })
+      .then((response) => {
+        console.log("관심 매물 등록/취소됐음!");
+        setIsInterest(() => !isInterest); // 관심 매물 true/false 상태를 반전
+      })
+      .catch((err) => console.log(err));
+  };
 
   // 채팅방 생성
   const makeChatRoom = () => {
-    console.log(productInfo.profileDto.userId);
+    console.log(productInfo.profileDto);
     authAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/chatrooms/save`,
@@ -189,68 +189,68 @@ const ProductDetail: React.FC = () => {
       });
   };
 
-    // 일자를 파싱하는 함수
-    const timeParser = (time: string): number[] => {
-        if (!time) {
-            return [0, 0, 0];
-        }
-        return time.split("-").map((el) => Number(el));
-    };
+  // 일자를 파싱하는 함수
+  const timeParser = (time: string): number[] => {
+    if (!time) {
+      return [0, 0, 0];
+    }
+    return time.split("-").map((el) => Number(el));
+  };
 
-    // modal ok 버튼 핸들러
-    const handleModalOk = () => {
-        setIsReportModalOpen(false);
-    };
+  // modal ok 버튼 핸들러
+  const handleModalOk = () => {
+    setIsReportModalOpen(false);
+  };
 
-    // modal cancel 버튼 핸들러
-    const handleModalCancel = () => {
-        setIsReportModalOpen(false);
-    };
+  // modal cancel 버튼 핸들러
+  const handleModalCancel = () => {
+    setIsReportModalOpen(false);
+  };
 
-    // ant design 글로벌 디자인 토큰
-    const theme = {
-        token: {
-            colorBgTextHover: "#E9FFE7",
-            colorPrimary: "#129B07",
-            colorPrimaryBorder: "#129B07",
-            defaultHoverBg: "#129B07",
-        },
-    };
+  // ant design 글로벌 디자인 토큰
+  const theme = {
+    token: {
+      colorBgTextHover: "#E9FFE7",
+      colorPrimary: "#129B07",
+      colorPrimaryBorder: "#129B07",
+      defaultHoverBg: "#129B07",
+    },
+  };
 
-    // 계약일, 계약종료일을 연월일로 반환
-    const [startYear, startMonth, startDay] = timeParser(
-        productInfo.productReturnDto.productStartDate
-    );
-    const [endYear, endMonth, endDay] = timeParser(
-        productInfo.productReturnDto.productEndDate
-    );
+  // 계약일, 계약종료일을 연월일로 반환
+  const [startYear, startMonth, startDay] = timeParser(
+    productInfo.productReturnDto.productStartDate
+  );
+  const [endYear, endMonth, endDay] = timeParser(
+    productInfo.productReturnDto.productEndDate
+  );
 
-    const remainMonth = (endYear - startYear) * 12 + (endMonth - startMonth);
+  const remainMonth = (endYear - startYear) * 12 + (endMonth - startMonth);
 
-    // 비트마스킹된 기본옵션들 뽑아오기
-    const options: number = productInfo.productReturnDto.productOption || 0;
+  // 비트마스킹된 기본옵션들 뽑아오기
+  const options: number = productInfo.productReturnDto.productOption || 0;
 
-    // 문자열 리스트로 들어오는 추가옵션 받아오기
-    const additionalOption: string[] =
-        productInfo.productReturnDto.productAdditionalOption || [];
+  // 문자열 리스트로 들어오는 추가옵션 받아오기
+  const additionalOption: string[] =
+    productInfo.productReturnDto.productAdditionalOption || [];
 
   if (loading) return <Loading />;
   // if (connectionFailed) return <div>데이터를 불러오는 데 실패했습니다.</div>;
 
-    const homeTypeNameTable: any = {
-        ONEROOM: "원룸",
-        TWOROOM: "투룸+",
-        OFFICE: "오피스텔",
-        VILLA: "빌라",
-        APARTMENT: "아파트",
-    };
+  const homeTypeNameTable: any = {
+    ONEROOM: "원룸",
+    TWOROOM: "투룸+",
+    OFFICE: "오피스텔",
+    VILLA: "빌라",
+    APARTMENT: "아파트",
+  };
 
-    // 1:1 채팅 버튼 스타일
-    const oneToOneButtonStyle = {
-        backgroundColor: hover ? "#facc15" : "#fef08a",
-        borderColor: hover ? "#facc15" : "",
-        color: hover ? "#ffffff" : "",
-    };
+  // 1:1 채팅 버튼 스타일
+  const oneToOneButtonStyle = {
+    backgroundColor: hover ? "#facc15" : "#fef08a",
+    borderColor: hover ? "#facc15" : "",
+    color: hover ? "#ffffff" : "",
+  };
 
   return (
     <>
@@ -385,7 +385,7 @@ const ProductDetail: React.FC = () => {
               <Row className="items-center mt-20">
                 <Col span={12} className="text-2xl flex items-center">
                   <span className="font-bold">기본 옵션 | </span>
-                  <ProductOptions options={options} isPc  dark/>
+                  <ProductOptions options={options} isPc dark />
                 </Col>
                 <Col span={8} offset={2} className="text-2xl">
                   <span className="font-bold">방 개수 | </span>
@@ -459,7 +459,7 @@ const ProductDetail: React.FC = () => {
           {/* 구분선 */}
           <Devider />
           {/* 옵션 */}
-          <ProductOptions options={options} isPc={false}  dark/>
+          <ProductOptions options={options} isPc={false} dark />
           {/* 구분선 */}
           <Devider />
           {/* 추가옵션 */}

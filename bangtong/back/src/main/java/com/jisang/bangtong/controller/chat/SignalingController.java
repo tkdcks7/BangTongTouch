@@ -1,6 +1,8 @@
 package com.jisang.bangtong.controller.chat;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -11,6 +13,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 public class SignalingController {
+
+  private final Map<String, String> chatRoomToVideoRoom = new ConcurrentHashMap<>();
+
+  @MessageMapping("/create/video-room")
+  @SendTo("/topic/video-room/created")
+  public String createVideoRoom(@Payload String chatRoomId) {
+    String videoRoomId = generateUniqueKey();
+    chatRoomToVideoRoom.put(chatRoomId, videoRoomId);
+    log.info("Created video room {} for chat room {}", videoRoomId, chatRoomId);
+    return videoRoomId;
+  }
+
+  @MessageMapping("/join/video-room")
+  @SendTo("/topic/video-room/joined")
+  public String joinVideoRoom(@Payload String chatRoomId) {
+    String videoRoomId = chatRoomToVideoRoom.get(chatRoomId);
+    if (videoRoomId == null) {
+      videoRoomId = createVideoRoom(chatRoomId);
+    }
+    log.info("Joined video room {} for chat room {}", videoRoomId, chatRoomId);
+    return videoRoomId;
+  }
 
   @MessageMapping("/peer/offer/{camKey}/{roomId}")
   @SendTo("/topic/peer/offer/{camKey}/{roomId}")
@@ -39,9 +63,8 @@ public class SignalingController {
   @MessageMapping("/send/key")
   @SendTo("/topic/call/key")
   public String sendKey(@Payload String message) {
-    String key = generateUniqueKey();
-    log.info("send key {}, {}", message, key);
-    return key;
+    log.info("send key {}", message);
+    return message;
   }
 
   private String generateUniqueKey() {
