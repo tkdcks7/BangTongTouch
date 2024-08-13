@@ -156,7 +156,7 @@ const ChatDetail: React.FC = () => {
     <>
       {isChatLoaded ? (
         <div className="h-[650px] md:h-[700px] w-[80vw] md:w-[800px] p-5">
-          <div className="flex items-center">
+          <div className="flex items-center border-b border-gray-300">
             <div className="md:hidden">
               <RollBackBtn />
             </div>

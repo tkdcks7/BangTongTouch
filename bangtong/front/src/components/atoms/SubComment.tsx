@@ -161,8 +161,8 @@ const SubComment: React.FC<iSubComment> = ({
         <div>┖</div>
       </div>
       <div className="flex w-full">
-        <div className="flex-initial text-sm w-12">
-          {deleted === false ? iuser.nickname : "X"}
+        <div className="flex items-center text-base me-3 text-lime-600">
+          <p>{deleted === false ? iuser.nickname : "X"}</p>
         </div>
         {isEditClicked === true ? (
           <div className="flex justify-between w-full">
@@ -179,23 +179,25 @@ const SubComment: React.FC<iSubComment> = ({
           </div>
         ) : (
           <React.Fragment>
-            <div className="flex-1 text-base break-words overflow-hidden whitespace-pre-wrap">
-              {deleted === false ? content : "삭제된 메시지입니다."}
+            <div className="flex items-center justify-between text-base break-words overflow-hidden whitespace-pre-wrap">
+              <p>{deleted === false ? content : "삭제된 메시지입니다."}</p>
             </div>
-            <div className="flex-initial text-xs w-16">
-              {formatTimestamp(commentDate)}
+            <div className="flex ml-auto">
+              <div className="flex text-xs w-16">
+                {formatTimestamp(commentDate)}
+              </div>
+              {deleted === false ? (
+                <Dropdown
+                  className="w-6 h-6 rounded-xl mb-3"
+                  trigger={["click"]}
+                  menu={{
+                    items: iuser.userId === userId ? myMenuItem : otherMenuItem,
+                  }}
+                >
+                  <img src={menuImg} alt="" />
+                </Dropdown>
+              ) : null}
             </div>
-            {deleted === false ? (
-              <Dropdown
-                className="w-6 h-6 rounded-xl mb-3"
-                trigger={["click"]}
-                menu={{
-                  items: iuser.userId === userId ? myMenuItem : otherMenuItem,
-                }}
-              >
-                <img src={menuImg} alt="" />
-              </Dropdown>
-            ) : null}
           </React.Fragment>
         )}
       </div>
