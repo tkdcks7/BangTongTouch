@@ -17,15 +17,6 @@ public class SignalingController {
   private final Map<String, String> chatRoomToVideoRoom = new ConcurrentHashMap<>();
   private final Map<String, Boolean> videoRoomInitiators = new ConcurrentHashMap<>();
 
-  @MessageMapping("/create/video-room")
-  @SendTo("/topic/video-room/created")
-  public String createVideoRoom(@Payload String chatRoomId) {
-    String videoRoomId = generateUniqueKey();
-    chatRoomToVideoRoom.put(chatRoomId, videoRoomId);
-    log.info("Created video room {} for chat room {}", videoRoomId, chatRoomId);
-    return videoRoomId;
-  }
-
   @MessageMapping("/join/video-room")
   @SendTo("/topic/video-room/joined")
   public Map<String, String> joinVideoRoom(@Payload String chatRoomId) {
@@ -51,7 +42,7 @@ public class SignalingController {
   @SendTo("/topic/peer/offer/{camKey}/{roomId}")
   public String peerHandleOffer(@Payload String offer, @DestinationVariable String roomId,
       @DestinationVariable String camKey) {
-    log.info("peer handle offer {}", offer);
+    log.info("Peer handle offer for room: {}, camKey: {}", roomId, camKey);
     return offer;
   }
 
@@ -59,7 +50,7 @@ public class SignalingController {
   @SendTo("/topic/peer/answer/{camKey}/{roomId}")
   public String peerHandleAnswer(@Payload String answer, @DestinationVariable String roomId,
       @DestinationVariable String camKey) {
-    log.info("peer handle answer {}", answer);
+    log.info("Peer handle answer for room: {}, camKey: {}", roomId, camKey);
     return answer;
   }
 
@@ -67,14 +58,14 @@ public class SignalingController {
   @SendTo("/topic/peer/iceCandidate/{camKey}/{roomId}")
   public String peerHandleIceCandidate(@Payload String candidate,
       @DestinationVariable String roomId, @DestinationVariable String camKey) {
-    log.info("peer handle iceCandidate {}", candidate);
+    log.info("Peer handle ICE candidate for room: {}, camKey: {}", roomId, camKey);
     return candidate;
   }
 
   @MessageMapping("/send/key")
   @SendTo("/topic/call/key")
   public String sendKey(@Payload String message) {
-    log.info("send key {}", message);
+    log.info("Send key: {}", message);
     return message;
   }
 

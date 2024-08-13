@@ -5,7 +5,6 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const VideoChat: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
-
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
@@ -45,7 +44,7 @@ const VideoChat: React.FC = () => {
     };
   }, [roomId]);
 
-  const setupWebRTC = async (isInitiator: boolean) => {
+  const setupWebRTC = async (initiator: boolean) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -66,7 +65,7 @@ const VideoChat: React.FC = () => {
 
       peerConnectionRef.current.ontrack = (event) => {
         console.log("Received remote track", event);
-        if (remoteVideoRef.current) {
+        if (remoteVideoRef.current && event.streams && event.streams[0]) {
           remoteVideoRef.current.srcObject = event.streams[0];
         }
       };
@@ -82,17 +81,21 @@ const VideoChat: React.FC = () => {
 
       SocketService.subscribe("/topic/call/key", handleCallKey);
       SocketService.send("/app/send/key", JSON.stringify({ roomId }));
+
+      if (initiator) {
+        createOffer();
+      }
     } catch (error) {
       console.error("Error setting up WebRTC:", error);
-    }
-
-    if (isInitiator) {
-      createOffer();
     }
   };
 
   const handleCallKey = (message: { body: string }) => {
-    const key = message.body;
+    const parsedBody = JSON.parse(JSON.parse(message.body));
+    const key = parsedBody.roomId;
+
+    console.log(key);
+
     setCamKey(key);
     subscribeToRoom(key);
 
@@ -147,8 +150,11 @@ const VideoChat: React.FC = () => {
 
   const handleAnswer = async (message: { body: string }) => {
     if (!peerConnectionRef.current) return;
+
     try {
       const answer = JSON.parse(message.body);
+      console.log("Received remote answer:", answer);
+
       await peerConnectionRef.current.setRemoteDescription(
         new RTCSessionDescription(answer),
       );
