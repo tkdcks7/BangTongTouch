@@ -404,6 +404,7 @@ const ProductDetail: React.FC = () => {
                     <h2 className="text-2xl font-black">매물 설명 </h2>
                     <p className="mt-2">
                         {productInfo.productReturnDto.productAdditionalDetail
+                            
                             ? productInfo.productReturnDto.productAdditionalDetail
                             : "등록된 상세 설명이 없습니다"}
                     </p>
