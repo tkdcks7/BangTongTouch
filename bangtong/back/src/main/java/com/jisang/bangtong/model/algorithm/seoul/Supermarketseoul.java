@@ -8,7 +8,7 @@ import lombok.Data;
 @Entity
 public class Supermarketseoul {
   @Id
-  private String id;
+  private Long id;
   private Double lat;   //위도
   private Double lng;   //경도
 }

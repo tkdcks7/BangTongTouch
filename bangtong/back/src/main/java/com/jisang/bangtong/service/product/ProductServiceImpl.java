@@ -2,7 +2,6 @@ package com.jisang.bangtong.service.product;
 
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.jisang.bangtong.dto.Interest.InterestProductDto;
-import com.jisang.bangtong.dto.preference.PreferenceDto;
 import com.jisang.bangtong.dto.product.ProductReturnDto;
 import com.jisang.bangtong.dto.product.ProductReturnDtoWIthProfile;
 import com.jisang.bangtong.dto.product.ProductSearchDto;
@@ -14,10 +13,12 @@ import com.jisang.bangtong.model.interest.Interest;
 import com.jisang.bangtong.model.media.Media;
 import com.jisang.bangtong.model.preference.Preference;
 import com.jisang.bangtong.model.product.Product;
+import com.jisang.bangtong.model.product.Productalgorithm;
 import com.jisang.bangtong.model.region.Region;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.repository.interest.InterestRepository;
 import com.jisang.bangtong.repository.preference.PreferenceRepository;
+import com.jisang.bangtong.repository.product.algorithm.ProductAlgorithmRepository;
 import com.jisang.bangtong.repository.product.ProductRepository;
 import com.jisang.bangtong.repository.region.RegionRepository;
 import com.jisang.bangtong.repository.user.UserRepository;
@@ -55,6 +56,8 @@ public class ProductServiceImpl implements ProductService {
   private InterestRepository interestRepository;
   @Autowired
   private PreferenceRepository preferenceRepository;
+  @Autowired
+  private ProductAlgorithmRepository productAlgorithmRepository;
 
   @Transactional
   @Override
@@ -69,11 +72,12 @@ public class ProductServiceImpl implements ProductService {
     }
     Product product = getProductWhenUpload(productUploadDto, u);
     try {
-
-      productRepository.save(product);
+      Product p = productRepository.save(product);
       List<Media> fileList = fileService.upload(fileService.getName(productMedia));
       productRepository.save(product);
       product.setProductMedia(fileList);
+      Productalgorithm productAlgorithm = productAlgorithmRepository.getProductalgorithm(p.getLat(), p.getLng());
+      productAlgorithmRepository.save(productAlgorithm);
     } catch (IOException e) {
       throw new IllegalArgumentException("파일을 저장할 수 없습니다");
     }
