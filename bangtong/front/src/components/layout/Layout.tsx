@@ -1,6 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 
+
 // 컴포넌트
 import MMenuBar from "../organism/MMenuBar"; // 모바일 메뉴바 (알림, 햄버거버튼)
 import MNavBar from "../organism/MNavBar"; // 모바일 네비게이션바

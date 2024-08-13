@@ -352,47 +352,48 @@ const ProfileModal: React.FC<ModalI> = ({
       });
   };
 
-  return (
-    <>
-      <Modal
-        isOpen={modalIsOpen}
-        style={customStyle}
-        onRequestClose={closeModal}
-        contentLabel="선택된 선호 조건"
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{
-            duration: 0.5,
-            delay: 0.1,
-            ease: [0, 0.5, 0.2, 1],
-          }}
-        >
-          <div className="w-80 relative px-5 py-10 border-2 rounded-xl shadow-md max-h-[80vh] overflow-y-auto">
-            {/* 모달의 x버튼 */}
-            <div
-              className="absolute top-1 right-1 hover:cursor-pointer"
-              onClick={closeModal}
+    return (
+        <>
+            <Modal
+                isOpen={modalIsOpen}
+                style={customStyle}
+                onRequestClose={closeModal}
+                contentLabel="선택된 선호 조건"
             >
-              <CloseSquareFilled
-                width={40}
-                style={{ color: "red", fontSize: "24px" }}
-              />
-            </div>
-            {selectedId ? (
-              <h1 className="text-lime-500 text-center font-bold ml-3 text-xl">
-                {preferenceName}
-              </h1>
-            ) : (
-              <Input
-                placeholder="설정 이름을 입력하세요"
-                size="large"
-                type="text"
-                value={preferenceName}
-                onChange={(e) => setPreferenceName(e.target.value)}
-              />
-            )}
+                <motion.div
+                    initial={{opacity: 0, scale: 0.5}}
+                    animate={{opacity: 1, scale: 1}}
+                    transition={{
+                        duration: 0.5,
+                        delay: 0.1,
+                        ease: [0, 0.5, 0.2, 1],
+                    }}
+                >
+                    <div
+                        className="w-80 relative px-5 py-10 border-2 rounded-xl shadow-md max-h-[80vh] overflow-y-auto dark:bg-gray-800">
+                        {/* 모달의 x버튼 */}
+                        <div
+                            className="absolute top-1 right-1 hover:cursor-pointer"
+                            onClick={closeModal}
+                        >
+                            <CloseSquareFilled
+                                width={40}
+                                style={{color: "red", fontSize: "24px"}}
+                            />
+                        </div>
+                        {selectedId ? (
+                            <h1 className="text-lime-500 text-center font-bold ml-3 text-xl">
+                                {preferenceName}
+                            </h1>
+                        ) : (
+                            <Input
+                                placeholder="설정 이름을 입력하세요"
+                                size="large"
+                                type="text"
+                                value={preferenceName}
+                                onChange={(e) => setPreferenceName(e.target.value)}
+                            />
+                        )}
 
             <hr className="border-2" />
             <br />

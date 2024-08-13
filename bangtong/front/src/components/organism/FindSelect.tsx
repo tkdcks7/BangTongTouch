@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 // 컴포넌트 불러오기
 import TextBox from "../atoms/TextBox";
 import { Button, ConfigProvider, Input, Modal, Form, Space } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const FindSelectPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,6 +24,8 @@ const FindSelectPage: React.FC = () => {
 
   const [isIdActive, setIsIdActive] = useState<boolean>(true);
   const [isIdAuthAtive, setIsIdAuthAtive] = useState<boolean>(false);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // ant design 글로벌 디자인 토큰
   const theme = {
@@ -57,19 +60,54 @@ const FindSelectPage: React.FC = () => {
       .catch((error) => console.log("에러발생", error));
   };
 
-  // 인증번호를 발송하여 맞는지 아닌지 확인
-  const verifyAuthHandler = () => {
+  // 인증 메일 발송
+  const sendMailHandler = () => {
+    setIsLoading(true);
     axios({
       method: "POST",
-      url: `${process.env.REACT_APP_BACKEND_URL}/users/find/password/auth`,
-      data: { email, auth }, // 이메일, auth 전송.
+      url: `${process.env.REACT_APP_BACKEND_URL}/emails`,
+      data: { email }, // 이메일 전송
     })
       .then((response) => {
-        console.log("비밀번호가 변경됐습니다.");
-        alert(
-          `비밀번호가 변경됐습니다. 변경된 비밀번호는 ${response.data.data.user.password} 입니다.`
-        );
-        navigate("/user/login");
+        setIsIdAuthAtive(true);
+      })
+      .catch((error) => console.log("에러발생", error));
+    setIsLoading(false);
+  };
+
+  // 인증번호를 발송하여 맞는지 아닌지 확인
+  const verifyAuthHandler = () => {
+    console.log("verify 시작");
+    console.log(`email: ${email} auth: ${auth}`);
+    axios({
+      method: "POST",
+      url: `${process.env.REACT_APP_BACKEND_URL}/emails/verify`,
+      data: { email, code: auth }, // 이메일, auth 전송.
+    })
+      .then((response) => {
+        console.log("여기까진 됨");
+        if (response.data.data) {
+          // 비밀번호가 포함된 메일 발송
+          console.log("비밀번호 확인 진행");
+          axios({
+            method: "POST",
+            url: `${process.env.REACT_APP_BACKEND_URL}/emails/find/password`,
+            data: { email, code: auth }, // 이메일, auth 전송.
+          })
+            .then((response) => {
+              console.log("비밀번호 확인도 성공");
+              console.log(response);
+              if (response.data.data) {
+                navigate("/user/login");
+              } else {
+                console.log("오류 발생");
+              }
+            })
+            .catch((err) => console.log(err));
+        } else {
+          console.log("false 나옴");
+          console.log(response);
+        }
       }) // 비밀번호가 변경됨을 알리고 login page로 redirect
       .catch((error) => console.log("에러발생", error));
   };
@@ -183,15 +221,14 @@ const FindSelectPage: React.FC = () => {
                           type="primary"
                           size="large"
                           className="text-sm rounded-full"
+                          onClick={verifyAuthHandler}
                         >
                           전송
                         </Button>
                       </Space.Compact>
                     </motion.div>
                   </Form.Item>
-                ) : (
-                  <></>
-                )}
+                ) : null}
 
                 {/* 이메일 form */}
                 <Form.Item
@@ -220,7 +257,7 @@ const FindSelectPage: React.FC = () => {
                         type="primary"
                         size="large"
                         className="text-sm rounded-full"
-                        onClick={() => setIsIdAuthAtive(true)}
+                        onClick={sendMailHandler}
                       >
                         확인
                       </Button>
@@ -243,41 +280,6 @@ const FindSelectPage: React.FC = () => {
         <div className="text-lime-500 text-sm md:text-base mt-3 text-center">
           <Link to={"/user/login"}>로그인 화면으로</Link>
         </div>
-        <Modal
-          title="아이디 찾기"
-          open={isIdModalOpen}
-          onOk={(e) => {
-            mailCheck(e);
-            setIsIdModalOpen(false);
-          }}
-          onCancel={() => setIsIdModalOpen(false)}
-        >
-          <Input
-            placeholder="본인의 휴대전화번호를 숫자만 입력하세요"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </Modal>
-        <Modal
-          title="비밀번호 찾기"
-          open={isAuthOpen}
-          onOk={() => {
-            verifyAuthHandler();
-            setIsAuthOpen(false);
-          }}
-          onCancel={() => setIsAuthOpen(false)}
-        >
-          <Input
-            placeholder="이메일을 입력하세요"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Input
-            placeholder="인증번호를 입력하세요"
-            value={auth}
-            onChange={(e) => setAuth(e.target.value)}
-          />
-        </Modal>
       </ConfigProvider>
     </>
   );

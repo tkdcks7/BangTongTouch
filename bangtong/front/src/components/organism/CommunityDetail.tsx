@@ -256,7 +256,7 @@ const CommunityDetail: React.FC = () => {
                   placeholder="댓글 입력"
                   name="message"
                   rows={4}
-                  className="block p-2.5 w-full text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-lime-300 focus:border-lime-500 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 resize-none"
+                  className="block p-2.5 w-full text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-lime-300 focus:border-lime-500 dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500 resize-none"
                   onChange={(e) => (commentRef.current = e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {

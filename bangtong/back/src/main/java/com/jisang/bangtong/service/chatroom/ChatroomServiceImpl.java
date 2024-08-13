@@ -114,7 +114,7 @@ public class ChatroomServiceImpl implements ChatroomService {
 
   @Override
   public ChatReturnDto getChats(Long chatroomId) {
-    log.info("ChatroomServiceImpl. getChats 시작");
+    log.info("ChatroomServiceImpl. getChats 시작{}", chatroomId);
 
     if(!chatroomRepository.findById(chatroomId).isPresent()){
       throw new NotFoundException("채팅방이 존재하지 않습니다");
