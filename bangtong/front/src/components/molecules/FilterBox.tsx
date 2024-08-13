@@ -8,6 +8,7 @@ import TextBtn from "../atoms/TextBtn";
 import BtnGroup from "../molecules/BtnGroup";
 import { ConfigProvider, Modal } from "antd";
 import { productSearchStore, preferenceStore } from "../../store/productStore";
+import { useUserPreferStore } from "../../store/userStore";
 
 // 이모티콘
 import { SearchOutlined } from "@ant-design/icons";
@@ -45,7 +46,6 @@ const FilterBox: React.FC = () => {
 
   const {
     preferenceId,
-    regionId,
     regionAddress,
     preferenceDeposit,
     preferenceRent,
@@ -53,14 +53,15 @@ const FilterBox: React.FC = () => {
     preferenceInfra,
     preferenceStartDate,
     preferenceEndDate,
-  } = preferenceStore();
+    setPreferUpdate,
+  } = useUserPreferStore();
 
   // 설정된 선호 설정이 있을 시(preferenceStore의 데이터), 이 값들을 searchStore의 각 항목들에 넣어준다
   useEffect(() => {
     setInitailize();
     if (preferenceId) {
       setLocationTitle(regionAddress);
-      setAddress(regionId);
+      setAddress(address);
       setDeposit(0, preferenceDeposit);
       setRent(0, preferenceRent);
       setHomeType(preferenceType.indexOf("1"));

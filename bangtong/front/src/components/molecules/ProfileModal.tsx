@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import useUserStore from "../../store/userStore";
+import useUserStore, { useUserPreferStore } from "../../store/userStore";
 import { motion } from "framer-motion";
 
 // 아이콘
@@ -55,6 +55,7 @@ const ProfileModal: React.FC<ModalI> = ({
   };
 
   const { id } = useUserStore();
+  const { setPreferUpdate } = useUserPreferStore();
 
   // 모달창에 뜨기 위한 state
   const [preferenceName, setPreferenceName] = useState<string>("");
@@ -316,7 +317,7 @@ const ProfileModal: React.FC<ModalI> = ({
       preferenceStartDate: startDate,
       preferenceEndDate: endDate,
     };
-    setPreference(dataSet); // productSearchStore의 데이터를 이용해서 현재 선호설정 변경
+    setPreferUpdate(dataSet); // productSearchStore의 데이터를 이용해서 현재 선호설정 변경
     closeModal();
   };
 

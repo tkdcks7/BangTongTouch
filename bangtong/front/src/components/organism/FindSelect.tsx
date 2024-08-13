@@ -5,15 +5,14 @@ import { motion } from "framer-motion";
 
 // 컴포넌트 불러오기
 import TextBox from "../atoms/TextBox";
-import { Button, ConfigProvider, Input, Modal, Form, Space } from "antd";
+import { Button, ConfigProvider, Input, Form, Space } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 const FindSelectPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const [isIdModalOpen, setIsIdModalOpen] = useState(false);
+  // 아이디(이메일) 찾기를 했으면 mail을 알려주는 box를 보여준다.
   const [isMailChecked, setIsMailChecked] = useState<boolean>(false);
-  const [isAuthOpen, setIsAuthOpen] = useState<boolean>(false);
 
   const [phone, setPhone] = useState<string>("");
   const [maskedEmail, setMaskedEmail] = useState<string>("");
@@ -71,45 +70,25 @@ const FindSelectPage: React.FC = () => {
       .then((response) => {
         setIsIdAuthAtive(true);
       })
-      .catch((error) => console.log("에러발생", error));
-    setIsLoading(false);
+      .catch((error) => console.log("에러발생", error))
+      .finally(() => setIsLoading(false));
   };
 
   // 인증번호를 발송하여 맞는지 아닌지 확인
   const verifyAuthHandler = () => {
-    console.log("verify 시작");
-    console.log(`email: ${email} auth: ${auth}`);
     axios({
       method: "POST",
-      url: `${process.env.REACT_APP_BACKEND_URL}/emails/verify`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/emails/find/password`,
       data: { email, code: auth }, // 이메일, auth 전송.
     })
       .then((response) => {
-        console.log("여기까진 됨");
         if (response.data.data) {
-          // 비밀번호가 포함된 메일 발송
-          console.log("비밀번호 확인 진행");
-          axios({
-            method: "POST",
-            url: `${process.env.REACT_APP_BACKEND_URL}/emails/find/password`,
-            data: { email, code: auth }, // 이메일, auth 전송.
-          })
-            .then((response) => {
-              console.log("비밀번호 확인도 성공");
-              console.log(response);
-              if (response.data.data) {
-                navigate("/user/login");
-              } else {
-                console.log("오류 발생");
-              }
-            })
-            .catch((err) => console.log(err));
+          navigate("/user/login"); // 로그인 페이지로 이동
         } else {
-          console.log("false 나옴");
-          console.log(response);
+          console.log("오류 발생");
         }
-      }) // 비밀번호가 변경됨을 알리고 login page로 redirect
-      .catch((error) => console.log("에러발생", error));
+      })
+      .catch((err) => console.log(err));
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -271,11 +250,18 @@ const FindSelectPage: React.FC = () => {
 
         <div className="flex justify-center mt-5">
           {/* 이메일 확인이 끝날 시, "메일은 ~~~입니다." 라고 알려주는 div */}
-          <div
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 0.5,
+              delay: 0.1,
+              ease: [0, 0.7, 0.2, 1],
+            }}
             className={`flex justify-center mt-2 bg-yellow-200 text-center p-3 rounded-md shadow-md max-w-xs mx-auto ${isMailChecked ? "" : "hidden"}`}
           >
             <TextBox text={`이메일은 ${maskedEmail} 입니다.`} size="xl" />
-          </div>
+          </motion.div>
         </div>
         <div className="text-lime-500 text-sm md:text-base mt-3 text-center">
           <Link to={"/user/login"}>로그인 화면으로</Link>
