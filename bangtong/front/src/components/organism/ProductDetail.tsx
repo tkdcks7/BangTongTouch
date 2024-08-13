@@ -83,6 +83,8 @@ const ProductDetail: React.FC = () => {
   // 1:1 채팅 아이콘 hover 처리
   const [hover, setHover] = useState<boolean>(false);
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
   // 백엔드에서 상세 페이지 정보 받아오기
   useEffect(() => {
     const fetchData = async () => {

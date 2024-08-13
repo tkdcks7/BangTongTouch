@@ -30,7 +30,7 @@ const SubCommentInput: React.FC<SubCommentInputProps> = ({
       .catch((err) => console.log(err));
   };
   return (
-    <form className="border flex justify-between px-4">
+    <form className="border flex justify-between px-4 dark:text-black dark:bg-white">
       <input
         type="text"
         placeholder="대댓글을 입력해주세요."
