@@ -349,7 +349,7 @@ const ProfileModal: React.FC<ModalI> = ({
                     }}
                 >
                     <div
-                        className="w-80 relative px-5 py-10 border-2 rounded-xl shadow-md max-h-[80vh] overflow-y-auto">
+                        className="w-80 relative px-5 py-10 border-2 rounded-xl shadow-md max-h-[80vh] overflow-y-auto dark:bg-gray-800">
                         {/* 모달의 x버튼 */}
                         <div
                             className="absolute top-1 right-1 hover:cursor-pointer"

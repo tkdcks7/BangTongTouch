@@ -64,6 +64,8 @@ const ProductDetail: React.FC = () => {
   // state와 초기값 선언. 나중에 null, 0 혹은 빈 문자열로 바꿀거임.
   const [productInfo, setProductInfo] = useState(tempObj);
 
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
   // 백엔드에서 상세 페이지 정보 받아오기
   useEffect(() => {
     const fetchData = async () => {
@@ -224,7 +226,7 @@ const ProductDetail: React.FC = () => {
         {/* 구분선 */}
         <Devider />
         {/* 옵션 */}
-        <ProductOptions options={options} />
+        <ProductOptions options={options} dark={isDarkMode}/>
         {/* 구분선 */}
         <Devider />
         {/* 추가옵션 */}

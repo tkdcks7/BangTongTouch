@@ -11,12 +11,16 @@ import AirConditioner from "../../assets/Airconditioner.png";
 import Microwave from "../../assets/Microwave.png";
 import Bed from "../../assets/Bed.png";
 import Tv from "../../assets/Tv.png";
+import DarkModeTv from "../../assets/DarkModeTv.png";
+
 
 interface ProductProps {
   options: string;
+  dark: boolean;
+
 }
 
-const ProductOptions: React.FC<ProductProps> = ({ options }) => {
+const ProductOptions: React.FC<ProductProps> = ({ options, dark }) => {
   const optionList = [
     "텔레비전",
     "침대",
@@ -28,7 +32,7 @@ const ProductOptions: React.FC<ProductProps> = ({ options }) => {
   ];
 
   const iconList = [
-    Tv,
+    dark ? DarkModeTv : Tv,
     Bed,
     Microwave,
     AirConditioner,
@@ -36,6 +40,16 @@ const ProductOptions: React.FC<ProductProps> = ({ options }) => {
     Fridge,
     Stove,
   ];
+
+  // const darkModeIcon = [
+  //   DarkModeTv,
+  //   Bed,
+  //   Microwave,
+  //   AirConditioner,
+  //   WashingMachine,
+  //   Fridge,
+  //   Stove,
+  // ];
 
   const numberArray: number[] = [0, 0, 0, 0, 0, 0, 0];
 
