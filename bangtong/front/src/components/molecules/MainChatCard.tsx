@@ -3,7 +3,7 @@ import React from "react";
 // 컴포넌트
 import TextBox from "../atoms/TextBox";
 
-const ChatCard: React.FC = () => {
+const MainChatCard: React.FC = () => {
   return (
     <div className="p-5 border border-gray-300 flex flex-col items-center">
       <svg
@@ -31,4 +31,4 @@ const ChatCard: React.FC = () => {
   );
 };
 
-export default ChatCard;
+export default MainChatCard;
