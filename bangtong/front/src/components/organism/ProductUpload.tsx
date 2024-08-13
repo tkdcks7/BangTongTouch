@@ -213,19 +213,8 @@ const ProductUpload: React.FC = () => {
       );
     }
 
-    // 주소로 위경도 반환: CORS 에러 해결 필요
-    if (address) {
-      getUserAddressNum(address)
-        .then((res) => {
-          setCoordinate(res);
-        })
-        .catch((err) => console.log("위경도를 받아오지 못하고 있음!!!"));
-    } else {
-      window.alert("주소가 있어야 위도/경도를 반환할 수 있습니다.");
-    }
-
     const productUploadDto: ProductUploadDto = {
-      productType: "ONEROOM", // 지금 값을 입력할 컴포넌트 없음
+      productType: typeRoom, // 지금 값을 입력할 컴포넌트 없음
       productAddress: address,
       regionId, // daum postcode에서 나오는 bcode를 넣어줌.
       productDeposit: Number(deposit),
@@ -241,9 +230,12 @@ const ProductUpload: React.FC = () => {
       productStartDate: dayjs(date[0]).format("YYYY-MM-DD"),
       productEndDate: dayjs(date[1]).format("YYYY-MM-DD"),
       productDetailAddress: addressDetail,
-      lat: coordinate[0],
-      lng: coordinate[1],
+      lat: coordinate[1],
+      lng: coordinate[0],
     };
+
+    console.log("전송할 데이터를 출력합니다.");
+    console.log(productUploadDto);
 
     const formData = new FormData(); // formData 객체 생성
     const jsonBlob = new Blob([JSON.stringify(productUploadDto)], {
@@ -306,6 +298,17 @@ const ProductUpload: React.FC = () => {
       document.head.removeChild(style);
     };
   }, []);
+
+  useEffect(() => {
+    // 주소로 위경도 반환: CORS 에러 해결 필요
+    if (address) {
+      getUserAddressNum(address)
+        .then((res) => {
+          setCoordinate(res);
+        })
+        .catch((err) => console.log("위경도를 받아오지 못하고 있음!!!"));
+    }
+  }, [address]);
 
   return (
     <div className="mt-5 md:w-3/5 lg:w-2/5 mx-auto">
