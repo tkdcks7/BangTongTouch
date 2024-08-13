@@ -46,6 +46,7 @@ const VideoChat: React.FC = () => {
       });
 
       if (localVideoRef.current) {
+        console.log("localVideoRef.current: " + localVideoRef.current);
         localVideoRef.current.srcObject = stream;
       }
 
@@ -54,6 +55,7 @@ const VideoChat: React.FC = () => {
       });
 
       stream.getTracks().forEach((track) => {
+        console.log("track: " + track);
         peerConnectionRef.current?.addTrack(track, stream);
       });
 
