@@ -368,7 +368,7 @@ const ProductDetail: React.FC = () => {
               <Row className="items-center mt-10">
                 <Col span={24} className="text-xl flex items-center">
                   <span className="font-bold">기본 옵션 | </span>
-                  <ProductOptions options={options} isPc />
+                  <ProductOptions options={options} isPc  dark/>
                 </Col>
               </Row>
               <Row className="mt-10">
@@ -438,7 +438,7 @@ const ProductDetail: React.FC = () => {
           {/* 구분선 */}
           <Devider />
           {/* 옵션 */}
-          <ProductOptions options={options} isPc={false} />
+          <ProductOptions options={options} isPc={false}  dark/>
           {/* 구분선 */}
           <Devider />
           {/* 추가옵션 */}
