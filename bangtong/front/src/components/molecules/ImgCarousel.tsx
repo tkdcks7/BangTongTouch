@@ -20,12 +20,14 @@ interface imgSrcProps {
   imgSrcArray?: Array<string>; //전달 안했을 경우 디폴트 이미지로
   productId?: string; // 디테일페이지로 이동하기위한 PK
   isCanClick?: boolean; // 캐러셀 클릭 가능여부
+  isForChat?: boolean; // 채팅창에 나타낼 캐러셀인지
 }
 
 const ImgCarousel: React.FC<imgSrcProps> = ({
   imgSrcArray = [""],
   productId,
   isCanClick = true,
+  isForChat = false,
 }) => {
   const imgSrc: Array<string> = [];
   const navigate = useNavigate();

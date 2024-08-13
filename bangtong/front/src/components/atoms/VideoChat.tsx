@@ -14,6 +14,9 @@ const VideoChat: React.FC = () => {
     const setupConnection = async () => {
       await new Promise<void>((resolve) => {
         SocketService.connect();
+
+        console.log("setup connection");
+
         const checkConnection = setInterval(() => {
           if (SocketService.client.connected) {
             clearInterval(checkConnection);
@@ -56,6 +59,7 @@ const VideoChat: React.FC = () => {
 
       peerConnectionRef.current.ontrack = (event) => {
         console.log("Received remote track", event);
+
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = event.streams[0];
         }
