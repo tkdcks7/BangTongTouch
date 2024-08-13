@@ -2,12 +2,12 @@ import React from "react";
 
 // 컴포넌트
 import TextBox from "../atoms/TextBox";
-import ChatDetail from "./ChatDetail";
+import ChatBox from "../molecules/ChatBox";
 
 const ChatMain: React.FC = () => {
   return (
-    <div className="w-max">
-      <div className="md:hidden">
+    <>
+      <div className="md:hidden bg-white pb-5">
         <TextBox
           text="1:1 채팅 목록"
           color="lime-500"
@@ -15,8 +15,16 @@ const ChatMain: React.FC = () => {
           weight="bold"
         />
       </div>
-      <ChatDetail />
-    </div>
+      <div
+        className="w-[80vw] h-[70vh] overflow-auto md:hidden"
+        id="product-list"
+      >
+        <ChatBox />
+      </div>
+      <div className="w-[800px] h-[700px] justify-center items-center hidden md:flex">
+        <p className="text-2xl">채팅창을 선택해주세요.</p>
+      </div>
+    </>
   );
 };
 
