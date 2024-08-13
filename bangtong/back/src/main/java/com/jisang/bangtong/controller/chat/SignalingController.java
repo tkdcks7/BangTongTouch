@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SignalingController {
 
   private final Map<String, String> chatRoomToVideoRoom = new ConcurrentHashMap<>();
+  private final Map<String, Boolean> videoRoomInitiators = new ConcurrentHashMap<>();
 
   @MessageMapping("/create/video-room")
   @SendTo("/topic/video-room/created")
@@ -27,13 +28,23 @@ public class SignalingController {
 
   @MessageMapping("/join/video-room")
   @SendTo("/topic/video-room/joined")
-  public String joinVideoRoom(@Payload String chatRoomId) {
+  public Map<String, String> joinVideoRoom(@Payload String chatRoomId) {
     String videoRoomId = chatRoomToVideoRoom.get(chatRoomId);
+    boolean isInitiator = false;
+
     if (videoRoomId == null) {
-      videoRoomId = createVideoRoom(chatRoomId);
+      videoRoomId = generateUniqueKey();
+      chatRoomToVideoRoom.put(chatRoomId, videoRoomId);
+      videoRoomInitiators.put(videoRoomId, true);
+      isInitiator = true;
+    } else {
+      isInitiator = !videoRoomInitiators.get(videoRoomId);
+      videoRoomInitiators.put(videoRoomId, false);
     }
-    log.info("Joined video room {} for chat room {}", videoRoomId, chatRoomId);
-    return videoRoomId;
+
+    log.info("Joined video room {} for chat room {}. Initiator: {}", videoRoomId, chatRoomId,
+        isInitiator);
+    return Map.of("videoRoomId", videoRoomId, "isInitiator", Boolean.toString(isInitiator));
   }
 
   @MessageMapping("/peer/offer/{camKey}/{roomId}")

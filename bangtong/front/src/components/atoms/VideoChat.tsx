@@ -25,7 +25,14 @@ const VideoChat: React.FC = () => {
           }
         }, 100);
       });
-      setupWebRTC();
+
+      SocketService.subscribe(`/topic/video-room/joined`, (message) => {
+        const { videoRoomId, isInitiator } = JSON.parse(message.body);
+        setIsInitiator(isInitiator === "true");
+        setupWebRTC(isInitiator === "true");
+      });
+
+      SocketService.send("/app/join/video-room", roomId);
     };
 
     setupConnection();
@@ -38,7 +45,7 @@ const VideoChat: React.FC = () => {
     };
   }, [roomId]);
 
-  const setupWebRTC = async () => {
+  const setupWebRTC = async (isInitiator: boolean) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -78,6 +85,10 @@ const VideoChat: React.FC = () => {
     } catch (error) {
       console.error("Error setting up WebRTC:", error);
     }
+
+    if (isInitiator) {
+      createOffer();
+    }
   };
 
   const handleCallKey = (message: { body: string }) => {
@@ -85,11 +96,8 @@ const VideoChat: React.FC = () => {
     setCamKey(key);
     subscribeToRoom(key);
 
-    if (camKey !== null) {
-      setIsInitiator(key < camKey);
-      if (key < camKey) {
-        createOffer();
-      }
+    if (!isInitiator) {
+      createOffer();
     }
   };
 
