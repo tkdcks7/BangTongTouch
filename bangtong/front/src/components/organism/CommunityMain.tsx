@@ -133,6 +133,9 @@ const CommunityMain: React.FC = () => {
               width="100%"
               height="100%"
               setValue={setKeyword}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") onKeywordChange();
+              }}
               onIconClick={onKeywordChange}
             />
           </div>

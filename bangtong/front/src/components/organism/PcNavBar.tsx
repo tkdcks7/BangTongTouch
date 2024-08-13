@@ -90,7 +90,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
   return (
     <>
       <header
-        className={`flex justify-between items-center w-full p-5 mb-10 ${!dark ? "bg-gray-800 text-white" : "bg-white text-black"}`}
+        className={`flex justify-between items-center w-full p-5 mb-10 ${!dark ? "bg-white text-black" : "bg-gray-800 text-white"}`}
       >
         <Link to="/" className="text-start">
           <img src={Logo} alt="로고" className="w-40" />
@@ -105,16 +105,16 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
             방통터치
           </NavLink>
           <NavLink
-            className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"} ${dark ? "dark:text-white" : ""}`
-            }
-            to="/chats"
+              className={({ isActive }) =>
+                  `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"} `
+              }
+              to="/chats"
           >
             채팅
           </NavLink>
           <NavLink
             className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"} ${dark ? "dark:text-white" : ""}`
+              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"}`
             }
             to={`/profile/${id}`}
           >
@@ -122,7 +122,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
           </NavLink>
           <NavLink
             className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"} ${dark ? "dark:text-white" : ""}`
+              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"}`
             }
             to="/boards"
           >

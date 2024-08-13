@@ -83,19 +83,19 @@ const ChatDetail: React.FC = () => {
       })
         .then((response) => {
           console.log(response.data.data);
-          let userData: OpponentUser;
-          if (response.data.data.maker.userId === userId) {
-            userData = response.data.data.participant;
-          } else {
-            userData = response.data.data.maker;
-          }
-          setOpponentUser(userData);
-          setMessages(response.data.data.content);
+          // let userData: OpponentUser;
+          // if (response.data.data.maker.userId === userId) {
+          //   userData = response.data.data.participant;
+          // } else {
+          //   userData = response.data.data.maker;
+          // }
+          // setOpponentUser(userData);
+          // setMessages(response.data.data.content);
         })
         .catch((error) => {
           console.log(error);
-          alert("잘못된 접근입니다.");
-          navigate("/");
+          // alert("잘못된 접근입니다.");
+          // navigate("/");
         });
     };
 

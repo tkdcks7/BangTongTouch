@@ -208,4 +208,13 @@ public class UserService {
     return userRepository.findByUserPhone(phone);
   }
 
+  public boolean verifyPassword(Long userId, String password) {
+    User user = userRepository.findById(userId).orElse(null);
+
+    if (user == null) {
+      return false;
+    }
+
+    return password.equals(passwordEncoder.encode(user.getUserPassword()));
+  }
 }
