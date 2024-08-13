@@ -39,6 +39,7 @@
     "react-scripts": "5.0.1",
     "react-tailwindcss-datepicker": "^1.6.6",
     "simple-peer": "^9.11.1",
+    "socket.io-client": "^4.7.5",
     "sockjs-client": "^1.6.1",
     "tech-stack-icons": "^2.0.3",
     "typescript": "^4.9.5",
