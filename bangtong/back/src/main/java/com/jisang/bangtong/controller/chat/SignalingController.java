@@ -1,6 +1,11 @@
 package com.jisang.bangtong.controller.chat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
@@ -15,27 +20,42 @@ import org.springframework.web.bind.annotation.RestController;
 public class SignalingController {
 
   private final Map<String, String> chatRoomToVideoRoom = new ConcurrentHashMap<>();
-  private final Map<String, Boolean> videoRoomInitiators = new ConcurrentHashMap<>();
+  private final Map<String, Set<String>> videoRoomParticipants = new ConcurrentHashMap<>();
 
   @MessageMapping("/join/video-room")
   @SendTo("/topic/video-room/joined")
-  public Map<String, String> joinVideoRoom(@Payload String chatRoomId) {
-    String videoRoomId = chatRoomToVideoRoom.get(chatRoomId);
-    boolean isInitiator = false;
+  public synchronized Map<String, String> joinVideoRoom(@Payload String chatRoomId) {
+    String videoRoomId = chatRoomToVideoRoom.computeIfAbsent(chatRoomId, k -> generateUniqueKey());
 
-    if (videoRoomId == null) {
-      videoRoomId = generateUniqueKey();
-      chatRoomToVideoRoom.put(chatRoomId, videoRoomId);
-      videoRoomInitiators.put(videoRoomId, true);
-      isInitiator = true;
-    } else {
-      isInitiator = !videoRoomInitiators.get(videoRoomId);
-      videoRoomInitiators.put(videoRoomId, false);
-    }
+    Set<String> participants = videoRoomParticipants.computeIfAbsent(videoRoomId,
+        k -> new HashSet<>());
+    boolean isInitiator = participants.isEmpty();
+    participants.add(chatRoomId);
 
     log.info("Joined video room {} for chat room {}. Initiator: {}", videoRoomId, chatRoomId,
         isInitiator);
     return Map.of("videoRoomId", videoRoomId, "isInitiator", Boolean.toString(isInitiator));
+  }
+
+  @MessageMapping("/leave/video-room")
+  public void leaveVideoRoom(@Payload String payload) throws JsonProcessingException {
+    Map<String, String> data = new ObjectMapper().readValue(payload,
+        new TypeReference<Map<String, String>>() {
+        });
+    String chatRoomId = data.get("chatRoomId");
+    String videoRoomId = data.get("videoRoomId");
+
+    if (videoRoomId != null && chatRoomId != null) {
+      Set<String> participants = videoRoomParticipants.get(videoRoomId);
+      if (participants != null) {
+        participants.remove(chatRoomId);
+        if (participants.isEmpty()) {
+          videoRoomParticipants.remove(videoRoomId);
+          chatRoomToVideoRoom.remove(chatRoomId);
+        }
+      }
+    }
+    log.info("Left video room {} for chat room {}", videoRoomId, chatRoomId);
   }
 
   @MessageMapping("/peer/offer/{camKey}/{roomId}")
