@@ -4,6 +4,7 @@ import useUserStore, { useUserPreferStore } from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
 import { productSearchStore, preferenceStore } from "../../store/productStore";
 import { motion } from "framer-motion";
+import { useDaumPostcodePopup } from "react-daum-postcode";
 
 // 컴포넌트
 import PreferenceBox from "../molecules/PreferenceBox";
@@ -27,6 +28,9 @@ const PreferenceList: React.FC = () => {
   const navigate = useNavigate();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number>(0);
+
+  const [isAnimationCompleted, setIsAnimationCompleted] =
+    useState<boolean>(false);
 
   const { setPreferUpdate } = useUserPreferStore();
 
@@ -82,12 +86,16 @@ const PreferenceList: React.FC = () => {
       .catch((err) => console.log(err));
   };
 
+  // postcode 팝업
+  const open = useDaumPostcodePopup();
+
   // 선호 설정 적용하는 핸들러
   const handlePreferenceApplicate = (prefId: number) => {
     const selectedPreference = preferenceArr.find(
-      (el) => el.preferenceId === prefId
+      (el: any) => el.preferenceId === prefId
     );
     if (selectedPreference) {
+      // 주소검색 팝업 부분
       setPreferUpdate(selectedPreference);
     }
   };
@@ -101,10 +109,11 @@ const PreferenceList: React.FC = () => {
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{
-        duration: 0.8,
+        duration: 0.5,
         delay: 0.5,
         ease: [0, 0.7, 0.2, 1],
       }}
+      onAnimationComplete={() => setIsAnimationCompleted(true)}
     >
       <div className="w-full flex text-nowrap items-center justify-between mt-5">
         <h2 className="text-xl text-left text-lime-500 font-bold">
@@ -132,6 +141,7 @@ const PreferenceList: React.FC = () => {
             return (
               <PreferenceBox
                 key={idx}
+                delayOrd={idx}
                 preferenceId={pref.preferenceId}
                 preferenceName={pref.preferenceName}
                 preferenceDeposit={pref.preferenceDeposit}
@@ -140,6 +150,7 @@ const PreferenceList: React.FC = () => {
                 handlePreferenceDetail={handlePreferenceDetail}
                 handlePreferenceApplicate={handlePreferenceApplicate}
                 handlePreferenceDelete={handlePreferenceDelete}
+                isAnimationCompleted={isAnimationCompleted}
               />
             );
           })
