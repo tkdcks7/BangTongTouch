@@ -18,7 +18,7 @@ public interface ProductService {
 
   void update(ProductUpdateDto product, Long productId, HttpServletRequest request);
 
-  ProductReturnDtoWIthProfile getProduct(long productId);
+  ProductReturnDtoWIthProfile getProduct(long productId, HttpServletRequest request);
 
   List<ProductReturnDto> searchList(ProductSearchDto productSearchDto, HttpServletRequest request);
 
@@ -31,4 +31,6 @@ public interface ProductService {
   List<ProductReturnDto> getRecentProducts(HttpServletRequest request);
 
   InterestProductDto getInterestProduct(Long productId);
+
+  List<ProductReturnDto> getProductsByMaker(HttpServletRequest request);
 }

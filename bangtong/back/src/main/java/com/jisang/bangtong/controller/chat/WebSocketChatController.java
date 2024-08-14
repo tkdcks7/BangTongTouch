@@ -45,7 +45,7 @@ public class WebSocketChatController {
   public ResponseDto<String> greeting(@RequestBody Map<String, Object> chatdto) {
     log.info("greeting {}", chatdto);
 
-    Map<String, String> chat = (Map<String, String>) chatdto.get("chat");
+    Map<String, String> chat= (Map<String, String>) chatdto.get("chat");
 
     log.info("greeting {}", chat);
     SendDto sendDto = new SendDto();
@@ -63,14 +63,13 @@ public class WebSocketChatController {
       JSONObject jsonObject = new JSONObject();
       jsonObject.put("chatRoom", sendDto.getChatRoom());
       jsonObject.put("sender", sendDto.getSender());
-      jsonObject.put("chatMessage",
-          HtmlUtils.htmlEscape(sendDto.getChatMessage())); // escapes HTML characters
+      jsonObject.put("chatMessage", HtmlUtils.htmlEscape(sendDto.getChatMessage())); // escapes HTML characters
       jsonObject.put("chatTime", formatter.format(sendDto.getChatTime()));
 
 // Convert the JSONObject to a string
       String responseData = jsonObject.toString();
       return new ResponseDto<>("SUCCESS", responseData);
-    } catch (RuntimeException e) {
+    }catch (RuntimeException e){
       return new ResponseDto<>("ERROR", HtmlUtils.htmlEscape(decodeHtmlEntities(e.getMessage())));
     }
 

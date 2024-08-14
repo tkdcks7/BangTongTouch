@@ -145,7 +145,7 @@ const CommunityMain: React.FC = () => {
           {isLoaded && <ContentTable contents={contents} />}
           <div className="w-full p-2 mt-5 flex justify-end">
             <Link
-              className="bg-yellow-300 p-3 rounded-xl shadow-lg"
+              className="bg-yellow-300 p-3 rounded-xl shadow-lg hover:scale-110 ease-in duration-200"
               to={"write"}
             >
               <IconBtn imgSrc={Pencil} size={30} />

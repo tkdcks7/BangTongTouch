@@ -179,8 +179,8 @@ const Comment: React.FC<IComment> = ({
           }}
         />
       </Modal>
-      <div className="flex pl-1 py-0.5">
-        <div className="flex-initial text-sm w-12">
+      <div className="flex pl-1 py-0.5 items-center">
+        <div className="flex-initial text-base text-lime-600 me-3">
           {deleted === false ? iuser.nickname : "X"}
         </div>
         {isEditClicked === true ? (

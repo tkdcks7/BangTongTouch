@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import authAxios, { formDataAxios } from "../../utils/authAxios";
 import { getUserAddressNum } from "../../utils/services";
+import { motion } from "framer-motion";
 import dayjs from "dayjs";
 
 // 컴포넌트
@@ -74,7 +75,7 @@ const ProductUpload: React.FC = () => {
   const [maintanenceInfo, setMaintanenceInfo] = useState<string>("");
   const [area, setArea] = useState<string>("");
   const [typeRoom, setTypeRoom] = useState<string>("ONEROOM");
-  const [room, setRoom] = useState<number>(1);
+  const [room, setRoom] = useState<number>(0);
   const [furniture, setFurniture] = useState<string>("");
   const [furnitureList, setFurnitureList] = useState<string[]>([]);
   const [coordinate, setCoordinate] = useState<number[]>([]);
@@ -213,19 +214,8 @@ const ProductUpload: React.FC = () => {
       );
     }
 
-    // 주소로 위경도 반환: CORS 에러 해결 필요
-    if (address) {
-      getUserAddressNum(address)
-        .then((res) => {
-          setCoordinate(res);
-        })
-        .catch((err) => console.log("위경도를 받아오지 못하고 있음!!!"));
-    } else {
-      window.alert("주소가 있어야 위도/경도를 반환할 수 있습니다.");
-    }
-
     const productUploadDto: ProductUploadDto = {
-      productType: "ONEROOM", // 지금 값을 입력할 컴포넌트 없음
+      productType: typeRoom, // 지금 값을 입력할 컴포넌트 없음
       productAddress: address,
       regionId, // daum postcode에서 나오는 bcode를 넣어줌.
       productDeposit: Number(deposit),
@@ -241,9 +231,12 @@ const ProductUpload: React.FC = () => {
       productStartDate: dayjs(date[0]).format("YYYY-MM-DD"),
       productEndDate: dayjs(date[1]).format("YYYY-MM-DD"),
       productDetailAddress: addressDetail,
-      lat: coordinate[0],
-      lng: coordinate[1],
+      lat: coordinate[1],
+      lng: coordinate[0],
     };
+
+    console.log("전송할 데이터를 출력합니다.");
+    console.log(productUploadDto);
 
     const formData = new FormData(); // formData 객체 생성
     const jsonBlob = new Blob([JSON.stringify(productUploadDto)], {
@@ -279,7 +272,7 @@ const ProductUpload: React.FC = () => {
         if (id) {
           navigate(`/products/${id}`);
         } else {
-          navigate(`/products/${response.data.data.productId}`);
+          navigate(`../`);
         }
       })
       .catch((err) => console.log(err));
@@ -307,194 +300,278 @@ const ProductUpload: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // 주소로 위경도 반환: CORS 에러 해결 필요
+    if (address) {
+      getUserAddressNum(address)
+        .then((res) => {
+          setCoordinate(res);
+        })
+        .catch((err) => console.log("위경도를 받아오지 못하고 있음!!!"));
+    }
+  }, [address]);
+
   return (
     <div className="mt-5 md:w-3/5 lg:w-2/5 mx-auto">
       <h2 className="font-bold text-xl">매물 정보를 입력해주세요.</h2>
       <ConfigProvider theme={theme}>
         <Form id="input-container" className="mt-5">
-          <Form.Item required>
-            <Search
-              placeholder="주소"
-              size="large"
-              type="text"
-              value={address}
-              onSearch={handleAddressPopUp}
-            />
-          </Form.Item>
-          <Form.Item required>
-            <Input
-              placeholder="상세 주소를 입력해주세요"
-              size="large"
-              type="text"
-              value={addressDetail}
-              onChange={(e) => setAddressDetail(e.target.value)}
-            />
-          </Form.Item>
-          <div className="mb-5">
-            <RangePicker
-              size="large"
-              className="w-full"
-              placeholder={["승계 가능 일자", "계약 종료 일자"]}
-              value={date}
-              onCalendarChange={handleValueChange}
-            />
-          </div>
-          <div className="w-full flex justify-between">
+          <motion.div
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: "auto" }}
+            transition={{
+              duration: 1.2,
+              delay: 0.8,
+              ease: [0, 0.7, 0.2, 1],
+            }}
+          >
             <Form.Item required>
-              <Input
-                placeholder="보증금"
-                size="large"
-                type="number"
-                value={deposit}
-                onChange={(e) => setDeposit(e.target.value)}
-                suffix="만원"
-              />
-            </Form.Item>
-            <Form.Item required>
-              <Input
-                placeholder="월세"
+              <Search
+                placeholder="주소"
                 size="large"
                 type="text"
-                value={charge}
-                onChange={(e) => setCharge(e.target.value)}
-                suffix="만원"
+                value={address}
+                onSearch={handleAddressPopUp}
               />
             </Form.Item>
-          </div>
-          <div className="w-full flex justify-between">
-            <Form.Item required>
-              <Input
-                placeholder="관리비"
-                size="large"
-                type="text"
-                value={maintanence}
-                onChange={(e) => setMaintanence(e.target.value)}
-                suffix="만원"
-              />
-            </Form.Item>
-            <Form.Item required>
-              <Input
-                placeholder="관리비 항목"
-                size="large"
-                type="text"
-                className="w-60"
-                value={maintanenceInfo}
-                onChange={(e) => setMaintanenceInfo(e.target.value)}
-              />
-            </Form.Item>
-          </div>
-          <div className="w-full flex justify-between">
-            <Form.Item required>
-              <Input
-                placeholder="면적"
-                size="large"
-                type="text"
-                value={area}
-                onChange={(e) => setArea(e.target.value)}
-                suffix="m²"
-              />
-            </Form.Item>
-          </div>
-        </Form>
-
-        <div className="mt-5" id="roomType">
-          <p className="text-lg">방 유형</p>
-          <div className="flex justify-center items-center">
-            <Radio.Group onChange={handleTypeRoomOption} value={typeRoom}>
-              <Radio value={"ONEROOM"}>원룸</Radio>
-              <Radio value={"TWOROOM"}>투룸+</Radio>
-              <Radio value={"OFFICE"}>오피스텔</Radio>
-              <Radio value={"VILLA"}>빌라</Radio>
-              <Radio value={"APARTMENT"}>아파트</Radio>
-            </Radio.Group>
-          </div>
-        </div>
-        <div className="mt-5" id="how-many-room">
-          <p className="text-lg">방 갯수</p>
-          <div className="flex justify-center items-center">
-            <Radio.Group onChange={handleRoomOption} value={room}>
-              <Radio value={1}>1</Radio>
-              <Radio value={2}>2</Radio>
-              <Radio value={3}>3개 이상</Radio>
-            </Radio.Group>
-          </div>
-        </div>
-        <div className="mt-5" id="options">
-          <p className="text-lg">옵션</p>
-          <OptionBtnGroup />
-          {/* 추가 옵션 부분 */}
-          <div className="w-full mt-5">
-            <div className="flex flex-wrap justify-center">
-              {furnitureList.length > 0 ? (
-                furnitureList.map((opt: any) => {
-                  return (
-                    <div
-                      className={
-                        "flex items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
-                      }
-                      key={opt}
-                    >
-                      {opt}
-                      <CloseCircleOutlined
-                        onClick={() => hadleFurnitureRemove(opt)}
-                        className="cursor-pointer ms-3"
-                      />
-                    </div>
-                  );
-                })
-              ) : (
-                <p>등록된 가구가 없습니다.</p>
-              )}
-            </div>
-            <div className="mt-2">
-              {/* 희망 가구 옵션은 가구 icon을 버튼으로 만든 그룹을 컴포넌트로 만들어 활용 */}
-              <InputBox
-                placeholder="희망하는 가구 거래 품목을 입력해주세요."
-                type="text"
-                width={"auto"}
-                value={furniture}
-                onChange={(e) => setFurniture(e.target.value)}
-                onKeyDown={(e) => handleFurnitureAppend(e)}
-              />
-            </div>
-          </div>
-          <div id="attachment-group">
-            {imgFile.length ? (
-              <div className="flex justify-center items-center text-center mt-5 w-full h-12 bg-lime-200 rounded-lg">
-                {fileNameList.map((el, index) => (
-                  <button
-                    key={index}
-                    className={`mx-5 text-xs w-20 h-4/5 truncate border-2 border-yellow-200 rounded-md bg-yellow-100 hover:bg-yellow-300 transition-colors duration-200`}
-                    onClick={() => handleRemoveImage(index)}
-                  >
-                    {el}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-
-            <Attachment onFileChange={onFileChange} />
-          </div>
-          <div className={"text-center mt-5"}>
-            <Btn
-              text="등록하기"
-              backgroundColor="bg-yellow-300 hover:bg-yellow-400"
-              height="h-10"
-              onClick={handleUploadClick}
-            />
-            {id ? (
-              <>
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <Btn
-                  text="삭제하기"
-                  backgroundColor="bg-red-300 hover:bg-red-400"
-                  height="h-10"
-                  onClick={handleUploadClick}
+          </motion.div>
+          {address ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 0.8,
+                delay: 0.5,
+                ease: [0, 0.7, 0.2, 1],
+              }}
+            >
+              <Form.Item required>
+                <Input
+                  placeholder="상세 주소를 입력해주세요"
+                  size="large"
+                  type="text"
+                  value={addressDetail}
+                  onChange={(e) => setAddressDetail(e.target.value)}
                 />
-              </>
-            ) : null}
-          </div>
-        </div>
+              </Form.Item>
+            </motion.div>
+          ) : null}
+
+          {address ? (
+            <motion.div
+              className="mb-5"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                duration: 0.8,
+                delay: 0.5,
+                ease: [0, 0.7, 0.2, 1],
+              }}
+            >
+              <RangePicker
+                size="large"
+                className="w-full"
+                placeholder={["승계 가능 일자", "계약 종료 일자"]}
+                value={date}
+                onCalendarChange={handleValueChange}
+              />
+            </motion.div>
+          ) : null}
+
+          {date[1] ? (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              transition={{
+                duration: 3,
+                delay: 1.5,
+                ease: [0, 0.7, 0.2, 1],
+              }}
+            >
+              <div className="w-full flex justify-between">
+                <Form.Item required>
+                  <Input
+                    placeholder="보증금"
+                    size="large"
+                    type="number"
+                    value={deposit}
+                    onChange={(e) => setDeposit(e.target.value)}
+                    suffix="만원"
+                  />
+                </Form.Item>
+                <Form.Item required>
+                  <Input
+                    placeholder="월세"
+                    size="large"
+                    type="text"
+                    value={charge}
+                    onChange={(e) => setCharge(e.target.value)}
+                    suffix="만원"
+                  />
+                </Form.Item>
+              </div>
+              <div className="w-full flex justify-between">
+                <Form.Item required>
+                  <Input
+                    placeholder="관리비"
+                    size="large"
+                    type="text"
+                    value={maintanence}
+                    onChange={(e) => setMaintanence(e.target.value)}
+                    suffix="만원"
+                  />
+                </Form.Item>
+                <Form.Item required>
+                  <Input
+                    placeholder="관리비 항목"
+                    size="large"
+                    type="text"
+                    className="w-60"
+                    value={maintanenceInfo}
+                    onChange={(e) => setMaintanenceInfo(e.target.value)}
+                  />
+                </Form.Item>
+              </div>
+              <div className="w-full flex justify-between">
+                <Form.Item required>
+                  <Input
+                    placeholder="면적"
+                    size="large"
+                    type="text"
+                    value={area}
+                    onChange={(e) => setArea(e.target.value)}
+                    suffix="m²"
+                  />
+                </Form.Item>
+              </div>
+            </motion.div>
+          ) : null}
+        </Form>
+        {area.length > 1 ? (
+          <motion.div
+            className="mt-5"
+            id="roomType"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 1,
+              delay: 0.5,
+              ease: [0, 0.7, 0.2, 1],
+            }}
+          >
+            <p className="text-lg">주거 유형</p>
+            <div className="flex justify-center items-center">
+              <Radio.Group onChange={handleTypeRoomOption} value={typeRoom}>
+                <Radio value={"ONEROOM"}>원룸</Radio>
+                <Radio value={"TWOROOM"}>투룸+</Radio>
+                <Radio value={"OFFICE"}>오피스텔</Radio>
+                <Radio value={"VILLA"}>빌라</Radio>
+                <Radio value={"APARTMENT"}>아파트</Radio>
+              </Radio.Group>
+            </div>
+          </motion.div>
+        ) : null}
+
+        {area.length > 1 ? (
+          <motion.div
+            className="mt-5"
+            id="how-many-room"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 1,
+              delay: 1.5,
+              ease: [0, 0.7, 0.2, 1],
+            }}
+          >
+            <p className="text-lg">방 갯수</p>
+            <div className="flex justify-center items-center">
+              <Radio.Group onChange={handleRoomOption} value={room}>
+                <Radio value={1}>1</Radio>
+                <Radio value={2}>2</Radio>
+                <Radio value={3}>3개 이상</Radio>
+              </Radio.Group>
+            </div>
+          </motion.div>
+        ) : null}
+
+        {room ? (
+          <motion.div
+            className="mt-5"
+            id="options"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.5,
+              ease: [0, 0.7, 0.2, 1],
+            }}
+          >
+            <p className="text-lg">옵션</p>
+            <OptionBtnGroup />
+            {/* 추가 옵션 부분 */}
+            <div className="w-full mt-5">
+              <div className="flex flex-wrap justify-center">
+                {furnitureList.length > 0 ? (
+                  furnitureList.map((opt: any) => {
+                    return (
+                      <div
+                        className={
+                          "flex items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
+                        }
+                        key={opt}
+                      >
+                        {opt}
+                        <CloseCircleOutlined
+                          onClick={() => hadleFurnitureRemove(opt)}
+                          className="cursor-pointer ms-3"
+                        />
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p>등록된 가구가 없습니다.</p>
+                )}
+              </div>
+              <div className="mt-2">
+                {/* 희망 가구 옵션은 가구 icon을 버튼으로 만든 그룹을 컴포넌트로 만들어 활용 */}
+                <InputBox
+                  placeholder="희망하는 가구 거래 품목을 입력해주세요."
+                  type="text"
+                  width={"auto"}
+                  value={furniture}
+                  onChange={(e) => setFurniture(e.target.value)}
+                  onKeyDown={(e) => handleFurnitureAppend(e)}
+                />
+              </div>
+            </div>
+            <div id="attachment-group">
+              {imgFile.length ? (
+                <div className="flex justify-center items-center text-center mt-5 w-full h-12 bg-lime-200 rounded-lg">
+                  {fileNameList.map((el, index) => (
+                    <button
+                      key={index}
+                      className={`mx-5 text-xs w-20 h-4/5 truncate border-2 border-yellow-200 rounded-md bg-yellow-100 hover:bg-yellow-300 transition-colors duration-200`}
+                      onClick={() => handleRemoveImage(index)}
+                    >
+                      {el}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+
+              <Attachment onFileChange={onFileChange} />
+            </div>
+            <div className="text-center mt-5">
+              <Btn
+                text="등록하기"
+                backgroundColor="bg-yellow-300 hover:bg-yellow-400"
+                height="h-10"
+                onClick={handleUploadClick}
+              />
+            </div>
+          </motion.div>
+        ) : null}
       </ConfigProvider>
       <div className="h-24" />
     </div>
