@@ -23,6 +23,7 @@ const io = new Server(server, {
 
 // 기본 경로에 대해 간단한 응답
 app.get('/', (req, res) => {
+  console.log("test")
   res.send('WebRTC signaling server is running.');
 });
 
