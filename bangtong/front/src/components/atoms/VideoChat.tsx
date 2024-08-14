@@ -16,7 +16,7 @@ const VideoChat: React.FC = () => {
     const setupConnection = async () => {
       await new Promise<void>((resolve) => {
         SocketService.connect();
-        console.log("setup connection");
+        console.log("Setting up connection");
         const checkConnection = setInterval(() => {
           if (SocketService.client.connected) {
             clearInterval(checkConnection);
@@ -27,6 +27,9 @@ const VideoChat: React.FC = () => {
 
       SocketService.subscribe(`/topic/video-room/joined`, (message) => {
         const { videoRoomId, isInitiator } = JSON.parse(message.body);
+        console.log(
+          `Joined video room ${videoRoomId}. Initiator: ${isInitiator}`,
+        );
         setIsInitiator(isInitiator === "true");
         setupWebRTC(isInitiator === "true");
       });
@@ -40,12 +43,19 @@ const VideoChat: React.FC = () => {
       if (peerConnectionRef.current) {
         peerConnectionRef.current.close();
       }
+      if (camKey) {
+        SocketService.send(
+          "/app/leave/video-room",
+          JSON.stringify({ chatRoomId: roomId, videoRoomId: camKey }),
+        );
+      }
       SocketService.disconnect();
     };
   }, [roomId]);
 
   const setupWebRTC = async (initiator: boolean) => {
     try {
+      console.log("initiator: " + initiator);
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
