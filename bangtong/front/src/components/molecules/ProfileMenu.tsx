@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Accordion } from "@szhsin/react-accordion";
 import { NavLink } from "react-router-dom";
 import useUserStore from "../../store/userStore";
@@ -13,17 +13,6 @@ import axios from "axios";
 
 const ProfileMenu: React.FC = () => {
   const { id } = useUserStore();
-
-  useEffect(() => {
-    axios({
-      method: "GET",
-      url: `${process.env.REACT_APP_BACKEND_URL}/interests/${id}`,
-    })
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => console.log(err));
-  }, []);
 
   return (
     <div className="mx-2 my-4">

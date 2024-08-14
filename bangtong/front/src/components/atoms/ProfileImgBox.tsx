@@ -30,7 +30,7 @@ const ProfileImgBox: React.FC<ImageWithFallbackProps> = ({
         onError={handleError}
         className="rounded-full me-10"
         style={{ display: isLoaded ? "block" : "none" }}
-        onClick={() => navigate(`profile/${profileId}`)}
+        onClick={() => navigate(`/profile/${profileId}`)}
       />
       {!isLoaded && (
         <img

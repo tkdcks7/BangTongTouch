@@ -53,7 +53,7 @@ const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
       }
 
       SocketService.subscribe("/topic/video-room/joined", (message) => {
-        const videoRoomId = message.body;
+        const { videoRoomId, isInitiator } = JSON.parse(message.body);
         navigate(`/chats/videochat/${videoRoomId}`);
       });
 

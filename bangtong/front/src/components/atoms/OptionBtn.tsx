@@ -45,8 +45,8 @@ const OptionBtn: React.FC<BtnProps> = ({ text, ...props }) => {
     <button
       onClick={() => setProductOption(text)}
       className={
-        "flex flex-col items-center border border-lime-500 rounded-full m-1 px-3 py-2 " +
-        (optionObj[text] ? " bg-lime-500 text-white" : "text-lime-500 bg-white")
+        "flex flex-col items-center border font-bold hover:bg-lime-300 transition-colors duration-200 border-lime-500 rounded-lg m-1 px-3 py-2 " +
+        (optionObj[text] ? " bg-lime-300 text-white" : "text-lime-500 bg-white")
       }
     >
       <img src={imgSrc} alt="" className="w-8 h-8" />

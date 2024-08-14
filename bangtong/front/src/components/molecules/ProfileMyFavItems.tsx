@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-// 데이터
-import { usersFavItems } from "../../data"; // 유저의 관심 매물 (더미데이터)
+// Store
+import useUserStore from "../../store/userStore";
 
 // 이미지 소스
 import defaultRoom from "../../assets/Room1.jpg";
+import axios from "axios";
 
 const ProfileMyFavItems: React.FC = () => {
+  const [favItems, setFavItems] = useState<any>([]);
+  const { id } = useUserStore();
+
   const roomType: { [key: string]: string } = {
     ONEROOM: "원룸",
     TWOROOM: "투룸",
@@ -16,24 +20,45 @@ const ProfileMyFavItems: React.FC = () => {
     APART: "아파트",
   };
 
+  useEffect(() => {
+    axios({
+      method: "GET",
+      url: `${process.env.REACT_APP_BACKEND_URL}/interests/${id}`,
+    })
+      .then((res) => {
+        console.log(res);
+        setFavItems(res.data.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   return (
     <div className="flex flex-wrap justify-center">
-      {usersFavItems.map((item) => (
-        <div className="me-3" key={item.data.productId}>
-          <Link to={`/products/${item.data.productId}`}>
-            <img
-              src={defaultRoom}
-              alt="관심매물 사진"
-              width={120}
-              className="rounded-xl"
-            />
-          </Link>
-          <div>
-            <p className="text-sm dark:text-white">{`${item.data.boardRegion.regionDong} ${roomType[item.data.productType]}`}</p>
-            <p className="text-sm dark:text-white">{`${item.data.productDeposit}/${item.data.productRent}`}</p>
+      {favItems &&
+        favItems.map((item: any) => (
+          <div className="me-3" key={item?.productReturnDto?.productId}>
+            <Link to={`/products/${item?.productReturnDto?.productId}`}>
+              <img
+                src={
+                  item?.productReturnDto?.mediaList.length !== 0
+                    ? item?.productReturnDto?.mediaList[0]
+                    : defaultRoom
+                }
+                alt="관심매물 사진"
+                width={120}
+                className="rounded-xl"
+              />
+            </Link>
+            <div className="text-center">
+              <p className="text-sm dark:text-white">
+                {`${item?.productReturnDto?.regionReturnDto?.regionDong || "Unknown Location"} ${roomType[item?.productReturnDto?.productType] || "Unknown Type"}`}
+              </p>
+              <p className="text-sm dark:text-white">
+                {`${item?.productReturnDto?.productDeposit || 0}/${item?.productReturnDto?.productRent || 0}`}
+              </p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
     </div>
   );
 };

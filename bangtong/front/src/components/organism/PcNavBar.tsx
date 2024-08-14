@@ -98,23 +98,23 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
         <div className="flex items-center justify-between">
           <NavLink
             className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"} `
+              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-colors duration-300 ${isActive ? "text-black dark:text-white" : "text-gray-400"} `
             }
             to="/products"
           >
             방통터치
           </NavLink>
           <NavLink
-              className={({ isActive }) =>
-                  `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"} `
-              }
-              to="/chats"
+            className={({ isActive }) =>
+              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-colors duration-300 ${isActive ? "text-black dark:text-white" : "text-gray-400"} `
+            }
+            to="/chats"
           >
             채팅
           </NavLink>
           <NavLink
             className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"}`
+              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-colors duration-300 ${isActive ? "text-black dark:text-white" : "text-gray-400"}`
             }
             to={`/profile/${id}`}
           >
@@ -122,7 +122,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
           </NavLink>
           <NavLink
             className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap ${isActive ? "text-black dark:text-white" : "text-gray-400"}`
+              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-colors duration-300 ${isActive ? "text-black dark:text-white" : "text-gray-400"}`
             }
             to="/boards"
           >
@@ -139,7 +139,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
                   count={token ? useAlarmInfoStore.getState().alarmNum : null}
                   className="hover:cursor-pointer"
                 >
-                  <BellOutlined className="text-xl dark:text-white"/>
+                  <BellOutlined className="text-xl dark:text-white" />
                 </Badge>
               </Dropdown>
             ) : (
