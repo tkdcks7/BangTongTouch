@@ -1,96 +1,226 @@
-import React, { useEffect, useRef } from "react";
-import { io, Socket } from "socket.io-client";
+// VideoChat.tsx
+import React, { useEffect, useRef, useState } from "react";
+import SocketService from "../../utils/SocketService";
+import { useNavigate, useParams } from "react-router-dom";
 
-const WebRTCComponent = () => {
+const VideoChat: React.FC = () => {
+  const { roomId } = useParams<{ roomId: string }>();
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const socketRef = useRef<Socket | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+  const [camKey, setCamKey] = useState<string | null>(null);
+  const [isInitiator, setIsInitiator] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Socket.io 연결
-    socketRef.current = io("http://localhost:4000");
+    const setupConnection = async () => {
+      await new Promise<void>((resolve) => {
+        SocketService.connect();
+        console.log("setup connection");
+        const checkConnection = setInterval(() => {
+          if (SocketService.client.connected) {
+            clearInterval(checkConnection);
+            resolve();
+          }
+        }, 100);
+      });
 
-    // PeerConnection 설정
-    peerConnectionRef.current = new RTCPeerConnection();
+      SocketService.subscribe(`/topic/video-room/joined`, (message) => {
+        const { videoRoomId, isInitiator } = JSON.parse(message.body);
+        setIsInitiator(isInitiator === "true");
+        setupWebRTC(isInitiator === "true");
+      });
 
-    peerConnectionRef.current.onicecandidate = (event) => {
-      if (event.candidate) {
-        socketRef.current?.emit("candidate", event.candidate);
-      }
+      SocketService.send("/app/join/video-room", roomId);
     };
 
-    peerConnectionRef.current.ontrack = (event) => {
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = event.streams[0];
+    setupConnection();
+
+    return () => {
+      if (peerConnectionRef.current) {
+        peerConnectionRef.current.close();
       }
+      SocketService.disconnect();
     };
+  }, [roomId]);
 
-    // 클라이언트 시그널링 핸들링
-    socketRef.current.on("offer", async (data: any) => {
-      if (peerConnectionRef.current) {
-        await peerConnectionRef.current.setRemoteDescription(
-          new RTCSessionDescription(data),
-        );
-        const answer = await peerConnectionRef.current.createAnswer();
-        await peerConnectionRef.current.setLocalDescription(answer);
-        socketRef.current?.emit("answer", answer);
-      }
-    });
-
-    socketRef.current.on("answer", async (data: any) => {
-      if (peerConnectionRef.current) {
-        await peerConnectionRef.current.setRemoteDescription(
-          new RTCSessionDescription(data),
-        );
-      }
-    });
-
-    socketRef.current.on("candidate", async (data: any) => {
-      if (peerConnectionRef.current) {
-        await peerConnectionRef.current.addIceCandidate(
-          new RTCIceCandidate(data),
-        );
-      }
-    });
-
-    // 로컬 미디어 스트림 가져오기
-    const startMediaStream = async () => {
+  const setupWebRTC = async (initiator: boolean) => {
+    try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
+
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
+
+      peerConnectionRef.current = new RTCPeerConnection({
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+      });
+
       stream.getTracks().forEach((track) => {
         peerConnectionRef.current?.addTrack(track, stream);
       });
-    };
 
-    startMediaStream();
+      peerConnectionRef.current.ontrack = (event) => {
+        console.log("Received remote track", event);
+        if (remoteVideoRef.current && event.streams && event.streams[0]) {
+          remoteVideoRef.current.srcObject = event.streams[0];
+        }
+      };
 
-    return () => {
-      socketRef.current?.disconnect();
-      peerConnectionRef.current?.close();
-    };
-  }, []);
+      peerConnectionRef.current.onicecandidate = (event) => {
+        if (event.candidate && camKey) {
+          SocketService.send(
+            `/app/peer/iceCandidate/${camKey}/${roomId}`,
+            JSON.stringify(event.candidate),
+          );
+        }
+      };
 
-  const createOffer = async () => {
-    if (peerConnectionRef.current) {
-      const offer = await peerConnectionRef.current.createOffer();
-      await peerConnectionRef.current.setLocalDescription(offer);
-      socketRef.current?.emit("offer", offer);
+      SocketService.subscribe("/topic/call/key", handleCallKey);
+      SocketService.send("/app/send/key", JSON.stringify({ roomId }));
+
+      if (initiator) {
+        createOffer();
+      }
+    } catch (error) {
+      console.error("Error setting up WebRTC:", error);
     }
   };
 
+  const handleCallKey = (message: { body: string }) => {
+    const parsedBody = JSON.parse(JSON.parse(message.body));
+    const key = parsedBody.roomId;
+
+    console.log(key);
+
+    setCamKey(key);
+    subscribeToRoom(key);
+
+    if (!isInitiator) {
+      createOffer();
+    }
+  };
+
+  const subscribeToRoom = (key: string) => {
+    SocketService.subscribe(`/topic/peer/offer/${key}/${roomId}`, handleOffer);
+    SocketService.subscribe(
+      `/topic/peer/answer/${key}/${roomId}`,
+      handleAnswer,
+    );
+    SocketService.subscribe(
+      `/topic/peer/iceCandidate/${key}/${roomId}`,
+      handleIceCandidate,
+    );
+  };
+
+  const createOffer = async () => {
+    if (!peerConnectionRef.current || !camKey) return;
+    try {
+      const offer = await peerConnectionRef.current.createOffer();
+      await peerConnectionRef.current.setLocalDescription(offer);
+      SocketService.send(
+        `/app/peer/offer/${camKey}/${roomId}`,
+        JSON.stringify(offer),
+      );
+    } catch (error) {
+      console.error("Error creating offer:", error);
+    }
+  };
+
+  const handleOffer = async (message: { body: string }) => {
+    if (!peerConnectionRef.current || !camKey) return;
+    try {
+      const offer = JSON.parse(message.body);
+      await peerConnectionRef.current.setRemoteDescription(
+        new RTCSessionDescription(offer),
+      );
+      const answer = await peerConnectionRef.current.createAnswer();
+      await peerConnectionRef.current.setLocalDescription(answer);
+      SocketService.send(
+        `/app/peer/answer/${camKey}/${roomId}`,
+        JSON.stringify(answer),
+      );
+    } catch (error) {
+      console.error("Error handling offer:", error);
+    }
+  };
+
+  const handleAnswer = async (message: { body: string }) => {
+    if (!peerConnectionRef.current) return;
+
+    try {
+      const answer = JSON.parse(message.body);
+      console.log("Received remote answer:", answer);
+
+      await peerConnectionRef.current.setRemoteDescription(
+        new RTCSessionDescription(answer),
+      );
+    } catch (error) {
+      console.error("Error handling answer:", error);
+    }
+  };
+
+  const handleIceCandidate = (message: { body: string }) => {
+    if (!peerConnectionRef.current) return;
+
+    try {
+      const cc = JSON.parse(JSON.parse(message.body));
+      console.log(cc);
+      // console.log(cc.candidate);
+
+      peerConnectionRef.current.addIceCandidate(
+        new RTCIceCandidate({
+          candidate: cc.candidate,
+          sdpMid: cc.sdpMid,
+          sdpMLineIndex: cc.sdpMLineIndex,
+          usernameFragment: cc.usernameFragment,
+        }),
+      );
+    } catch (error) {
+      console.error("Error handling ICE candidate:", error);
+    }
+  };
+
+  const leaveChat = () => {
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+    }
+    SocketService.disconnect();
+    navigate("/");
+  };
+
   return (
-    <div>
-      <video ref={localVideoRef} autoPlay playsInline></video>
-      <video ref={remoteVideoRef} autoPlay playsInline></video>
-      <button onClick={createOffer}>Call</button>
+    <div className="video-chat-container">
+      <h2>Video Chat Room: {roomId}</h2>
+      <button onClick={leaveChat}>Leave Chat</button>
+      <div className="video-container">
+        <div>
+          <h3>Local Video</h3>
+          <video
+            ref={localVideoRef}
+            autoPlay
+            muted
+            playsInline
+            className="scale-x-[-1]"
+            width="300px"
+          />
+        </div>
+        <div>
+          <h3>Remote Video</h3>
+          <video
+            ref={remoteVideoRef}
+            autoPlay
+            playsInline
+            className="scale-x-[-1]"
+            width="300px"
+          />
+        </div>
+      </div>
     </div>
   );
 };
 
-export default WebRTCComponent;
+export default VideoChat;
