@@ -327,7 +327,7 @@ const ProductUpload: React.FC = () => {
           >
             <Form.Item required>
               <Search
-                placeholder="주소"
+                placeholder="돋보기를 눌러 주소를 입력해 주세요"
                 size="large"
                 type="text"
                 value={address}
@@ -459,7 +459,7 @@ const ProductUpload: React.FC = () => {
               ease: [0, 0.7, 0.2, 1],
             }}
           >
-            <p className="text-lg">주거 유형</p>
+            <p className="font-bold text-lg">주거 유형</p>
             <div className="flex justify-center items-center">
               <Radio.Group onChange={handleTypeRoomOption} value={typeRoom}>
                 <Radio value={"ONEROOM"}>원룸</Radio>
@@ -484,7 +484,7 @@ const ProductUpload: React.FC = () => {
               ease: [0, 0.7, 0.2, 1],
             }}
           >
-            <p className="text-lg">방 갯수</p>
+            <p className="font-bold text-lg">방 갯수</p>
             <div className="flex justify-center items-center">
               <Radio.Group onChange={handleRoomOption} value={room}>
                 <Radio value={1}>1</Radio>
@@ -507,30 +507,47 @@ const ProductUpload: React.FC = () => {
               ease: [0, 0.7, 0.2, 1],
             }}
           >
-            <p className="text-lg">옵션</p>
+            <p className="font-bold text-lg">옵션</p>
             <OptionBtnGroup />
             {/* 추가 옵션 부분 */}
             <div className="w-full mt-5">
               <div className="flex flex-wrap justify-center">
                 {furnitureList.length > 0 ? (
-                  furnitureList.map((opt: any) => {
-                    return (
-                      <div
-                        className={
-                          "flex items-center border border-lime-500 rounded-full m-1 px-3 py-1 text-lime-500 bg-white"
-                        }
-                        key={opt}
-                      >
-                        {opt}
-                        <CloseCircleOutlined
-                          onClick={() => hadleFurnitureRemove(opt)}
-                          className="cursor-pointer ms-3"
-                        />
-                      </div>
-                    );
-                  })
+                  <motion.div
+                    className="flex justify-center mx-auto items-center text-center mt-5 w-full h-12 bg-yellow-200 rounded-lg"
+                    initial={{ width: "0%" }} // 초기 상태에서 width가 0%
+                    animate={{ width: "100%" }}
+                    transition={{
+                      duration: 0.8,
+                      ease: "easeOut", // 애니메이션의 속도 곡선
+                    }}
+                  >
+                    {furnitureList.map((opt: any) => {
+                      return (
+                        <motion.div
+                          className={
+                            "flex items-center border font-bold border-lime-500 rounded-lg m-1 px-3 py-1 text-lime-500 bg-lime-100"
+                          }
+                          key={opt}
+                          initial={{ scale: 0 }} // 초기 상태에서 width가 0%
+                          animate={{ scale: 1 }}
+                          transition={{
+                            duration: 0.5,
+                            delay: 0.8,
+                            ease: "easeOut", // 애니메이션의 속도 곡선
+                          }}
+                        >
+                          {opt}
+                          <CloseCircleOutlined
+                            onClick={() => hadleFurnitureRemove(opt)}
+                            className="cursor-pointer ms-3"
+                          />
+                        </motion.div>
+                      );
+                    })}
+                  </motion.div>
                 ) : (
-                  <p>등록된 가구가 없습니다.</p>
+                  <p className="">등록된 가구가 없습니다.</p>
                 )}
               </div>
               <div className="mt-2">

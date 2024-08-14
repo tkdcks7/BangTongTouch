@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import useUserStore from "../../store/userStore";
 
 // 컴포넌트 불러오기
 import TextBox from "../atoms/TextBox";
@@ -9,6 +10,34 @@ import { Form, Input, ConfigProvider, Button } from "antd";
 
 // 아이콘
 import { LoadingOutlined } from "@ant-design/icons";
+
+// 닉네임 생성용 배열 만들기
+const animalArr = [
+  "생쥐",
+  "송아지",
+  "호랑이",
+  "토끼",
+  "용용이",
+  "구렁이",
+  "망아지",
+  "양양이",
+  "원숭이",
+  "병아리",
+  "댕댕이",
+  "도야지",
+];
+const adjectiveArr = [
+  "귀여운",
+  "구슬픈",
+  "활기찬",
+  "활발한",
+  "침착한",
+  "냉정한",
+  "피곤한",
+  "신난",
+  "멍한",
+  "맹렬한",
+];
 
 const SignupPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -23,34 +52,7 @@ const SignupPage: React.FC = () => {
   const [form] = Form.useForm();
 
   const navigate = useNavigate();
-
-  // 닉네임 생성용 배열 만들기
-  const animalArr = [
-    "생쥐",
-    "송아지",
-    "호랑이",
-    "토끼",
-    "용용이",
-    "구렁이",
-    "망아지",
-    "양양이",
-    "원숭이",
-    "병아리",
-    "댕댕이",
-    "도야지",
-  ];
-  const adjectiveArr = [
-    "귀여운",
-    "구슬픈",
-    "활기찬",
-    "활발한",
-    "침착한",
-    "냉정한",
-    "피곤한",
-    "신난",
-    "멍한",
-    "맹렬한",
-  ];
+  const { setInfoUpdate, setToken } = useUserStore();
 
   // 랜덤 양의 정수 생성함수
   const randInt = (max: number): number => {
@@ -62,6 +64,26 @@ const SignupPage: React.FC = () => {
     return (
       adjectiveArr[randInt(10)] + animalArr[randInt(12)] + String(randInt(1000))
     );
+  };
+
+  // 회원가입 직후 로그인함수
+  const handleLogInAfterSignUp = (): void => {
+    const payload = {
+      username: email,
+      password: password,
+    };
+    axios({
+      method: "POST",
+      url: `${process.env.REACT_APP_BACKEND_URL}/users/login`,
+      data: payload,
+    })
+      .then((response) => {
+        const infoObj = response.data.data;
+        infoObj.email = email; // 본인이 입력한 이메일 추가
+        setInfoUpdate(infoObj);
+        setToken(response.headers.authorization);
+      })
+      .catch((error) => console.log("전송 실패", error));
   };
 
   // 일반 회원가입 함수
@@ -92,9 +114,8 @@ const SignupPage: React.FC = () => {
         nickname: nickNameCreate(),
       },
     })
-      .then((response) => {
-        console.log("성공적으로 전송됐습니다.", response.data);
-        alert("회원 가입이 완료됐습니다."); // 확인용. refactoring 시 지울 것
+      .then(() => {
+        handleLogInAfterSignUp(); // 회원가입 직후 로그인
         navigate("/search"); // 첫 선호 옵션 생성 페이지로 이동
       })
       .catch((err) => console.log(err));

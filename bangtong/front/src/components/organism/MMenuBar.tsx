@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import authAxios from "../../utils/authAxios";
 
 // 컴포넌트 불러오기
@@ -25,6 +25,7 @@ interface MMenuBarProps {
 
 const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { alarms, setAlarmDelete } = useAlarmInfoStore();
   const { token, id, setLogOut } = useUserStore();
   const { reSetPreference } = preferenceStore();
@@ -116,6 +117,9 @@ const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
     }
   }, []);
 
+  const floatButtonClass =
+      location.pathname.slice(1,7) === "chats/" && !isNaN(Number(location.pathname.slice(7))) ? { insetInlineEnd: 24, bottom: 140 } : { insetInlineEnd: 24, bottom: 100 };
+
   return (
     <>
       <div className="flex justify-end items-center w-screen p-2">
@@ -125,7 +129,7 @@ const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
               count={token ? useAlarmInfoStore.getState().alarmNum : null}
               className="hover:cursor-pointer"
             >
-              <BellOutlined className="text-2xl" />
+              <BellOutlined className="text-2xl dark:text-white" />
             </Badge>
           </Dropdown>
         ) : (
@@ -140,7 +144,7 @@ const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
         <div className="mx-3">
           <Dropdown menu={menuProps} trigger={["click"]}>
             <Button type="text" size="small">
-              <MenuOutlined className="text-2xl" />
+              <MenuOutlined className="text-2xl dark:text-white" />
             </Button>
           </Dropdown>
         </div>
@@ -152,7 +156,7 @@ const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
           <div>{dark ? "Switch to Dark Mode" : "Switch to Light Mode"}</div>
         }
         className={"bg-yellow-300"}
-        style={{ insetInlineEnd: 24, bottom: 82 }}
+        style={floatButtonClass}
       />
     </>
   );

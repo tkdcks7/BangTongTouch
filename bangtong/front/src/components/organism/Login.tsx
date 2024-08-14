@@ -1,21 +1,18 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { motion } from "framer-motion";
 import useUserStore from "../../store/userStore";
 
 // 컴포넌트 불러오기
-import { Form, Input, Button, message, ConfigProvider } from "antd";
-import TextBox from "../atoms/TextBox";
-import InputBox from "../molecules/InputBox";
+import { Button, ConfigProvider, Form, Input } from "antd";
 import IconBtn from "../atoms/IconBtn";
-import Btn from "../atoms/Btn";
+import TextBox from "../atoms/TextBox";
 
 // 이미지 소스
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import Google from "../../assets/GoogleSocial.png";
 import Kakao from "../../assets/KakaoSocial.png";
 import Naver from "../../assets/NaverSocial.png";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -86,17 +83,15 @@ const LoginPage: React.FC = () => {
       username: email,
       password: password,
     };
-    console.log(payload);
     axios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/users/login`,
       data: payload,
     })
       .then((response) => {
-        console.log(response, "response입니다.");
-        console.log(response.config.data, "성공적으로 전송됨");
-        console.log(response.headers);
-        setInfoUpdate(response.data.data);
+        const infoObj = response.data.data;
+        infoObj.email = email; // 본인이 입력한 이메일 추가
+        setInfoUpdate(infoObj);
         setToken(response.headers.authorization);
         navigate("../../");
       })
