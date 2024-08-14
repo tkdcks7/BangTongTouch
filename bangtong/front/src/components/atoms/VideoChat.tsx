@@ -1,6 +1,7 @@
+// VideoChat.tsx
 import React, { useEffect, useRef, useState } from "react";
 import SocketService from "../../utils/SocketService";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const VideoChat: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
@@ -9,14 +10,13 @@ const VideoChat: React.FC = () => {
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const [camKey, setCamKey] = useState<string | null>(null);
   const [isInitiator, setIsInitiator] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const setupConnection = async () => {
       await new Promise<void>((resolve) => {
         SocketService.connect();
-
         console.log("setup connection");
-
         const checkConnection = setInterval(() => {
           if (SocketService.client.connected) {
             clearInterval(checkConnection);
@@ -25,7 +25,13 @@ const VideoChat: React.FC = () => {
         }, 100);
       });
 
-      setupWebRTC();
+      SocketService.subscribe(`/topic/video-room/joined`, (message) => {
+        const { videoRoomId, isInitiator } = JSON.parse(message.body);
+        setIsInitiator(isInitiator === "true");
+        setupWebRTC(isInitiator === "true");
+      });
+
+      SocketService.send("/app/join/video-room", roomId);
     };
 
     setupConnection();
@@ -38,7 +44,7 @@ const VideoChat: React.FC = () => {
     };
   }, [roomId]);
 
-  const setupWebRTC = async () => {
+  const setupWebRTC = async (initiator: boolean) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
@@ -59,8 +65,7 @@ const VideoChat: React.FC = () => {
 
       peerConnectionRef.current.ontrack = (event) => {
         console.log("Received remote track", event);
-
-        if (remoteVideoRef.current) {
+        if (remoteVideoRef.current && event.streams && event.streams[0]) {
           remoteVideoRef.current.srcObject = event.streams[0];
         }
       };
@@ -74,32 +79,28 @@ const VideoChat: React.FC = () => {
         }
       };
 
-      peerConnectionRef.current.onconnectionstatechange = () => {
-        console.log(
-          "Connection state:",
-          peerConnectionRef.current?.connectionState,
-        );
-      };
-
       SocketService.subscribe("/topic/call/key", handleCallKey);
       SocketService.send("/app/send/key", JSON.stringify({ roomId }));
+
+      if (initiator) {
+        createOffer();
+      }
     } catch (error) {
       console.error("Error setting up WebRTC:", error);
     }
   };
 
   const handleCallKey = (message: { body: string }) => {
-    const key = JSON.parse(message.body);
+    const parsedBody = JSON.parse(JSON.parse(message.body));
+    const key = parsedBody.roomId;
+
+    console.log(key);
+
     setCamKey(key);
     subscribeToRoom(key);
 
-    // Determine if this peer should initiate the call
-    if (camKey !== null) {
-      setIsInitiator(key < camKey);
-
-      if (key < camKey) {
-        createOffer();
-      }
+    if (!isInitiator) {
+      createOffer();
     }
   };
 
@@ -117,7 +118,6 @@ const VideoChat: React.FC = () => {
 
   const createOffer = async () => {
     if (!peerConnectionRef.current || !camKey) return;
-
     try {
       const offer = await peerConnectionRef.current.createOffer();
       await peerConnectionRef.current.setLocalDescription(offer);
@@ -132,7 +132,6 @@ const VideoChat: React.FC = () => {
 
   const handleOffer = async (message: { body: string }) => {
     if (!peerConnectionRef.current || !camKey) return;
-
     try {
       const offer = JSON.parse(message.body);
       await peerConnectionRef.current.setRemoteDescription(
@@ -154,6 +153,8 @@ const VideoChat: React.FC = () => {
 
     try {
       const answer = JSON.parse(message.body);
+      console.log("Received remote answer:", answer);
+
       await peerConnectionRef.current.setRemoteDescription(
         new RTCSessionDescription(answer),
       );
@@ -164,7 +165,6 @@ const VideoChat: React.FC = () => {
 
   const handleIceCandidate = (message: { body: string }) => {
     if (!peerConnectionRef.current) return;
-
     try {
       const candidate = JSON.parse(message.body);
       peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
@@ -173,27 +173,40 @@ const VideoChat: React.FC = () => {
     }
   };
 
+  const leaveChat = () => {
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+    }
+    SocketService.disconnect();
+    navigate("/");
+  };
+
   return (
-    <div>
-      <h2>Room: {roomId}</h2>
-      <div>
-        <h3>Local Video</h3>
-        <video
-          ref={localVideoRef}
-          autoPlay
-          muted
-          playsInline
-          className={`scale-x-[-1]`}
-        />
-      </div>
-      <div>
-        <h3>Remote Video</h3>
-        <video
-          ref={remoteVideoRef}
-          autoPlay
-          playsInline
-          className={`scale-x-[-1]`}
-        />
+    <div className="video-chat-container">
+      <h2>Video Chat Room: {roomId}</h2>
+      <button onClick={leaveChat}>Leave Chat</button>
+      <div className="video-container">
+        <div>
+          <h3>Local Video</h3>
+          <video
+            ref={localVideoRef}
+            autoPlay
+            muted
+            playsInline
+            className="scale-x-[-1]"
+            width="300px"
+          />
+        </div>
+        <div>
+          <h3>Remote Video</h3>
+          <video
+            ref={remoteVideoRef}
+            autoPlay
+            playsInline
+            className="scale-x-[-1]"
+            width="300px"
+          />
+        </div>
       </div>
     </div>
   );

@@ -155,19 +155,22 @@ const ChatDetail: React.FC = () => {
   return (
     <>
       {isChatLoaded ? (
-        <div>
-          <div className="flex items-center">
-            <RollBackBtn />
+        <div className="h-[650px] md:h-[700px] w-[80vw] md:w-[800px] p-5">
+          <div className="flex items-center border-b border-gray-300">
+            <div className="md:hidden">
+              <RollBackBtn />
+            </div>
             <div className="inline-block text-center h-10 ms-3">
               {opponentUser?.nickname}
             </div>
           </div>
           <div
+            id="product-list"
             className="flex-row"
             ref={chatContainerRef}
             style={{
               overflowY: "auto",
-              maxHeight: "400px",
+              height: "480px",
             }}
           >
             {messages.map((item, index) => (
@@ -187,7 +190,14 @@ const ChatDetail: React.FC = () => {
             ))}
             <div ref={messagesEndRef} /> {/* 스크롤 이동을 위한 빈 div */}
           </div>
-          <div className="mt-10">
+          <div className="mt-5">
+            <ChatAdditionalBar
+              roomId={roomId!!}
+              reportUserId={opponentUser?.userId!!}
+              reportUserNickname={opponentUser?.nickname!!}
+            />
+          </div>
+          <div>
             <InputBox
               placeholder="채팅 입력"
               value={chatMessage}
@@ -205,14 +215,11 @@ const ChatDetail: React.FC = () => {
               onIconClick={sendMessage}
             />
           </div>
-          <ChatAdditionalBar
-            roomId={roomId!!}
-            reportUserId={opponentUser?.userId!!}
-            reportUserNickname={opponentUser?.nickname!!}
-          />
         </div>
       ) : (
-        roomId
+        <div className="w-[800px] h-[700px] flex justify-center items-center hidden md:block">
+          <p className="text-2xl">채팅창을 선택해주세요.</p>
+        </div>
       )}
     </>
   );

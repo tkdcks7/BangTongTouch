@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 // 아이콘
 import {
@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import authAxios from "../../utils/authAxios";
 import { Modal, Select } from "antd";
+import SocketService from "../../utils/SocketService";
 
 interface ChatAdditionalBarProps {
   roomId: string;
@@ -24,6 +25,44 @@ const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
   reportUserNickname,
 }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!SocketService.client.connected) {
+      SocketService.connect();
+    }
+
+    return () => {
+      if (SocketService.client.connected) {
+        SocketService.disconnect();
+      }
+    };
+  }, []);
+
+  const handleVideoChat = () => {
+    const setupConnection = async () => {
+      if (!SocketService.client.connected) {
+        await new Promise<void>((resolve) => {
+          SocketService.connect();
+          const checkConnection = setInterval(() => {
+            if (SocketService.client.connected) {
+              clearInterval(checkConnection);
+              resolve();
+            }
+          }, 100);
+        });
+      }
+
+      SocketService.subscribe("/topic/video-room/joined", (message) => {
+        const { videoRoomId, isInitiator } = JSON.parse(message.body);
+        navigate(`/chats/videochat/${videoRoomId}`);
+      });
+
+      SocketService.send("/app/join/video-room", roomId);
+    };
+
+    setupConnection();
+  };
+
   const reportRef = useRef<string>("");
   const reportTypeRef = useRef<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -62,7 +101,7 @@ const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
   };
 
   return (
-    <div className="w-full bg-yellow-200 fixed bottom-16 left-0 flex justify-around p-2 md:hidden">
+    <div className="w-full bg-yellow-200 fixed md:static bottom-16 left-0 flex justify-around p-2 md:rounded-2xl">
       <Modal
         title="댓글 신고"
         open={isModalOpen}
@@ -99,9 +138,10 @@ const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
       </Modal>
       <button
         className="text-center"
-        onClick={(e) => {
-          navigate(`/chats/videochat/${roomId}`);
-        }}
+        onClick={handleVideoChat}
+        // onClick={(e) => {
+        //   navigate(`/chats/videochat/${roomId}`);
+        // }}
       >
         <VideoCameraOutlined />
         <p>라이브 시작</p>

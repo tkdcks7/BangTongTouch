@@ -1,7 +1,8 @@
 import React, { useRef, useState } from "react";
 import authAxios from "../../utils/authAxios";
-import { Modal, Select } from "antd";
+import { Dropdown, Modal, Select } from "antd";
 import useUserStore from "../../store/userStore";
+import menuImg from "../../assets/Menu.png";
 
 /**
  *    예시   <SubComment comment_id="까치" content="그건 좀;;" date={273890147923} />
@@ -30,6 +31,7 @@ const SubComment: React.FC<iSubComment> = ({
   commentDate,
 }) => {
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
+  const userId = useUserStore().id;
   const [isEditClicked, setIsEditClicked] = useState<boolean>(false);
   const editContent = useRef<string>(content);
   const reportRef = useRef<string>(content);
@@ -97,6 +99,26 @@ const SubComment: React.FC<iSubComment> = ({
       });
     changeModalStatus();
   };
+  const myMenuItem = [
+    {
+      label: "수정",
+      key: 1,
+      onClick: changeIsEditClicked,
+    },
+    {
+      label: "삭제",
+      key: 2,
+      onClick: deleteComment,
+    },
+  ];
+
+  const otherMenuItem = [
+    {
+      label: "신고",
+      key: 1,
+      onClick: changeModalStatus,
+    },
+  ];
   return (
     <div className="flex pl-4 py-0.5">
       <Modal
@@ -139,8 +161,8 @@ const SubComment: React.FC<iSubComment> = ({
         <div>┖</div>
       </div>
       <div className="flex w-full">
-        <div className="flex-initial text-sm w-12">
-          {deleted === false ? iuser.nickname : "X"}
+        <div className="flex items-center text-base me-3 text-lime-600">
+          <p>{deleted === false ? iuser.nickname : "X"}</p>
         </div>
         {isEditClicked === true ? (
           <div className="flex justify-between w-full">
@@ -157,29 +179,25 @@ const SubComment: React.FC<iSubComment> = ({
           </div>
         ) : (
           <React.Fragment>
-            <div className="flex-1 text-base break-words overflow-hidden whitespace-pre-wrap">
-              {deleted === false ? content : "삭제된 메시지입니다."}
+            <div className="flex items-center justify-between text-base break-words overflow-hidden whitespace-pre-wrap">
+              <p>{deleted === false ? content : "삭제된 메시지입니다."}</p>
             </div>
-            <div className="flex-initial text-xs w-16">
-              {formatTimestamp(commentDate)}
-            </div>
-            {deleted === false ? (
-              <button onClick={changeMenuVisible}>…</button>
-            ) : null}
-            {menuVisible === true ? (
-              <div className="absolute bg-gray-300 right-2">
-                {iuser.userId === useUserStore.getState().id ? (
-                  <ul className="flex-col">
-                    <button onClick={changeIsEditClicked}>수정</button>
-                    <button onClick={deleteComment}>삭제</button>
-                  </ul>
-                ) : (
-                  <ul className="flex-col">
-                    <button onClick={changeModalStatus}>신고</button>
-                  </ul>
-                )}
+            <div className="flex ml-auto">
+              <div className="flex text-xs w-16">
+                {formatTimestamp(commentDate)}
               </div>
-            ) : null}
+              {deleted === false ? (
+                <Dropdown
+                  className="w-6 h-6 rounded-xl mb-3"
+                  trigger={["click"]}
+                  menu={{
+                    items: iuser.userId === userId ? myMenuItem : otherMenuItem,
+                  }}
+                >
+                  <img src={menuImg} alt="" />
+                </Dropdown>
+              ) : null}
+            </div>
           </React.Fragment>
         )}
       </div>

@@ -39,11 +39,11 @@ import CommunityCreate from "./components/organism/CommunityCreate"; // 글 쓰�
 import authAxios from "./utils/authAxios";
 import useAlarmInfoStore from "./store/alarmInfoStore";
 import NotFoundPage from "./components/page/NotFoundPage";
-import VideoChat from "./components/page/VideoChatPage";
 
 // 비로그인시 보여줄 페이지
 import InformationPage from "./components/page/InformationPage/InformationPage";
 import ProductSearchPage from "./components/page/ProductSearchPage";
+import VideoChat from "./components/atoms/VideoChat";
 
 // 비로그인 사용자를 login으로 이동시키는 protectedRoute
 const ProtectedRoute: React.FC = () => {

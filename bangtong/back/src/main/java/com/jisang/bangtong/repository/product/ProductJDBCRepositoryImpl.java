@@ -62,9 +62,7 @@ public class ProductJDBCRepositoryImpl implements ProductJDBCRepository{
         if (productSearchDto.getRegionId() != null) {
             sql += " AND region_id = ?";
         }
-        if (productSearchDto.getInfra() != null) {
-            sql += " AND (product_option & ?) >= ?";
-        }
+
         sql+= " AND product_is_deleted = false";
 
         sql += " ORDER BY " + buildOrderClause(productSearchDto.getOrder());
@@ -101,10 +99,7 @@ public class ProductJDBCRepositoryImpl implements ProductJDBCRepository{
             if (productSearchDto.getRegionId() != null) {
                 preparedStatement.setString(paramIndex++, productSearchDto.getRegionId());
             }
-            if (productSearchDto.getInfra() != null) {
-                preparedStatement.setInt(paramIndex++, productSearchDto.getInfra());
-                preparedStatement.setInt(paramIndex, productSearchDto.getInfra());
-            }
+
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {

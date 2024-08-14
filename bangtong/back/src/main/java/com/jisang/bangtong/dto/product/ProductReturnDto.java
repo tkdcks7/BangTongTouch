@@ -41,7 +41,7 @@ public class ProductReturnDto {
   boolean productIsInterest;
   List<Media> mediaList;
   boolean productIsDelete;
-
+  double score=0;
   // 생성자 추가
   public ProductReturnDto(
       Long productId,

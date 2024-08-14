@@ -2,16 +2,14 @@ import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import { Link } from "react-router-dom";
-import { FloatButton } from "antd";
 
 // 이미지 소스
-import MapProduct from "../../assets/MapProduct.png"; // 매물
-import MapConvStore from "../../assets/MapConvStore.png"; // 편의점
-import MapBusStation from "../../assets/MapBusStation.png"; // 버스정류장
 import MapBank from "../../assets/MapBank.png"; // 은행
-import MapLaundry from "../../assets/MapLaundry.png"; // 세탁소
+import MapBusStation from "../../assets/MapBusStation.png"; // 버스정류장
+import MapConvStore from "../../assets/MapConvStore.png"; // 편의점
 import MapGym from "../../assets/MapGym.png"; // 헬스장
-import { FilterOutlined } from "@ant-design/icons";
+import MapLaundry from "../../assets/MapLaundry.png"; // 세탁소
+import MapProduct from "../../assets/MapProduct.png"; // 매물
 import { productSearchStore } from "../../store/productStore";
 import authAxios from "../../utils/authAxios";
 
@@ -131,8 +129,14 @@ const SearchMap: React.FC<MapProps> = ({
     },
   };
 
-  const openModal = (title: number) => {
-    setSelectedMarkerData(markerDatas[title]);
+  const openModal = (i: number) => {
+    setSelectedMarkerData({
+      title: markerDatas[i].title,
+      lat: markerDatas[i].lat,
+      lng: markerDatas[i].lng,
+      productId: markerDatas[i].productId,
+      src: markerDatas[i].src,
+    });
     setIsOpen(true);
   };
 
@@ -172,7 +176,7 @@ const SearchMap: React.FC<MapProps> = ({
   }
 
   function markerRender() {
-    function drawMarker() {
+    async function drawMarker() {
       if (!map) return;
       markerDatas.length = 0;
       if (flag) {
@@ -184,7 +188,7 @@ const SearchMap: React.FC<MapProps> = ({
           src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
         });
       } else {
-        authAxios({
+        await authAxios({
           method: "POST",
           url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
           data: {
@@ -193,32 +197,32 @@ const SearchMap: React.FC<MapProps> = ({
             maxDeposit,
             minRent,
             maxRent,
-            type: "ONEROOM",
-            regionId: "" + 1111010100,
+            type: "TWOROOM",
+            regionId: "" + 1129012500,
             rentSupportable,
             furnitureSupportable,
-            infra: 255,
-            startDate,
-            endDate,
+            infra: 0,
+            startDate: "2024-08-13",
+            endDate: "2024-08-30",
             lat: posRef.current.lat,
             lng: posRef.current.lng,
           },
         })
           .then((response) => {
-            console.log(response);
+            response.data.data.forEach((item: any) => {
+              console.log(item.lat + " " + item.lng);
+              markerDatas.push({
+                productId: item.productId,
+                lat: item.lng,
+                lng: item.lat,
+                title: item.productAddress,
+                src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
+              });
+            });
           })
           .catch((error) => {
             console.log(error);
           });
-        for (let i = 0; i < 10; i++) {
-          markerDatas.push({
-            productId: i,
-            lat: Math.random() * 2 + 35,
-            lng: Math.random() * 3 + 126,
-            title: i,
-            src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
-          });
-        }
       }
 
       const southWest = toEPSG3857(
@@ -235,54 +239,44 @@ const SearchMap: React.FC<MapProps> = ({
       for (let i = 0; i < subMarkerDatas.length; i++) {
         axios({
           method: "GET",
-          url: `/vworld/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=10&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
+          url: `/vworld/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=30&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
         })
           .then((response) => {
-            if (response.data.response.result.items) {
-              console.log(response.data.response.result.items);
-              for (
-                let j = 0;
-                j < response.data.response.result.items.length;
-                j++
-              ) {
-                const result = fromEPSG3857(
-                  response.data.response.result.items[j].point.x,
-                  response.data.response.result.items[j].point.y
-                );
-                const marker = new naver.maps.Marker({
-                  position: new naver.maps.LatLng(result.lat, result.lng),
-                  map: map,
-                  icon: {
-                    content: `
-                        <img 
-                          src=${subMarkerDatas[i].src}
-                          alt="${subMarkerDatas[i].category}" 
-                          style="
-                            margin: 0; 
-                            padding: 0; 
-                            border: 0; 
-                            display: block; 
-                            max-width: none; 
-                            max-height: none; 
-                            -webkit-user-select: none; 
-                            position: absolute; 
-                            width: 30px; 
-                            height: 40px; 
-                            left: 0; 
-                            top: 0;
-                          "
-                        />
-                      `,
-                    size: new naver.maps.Size(30, 20),
-                    anchor: new naver.maps.Point(11, 35),
-                  },
-                });
-                naver.maps.Event.addListener(marker, "click", () => {
-                  openSubModal(response.data.response.result.items[j].title);
-                });
-                markers.push(marker);
-              }
-            }
+            response.data.response.result.items.forEach((item: any) => {
+              const result = fromEPSG3857(item.point.x, item.point.y);
+              const marker = new naver.maps.Marker({
+                position: new naver.maps.LatLng(result.lat, result.lng),
+                map: map,
+                icon: {
+                  content: `
+                      <img 
+                        src=${subMarkerDatas[i].src}
+                        alt="${subMarkerDatas[i].category}" 
+                        style="
+                          margin: 0; 
+                          padding: 0; 
+                          border: 0; 
+                          display: block; 
+                          max-width: none; 
+                          max-height: none; 
+                          -webkit-user-select: none; 
+                          position: absolute; 
+                          width: 30px; 
+                          height: 40px; 
+                          left: 0; 
+                          top: 0;
+                        "
+                      />
+                    `,
+                  size: new naver.maps.Size(30, 20),
+                  anchor: new naver.maps.Point(11, 35),
+                },
+              });
+              naver.maps.Event.addListener(marker, "click", () => {
+                openSubModal(item.title);
+              });
+              markers.push(marker);
+            });
           })
           .catch((error) => console.log("전송 실패", error));
       }
@@ -318,7 +312,9 @@ const SearchMap: React.FC<MapProps> = ({
           },
         });
         naver.maps.Event.addListener(marker, "click", () => {
-          openModal(markerDatas[i].title);
+          console.log(i);
+          console.log(markerDatas);
+          openModal(i);
         });
         markers.push(marker);
       }
@@ -340,7 +336,6 @@ const SearchMap: React.FC<MapProps> = ({
       markers.forEach((marker) => marker.setMap(null));
       markers = [];
       drawMarker();
-      console.log(posRef.current.lat + " " + posRef.current.lng);
     }
     return () => {
       script.removeEventListener("load", markerRender);
@@ -390,7 +385,7 @@ const SearchMap: React.FC<MapProps> = ({
         onRequestClose={closeModal}
         contentLabel="Marker Info Modal"
       >
-        <img src={selectedMarkerData?.src} />
+        <img src={selectedMarkerData?.src} alt="" />
         <div>{selectedMarkerData?.title}</div>
         <div>{selectedMarkerData?.lat}</div>
         <div>{selectedMarkerData?.lng}</div>
