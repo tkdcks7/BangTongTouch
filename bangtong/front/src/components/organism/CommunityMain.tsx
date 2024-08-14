@@ -7,7 +7,7 @@ import MultiBtn from "../molecules/MultiBtn";
 import ContentTable from "../molecules/ContentTable";
 import InputBox from "../molecules/InputBox";
 import IconBtn from "../atoms/IconBtn";
-import { Pagination, ConfigProvider } from "antd";
+import { Pagination, ConfigProvider, PaginationProps } from "antd";
 import Loading from "../atoms/Loading";
 
 // 이미지 소스
@@ -116,6 +116,17 @@ const CommunityMain: React.FC = () => {
     loadData();
   };
 
+  // Pagination 커스터마이징을 위한 itemRender 함수
+  const itemRender: PaginationProps['itemRender'] = (_, type, originalElement) => {
+    if (type === 'prev') {
+      return <a className={"dark:text-white"}>Previous</a>;
+    }
+    if (type === 'next') {
+      return <a className={"dark:text-white"}>Next</a>;
+    }
+    return originalElement;
+  }
+
   return (
     <>
       {isLoaded ? (
@@ -158,6 +169,7 @@ const CommunityMain: React.FC = () => {
               className="mt-10"
               responsive
               onChange={(pageNumber) => setPage(pageNumber)}
+              itemRender={itemRender}
             />
           </ConfigProvider>
         </div>

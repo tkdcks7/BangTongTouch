@@ -84,9 +84,9 @@ const TextBtn: React.FC<TextBtnProps> = ({ title, text }) => {
       <ConfigProvider theme={{
         components: {
           Modal: {
-            contentBg: "#1F2937",
-            headerBg: "#1F2937",
-            footerBg: "#1F2937",
+            // contentBg: "#1F2937",
+            // headerBg: "#1F2937",
+            // footerBg: "#1F2937",
           }
         }
       }}>

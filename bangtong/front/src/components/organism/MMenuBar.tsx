@@ -125,7 +125,7 @@ const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
               count={token ? useAlarmInfoStore.getState().alarmNum : null}
               className="hover:cursor-pointer"
             >
-              <BellOutlined className="text-2xl" />
+              <BellOutlined className="text-2xl dark:text-white" />
             </Badge>
           </Dropdown>
         ) : (
@@ -140,7 +140,7 @@ const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
         <div className="mx-3">
           <Dropdown menu={menuProps} trigger={["click"]}>
             <Button type="text" size="small">
-              <MenuOutlined className="text-2xl" />
+              <MenuOutlined className="text-2xl dark:text-white" />
             </Button>
           </Dropdown>
         </div>

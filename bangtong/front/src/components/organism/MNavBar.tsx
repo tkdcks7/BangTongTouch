@@ -41,6 +41,7 @@ const MNavBar: React.FC = () => {
         <TextBox text="커뮤니티" size="sm" color="black" />
       </Link>
     </div>
+
   );
 };
 
