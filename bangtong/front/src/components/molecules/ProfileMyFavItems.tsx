@@ -48,7 +48,7 @@ const ProfileMyFavItems: React.FC = () => {
                 }
                 alt="관심매물 사진"
                 width={120}
-                className="rounded-xl"
+                className="rounded-xl h-20 w-32"
               />
             </Link>
             <div className="text-center">

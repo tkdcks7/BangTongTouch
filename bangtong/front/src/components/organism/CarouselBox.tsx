@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import authAxios from "../../utils/authAxios";
 
 // 컴포넌트
 import ImgCarousel from "../molecules/ImgCarousel";
+import { Carousel } from "antd";
 
 // 이모티콘
 import { PlusSquareFilled } from "@ant-design/icons";
@@ -17,25 +18,16 @@ interface regionDto {
   regionId: number;
 }
 
-const CarouselBox: React.FC = () => {
-  const [src, setSrc] = useState<string[]>();
-  const [region, setRegion] = useState<regionDto>();
-  const [productId, setProductId] = useState();
-  const { id } = useUserStore();
+interface CarouselBoxProps {
+  product: {
+    regionReturnDto: regionDto;
+    mediaList: string[];
+    productId: number;
+  };
+}
 
-  useEffect(() => {
-    axios({
-      method: "GET",
-      url: `${process.env.REACT_APP_BACKEND_URL}/products/recent/${id}`,
-    })
-      .then((res) => {
-        console.log(res);
-        setSrc(res.data.data.mediaList);
-        setRegion(res.data.data.productReturnDto.regionReturnDto);
-        setProductId(res.data.data.productReturnDto.productId);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+const CarouselBox: React.FC<CarouselBoxProps> = ({ product }) => {
+  const { id } = useUserStore();
 
   return (
     <div className="mt-10">
@@ -44,11 +36,11 @@ const CarouselBox: React.FC = () => {
       </div>
       <p className="mb-3 md:text-xl md:text-center">
         <span className="font-bold">
-          {region?.regionGugun} {region?.regionDong}
+          {product?.regionReturnDto?.regionGugun}{" "}
+          {product?.regionReturnDto?.regionDong}
         </span>
         에 새로 올라온 승계 원룸입니다.
       </p>
-      <ImgCarousel imgSrcArray={src} productId={productId} />
     </div>
   );
 };
