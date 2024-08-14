@@ -59,8 +59,8 @@ public class ProductController {
   //매물 조회
   @Transactional
   @GetMapping("/{productId}")
-  public ResponseDto<ProductReturnDtoWIthProfile> getProduct(@PathVariable("productId") Long productId) {
-    ProductReturnDtoWIthProfile product = productService.getProduct(productId);
+  public ResponseDto<ProductReturnDtoWIthProfile> getProduct(@PathVariable("productId") Long productId, HttpServletRequest request) {
+    ProductReturnDtoWIthProfile product = productService.getProduct(productId, request );
     return new ResponseDto<>(SUCCESS, product);
   }
 
