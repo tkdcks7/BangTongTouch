@@ -170,7 +170,7 @@ const ProductDetail: React.FC = () => {
 
   // 관심 매물 등록(좋아요). 관심매물 좋아요 상태도 같이 보내줄 것.
   const handleInterestBtn = (): void => {
-    let method: string = "GET";
+    let method: string = "POST";
     let url: string = `${process.env.REACT_APP_BACKEND_URL}/interests/add`;
     let data: any = { userId, productId: id };
     if (isInterest) {

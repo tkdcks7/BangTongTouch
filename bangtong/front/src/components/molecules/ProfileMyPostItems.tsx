@@ -47,7 +47,7 @@ const ProfileMyPostItems: React.FC = () => {
                 }
                 alt="업로드한 매물 사진"
                 width={120}
-                className="rounded-xl"
+                className="rounded-xl h-20 w-32"
               />
             </Link>
             <div className="text-center">
