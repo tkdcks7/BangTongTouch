@@ -6,6 +6,7 @@ import useUserStore from "../../store/userStore";
 // 컴포넌트
 import AccordionPart from "../molecules/AccordionPart";
 import ProfileMyFavItems from "./ProfileMyFavItems";
+import ProfileMyPostItems from "./ProfileMyPostItems";
 
 // 아이콘
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
@@ -31,7 +32,7 @@ const ProfileMenu: React.FC = () => {
         className="dark:hover:text-black"
       >
         <AccordionPart header="내가 올린 매물">
-          <ProfileMyFavItems />
+          <ProfileMyPostItems />
         </AccordionPart>
       </Accordion>
       <NavLink

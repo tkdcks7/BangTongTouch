@@ -97,25 +97,10 @@ const ProductDetail: React.FC = () => {
           url: `${process.env.REACT_APP_BACKEND_URL}/products/${id}`,
         });
         setProductInfo(response.data.data);
+        setIsInterest(response.data.data.productReturnDto.productIsInterest);
         console.log(response);
         setIsMe(userId === response.data.data.profileDto.userId); // 유저 Id
         // 관심 매물 등록이 돼있는지 조회 후, 그렇다면 관심 상태를 true로
-        axios({
-          method: "GET",
-          url: `${process.env.REACT_APP_BACKEND_URL}/interests/${userId}`,
-        })
-          .then((response) => {
-            console.log(response);
-            if (
-              response.data.data.product &&
-              id in response.data.data.product
-            ) {
-              setIsInterest(true);
-            } else {
-              setIsInterest(false);
-            }
-          })
-          .catch((err) => console.log("에러남"));
       } catch (err) {
         console.log(err);
         setConnectionFailed(true);
@@ -156,7 +141,7 @@ const ProductDetail: React.FC = () => {
     let data: any = { userId, productId: id };
     if (isInterest) {
       method = "DELETE";
-      url = `${process.env.REACT_APP_BACKEND_URL}/interest/delete/${userId}/${id}`;
+      url = `${process.env.REACT_APP_BACKEND_URL}/interests/delete/${userId}/${id}`;
       data = {};
     }
     authAxios({ method, url, data })
@@ -303,7 +288,11 @@ const ProductDetail: React.FC = () => {
                   )}
                 </div>
                 <button onClick={handleInterestBtn} className="text-xl">
-                  {isInterest ? <HeartFilled /> : <HeartOutlined />}
+                  {isInterest ? (
+                    <HeartFilled className="text-red-500" />
+                  ) : (
+                    <HeartOutlined />
+                  )}
                 </button>
               </div>
             </Card>
@@ -324,6 +313,7 @@ const ProductDetail: React.FC = () => {
                 imgSrcArray={productInfo.productReturnDto.mediaList}
                 productId={id}
                 isCanClick={false}
+                isFromBack
               />
             </div>
             <div className="flex justify-end items-center mt-5 text-2xl font-bold hover:cursor-pointer">
@@ -357,7 +347,7 @@ const ProductDetail: React.FC = () => {
                 </ConfigProvider>
               )}
             </div>
-            <div className="h-3/5 p-10 pt-20 mt-10 rounded-2xl border border-slate-200">
+            <div className="p-10 pt-20 mt-10 rounded-2xl border border-slate-200">
               <Row>
                 <Col span={8} className="text-2xl">
                   <span className="font-bold">관리비 | </span>

@@ -6,6 +6,8 @@ import Room2 from "../../assets/Room2.jpg";
 import Room3 from "../../assets/Room3.jpg";
 import defaultHome from "../../assets/defaulthome.png";
 
+import "../../index.css";
+
 const contentStyle: React.CSSProperties = {
   margin: 0,
   height: "160px",
@@ -21,6 +23,7 @@ interface imgSrcProps {
   productId?: string; // 디테일페이지로 이동하기위한 PK
   isCanClick?: boolean; // 캐러셀 클릭 가능여부
   isForChat?: boolean; // 채팅창에 나타낼 캐러셀인지
+  isFromBack?: boolean; // 백단에서 온 데이터인지
 }
 
 const ImgCarousel: React.FC<imgSrcProps> = ({
@@ -28,6 +31,7 @@ const ImgCarousel: React.FC<imgSrcProps> = ({
   productId,
   isCanClick = true,
   isForChat = false,
+  isFromBack = false,
 }) => {
   const imgSrc: Array<string> = [];
   const navigate = useNavigate();
@@ -57,7 +61,7 @@ const ImgCarousel: React.FC<imgSrcProps> = ({
       }}
     >
       <Carousel arrows autoplay draggable adaptiveHeight>
-        {imgSrc.map((img) => {
+        {imgSrc.map((img: any) => {
           return (
             <div
               key={img}
@@ -66,7 +70,13 @@ const ImgCarousel: React.FC<imgSrcProps> = ({
             >
               <img
                 key={img}
-                src={img}
+                src={
+                  isFromBack
+                    ? process.env.REACT_APP_BACKEND_SRC_URL +
+                      "/" +
+                      img.mediaPath
+                    : img
+                }
                 alt="1"
                 className="rounded-xl h-60 md:h-80 w-full"
               />
