@@ -9,7 +9,7 @@ const WebRTCComponent = () => {
 
   useEffect(() => {
     // Socket.io 연결
-    socketRef.current = io("http://localhost:4000");
+    socketRef.current = io("https://i11d206.p.ssafy.io/rtc");
 
     // PeerConnection 설정
     peerConnectionRef.current = new RTCPeerConnection();
