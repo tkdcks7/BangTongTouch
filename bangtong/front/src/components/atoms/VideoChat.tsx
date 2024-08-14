@@ -84,6 +84,8 @@ const VideoChat: React.FC = () => {
 
       if (initiator) {
         createOffer();
+      } else {
+        console.log("Waiting for offer from initiator");
       }
     } catch (error) {
       console.error("Error setting up WebRTC:", error);
@@ -99,9 +101,9 @@ const VideoChat: React.FC = () => {
     setCamKey(key);
     subscribeToRoom(key);
 
-    if (!isInitiator) {
-      createOffer();
-    }
+    // if (!isInitiator) {
+    //   createOffer();
+    // }
   };
 
   const subscribeToRoom = (key: string) => {
@@ -117,10 +119,15 @@ const VideoChat: React.FC = () => {
   };
 
   const createOffer = async () => {
-    if (!peerConnectionRef.current || !camKey) return;
+    if (!peerConnectionRef.current || !camKey) {
+      console.log("createOffer: peerConnectionRef NOT current");
+      return;
+    }
+
     try {
       const offer = await peerConnectionRef.current.createOffer();
       await peerConnectionRef.current.setLocalDescription(offer);
+
       SocketService.send(
         `/app/peer/offer/${camKey}/${roomId}`,
         JSON.stringify(offer),
@@ -137,19 +144,25 @@ const VideoChat: React.FC = () => {
       await peerConnectionRef.current.setRemoteDescription(
         new RTCSessionDescription(offer),
       );
-      const answer = await peerConnectionRef.current.createAnswer();
-      await peerConnectionRef.current.setLocalDescription(answer);
-      SocketService.send(
-        `/app/peer/answer/${camKey}/${roomId}`,
-        JSON.stringify(answer),
-      );
+
+      if (!isInitiator) {
+        const answer = await peerConnectionRef.current.createAnswer();
+        await peerConnectionRef.current.setLocalDescription(answer);
+        SocketService.send(
+          `/app/peer/answer/${camKey}/${roomId}`,
+          JSON.stringify(answer),
+        );
+      }
     } catch (error) {
       console.error("Error handling offer:", error);
     }
   };
 
   const handleAnswer = async (message: { body: string }) => {
-    if (!peerConnectionRef.current) return;
+    if (!peerConnectionRef.current) {
+      console.log("handleAnswer: peerConnectionRef NOT current");
+      return;
+    }
 
     try {
       const answer = JSON.parse(message.body);
@@ -164,7 +177,10 @@ const VideoChat: React.FC = () => {
   };
 
   const handleIceCandidate = (message: { body: string }) => {
-    if (!peerConnectionRef.current) return;
+    if (!peerConnectionRef.current) {
+      console.log("handleIceCandidate: peerConnectionRef NOT current");
+      return;
+    }
 
     try {
       const cc = JSON.parse(JSON.parse(message.body));
