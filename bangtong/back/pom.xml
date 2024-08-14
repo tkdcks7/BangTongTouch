@@ -119,12 +119,6 @@
       <artifactId>spring-boot-starter-websocket</artifactId>
       <version>3.3.1</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.corundumstudio.socketio/netty-socketio -->
-    <dependency>
-      <groupId>com.corundumstudio.socketio</groupId>
-      <artifactId>netty-socketio</artifactId>
-      <version>2.0.11</version>
-    </dependency>
     <!--웹 소켓을 위한 디펜던시 추가 끝-->
     <!-- OAuth 2.0 의존성 START -->
     <dependency>

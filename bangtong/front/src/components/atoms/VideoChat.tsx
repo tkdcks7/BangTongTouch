@@ -1,247 +1,226 @@
+// VideoChat.tsx
 import React, { useEffect, useRef, useState } from "react";
-import io from "socket.io-client";
+import SocketService from "../../utils/SocketService";
+import { useNavigate, useParams } from "react-router-dom";
 
-const socket = io();
-
-interface MediaStreamEvent extends Event {
-  stream: MediaStream;
-}
-
-const WebRTCComponent: React.FC = () => {
-  const myFaceRef = useRef<HTMLVideoElement>(null);
-  const peerFaceRef = useRef<HTMLVideoElement>(null);
-  const [muted, setMuted] = useState(false);
-  const [cameraOff, setCameraOff] = useState(false);
-  const [roomName, setRoomName] = useState("");
-  const [showCall, setShowCall] = useState(false);
-  const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
-  const [selectedCamera, setSelectedCamera] = useState("");
-
-  const myStreamRef = useRef<MediaStream | null>(null);
-  const myPeerConnectionRef = useRef<RTCPeerConnection | null>(null);
-  const myDataChannelRef = useRef<RTCDataChannel | null>(null);
-
-  const getCameras = async () => {
-    try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const cameraDevices = devices.filter(
-        (device) => device.kind === "videoinput",
-      );
-      setCameras(cameraDevices);
-
-      if (myStreamRef.current) {
-        const currentCamera = myStreamRef.current.getVideoTracks()[0];
-        setSelectedCamera(currentCamera.getSettings().deviceId || "");
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const getMedia = async (deviceId?: string) => {
-    const initialConstraints = {
-      audio: true,
-      video: { facingMode: "user" },
-    };
-    const cameraConstraints = {
-      audio: true,
-      video: { deviceId: { exact: deviceId } },
-    };
-    try {
-      myStreamRef.current = await navigator.mediaDevices.getUserMedia(
-        deviceId ? cameraConstraints : initialConstraints,
-      );
-      if (myFaceRef.current) {
-        myFaceRef.current.srcObject = myStreamRef.current;
-      }
-      if (!deviceId) {
-        await getCameras();
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const handleMuteClick = () => {
-    if (myStreamRef.current) {
-      myStreamRef.current
-        .getAudioTracks()
-        .forEach((track) => (track.enabled = !track.enabled));
-      setMuted(!muted);
-    }
-  };
-
-  const handleCameraClick = () => {
-    if (myStreamRef.current) {
-      myStreamRef.current
-        .getVideoTracks()
-        .forEach((track) => (track.enabled = !track.enabled));
-      setCameraOff(!cameraOff);
-    }
-  };
-
-  const handleCameraChange = async (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    await getMedia(event.target.value);
-    if (myPeerConnectionRef.current) {
-      const videoTrack = myStreamRef.current?.getVideoTracks()[0];
-      const videoSender = myPeerConnectionRef.current
-        .getSenders()
-        .find((sender) => sender.track?.kind === "video");
-      if (videoSender && videoTrack) {
-        videoSender.replaceTrack(videoTrack);
-      }
-    }
-  };
-
-  const initCall = async () => {
-    setShowCall(true);
-    await getMedia();
-    makeConnection();
-  };
-
-  const handleWelcomeSubmit = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault();
-    await initCall();
-    socket.emit("join_room", roomName);
-    setRoomName("");
-  };
-
-  const makeConnection = () => {
-    myPeerConnectionRef.current = new RTCPeerConnection({
-      iceServers: [
-        {
-          urls: [
-            "stun:stun.l.google.com:19302",
-            "stun:stun1.l.google.com:19302",
-            "stun:stun2.l.google.com:19302",
-            "stun:stun3.l.google.com:19302",
-            "stun:stun4.l.google.com:19302",
-          ],
-        },
-      ],
-    });
-    myPeerConnectionRef.current.addEventListener("icecandidate", handleIce);
-    // @ts-ignore
-    myPeerConnectionRef.current.addEventListener("addstream", handleAddStream);
-    myStreamRef.current?.getTracks().forEach((track) => {
-      if (myPeerConnectionRef.current && myStreamRef.current) {
-        myPeerConnectionRef.current.addTrack(track, myStreamRef.current);
-      }
-    });
-  };
-
-  const handleIce = (data: RTCPeerConnectionIceEvent) => {
-    console.log("sent candidate");
-    socket.emit("ice", data.candidate, roomName);
-  };
-
-  const handleAddStream = (data: MediaStreamEvent) => {
-    console.log("got an stream from my peer");
-    if (peerFaceRef.current) {
-      peerFaceRef.current.srcObject = data.stream;
-    }
-  };
+const VideoChat: React.FC = () => {
+  const { roomId } = useParams<{ roomId: string }>();
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
+  const [camKey, setCamKey] = useState<string | null>(null);
+  const [isInitiator, setIsInitiator] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    socket.on("welcome", async () => {
-      if (myDataChannelRef.current !== undefined) {
-        // @ts-ignore
-        myDataChannelRef.current =
-          myPeerConnectionRef.current?.createDataChannel("chat");
-        myDataChannelRef.current?.addEventListener("message", (event) =>
-          console.log(event.data),
-        );
-        console.log("made data channel");
-        const offer = await myPeerConnectionRef.current?.createOffer();
-        myPeerConnectionRef.current?.setLocalDescription(offer);
-        console.log("sent the offer");
-        socket.emit("offer", offer, roomName);
-      }
-    });
-
-    socket.on("offer", async (offer: RTCSessionDescriptionInit) => {
-      myPeerConnectionRef.current?.addEventListener("datachannel", (event) => {
-        myDataChannelRef.current = event.channel;
-        myDataChannelRef.current.addEventListener("message", (event) =>
-          console.log(event.data),
-        );
+    const setupConnection = async () => {
+      await new Promise<void>((resolve) => {
+        SocketService.connect();
+        console.log("setup connection");
+        const checkConnection = setInterval(() => {
+          if (SocketService.client.connected) {
+            clearInterval(checkConnection);
+            resolve();
+          }
+        }, 100);
       });
-      console.log("received the offer");
-      myPeerConnectionRef.current?.setRemoteDescription(offer);
-      const answer = await myPeerConnectionRef.current?.createAnswer();
-      myPeerConnectionRef.current?.setLocalDescription(answer);
-      socket.emit("answer", answer, roomName);
-      console.log("sent the answer");
-    });
 
-    socket.on("answer", (answer: RTCSessionDescriptionInit) => {
-      console.log("received the answer");
-      myPeerConnectionRef.current?.setRemoteDescription(answer);
-    });
+      SocketService.subscribe(`/topic/video-room/joined`, (message) => {
+        const { videoRoomId, isInitiator } = JSON.parse(message.body);
+        setIsInitiator(isInitiator === "true");
+        setupWebRTC(isInitiator === "true");
+      });
 
-    socket.on("ice", (ice: RTCIceCandidateInit) => {
-      console.log("received candidate");
-      myPeerConnectionRef.current?.addIceCandidate(ice);
-    });
+      SocketService.send("/app/join/video-room", roomId);
+    };
+
+    setupConnection();
 
     return () => {
-      socket.off("welcome");
-      socket.off("offer");
-      socket.off("answer");
-      socket.off("ice");
+      if (peerConnectionRef.current) {
+        peerConnectionRef.current.close();
+      }
+      SocketService.disconnect();
     };
-  }, [roomName]);
+  }, [roomId]);
+
+  const setupWebRTC = async (initiator: boolean) => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+
+      peerConnectionRef.current = new RTCPeerConnection({
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+      });
+
+      stream.getTracks().forEach((track) => {
+        peerConnectionRef.current?.addTrack(track, stream);
+      });
+
+      peerConnectionRef.current.ontrack = (event) => {
+        console.log("Received remote track", event);
+        if (remoteVideoRef.current && event.streams && event.streams[0]) {
+          remoteVideoRef.current.srcObject = event.streams[0];
+        }
+      };
+
+      peerConnectionRef.current.onicecandidate = (event) => {
+        if (event.candidate && camKey) {
+          SocketService.send(
+            `/app/peer/iceCandidate/${camKey}/${roomId}`,
+            JSON.stringify(event.candidate),
+          );
+        }
+      };
+
+      SocketService.subscribe("/topic/call/key", handleCallKey);
+      SocketService.send("/app/send/key", JSON.stringify({ roomId }));
+
+      if (initiator) {
+        createOffer();
+      }
+    } catch (error) {
+      console.error("Error setting up WebRTC:", error);
+    }
+  };
+
+  const handleCallKey = (message: { body: string }) => {
+    const parsedBody = JSON.parse(JSON.parse(message.body));
+    const key = parsedBody.roomId;
+
+    console.log(key);
+
+    setCamKey(key);
+    subscribeToRoom(key);
+
+    if (!isInitiator) {
+      createOffer();
+    }
+  };
+
+  const subscribeToRoom = (key: string) => {
+    SocketService.subscribe(`/topic/peer/offer/${key}/${roomId}`, handleOffer);
+    SocketService.subscribe(
+      `/topic/peer/answer/${key}/${roomId}`,
+      handleAnswer,
+    );
+    SocketService.subscribe(
+      `/topic/peer/iceCandidate/${key}/${roomId}`,
+      handleIceCandidate,
+    );
+  };
+
+  const createOffer = async () => {
+    if (!peerConnectionRef.current || !camKey) return;
+    try {
+      const offer = await peerConnectionRef.current.createOffer();
+      await peerConnectionRef.current.setLocalDescription(offer);
+      SocketService.send(
+        `/app/peer/offer/${camKey}/${roomId}`,
+        JSON.stringify(offer),
+      );
+    } catch (error) {
+      console.error("Error creating offer:", error);
+    }
+  };
+
+  const handleOffer = async (message: { body: string }) => {
+    if (!peerConnectionRef.current || !camKey) return;
+    try {
+      const offer = JSON.parse(message.body);
+      await peerConnectionRef.current.setRemoteDescription(
+        new RTCSessionDescription(offer),
+      );
+      const answer = await peerConnectionRef.current.createAnswer();
+      await peerConnectionRef.current.setLocalDescription(answer);
+      SocketService.send(
+        `/app/peer/answer/${camKey}/${roomId}`,
+        JSON.stringify(answer),
+      );
+    } catch (error) {
+      console.error("Error handling offer:", error);
+    }
+  };
+
+  const handleAnswer = async (message: { body: string }) => {
+    if (!peerConnectionRef.current) return;
+
+    try {
+      const answer = JSON.parse(message.body);
+      console.log("Received remote answer:", answer);
+
+      await peerConnectionRef.current.setRemoteDescription(
+        new RTCSessionDescription(answer),
+      );
+    } catch (error) {
+      console.error("Error handling answer:", error);
+    }
+  };
+
+  const handleIceCandidate = (message: { body: string }) => {
+    if (!peerConnectionRef.current) return;
+
+    try {
+      const cc = JSON.parse(JSON.parse(message.body));
+      console.log(cc);
+      // console.log(cc.candidate);
+
+      peerConnectionRef.current.addIceCandidate(
+        new RTCIceCandidate({
+          candidate: cc.candidate,
+          sdpMid: cc.sdpMid,
+          sdpMLineIndex: cc.sdpMLineIndex,
+          usernameFragment: cc.usernameFragment,
+        }),
+      );
+    } catch (error) {
+      console.error("Error handling ICE candidate:", error);
+    }
+  };
+
+  const leaveChat = () => {
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+    }
+    SocketService.disconnect();
+    navigate("/");
+  };
 
   return (
-    <div>
-      {!showCall ? (
-        <div id="welcome">
-          <form onSubmit={handleWelcomeSubmit}>
-            <input
-              type="text"
-              placeholder="Room Name"
-              value={roomName}
-              onChange={(e) => setRoomName(e.target.value)}
-              required
-            />
-            <button type="submit">Enter Room</button>
-          </form>
-        </div>
-      ) : (
-        <div id="call">
+    <div className="video-chat-container">
+      <h2>Video Chat Room: {roomId}</h2>
+      <button onClick={leaveChat}>Leave Chat</button>
+      <div className="video-container">
+        <div>
+          <h3>Local Video</h3>
           <video
-            ref={myFaceRef}
+            ref={localVideoRef}
+            autoPlay
+            muted
+            playsInline
+            className="scale-x-[-1]"
+            width="300px"
+          />
+        </div>
+        <div>
+          <h3>Remote Video</h3>
+          <video
+            ref={remoteVideoRef}
             autoPlay
             playsInline
-            width="400"
-            height="300"
+            className="scale-x-[-1]"
+            width="300px"
           />
-          <video
-            ref={peerFaceRef}
-            autoPlay
-            playsInline
-            width="400"
-            height="300"
-          />
-          <button onClick={handleMuteClick}>{muted ? "Unmute" : "Mute"}</button>
-          <button onClick={handleCameraClick}>
-            {cameraOff ? "Turn Camera On" : "Turn Camera Off"}
-          </button>
-          <select value={selectedCamera} onChange={handleCameraChange}>
-            {cameras.map((camera) => (
-              <option key={camera.deviceId} value={camera.deviceId}>
-                {camera.label}
-              </option>
-            ))}
-          </select>
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-export default WebRTCComponent;
+export default VideoChat;
