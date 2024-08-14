@@ -25,9 +25,52 @@ import {
 } from "@ant-design/icons";
 import { error } from "console";
 
+interface RegionReturnDto {
+  regionId: string;
+  regionSido: string;
+  regionGugun: string;
+  regionDong: string;
+  score: number;
+}
+
+interface ProductReturnDto {
+  productId: number;
+  productType: string;
+  regionReturnDto: RegionReturnDto;
+  productAddress: string;
+  productDeposit: number;
+  productRent: number;
+  productMaintenance: number;
+  productMaintenanceInfo: string;
+  productIsRentSupportable: boolean;
+  productIsFurnitureSupportable: boolean;
+  productSquare: number;
+  productRoom: number;
+  productOption: number;
+  productAdditionalOption: string[];
+  productIsBanned: boolean;
+  productIsDeleted: boolean;
+  productPostDate: string;
+  productStartDate: string;
+  productEndDate: string;
+  productAdditionalDetail: string;
+  mediaList: string[];
+}
+
+interface ProfileDto {
+  userId: number;
+  profileImage: string;
+  nickname: string;
+}
+
+interface ProductDetailI {
+  productReturnDto: ProductReturnDto;
+  profileDto: ProfileDto;
+}
+
 const ProductDetail: React.FC = () => {
   // 기본값 선언
-  const tempObj = {
+  const tempObj: ProductDetailI = {
     productReturnDto: {
       productId: 1,
       productType: "ONEROOM",
@@ -36,6 +79,7 @@ const ProductDetail: React.FC = () => {
         regionSido: "서울특별시",
         regionGugun: "종로구",
         regionDong: "누상동",
+        score: 0,
       },
       productAddress: "147-51",
       productDeposit: 10,
@@ -57,11 +101,9 @@ const ProductDetail: React.FC = () => {
       mediaList: [""],
     },
     profileDto: {
-      userId: 13,
-      userEmail: "test@naver.com",
+      userId: 0,
       profileImage: "",
       nickname: "매콤한 호랑이143",
-      IsBanned: false,
     },
   };
   let { id }: any = useParams(); // 상품 번호
@@ -126,14 +168,6 @@ const ProductDetail: React.FC = () => {
     fetchData();
   }, [id]);
 
-  // 수정 페이지(작성 페이지에서 기본값이 다 설정된 페이지?)로 이동
-  // Dto 때문에 userId를 비교하는 로직을 작성 못함.
-  // const handleToUpdate = (): void => {
-  //   if (productInfo.userId === userId) {
-  //     navigate(`/products/update/${id}`)
-  //   }
-  // }
-
   // 매물 게시글 삭제 함수
   const handleDelete = (): void => {
     if (productInfo.profileDto.userId === userId) {
@@ -151,7 +185,7 @@ const ProductDetail: React.FC = () => {
 
   // 관심 매물 등록(좋아요). 관심매물 좋아요 상태도 같이 보내줄 것.
   const handleInterestBtn = (): void => {
-    let method: string = "POST";
+    let method: string = "GET";
     let url: string = `${process.env.REACT_APP_BACKEND_URL}/interests/add`;
     let data: any = { userId, productId: id };
     if (isInterest) {

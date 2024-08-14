@@ -104,10 +104,11 @@ const ProfileBox: React.FC = () => {
         <div className="mb-3">
           <Btn
             text="프로필 편집"
-            textSize="text-sm"
+            textSize="text-sm font-bold"
             width="w-28"
             backgroundColor="bg-lime-500"
             textColor="white"
+            hoverBackgroundColor="hover:bg-lime-400 transitioin-color duration-300"
             onClick={() => setIsModalOpen(true)}
           />
           <ConfigProvider theme={theme}>

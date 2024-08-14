@@ -72,6 +72,7 @@ const ProductSearch3: React.FC<IProductSearch3Props> = ({ onPrev }) => {
       preferenceStartDate: stDate,
       preferenceEndDate: edDate,
     };
+    console.log(dataSet);
     authAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/preferences/add/${id}`,
