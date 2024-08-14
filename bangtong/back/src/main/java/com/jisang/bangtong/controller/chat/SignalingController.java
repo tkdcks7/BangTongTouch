@@ -19,7 +19,7 @@ public class SignalingController {
 
   @MessageMapping("/join/video-room")
   @SendTo("/topic/video-room/joined")
-  public Map<String, String> joinVideoRoom(@Payload String chatRoomId) {
+  public synchronized Map<String, String> joinVideoRoom(@Payload String chatRoomId) {
     String videoRoomId = chatRoomToVideoRoom.get(chatRoomId);
     boolean isInitiator = false;
 
@@ -29,12 +29,13 @@ public class SignalingController {
       videoRoomInitiators.put(videoRoomId, true);
       isInitiator = true;
     } else {
-      isInitiator = !videoRoomInitiators.get(videoRoomId);
-      videoRoomInitiators.put(videoRoomId, false);
+      isInitiator = videoRoomInitiators.get(videoRoomId);
+      if (isInitiator) {
+        videoRoomInitiators.put(videoRoomId, false);
+      }
     }
 
-    log.info("Joined video room {} for chat room {}. Initiator: {}", videoRoomId, chatRoomId,
-        isInitiator);
+    log.info("Joined video room {} for chat room {}. Initiator: {}", videoRoomId, chatRoomId, isInitiator);
     return Map.of("videoRoomId", videoRoomId, "isInitiator", Boolean.toString(isInitiator));
   }
 
