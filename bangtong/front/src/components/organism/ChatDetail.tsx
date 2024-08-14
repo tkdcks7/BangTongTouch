@@ -38,9 +38,6 @@ const ChatDetail: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const userId = useUserStore().id;
   const url: string = `${process.env.REACT_APP_BACKEND_URL}/ws`;
-
-  console.log("url: " + url);
-
   const connectUrl: string = `/topic/greetings/${roomId}`;
   const sendUrl: string = `/app/hello/${roomId}`;
   const [opponentUser, setOpponentUser] = useState<OpponentUser>();
