@@ -26,43 +26,6 @@ const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (!SocketService.client.connected) {
-  //     SocketService.connect();
-  //   }
-  //
-  //   return () => {
-  //     if (SocketService.client.connected) {
-  //       SocketService.disconnect();
-  //     }
-  //   };
-  // }, []);
-  //
-  // const handleVideoChat = () => {
-  //   const setupConnection = async () => {
-  //     if (!SocketService.client.connected) {
-  //       await new Promise<void>((resolve) => {
-  //         SocketService.connect();
-  //         const checkConnection = setInterval(() => {
-  //           if (SocketService.client.connected) {
-  //             clearInterval(checkConnection);
-  //             resolve();
-  //           }
-  //         }, 100);
-  //       });
-  //     }
-  //
-  //     SocketService.subscribe("/topic/video-room/joined", (message) => {
-  //       const { videoRoomId, isInitiator } = JSON.parse(message.body);
-  //       navigate(`/chats/videochat/${videoRoomId}`);
-  //     });
-  //
-  //     SocketService.send("/app/join/video-room", roomId);
-  //   };
-  //
-  //   setupConnection();
-  // };
-
   const reportRef = useRef<string>("");
   const reportTypeRef = useRef<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -138,10 +101,9 @@ const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
       </Modal>
       <button
         className="text-center"
-        // onClick={handleVideoChat}
-        // onClick={(e) => {
-        //   navigate(`/chats/videochat/${roomId}`);
-        // }}
+        onClick={(e) => {
+          navigate(`/chats/videochat/${roomId}`);
+        }}
       >
         <VideoCameraOutlined />
         <p>라이브 시작</p>

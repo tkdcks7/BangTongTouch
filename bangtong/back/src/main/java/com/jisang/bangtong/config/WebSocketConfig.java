@@ -12,10 +12,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
-    registry.addEndpoint("/signaling")
+    registry.addEndpoint("/ws")
         .setAllowedOriginPatterns("*").withSockJS();
   }
 

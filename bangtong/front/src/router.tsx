@@ -44,7 +44,6 @@ import NotFoundPage from "./components/page/NotFoundPage";
 import InformationPage from "./components/page/InformationPage/InformationPage";
 import ProductSearchPage from "./components/page/ProductSearchPage";
 import VideoChat from "./components/atoms/VideoChat";
-import VideoChatPage from "./components/page/VideoChatPage";
 
 // 비로그인 사용자를 login으로 이동시키는 protectedRoute
 const ProtectedRoute: React.FC = () => {
@@ -105,7 +104,7 @@ const AppRoutes: React.FC = () => {
           {/* 채팅 페이지 */}
           <Route path="chats" element={<ChattingPage />}>
             <Route path="" element={<ChatMain />} />
-            <Route path="video" element={<VideoChatPage />} />
+            <Route path="videochat/:roomId" element={<VideoChat />} />
             <Route path=":roomId" element={<ChatDetail />} />
           </Route>
 
