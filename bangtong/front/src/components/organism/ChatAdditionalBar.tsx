@@ -100,8 +100,8 @@ const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
       <button
         className="text-center"
         onClick={(e) => {
-          navigate(`/`);
-          // navigate(`/chats/videochat/${roomId}`);
+          // navigate(`/`);
+          navigate(`/chats/videochat/${roomId}`);
         }}
       >
         <VideoCameraOutlined />
