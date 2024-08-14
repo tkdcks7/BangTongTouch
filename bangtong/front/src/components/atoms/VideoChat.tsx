@@ -165,9 +165,20 @@ const VideoChat: React.FC = () => {
 
   const handleIceCandidate = (message: { body: string }) => {
     if (!peerConnectionRef.current) return;
+
     try {
-      const candidate = JSON.parse(message.body);
-      peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+      const cc = JSON.parse(JSON.parse(message.body));
+      console.log(cc);
+      // console.log(cc.candidate);
+
+      peerConnectionRef.current.addIceCandidate(
+        new RTCIceCandidate({
+          candidate: cc.candidate,
+          sdpMid: cc.sdpMid,
+          sdpMLineIndex: cc.sdpMLineIndex,
+          usernameFragment: cc.usernameFragment,
+        }),
+      );
     } catch (error) {
       console.error("Error handling ICE candidate:", error);
     }
