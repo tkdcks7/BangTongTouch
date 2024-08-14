@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useUserStore, { useUserPreferStore } from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
 import { productSearchStore, preferenceStore } from "../../store/productStore";
+import { motion } from "framer-motion";
 
 // 컴포넌트
 import PreferenceBox from "../molecules/PreferenceBox";
@@ -96,7 +97,15 @@ const PreferenceList: React.FC = () => {
   };
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{
+        duration: 0.8,
+        delay: 0.5,
+        ease: [0, 0.7, 0.2, 1],
+      }}
+    >
       <div className="w-full flex text-nowrap items-center justify-between mt-5">
         <h2 className="text-xl text-left text-lime-500 font-bold">
           나의 선호 설정 관리
@@ -118,11 +127,11 @@ const PreferenceList: React.FC = () => {
         </div>
       </div>
       <div className="flex flex-col mt-5 items-center justify-center text-center">
-        {preferenceArr.length > 0 ? (
-          preferenceArr.map((pref: PreferenceI) => {
+        {preferenceArr.length ? (
+          preferenceArr.map((pref: PreferenceI, idx) => {
             return (
               <PreferenceBox
-                key={pref.preferenceId}
+                key={idx}
                 preferenceId={pref.preferenceId}
                 preferenceName={pref.preferenceName}
                 preferenceDeposit={pref.preferenceDeposit}
@@ -147,7 +156,7 @@ const PreferenceList: React.FC = () => {
         addpreferenceArr={addpreferenceArr}
         className={"dark:text-black dark:bg-gray-800"}
       />
-    </>
+    </motion.div>
   );
 };
 

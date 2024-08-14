@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { useUserPreferStore } from "../../store/userStore";
 
 import { CheckOutlined } from "@ant-design/icons";
 
 interface PreferenceBoxProps extends React.HTMLAttributes<HTMLDivElement> {
+  key: number;
   preferenceId: number;
   preferenceName: string;
   preferenceDeposit: number;
@@ -15,6 +17,7 @@ interface PreferenceBoxProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const PreferenceBox: React.FC<PreferenceBoxProps> = ({
+  key,
   preferenceId,
   preferenceName,
   preferenceDeposit,
@@ -29,13 +32,21 @@ const PreferenceBox: React.FC<PreferenceBoxProps> = ({
   const [isSelected, setIsSelected] = useState<boolean>(
     preferenceId === userPrefId
   );
+  const startTime = key + 1.5;
 
   useEffect(() => {
     setIsSelected(preferenceId === userPrefId);
   }, [userPrefId, preferenceId]);
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{
+        duration: 0.8,
+        delay: startTime,
+        ease: [0, 0.7, 0.2, 1],
+      }}
       className={`mt-4 relative flex items-center justify-center 
       rounded-lg border-2 border-lime-400 bg-lime-100 w-full h-20
       transition-colors duration-500 hover:cursor-pointer dark:text-black ${!isBtnHovered ? "hover:bg-lime-400" : ""}`}
@@ -72,7 +83,7 @@ const PreferenceBox: React.FC<PreferenceBoxProps> = ({
           삭제
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
