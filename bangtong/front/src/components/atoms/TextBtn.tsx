@@ -7,6 +7,15 @@ interface TextBtnProps {
   text: string;
 }
 
+// ant design 글로벌 디자인 토큰
+const theme = {
+  token: {
+    colorBgTextHover: "#E9FFE7",
+    colorPrimary: "#129B07",
+    colorPrimaryBorder: "#129B07",
+  },
+};
+
 const TextBtn: React.FC<TextBtnProps> = ({ title, text }) => {
   let min = 0;
   let max = 3000;
@@ -41,15 +50,6 @@ const TextBtn: React.FC<TextBtnProps> = ({ title, text }) => {
     3000: "3000~",
   };
 
-  // ant design 글로벌 디자인 토큰
-  const theme = {
-    token: {
-      colorBgTextHover: "#E9FFE7",
-      colorPrimary: "#129B07",
-      colorPrimaryBorder: "#129B07",
-    },
-  };
-
   // 슬라이더 조종 시 슬라이더 및 Input 값을 바꾸는 핸들러
   const handleSliderChange = (value: number[]) => {
     setSliderValue(value);
@@ -80,16 +80,10 @@ const TextBtn: React.FC<TextBtnProps> = ({ title, text }) => {
   return (
     <div className="flex justify-between mt-7">
       <p className="text-lime-600 font-bold">{title}</p>
-      <button className={"dark:text-white"} onClick={() => setModalOpen(true)}>{text}</button>
-      <ConfigProvider theme={{
-        components: {
-          Modal: {
-            // contentBg: "#1F2937",
-            // headerBg: "#1F2937",
-            // footerBg: "#1F2937",
-          }
-        }
-      }}>
+      <button className={"dark:text-white"} onClick={() => setModalOpen(true)}>
+        {text}
+      </button>
+      <ConfigProvider theme={theme}>
         <Modal
           title={`${title} 범위 설정 (단위: 만원)`}
           open={modalOpen}

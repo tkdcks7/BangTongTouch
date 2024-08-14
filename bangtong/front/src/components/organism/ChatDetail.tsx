@@ -14,6 +14,7 @@ import { Client, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import useUserStore from "../../store/userStore";
 import Chat from "../molecules/Chat";
+import { LoadingOutlined } from "@ant-design/icons";
 
 interface ChatI {
   chatRoom: number;
@@ -217,8 +218,8 @@ const ChatDetail: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="w-[800px] h-[700px] flex justify-center items-center hidden md:block">
-          <p className="text-2xl">채팅창을 선택해주세요.</p>
+        <div className="w-[800px] h-[700px] flex justify-center items-center hidden md:flex">
+          <LoadingOutlined className="text-xl" />
         </div>
       )}
     </>

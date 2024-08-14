@@ -13,7 +13,6 @@ import Room1 from "../../../assets/RoomCard1.png";
 import Room2 from "../../../assets/RoomCard2.png";
 import Room3 from "../../../assets/RoomCard3.png";
 import Room4 from "../../../assets/RoomCard4.png";
-import { duration } from "@mui/material";
 
 const container = {
   hidden: { opacity: 1, scale: 0 },
@@ -58,8 +57,7 @@ const InformationPage: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/products/count`,
     })
       .then((res) => {
-        console.log(res.data);
-        setProductCount(res.data);
+        setProductCount(res.data.data);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -72,34 +70,25 @@ const InformationPage: React.FC = () => {
     return () => clearInterval(interval);
   }, [textArray.length]);
 
-  const startCounting = () => {
+  const startCounting = (maxCount: number) => {
     if (animation) {
       animation.stop();
     }
-    animation = animate(count, 100, { duration: 3 });
-  };
-
-  const resetCount = () => {
-    if (animation) {
-      animation.stop();
-    }
-    count.set(0);
+    animation = animate(count, maxCount, { duration: 3 });
   };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            startCounting();
-            setIndex(0);
-          } else {
-            resetCount();
+          if (entry.isIntersecting && productCount > 0) {
+            startCounting(productCount);
+            observer.unobserve(entry.target); // 한 번 실행된 후에는 옵저버가 해제되도록 설정
           }
         });
       },
       {
-        threshold: 0.1,
+        threshold: 0.5, // 요소가 50% 정도 뷰포트에 들어왔을 때 트리거되도록 설정
       }
     );
 
@@ -115,9 +104,8 @@ const InformationPage: React.FC = () => {
         animation.stop();
       }
     };
-  }, [count]);
+  }, [count, productCount]);
 
-  // login 페이지로 이동하는 함수
   const handleLogInBtnClick = (e: any) => {
     navigate("/user/login");
   };

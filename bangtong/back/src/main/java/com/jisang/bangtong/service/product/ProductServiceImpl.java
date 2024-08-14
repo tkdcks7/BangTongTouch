@@ -114,13 +114,17 @@ public class ProductServiceImpl implements ProductService {
     productRepository.save(product);
   }
 
+
   @Transactional
-  public ProductReturnDtoWIthProfile getProduct(long productId) {
+  public ProductReturnDtoWIthProfile getProduct(long productId, HttpServletRequest request) {
     Product product = productRepository.findById(productId);
     List<String> additionalOption = getAdditionalOptionList(product);
     RegionReturnDto regionReturnDto = getRegionReturnDto(product);
     String sido = regionReturnDto.getRegionSido().replace("특별", "");
     regionReturnDto.setRegionSido(sido);
+    Set<Long> interestSet = new HashSet<>();
+    if(request != null)
+      getInterestSet(interestSet, request);
 
     User u = product.getUser();
     Media userPhoto = u.getUserProfileImage();
@@ -153,6 +157,7 @@ public class ProductServiceImpl implements ProductService {
         .productIsFurnitureSupportable(product.isProductIsFurnitureSupportable())
         .productSquare(product.getProductSquare()).productRoom(product.getProductRoom())
         .productAdditionalOption(additionalOption).productOption(product.getProductOption())
+        .productIsInterest(interestSet.contains(product.getProductId()))
         .build();
     return ProductReturnDtoWIthProfile.builder()
         .productReturnDto(productReturnDto)
@@ -210,6 +215,50 @@ public class ProductServiceImpl implements ProductService {
     return productReturnDtoList;
   }
 
+  public List<ProductReturnDto> getProductsByMaker(HttpServletRequest request) {
+    String token = jwtUtil.getAccessToken(request);
+    if (token == null || token.isEmpty()) {
+      return null;
+    }
+    Long userId = jwtUtil.getUserIdFromToken(token);
+    User u = userRepository.findById(userId).orElse(null);
+    if(!isValidUser(u)){
+      throw new IllegalArgumentException("올바르지 않은 접근입니다");
+    }
+    List<Product> products= productRepository.findByUserUserId(u.getUserId());
+    if(products==null || products.isEmpty()){
+      return null;
+    }else {
+      List<ProductReturnDto> productReturnDtoList = new ArrayList<>();
+      for (Product p : products) {
+        ProductReturnDto returnDto = getProductReturnDto(p);
+        productReturnDtoList.add(returnDto);
+      }
+      return productReturnDtoList;
+    }
+  }
+
+  private static ProductReturnDto getProductReturnDto(Product p) {
+    ProductReturnDto returnDto = ProductReturnDto.builder()
+        .productId(p.getProductId())
+        .productType(p.getProductType()).regionReturnDto(getRegionReturnDto(p))
+        .productAddress(p.getProductAddress()).productDeposit(p.getProductDeposit())
+        .productRent(p.getProductRent()).productMaintenance(p.getProductMaintenance())
+        .productMaintenanceInfo(p.getProductMaintenanceInfo())
+        .productIsRentSupportable(p.isProductIsRentSupportable())
+        .productIsFurnitureSupportable(p.isProductIsFurnitureSupportable())
+        .productSquare(p.getProductSquare()).productRoom(p.getProductRoom())
+        .productOption(p.getProductOption()).productAdditionalOption(getAdditionalOptionList(p))
+        .productPostDate(p.getProductPostDate()).productStartDate(p.getProductStartDate())
+        .productEndDate(p.getProductEndDate()).lat(p.getLat()).lng(p.getLng())
+        .productAdditionalDetail(p.getProductAddressDetail())
+        .productIsInterest(false)
+        .mediaList(p.getProductMedia())
+        .productIsDelete(p.isProductIsDeleted())
+        .score(0)
+        .build();
+    return returnDto;
+  }
 
 
   private double setScore(ProductSearchDto dto, Long productId) {
@@ -449,14 +498,13 @@ public class ProductServiceImpl implements ProductService {
     Product product = productRepository.findFirstByRegion_RegionIdAndProductIsDeletedIsFalse(
         regionId);
 
-    return getProduct(product.getProductId());
+    return getProduct(product.getProductId(), null);
   }
 
 
   //빈 인터레스트 셋을 입력받아서 사용자에 따라 어떤 매물을 관심있어 하는지 반환하는 메서드, isLike는 살펴볼만하다는 것을 의미하고,
   //셋에는 실제 productId가 반환되어 있음.
   private void getInterestSet(Set<Long> interestSet, HttpServletRequest request) {
-    boolean isLike = false;
     String token = jwtUtil.getAccessToken(request);
     if (token == null || token.isEmpty()) {
       return ;

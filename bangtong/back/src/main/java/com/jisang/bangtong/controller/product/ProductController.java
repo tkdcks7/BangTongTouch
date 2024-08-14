@@ -59,8 +59,8 @@ public class ProductController {
   //매물 조회
   @Transactional
   @GetMapping("/{productId}")
-  public ResponseDto<ProductReturnDtoWIthProfile> getProduct(@PathVariable("productId") Long productId) {
-    ProductReturnDtoWIthProfile product = productService.getProduct(productId);
+  public ResponseDto<ProductReturnDtoWIthProfile> getProduct(@PathVariable("productId") Long productId, HttpServletRequest request) {
+    ProductReturnDtoWIthProfile product = productService.getProduct(productId, request );
     return new ResponseDto<>(SUCCESS, product);
   }
 
@@ -90,6 +90,12 @@ public class ProductController {
     Integer productSize = productService.getProductSize();
     log.info("{}", productSize);
     return ResponseDto.res("SUCCESS", productSize);
+  }
+
+  @GetMapping("/myproducts")
+  public ResponseDto<List<ProductReturnDto>> getMakerProducts(HttpServletRequest request) {
+    List<ProductReturnDto> productReturnDtoList = productService.getProductsByMaker(request);
+    return ResponseDto.res(SUCCESS, productReturnDtoList);
   }
 
   @GetMapping("/recent/product")

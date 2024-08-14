@@ -98,7 +98,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
         <div className="flex items-center justify-between">
           <NavLink
             className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-colors duration-300 ${isActive ? "text-black dark:text-white" : "text-gray-400"} `
+              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-color duration-300 ${isActive ? "text-black font-bold dark:text-white" : "text-gray-400"} `
             }
             to="/products"
           >
@@ -106,7 +106,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
           </NavLink>
           <NavLink
             className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-colors duration-300 ${isActive ? "text-black dark:text-white" : "text-gray-400"} `
+              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-colors duration-300 ${isActive ? "text-black font-bold dark:text-white" : "text-gray-400"} `
             }
             to="/chats"
           >
@@ -114,7 +114,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
           </NavLink>
           <NavLink
             className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-colors duration-300 ${isActive ? "text-black dark:text-white" : "text-gray-400"}`
+              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-colors duration-300 ${isActive ? "text-black font-bold dark:text-white" : "text-gray-400"}`
             }
             to={`/profile/${id}`}
           >
@@ -122,7 +122,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
           </NavLink>
           <NavLink
             className={({ isActive }) =>
-              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-colors duration-300 ${isActive ? "text-black dark:text-white" : "text-gray-400"}`
+              `text-lg mx-3 text-nowrap hover:text-black hover:scale-110 transition-colors duration-300 ${isActive ? "text-black font-bold dark:text-white" : "text-gray-400"}`
             }
             to="/boards"
           >

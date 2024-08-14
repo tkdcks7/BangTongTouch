@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import authAxios from "../../utils/authAxios";
 
 // Store
 import useUserStore from "../../store/userStore";
 
 // 이미지 소스
 import defaultRoom from "../../assets/Room1.jpg";
-import axios from "axios";
 
-const ProfileMyFavItems: React.FC = () => {
-  const [favItems, setFavItems] = useState<any>([]);
+const ProfileMyPostItems: React.FC = () => {
+  const [postItems, setPostItems] = useState<any>([]);
   const { id } = useUserStore();
 
   const roomType: { [key: string]: string } = {
@@ -21,42 +22,40 @@ const ProfileMyFavItems: React.FC = () => {
   };
 
   useEffect(() => {
-    axios({
+    authAxios({
       method: "GET",
-      url: `${process.env.REACT_APP_BACKEND_URL}/interests/${id}`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/products/myproducts`,
     })
       .then((res) => {
         console.log(res);
-        setFavItems(res.data.data);
+        setPostItems(res.data.data);
       })
       .catch((err) => console.log(err));
   }, []);
 
   return (
     <div className="flex flex-wrap justify-start">
-      {favItems &&
-        favItems.map((item: any) => (
-          <div className="me-3" key={item?.productReturnDto?.productId}>
-            <Link to={`/products/${item?.productReturnDto?.productId}`}>
+      {postItems &&
+        postItems.map((item: any) => (
+          <div className="me-3" key={item?.productId}>
+            <Link to={`/products/${item?.productId}`}>
               <img
                 src={
-                  item?.productReturnDto?.mediaList.length !== 0
-                    ? process.env.REACT_APP_BACKEND_SRC_URL +
-                      "/" +
-                      item?.productReturnDto?.mediaList[0].mediaPath
+                  item?.mediaList.length !== 0
+                    ? `${process.env.REACT_APP_BACKEND_SRC_URL}/${item?.mediaList[0]?.mediaPath}`
                     : defaultRoom
                 }
-                alt="관심매물 사진"
+                alt="업로드한 매물 사진"
                 width={120}
                 className="rounded-xl"
               />
             </Link>
             <div className="text-center">
               <p className="text-sm dark:text-white">
-                {`${item?.productReturnDto?.regionReturnDto?.regionDong || "Unknown Location"} ${roomType[item?.productReturnDto?.productType] || "Unknown Type"}`}
+                {`${item?.regionReturnDto?.regionDong || "Unknown Location"} ${roomType[item?.productType] || "Unknown Type"}`}
               </p>
               <p className="text-sm dark:text-white">
-                {`${item?.productReturnDto?.productDeposit || 0}/${item?.productReturnDto?.productRent || 0}`}
+                {`${item?.productDeposit || 0}/${item?.productRent || 0}`}
               </p>
             </div>
           </div>
@@ -65,4 +64,4 @@ const ProfileMyFavItems: React.FC = () => {
   );
 };
 
-export default ProfileMyFavItems;
+export default ProfileMyPostItems;
