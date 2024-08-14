@@ -215,6 +215,50 @@ public class ProductServiceImpl implements ProductService {
     return productReturnDtoList;
   }
 
+  public List<ProductReturnDto> getProductsByMaker(HttpServletRequest request) {
+    String token = jwtUtil.getAccessToken(request);
+    if (token == null || token.isEmpty()) {
+      return null;
+    }
+    Long userId = jwtUtil.getUserIdFromToken(token);
+    User u = userRepository.findById(userId).orElse(null);
+    if(!isValidUser(u)){
+      throw new IllegalArgumentException("올바르지 않은 접근입니다");
+    }
+    List<Product> products= productRepository.findByUserUserId(u.getUserId());
+    if(products==null || products.isEmpty()){
+      return null;
+    }else {
+      List<ProductReturnDto> productReturnDtoList = new ArrayList<>();
+      for (Product p : products) {
+        ProductReturnDto returnDto = getProductReturnDto(p);
+        productReturnDtoList.add(returnDto);
+      }
+      return productReturnDtoList;
+    }
+  }
+
+  private static ProductReturnDto getProductReturnDto(Product p) {
+    ProductReturnDto returnDto = ProductReturnDto.builder()
+        .productId(p.getProductId())
+        .productType(p.getProductType()).regionReturnDto(getRegionReturnDto(p))
+        .productAddress(p.getProductAddress()).productDeposit(p.getProductDeposit())
+        .productRent(p.getProductRent()).productMaintenance(p.getProductMaintenance())
+        .productMaintenanceInfo(p.getProductMaintenanceInfo())
+        .productIsRentSupportable(p.isProductIsRentSupportable())
+        .productIsFurnitureSupportable(p.isProductIsFurnitureSupportable())
+        .productSquare(p.getProductSquare()).productRoom(p.getProductRoom())
+        .productOption(p.getProductOption()).productAdditionalOption(getAdditionalOptionList(p))
+        .productPostDate(p.getProductPostDate()).productStartDate(p.getProductStartDate())
+        .productEndDate(p.getProductEndDate()).lat(p.getLat()).lng(p.getLng())
+        .productAdditionalDetail(p.getProductAddressDetail())
+        .productIsInterest(false)
+        .mediaList(p.getProductMedia())
+        .productIsDelete(p.isProductIsDeleted())
+        .score(0)
+        .build();
+    return returnDto;
+  }
 
 
   private double setScore(ProductSearchDto dto, Long productId) {
