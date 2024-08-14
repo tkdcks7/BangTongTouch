@@ -80,7 +80,7 @@ const CommunityCreate: React.FC = () => {
       <div className="mt-10">
         <RollBackBtn />
       </div>
-      <div className="rounded-lg">
+      <div className="rounded-lg dark:text-black">
         <div className="bg-lime-500 flex justify-between p-2 rounded-t-lg">
           <input
             className="bg-transparent w-full focus:outline-none text-white placeholder:text-white"

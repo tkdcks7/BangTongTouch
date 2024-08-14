@@ -208,7 +208,8 @@ const FilterBox: React.FC = () => {
       furnitureSupportable,
       infra: bitMaskingInfra(infra),
       startDate,
-      endDate,
+      endDate, address: undefined
+
     };
 
     if (
