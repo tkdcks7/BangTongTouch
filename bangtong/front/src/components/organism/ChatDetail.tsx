@@ -13,6 +13,7 @@ import useUserStore from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
 import Chat from "../molecules/Chat";
 import InputBox from "../molecules/InputBox";
+import defaultProfile from "../../assets/defaultprofile.jpg";
 
 interface ChatI {
   chatRoom: number;
@@ -175,8 +176,10 @@ const ChatDetail: React.FC = () => {
                 imgUrl={
                   item.writerId === userId
                     ? undefined
-                    : process.env.REACT_APP_BACKEND_SRC_URL +
-                      String(opponentUser?.profileImage)
+                    : opponentUser?.profileImage === null
+                      ? defaultProfile
+                      : process.env.REACT_APP_BACKEND_SRC_URL +
+                        String(opponentUser?.profileImage)
                 }
                 flag={item.writerId === userId}
               />
