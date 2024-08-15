@@ -78,6 +78,7 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
+      <Route path="test" element={<VideoChat />}></Route>
       <Route path="main" element={<InformationPage />} />
       {/* 로그인, 회원가입, 아이디, 비밀번호 찾기 네비게이션바 X */}
       <Route path="user" element={<UserPage />}>
@@ -104,7 +105,7 @@ const AppRoutes: React.FC = () => {
           {/* 채팅 페이지 */}
           <Route path="chats" element={<ChattingPage />}>
             <Route path="" element={<ChatMain />} />
-            <Route path="videochat/:roomId" element={<VideoChat />} />
+            {/* <Route path="videochat/:roomId" element={<VideoChat />} /> */}
             <Route path=":roomId" element={<ChatDetail />} />
           </Route>
 
