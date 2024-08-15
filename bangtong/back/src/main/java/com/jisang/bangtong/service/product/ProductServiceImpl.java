@@ -528,6 +528,28 @@ public class ProductServiceImpl implements ProductService {
     }
   }
 
+  public List<ProductReturnDto> getPreferProduct(HttpServletRequest request, Long preferProductId){
+    String token = jwtUtil.getAccessToken(request);
+    Long userId = jwtUtil.getUserIdFromToken(token);
+
+    Preference preference = preferenceRepository.findById(preferProductId).orElse(null);
+    if(preference == null){
+      throw new IllegalArgumentException("유효한 선호설정이 아닙니다");
+    }
+    if (!(userId.equals(preference.getUser().getUserId()))) {
+      throw new NotFoundException("유효한 사용자가 아닙니다");
+    }
+    Region region = preference.getRegion();
+    log.info("{}", region);
+    List<Product> products = productRepository.findTop3ByRegionIdOrderByProductPostDateDesc(region.getRegionId());
+    List<ProductReturnDto> productReturnDtos = new ArrayList<>();
+    for(Product p: products){
+      ProductReturnDto productReturnDto = getProductReturnDto(p);
+      productReturnDtos.add(productReturnDto);
+    }
+    return productReturnDtos;
+  }
+
   private Product getProductWhenUpdate(ProductUpdateDto productUpdateDto) {
     Product product = productRepository.findById(productUpdateDto.getProductId()).orElse(null);
     //setter 설정
@@ -545,14 +567,21 @@ public class ProductServiceImpl implements ProductService {
 
   private Product getProductWhenUpload(ProductUploadDto productUploadDto, User u) {
 
+
     List<String> strList = productUploadDto.getProductAdditionalOption();
     StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < strList.size() - 1; i++) {
-      String option = strList.get(i);
-      sb.append(option).append(",");
+
+    if(strList != null && !strList.isEmpty()) {
+      for (int i = 0; i < strList.size() - 1; i++) {
+        String option = strList.get(i);
+        sb.append(option).append(",");
+      }
+      sb.append(strList.get(strList.size() - 1));
+    }else{
+      sb.append("없음");
     }
 
-    sb.append(strList.get(strList.size() - 1));
+
 
     return Product.builder().productType(productUploadDto.getProductType())
         .region(regionRepository.findById(productUploadDto.getRegionId()).get()).user(u)

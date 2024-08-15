@@ -137,7 +137,7 @@ const ProductUpload: React.FC = () => {
   const open = useDaumPostcodePopup();
 
   const handleComplete = (data: any) => {
-    setAddress(data.address);
+    setAddress(data.roadAddress);
     setRegionId(data.bcode);
   };
 
