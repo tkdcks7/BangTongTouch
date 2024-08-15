@@ -23,19 +23,21 @@ const MainPage: React.FC = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    authAxios({
-      method: "GET",
-      url: `${process.env.REACT_APP_BACKEND_URL}/products/preference/${preferenceId}`,
-    })
-      .then((res) => {
-        console.log(res);
-        setProducts(res.data.data);
-        setIsLoading(false);
+    if (preferenceId !== 0) {
+      authAxios({
+        method: "GET",
+        url: `${process.env.REACT_APP_BACKEND_URL}/products/preference/${preferenceId}`,
       })
-      .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
+        .then((res) => {
+          console.log(res);
+          setProducts(res.data.data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setIsLoading(false);
+        });
+    }
   }, []);
 
   return (
