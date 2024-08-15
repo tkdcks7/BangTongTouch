@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useUserStore from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
@@ -12,15 +12,26 @@ import ProductAdditionalOptions from "../molecules/ProductAdditionalOptions";
 import LocationAround from "../molecules/LocationAround";
 import ProductDetailInterest from "../molecules/ProductDetailInterest";
 import Loading from "../atoms/Loading";
-import { Button, Card, Carousel, Col, ConfigProvider, Modal, Row } from "antd";
+import {
+  Button,
+  Card,
+  Carousel,
+  Col,
+  ConfigProvider,
+  Modal,
+  Row,
+  Select,
+} from "antd";
 
 // 이미지 소스
 import defaltHomeImg from "../../assets/defaulthome.png";
+import defaultProfile from "../../assets/defaultprofile.jpg";
 import {
   HeartOutlined,
   HeartFilled,
   DeleteOutlined,
   WechatOutlined,
+  AlertOutlined,
 } from "@ant-design/icons";
 import { error } from "console";
 
@@ -131,6 +142,13 @@ const ProductDetail: React.FC = () => {
   const [hover, setHover] = useState<boolean>(false);
 
   const [dark, setDark] = useState(true);
+
+  const reportRef = useRef<string>("");
+  const reportTypeRef = useRef<number>(0);
+  const changeModalStatus = () => {
+    reportRef.current = "";
+    setIsReportModalOpen(!isReportModalOpen);
+  };
 
   // 백엔드에서 상세 페이지 정보 받아오기
   useEffect(() => {
@@ -274,6 +292,36 @@ const ProductDetail: React.FC = () => {
     color: hover ? "#ffffff" : "",
   };
 
+  const reportBoard = () => {
+    if (reportTypeRef.current === 0) {
+      alert("신고 유형을 선택해주세요.");
+      return;
+    }
+
+    if (reportRef.current === "") {
+      alert("사유를 입력해주세요.");
+      return;
+    }
+    authAxios({
+      method: "POST",
+      url: `${process.env.REACT_APP_BACKEND_URL}/reports`,
+      data: {
+        reportSubjectTypeId: 0,
+        reportTypeId: reportTypeRef.current,
+        content: reportRef.current,
+        subjectId: parseInt(id!!),
+      },
+    })
+      .then((response) => {
+        alert("신고가 완료되었습니다.");
+        reportRef.current = "";
+      })
+      .catch((error) => {
+        alert("로그인 후 이용하실 수 있습니다.");
+      });
+    changeModalStatus();
+  };
+
   return (
     <>
       <div className="hidden md:block w-4/5 mx-auto">
@@ -285,7 +333,7 @@ const ProductDetail: React.FC = () => {
                 productInfo.productReturnDto.mediaList[0] ? (
                   productInfo.productReturnDto.mediaList.map((src: any) => (
                     <img
-                      src={`https://bangtong-bucket.s3.ap-northeast-2.amazonaws.com/${src.mediaPath}`}
+                      src={`${process.env.REACT_APP_BACKEND_SRC_URL}${src.mediaPath}`}
                       alt="집 이미지"
                       className="h-40"
                     />
@@ -357,8 +405,19 @@ const ProductDetail: React.FC = () => {
               />
             </div>
             <div className="flex justify-end items-center mt-5 text-2xl font-bold hover:cursor-pointer">
+              <button
+                onClick={() => setIsReportModalOpen(true)}
+                className="border border-red-400 text-xl text-red-400 p-2 mr-auto rounded-xl hover:bg-red-400 hover:text-white"
+              >
+                <AlertOutlined className="me-2" />
+                신고하기
+              </button>
               <img
-                src={`https://bangtong-bucket.s3.ap-northeast-2.amazonaws.com/${productInfo.profileDto.profileImage}`}
+                src={
+                  productInfo.profileDto.profileImage
+                    ? `${process.env.REACT_APP_BACKEND_SRC_URL}${productInfo.profileDto.profileImage}`
+                    : defaultProfile
+                }
                 alt="프로필 이미지"
                 className="w-10 h-10 me-5 rounded-full"
               />
@@ -448,8 +507,64 @@ const ProductDetail: React.FC = () => {
       </div>
       <div className="md:hidden">
         <div className="mt-10 w-full md:w-2/5 mx-auto">
-          <ImgCarousel imgSrcArray={productInfo.productReturnDto.mediaList} />
+          <ImgCarousel
+            imgSrcArray={productInfo.productReturnDto.mediaList}
+            isFromBack
+            isCanClick={false}
+          />
           <h2 className="text-2xl font-bold text-center">{`${productInfo.productReturnDto.regionReturnDto.regionSido} ${productInfo.productReturnDto.regionReturnDto.regionGugun} ${productInfo.productReturnDto.regionReturnDto.regionDong}`}</h2>
+          <div className="w-full text-center my-5">
+            <button
+              onClick={() => setIsReportModalOpen(true)}
+              className="bg-red-400 w-8 h-8 me-3 rounded-xl"
+            >
+              <AlertOutlined />
+            </button>
+            <Modal
+              title="게시글 신고"
+              open={isReportModalOpen}
+              onOk={reportBoard}
+              onCancel={changeModalStatus}
+            >
+              <div>
+                <div>게시글 작성자: {productInfo?.profileDto.nickname}</div>
+              </div>
+              <Select
+                defaultValue={"신고 유형"}
+                className="w-full my-2"
+                onChange={(e) => {
+                  reportTypeRef.current = parseInt(e);
+                  console.log(reportTypeRef.current);
+                }}
+                options={[
+                  { value: 1, label: "스팸/도배" },
+                  { value: 2, label: "음란물" },
+                  { value: 3, label: "유해한 내용" },
+                  { value: 4, label: "비속어/차별적 표현" },
+                  { value: 5, label: "개인정보 노출" },
+                  { value: 6, label: "불쾌한 표현" },
+                ]}
+              />
+              <span>신고 사유</span>
+              <textarea
+                className="w-full border resize-none"
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  reportRef.current = e.target.value;
+                }}
+              />
+            </Modal>
+            <button
+              onClick={handleInterestBtn}
+              className={`w-8 h-8 border rounded-xl ${isInterest ? "border-red-300" : "border-black"}`}
+            >
+              {isInterest ? (
+                <HeartFilled className="text-red-400" />
+              ) : (
+                <HeartOutlined />
+              )}
+            </button>
+          </div>
           {/* 유저 프로필, 연락하기 */}
           <ProductProfile
             userinfo={productInfo.profileDto}
@@ -508,23 +623,6 @@ const ProductDetail: React.FC = () => {
           />
           <div className="h-20" />
         </div>
-        <button onClick={() => setIsReportModalOpen(true)}>
-          신고버튼테스트
-        </button>
-        <br />
-        <button onClick={handleInterestBtn}>
-          {isInterest ? <HeartFilled /> : <HeartOutlined />}
-        </button>
-        <ConfigProvider theme={theme}>
-          <Modal
-            title="지역을 선택해주세요."
-            open={isReportModalOpen}
-            onOk={handleModalOk}
-            onCancel={handleModalCancel}
-          >
-            <div className="p-2 text-center"></div>
-          </Modal>
-        </ConfigProvider>
       </div>
     </>
   );

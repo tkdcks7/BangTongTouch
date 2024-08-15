@@ -237,7 +237,7 @@ const CommunityDetail: React.FC = () => {
             <div className="flex justify-between">
               <RollBackBtn />
               <Dropdown
-                className="w-10 rounded-xl mb-3 dark:text-white"
+                className="w-10 rounded-xl mb-3 dark:text-white hover:cursor-pointer"
                 trigger={["click"]}
                 menu={{
                   items:
