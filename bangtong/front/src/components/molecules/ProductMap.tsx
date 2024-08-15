@@ -102,7 +102,7 @@ const ProductMap: React.FC<MapProps> = ({ height }) => {
             <ConfigProvider theme={yellowTheme}>
               <Button
                 type="primary"
-                className="w-40 h-10 absolute right-5 bottom-5 shadow-lg"
+                className="w-40 h-10 absolute right-5 bottom-5 shadow-lg text-black"
                 onClick={() => navigate("upload")}
               >
                 <UploadOutlined />
