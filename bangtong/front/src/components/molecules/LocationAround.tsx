@@ -21,7 +21,7 @@ const LocationAround: React.FC<Pos> = ({ lat, lng }) => {
   const [basePosition, setBasePosition] = useState<Pos>({ lat: 0, lng: 0 });
   useEffect(() => {
     setBasePosition({ lat: 37.5, lng: 127 });
-    setBasePosition({ lat, lng });
+    setBasePosition({ lat: lng, lng: lat });
     setIsDataLoaded(true);
   }, []);
 
