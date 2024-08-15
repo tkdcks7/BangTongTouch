@@ -7,8 +7,6 @@ import { motion } from "framer-motion";
 // 컴포넌트
 import { ConfigProvider, Input, Form } from "antd";
 // 컴포넌트
-import InputBox from "../molecules/InputBox";
-import DropDown from "./DropDown";
 
 // ant design 글로벌 디자인 토큰
 const theme = {
@@ -27,7 +25,8 @@ const ProfileEdit: React.FC = () => {
   const { id, email } = useUserStore();
   const navigate = useNavigate();
 
-  const handleUserInfoUpdate = () => {
+  const handleUserInfoUpdate = (e: any) => {
+    e.preventDefault();
     if (password !== pwSecond) {
       window.alert("두 비밀번호가 일치하지 않습니다.");
       return;
@@ -39,11 +38,11 @@ const ProfileEdit: React.FC = () => {
     };
 
     authAxios({
-      method: "POST",
+      method: "PUT",
       url: `${process.env.REACT_APP_BACKEND_URL}/users/modify/${id}`,
       data: sendData,
     })
-      .then((response) => navigate(`/profile/${id}`))
+      .then(() => navigate(`/profile/${id}`))
       .catch((err) => console.log(err));
   };
 

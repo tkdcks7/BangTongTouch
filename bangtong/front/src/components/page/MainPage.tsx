@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import authAxios from "../../utils/authAxios";
+import { useUserPreferStore } from "../../store/userStore";
 
 // 컴포넌트
 import CarouselBox from "../organism/CarouselBox";
@@ -18,11 +19,13 @@ const MainPage: React.FC = () => {
   const [isHover, setIsHover] = useState<boolean>(false);
   const navigate = useNavigate();
 
+  const { preferenceId } = useUserPreferStore();
+
   useEffect(() => {
     setIsLoading(true);
     authAxios({
       method: "GET",
-      url: `${process.env.REACT_APP_BACKEND_URL}/products/recent/product`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/products/recent/${preferenceId}`,
     })
       .then((res) => {
         console.log(res);

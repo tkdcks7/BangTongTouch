@@ -21,7 +21,8 @@ const ProfilePwConfirm: React.FC = () => {
   };
 
   // 비밀번호를 이용해 유효한 유저인지 판별하는 함수
-  const handlePwVerify = () => {
+  const handlePwVerify = (e: any) => {
+    e.preventDefault();
     authAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/users/password`,
@@ -31,7 +32,6 @@ const ProfilePwConfirm: React.FC = () => {
       },
     })
       .then((response) => {
-        console.log(response);
         if (response.data.data) {
           navigate(`/profile/${id}/update/confirmed`);
         } else {
