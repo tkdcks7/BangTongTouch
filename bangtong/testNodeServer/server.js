@@ -16,6 +16,7 @@ app.use(cors(corsOptions));
 
 const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer, {
+  path: "/socket.io/",
   cors: {
     origin: "*", // 클라이언트의 출처를 명시적으로 허용
     methods: ["GET", "POST"],

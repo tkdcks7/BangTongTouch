@@ -27,7 +27,8 @@ const VideoChat: React.FC = () => {
       socketRef.current?.emit("join_room", roomName);
     };
 
-    socketRef.current = io("https://i11d206.p.ssafy.io/rtc", {
+    socketRef.current = io("https://i11d206.p.ssafy.io", {
+      path: "/rtc/socket.io/",
       withCredentials: true,
       transports: ["websocket"], // WebSocket을 사용하여 연결 시도
     });
@@ -97,6 +98,10 @@ const VideoChat: React.FC = () => {
     socketRef.current.on("offer", handleOffer);
     socketRef.current.on("answer", handleAnswer);
     socketRef.current.on("ice", handleIce);
+
+    socketRef.current.on("connect_error", (error) => {
+      console.error("Connection error:", error);
+    });
 
     return () => {
       socketRef.current?.off("welcome", handleWelcome);
