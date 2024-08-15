@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import useUserStore from "../../store/userStore";
+import useUserStore, { useUserPreferStore } from "../../store/userStore";
 import { motion } from "framer-motion";
 
 // 컴포넌트 불러오기
@@ -14,11 +14,13 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import Google from "../../assets/GoogleSocial.png";
 import Kakao from "../../assets/KakaoSocial.png";
 import Naver from "../../assets/NaverSocial.png";
+import authAxios from "../../utils/authAxios";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { token, setInfoUpdate, setToken } = useUserStore(); // store
+  const { setPreferUpdate } = useUserPreferStore();
   const navigate = useNavigate();
   const [errorCount, setErrorCount] = useState(0);
   const [form] = Form.useForm(); // antd
@@ -93,11 +95,24 @@ const LoginPage: React.FC = () => {
       data: payload,
     })
       .then((response) => {
+        console.log(response.data.data.id);
         const infoObj = response.data.data;
         infoObj.email = email; // 본인이 입력한 이메일 추가
         setInfoUpdate(infoObj);
         setToken(response.headers.authorization);
-        navigate("../../");
+        authAxios({
+          method: "GET",
+          url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${response.data.data.id}/list`,
+        })
+          .then((response) => {
+            console.log(response);
+            console.log(response.data.data);
+            setPreferUpdate(response.data.data[0]);
+            navigate("../../");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
       .catch(() => setErrorCount((state) => state + 1));
   };
