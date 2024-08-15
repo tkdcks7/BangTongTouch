@@ -1,8 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import io, { Socket } from "socket.io-client";
+import {
+  AudioFilled,
+  AudioMutedOutlined,
+  CameraFilled,
+  CameraOutlined,
+  LogoutOutlined,
+  VideoCameraFilled,
+  VideoCameraOutlined,
+} from "@ant-design/icons";
 
 const VideoChat: React.FC = () => {
-  const [roomName, setRoomName] = useState<string>("");
+  const { roomId } = useParams<{ roomId: string }>();
   const mystreamRef = useRef<MediaStream | null>(null);
 
   const [muted, setMuted] = useState<boolean>(false);
@@ -18,8 +28,6 @@ const VideoChat: React.FC = () => {
   const iceCandidatesQueue = useRef<RTCIceCandidateInit[]>([]);
 
   useEffect(() => {
-    if (!roomName) return;
-
     const initSocket = () => {
       socketRef.current = io("https://i11d206.p.ssafy.io", {
         path: "/rtc/socket.io/",
@@ -46,7 +54,7 @@ const VideoChat: React.FC = () => {
           const offer = await peerConnectionRef.current.createOffer();
           await peerConnectionRef.current.setLocalDescription(offer);
           console.log("Sending offer:", offer);
-          socketRef.current?.emit("offer", offer, roomName);
+          socketRef.current?.emit("offer", offer, roomId);
         } catch (error) {
           console.error("Error in 'welcome' event handler:", error);
         }
@@ -61,7 +69,7 @@ const VideoChat: React.FC = () => {
           await pc.setRemoteDescription(new RTCSessionDescription(offer));
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
-          socketRef.current?.emit("answer", answer, roomName);
+          socketRef.current?.emit("answer", answer, roomId);
 
           // Process any queued ICE candidates now that the remote description is set
           iceCandidatesQueue.current.forEach(async (candidate) => {
@@ -132,7 +140,6 @@ const VideoChat: React.FC = () => {
     };
 
     const initCall = async () => {
-      if (!roomName) return;
       await getMedia(camerasSelectRef.current?.value);
       makeConnection();
     };
@@ -146,7 +153,7 @@ const VideoChat: React.FC = () => {
         peerConnectionRef.current.close();
       }
     };
-  }, [roomName]);
+  }, []);
 
   const getCameras = async () => {
     if (camerasSelectRef.current) {
@@ -250,7 +257,7 @@ const VideoChat: React.FC = () => {
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
         console.log("ice candidate");
-        socketRef.current?.emit("ice", event.candidate, roomName);
+        socketRef.current?.emit("ice", event.candidate, roomId);
       }
     };
 
@@ -276,55 +283,61 @@ const VideoChat: React.FC = () => {
     peerConnectionRef.current = peerConnection;
 
     console.log("PeerConnection created:", peerConnection);
-    socketRef.current?.emit("join_room", roomName);
+    socketRef.current?.emit("join_room", roomId);
   };
 
-  const handleWelcomeSubmit = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault();
-    const input = (
-      event.currentTarget.querySelector("input") as HTMLInputElement
-    )?.value;
-    if (input) {
-      setRoomName(input);
-    }
-  };
+  const navigate = useNavigate();
 
   return (
-    <div>
-      <div id="welcome">
-        <form onSubmit={handleWelcomeSubmit}>
-          <input placeholder="room name" type="text" />
-          <button type="submit">Enter room</button>
-        </form>
-      </div>
+    <div className={"w-screen h-screen bg-black fixed top-0 left-0 z-10"}>
       <div id="call">
-        <video
-          id="myFace"
-          ref={myFaceRef}
-          autoPlay
-          playsInline
-          width={350}
-        ></video>
-        <button id="mute" onClick={handleMuteClick}>
-          {muted ? "Unmute" : "Mute"}
-        </button>
-        <button id="camera" onClick={handleCameraClick}>
-          {cameraOff ? "Turn Camera On" : "Turn Camera Off"}
-        </button>
-        <select
-          id="cameras"
-          ref={camerasSelectRef}
-          onChange={handleCameraChange}
-        ></select>
         <video
           id="peerFace"
           ref={peerFaceRef}
           autoPlay
           playsInline
-          width={350}
+          className={"w-full h-full fixed top-0 left-0 -scale-x-100"}
         ></video>
+        <video
+          id="myFace"
+          ref={myFaceRef}
+          autoPlay
+          playsInline
+          className={`w-1/6 fixed top-5 right-5 -scale-x-100 ${cameraOff ? "hidden" : ""}`}
+        ></video>
+        <div
+          className={
+            "fixed bottom-20 flex flex-row justify-center items-center w-full gap-3"
+          }
+        >
+          <button
+            id="mute"
+            onClick={handleMuteClick}
+            className={`text-white size-14  rounded-full ${muted ? "  bg-red-600" : "bg-green-500"}`}
+          >
+            {muted ? <AudioMutedOutlined /> : <AudioFilled />}
+          </button>
+          <button
+            id="camera"
+            onClick={handleCameraClick}
+            className={`text-white size-14 rounded-full  ${cameraOff ? "bg-red-600" : "bg-green-500"}`}
+          >
+            {cameraOff ? <VideoCameraOutlined /> : <VideoCameraFilled />}
+          </button>
+          <button
+            className={"bg-red-600 size-14 text-white rounded-full"}
+            onClick={() => {
+              navigate("/chats");
+            }}
+          >
+            <LogoutOutlined />
+          </button>
+        </div>
+        {/*<select*/}
+        {/*  id="cameras"*/}
+        {/*  ref={camerasSelectRef}*/}
+        {/*  onChange={handleCameraChange}*/}
+        {/*></select>*/}
       </div>
     </div>
   );
