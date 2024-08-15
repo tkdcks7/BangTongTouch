@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/regions")
-@Slf4j
 public class RegionController {
 
   private final String SUCCESS = "success";

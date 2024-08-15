@@ -19,109 +19,106 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class ReportService {
 
-    private final String SUCCESS = "success";
-    private final String CLIENT_ERROR = "client_error";
-    private final String SERVER_ERROR = "server_error";
-    private final int maxCount = 3;  //신고 최대 카운트
+  private final String SUCCESS = "success";
+  private final String CLIENT_ERROR = "client_error";
+  private final String SERVER_ERROR = "server_error";
+  private final int maxCount = 3;  //신고 최대 카운트
 
 
-    private ReportRepository reportRepository;
-    private ReportTypeRepository reportTypeRepository;
-    private UserRepository userRepository;
-    private BoardRepository boardRepository;
-    private ProductRepository productRepository;
+  private ReportRepository reportRepository;
+  private ReportTypeRepository reportTypeRepository;
+  private UserRepository userRepository;
+  private BoardRepository boardRepository;
+  private ProductRepository productRepository;
 
-    private final String BANNED = "신고 누저으로 인해 이용에 제한이 생겼습니다.";
+  private final String BANNED = "신고 누저으로 인해 이용에 제한이 생겼습니다.";
 
-    // 신고 전송
-    @Transactional
-    public Report manageReport(ReportDto reportDto) {
-        Report report = new Report();
-        int reportTypeId = reportDto.getReportTypeId();
-        report.setReportType(reportTypeRepository.findById(reportTypeId).orElse(null));
-        report.setReportContent(reportDto.getContent());
+  // 신고 전송
+  @Transactional
+  public Report manageReport(ReportDto reportDto) {
+    Report report = new Report();
+    int reportTypeId = reportDto.getReportTypeId();
+    report.setReportType(reportTypeRepository.findById(reportTypeId).orElse(null));
+    report.setReportContent(reportDto.getContent());
 
-        int reportSubjectTypeId = reportDto.getReportSubjectTypeId();
-        Long subjectId = reportDto.getSubjectId();
-        User reportedUser = null;
+    int reportSubjectTypeId = reportDto.getReportSubjectTypeId();
+    Long subjectId = reportDto.getSubjectId();
+    User reportedUser = null;
 
 //        report switch
-        switch (reportSubjectTypeId) {
-            case 0:
-                Board board = boardRepository.findById(reportDto.getSubjectId()).orElse(null);
+    switch (reportSubjectTypeId) {
+      case 0:
+        Board board = boardRepository.findById(reportDto.getSubjectId()).orElse(null);
 
-                if (board == null) {
-                    report = null;
-                } else {
-                    report.setBoard(board);
-                    reportedUser = board.getBoardWriter();
-                }
-
-                break;
-            case 1:
-                Product product = productRepository.findById(subjectId).orElse(null);
-
-                if (product == null) {
-                    report = null;
-                } else {
-                    report.setProduct(product);
-                    reportedUser = product.getUser();
-                }
-
-                break;
-            case 2:
-                reportedUser = userRepository.findById(reportDto.getSubjectId()).orElse(null);
-
-                if (reportedUser == null) {
-                    report = null;
-                } else {
-                    report.setUser(reportedUser);
-                }
-
-                break;
-
-            default:
-                return null;
+        if (board == null) {
+          report = null;
+        } else {
+          report.setBoard(board);
+          reportedUser = board.getBoardWriter();
         }
 
+        break;
+      case 1:
+        Product product = productRepository.findById(subjectId).orElse(null);
 
-        if (report != null) {
-            reportRepository.save(report);
-
-            if (reportedUser != null) {
-                int reportCountUser = reportRepository.countByUser_UserId(reportedUser.getUserId());
-                log.info("User reports: {}", reportCountUser);
-
-                if (reportCountUser >= maxCount) {
-                    reportedUser.setUserIsBanned(true);
-                    userRepository.save(reportedUser);
-//                    return BANNED;
-                }
-
-            }
-
-            if (report.getBoard() != null) {
-                int reportCountBoard = reportRepository.countByBoard_BoardId(report.getBoard().getBoardId());
-                log.info("Board reports: {}", reportCountBoard);
-                if (reportCountBoard >= maxCount) {
-                    report.getBoard().setBoardIsBanned(true);
-                    boardRepository.save(report.getBoard());
-                }
-            }
-
-            if (report.getProduct() != null) {
-                int reportCountProduct = reportRepository.countByProduct_ProductId(report.getProduct().getProductId());
-                log.info("Product reports: {}", reportCountProduct);
-                if (reportCountProduct >= maxCount) {
-                    report.getProduct().setProductIsBanned(true);
-                    productRepository.save(report.getProduct());
-                }
-            }
+        if (product == null) {
+          report = null;
+        } else {
+          report.setProduct(product);
+          reportedUser = product.getUser();
         }
 
-        return report;
+        break;
+      case 2:
+        reportedUser = userRepository.findById(reportDto.getSubjectId()).orElse(null);
+
+        if (reportedUser == null) {
+          report = null;
+        } else {
+          report.setUser(reportedUser);
+        }
+
+        break;
+
+      default:
+        return null;
     }
+
+    if (report != null) {
+      reportRepository.save(report);
+
+      if (reportedUser != null) {
+        int reportCountUser = reportRepository.countByUser_UserId(reportedUser.getUserId());
+
+        if (reportCountUser >= maxCount) {
+          reportedUser.setUserIsBanned(true);
+          userRepository.save(reportedUser);
+//                    return BANNED;
+        }
+
+      }
+
+      if (report.getBoard() != null) {
+        int reportCountBoard = reportRepository.countByBoard_BoardId(
+            report.getBoard().getBoardId());
+        if (reportCountBoard >= maxCount) {
+          report.getBoard().setBoardIsBanned(true);
+          boardRepository.save(report.getBoard());
+        }
+      }
+
+      if (report.getProduct() != null) {
+        int reportCountProduct = reportRepository.countByProduct_ProductId(
+            report.getProduct().getProductId());
+        if (reportCountProduct >= maxCount) {
+          report.getProduct().setProductIsBanned(true);
+          productRepository.save(report.getProduct());
+        }
+      }
+    }
+
+    return report;
+  }
 }

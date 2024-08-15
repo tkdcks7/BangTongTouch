@@ -105,8 +105,10 @@ public class ProductController {
   }
 
   @GetMapping("/preference/{preferenceId}")
-  public ResponseDto<List<ProductReturnDto>> getPreferProduct(HttpServletRequest request, @PathVariable("preferenceId") Long preferenceId) {
-    List<ProductReturnDto> productReturnDtoList = productService.getPreferProduct(request, preferenceId);
+  public ResponseDto<List<ProductReturnDto>> getPreferProduct(HttpServletRequest request,
+      @PathVariable("preferenceId") Long preferenceId) {
+    List<ProductReturnDto> productReturnDtoList = productService.getPreferProduct(request,
+        preferenceId);
     return ResponseDto.res("SUCCESS", productReturnDtoList);
   }
 

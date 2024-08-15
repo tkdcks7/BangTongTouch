@@ -21,8 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
-public class InterestServiceImpl implements InterestService{
+public class InterestServiceImpl implements InterestService {
 
   @Autowired
   private InterestRepository interestRepository;
@@ -35,44 +34,36 @@ public class InterestServiceImpl implements InterestService{
 
 
   @Override
-  public void add(InterestDto interestDto){
-    log.info("add 시작");
-    //log.info("interestDto: {}", interestDto);
+  public void add(InterestDto interestDto) {
     Interest interest = new Interest();
-    
+
     //user 객체 얻기
     Optional<User> user = userRepository.findById(interestDto.getUserId());
-    user.ifPresent(value -> log.info("user{}", value));
-    
+
     //product 객체 얻기
     Optional<Product> product = productRepository.findById(interestDto.getProductId());
-    product.ifPresent(value-> log.info("product{}", value));
-    
-    if(user.isPresent() &&
-     product.isPresent()){
+
+    if (user.isPresent() &&
+        product.isPresent()) {
       interest.setUser(user.get());
       interest.setProduct(product.get());
       interestRepository.save(interest);
-    }
-    else{
+    } else {
       throw new RuntimeException("user or product not found");
     }
   }
 
   @Override
   public void delete(InterestDto interestDto) {
-    log.info("delete 실행 {}", interestDto);
-    interestRepository.deleteByUserIdAndProductId(interestDto.getUserId(), interestDto.getProductId());
+    interestRepository.deleteByUserIdAndProductId(interestDto.getUserId(),
+        interestDto.getProductId());
   }
 
   @Override
-  public List<InterestReturnDto> getList(Long userId){
-    log.info("Interest ServiceImpl getList 실행");
-
+  public List<InterestReturnDto> getList(Long userId) {
     List<Interest> interests = interestRepository.findAllByUser_UserId(userId).orElse(null);
-    log.info("{}", interests.size());
     List<InterestReturnDto> interestReturnDtos = new ArrayList<>();
-    for(Interest interest : interests){
+    for (Interest interest : interests) {
       Region region = interest.getProduct().getRegion();
       RegionReturnDto dto = RegionReturnDto.builder()
           .regionId(region.getRegionId())
@@ -124,7 +115,7 @@ public class InterestServiceImpl implements InterestService{
   }
 
   @Override
-  public Interest getInterest(Long userId, Long productId){
+  public Interest getInterest(Long userId, Long productId) {
     return interestRepository.findByProduct_ProductIdAndUser_UserId(productId, userId).orElse(null);
   }
 

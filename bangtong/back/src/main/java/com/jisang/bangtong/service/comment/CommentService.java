@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @Builder
 public class CommentService {
@@ -38,8 +37,6 @@ public class CommentService {
 
   //  댓글 작성
   public void writeComment(Long boardId, CommentDto commentDto, HttpServletRequest request) {
-    log.info("Service: writeComment 시작");
-
     Long commentPid = commentDto.getParentId();
     if (isCommentDtoNull(commentDto)) {
       throw new IllegalArgumentException("댓글 내용이 누락되었습니다.");
@@ -57,7 +54,6 @@ public class CommentService {
     if (!isValidUser(writer)) {
       throw new NotFoundException("작성자를 찾을 수 없습니다.");
     }
-    log.info("write : {}", writer);
     Comment comment = Comment.builder()
         .commentUser(writer)
         .commentContent(commentDto.getContent())
@@ -75,7 +71,6 @@ public class CommentService {
 
   //  댓글 수정
   public IComment modifyComment(long commentId, String content, HttpServletRequest request) {
-    log.info("Comment: modifyComment 실행");
     String token = jwtUtil.getAccessToken(request);
     Long userId = jwtUtil.getUserIdFromToken(token);
 
@@ -91,8 +86,6 @@ public class CommentService {
     comment.setCommentContent(content);
     comment.setCommentDate(new Date());
     commentRepository.save(comment);
-
-
 
     return IComment.builder()
         .commentId(comment.getCommentId())
@@ -161,7 +154,9 @@ public class CommentService {
     Comment comment = commentRepository.findById(commentId).orElse(null);
 
     List<Comment> p = comment.getComments();
-    if(p == null) return null;
+    if (p == null) {
+      return null;
+    }
 
     for (Comment s : comment.getComments()) {
       ISubComment iSubComment = ISubComment.builder()
@@ -176,7 +171,7 @@ public class CommentService {
     return subComment;
   }
 
-  private IUser getIUser(User user){
+  private IUser getIUser(User user) {
     return IUser.builder()
         .nickname(user.getUserNickname())
         .userId(user.getUserId())
@@ -210,7 +205,6 @@ public class CommentService {
     }
 
     Comment comment = commentRepository.findById(parentId).orElse(null);
-    log.info("parent id {}, {}", parentId, comment);
     return comment != null;
   }
 
