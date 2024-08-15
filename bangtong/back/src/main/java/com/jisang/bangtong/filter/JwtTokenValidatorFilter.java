@@ -20,7 +20,6 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@Slf4j
 public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
   private final UserRepository userRepository;

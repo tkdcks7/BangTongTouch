@@ -36,7 +36,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
-@Slf4j
 public class UserController {
 
   private final JwtUtil jwtUtil;

@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 public class ChatroomLogImpl implements ChatroomLog {
 
@@ -34,8 +33,7 @@ public class ChatroomLogImpl implements ChatroomLog {
   }
 
   @Override
-  public Chatroomlog enterOut(UserChatroomId userChatroomId){
-    log.info("enterOut {}", userChatroomId.toString());
+  public Chatroomlog enterOut(UserChatroomId userChatroomId) {
     return updateChatroomLog(userChatroomId, false);
   }
 

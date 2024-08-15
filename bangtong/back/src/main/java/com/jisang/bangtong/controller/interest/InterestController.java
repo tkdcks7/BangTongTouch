@@ -20,24 +20,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/interests")
-@Slf4j
 public class InterestController {
-  static final String SUCCESS="success";
+
+  static final String SUCCESS = "success";
 
   @Autowired
   private InterestService interestService;
 
   @PostMapping("/add")
   public ResponseDto<Void> add(@RequestBody InterestDto interestDto) {
-
-    log.info("interest: {}", interestDto);
     interestService.add(interestDto);
     return ResponseDto.res(SUCCESS);
   }
 
   @DeleteMapping("/delete/{userId}/{productId}")
-  public ResponseDto<Void> delete(@PathVariable("userId") String userId, @PathVariable("productId") String productId) {
-    log.info("Interests delete 실행");
+  public ResponseDto<Void> delete(@PathVariable("userId") String userId,
+      @PathVariable("productId") String productId) {
     InterestDto interestDto = new InterestDto();
     interestDto.setProductId(Long.parseLong(productId));
     interestDto.setUserId(Long.parseLong(userId));
@@ -46,15 +44,11 @@ public class InterestController {
   }
 
   @GetMapping("/{userId}")
-  public ResponseDto<List<InterestReturnDto>> getList(@PathVariable Long userId){
-    log.info("찜 목록 가져오는 쿼리 실행");
+  public ResponseDto<List<InterestReturnDto>> getList(@PathVariable Long userId) {
     List<InterestReturnDto> optionalInterestList = interestService.getList(userId);
-    if (!optionalInterestList.isEmpty()){
-      log.info("asdfasdf {}", optionalInterestList);
-      return ResponseDto.res(SUCCESS,optionalInterestList);
-    }
-    else{
-      log.info("찜 목록이 없습니다");
+    if (!optionalInterestList.isEmpty()) {
+      return ResponseDto.res(SUCCESS, optionalInterestList);
+    } else {
       return ResponseDto.res(SUCCESS);
     }
 

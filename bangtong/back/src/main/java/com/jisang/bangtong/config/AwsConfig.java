@@ -22,7 +22,7 @@ public class AwsConfig {
   private String region;
 
   @Bean
-  AmazonS3 amazonS3(){
+  AmazonS3 amazonS3() {
     try {
       AWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
       return AmazonS3ClientBuilder.standard()

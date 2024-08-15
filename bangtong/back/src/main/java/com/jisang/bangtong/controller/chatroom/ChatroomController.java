@@ -27,12 +27,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Slf4j
 @RequestMapping("/chatrooms")
 public class ChatroomController {
+
   private final String SUCCESS = "success";
   private final String SERVER_ERROR = "server_error";
   private final String CLIENT_ERROR = "client_error";
+
   @Autowired
   private ChatroomService chatroomService;
   @Autowired
@@ -44,36 +45,35 @@ public class ChatroomController {
 
   @PostMapping("/save")
   public ResponseDto<Long> save(@RequestBody ChatroomDto chatroomDto) {
-    log.info("{}", chatroomDto);
     Long chatroomId = chatroomService.createChatroom(chatroomDto);
     return ResponseDto.res(SUCCESS, chatroomId);
   }
 
   @GetMapping("/out/{chatroomId}")
   public ResponseDto<Void> out(@PathVariable Long chatroomId, HttpServletRequest request) {
-    log.info("Chatroom Out 실행{}", chatroomId);
     String token = jwtUtil.getAccessToken(request);
-    if(token == null || token.isEmpty()){
+    if (token == null || token.isEmpty()) {
       throw new IllegalArgumentException(SERVER_ERROR);
     }
     Long userId = jwtUtil.getUserIdFromToken(token);
     User u = userRepository.findById(userId).orElse(null);
-    if(u == null || (userId != u.getUserId())){
+    if (u == null || (userId != u.getUserId())) {
       throw new IllegalArgumentException("올바른 사용자가 아닙니다.");
     }
     UserChatroomId userChatroomId = new UserChatroomId(userId, chatroomId);
     chatroomLog.enterOut(userChatroomId);
     return ResponseDto.res(SUCCESS);
   }
-  
+
   @PutMapping("/end/{chatroomId}/{userId}")
-  public ResponseDto<Void> end(@PathVariable Long chatroomId, @PathVariable Long uId, HttpServletRequest request) {
+  public ResponseDto<Void> end(@PathVariable Long chatroomId, @PathVariable Long uId,
+      HttpServletRequest request) {
     String token = jwtUtil.getAccessToken(request);
-    if(token == null || token.isEmpty()){
+    if (token == null || token.isEmpty()) {
       throw new IllegalArgumentException(SERVER_ERROR);
     }
     Long userId = jwtUtil.getUserIdFromToken(token);
-    if(userId == null || !userId.equals( uId)){
+    if (userId == null || !userId.equals(uId)) {
       throw new IllegalArgumentException("올바른 사용자가 아닙니다.");
     }
     chatroomService.exitChatroom(chatroomId, userId);
@@ -83,27 +83,23 @@ public class ChatroomController {
 
   @GetMapping("/{userId}")
   public ResponseDto<List<ChatroomReturnDto>> getrooms(@PathVariable Long userId) {
-    log.info("{}", userId);
-    List<ChatroomReturnDto>chatroomReturnDtoList = chatroomService.getChatroom(userId);
-    log.info("List 출력 {}", chatroomReturnDtoList);
+    List<ChatroomReturnDto> chatroomReturnDtoList = chatroomService.getChatroom(userId);
     return ResponseDto.res(SUCCESS, chatroomReturnDtoList);
   }
 
   @GetMapping("/chat/{chatroomId}")
-  public ResponseDto<ChatReturnDto> getChats(@PathVariable Long chatroomId, HttpServletRequest request){
-    log.info("{}", chatroomId);
+  public ResponseDto<ChatReturnDto> getChats(@PathVariable Long chatroomId,
+      HttpServletRequest request) {
     String token = jwtUtil.getAccessToken(request);
-    if(token == null || token.isEmpty()){
+    if (token == null || token.isEmpty()) {
       throw new IllegalArgumentException("토큰이 유효하지 않습니다");
     }
-    ChatReturnDto chatReturnDto =  chatroomService.getChats(chatroomId);
+    ChatReturnDto chatReturnDto = chatroomService.getChats(chatroomId);
 
     Long userId = jwtUtil.getUserIdFromToken(token);
     UserChatroomId userChatroomId = new UserChatroomId(userId, chatroomId);
-    log.info("{}", userChatroomId);
     chatroomLog.enterIn(userChatroomId);
 
-    log.info("getChats: {}", chatReturnDto);
     return ResponseDto.res(SUCCESS, chatReturnDto);
   }
 }

@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -36,14 +35,11 @@ public class ProductController {
 
   @Autowired
   private ProductService productService;
-  //  TODO: MediaService 생성 후 연결
 
   //  매물 업로드
-  //  TODO: Multipart 처리
   @PostMapping(value = "/upload")
   public ResponseDto<Void> upload(@RequestPart @Valid ProductUploadDto productUploadDto,
       @RequestPart(required = false) List<MultipartFile> productMedia, HttpServletRequest request) {
-    log.info("product upload 실행 {}", productUploadDto);
     productService.upload(productUploadDto, productMedia, request);
     return new ResponseDto<>(SUCCESS);
   }
@@ -51,7 +47,6 @@ public class ProductController {
   @PutMapping("/modify/{productId}")
   public ResponseDto<Void> modify(@RequestBody @Valid ProductUpdateDto productUpdateDto,
       HttpServletRequest request, @PathVariable Long productId) {
-    log.info("modify 실행 {}", productUpdateDto);
     productService.update(productUpdateDto, productId, request);
     return new ResponseDto<>(SUCCESS);
   }
@@ -59,8 +54,9 @@ public class ProductController {
   //매물 조회
   @Transactional
   @GetMapping("/{productId}")
-  public ResponseDto<ProductReturnDtoWIthProfile> getProduct(@PathVariable("productId") Long productId, HttpServletRequest request) {
-    ProductReturnDtoWIthProfile product = productService.getProduct(productId, request );
+  public ResponseDto<ProductReturnDtoWIthProfile> getProduct(
+      @PathVariable("productId") Long productId, HttpServletRequest request) {
+    ProductReturnDtoWIthProfile product = productService.getProduct(productId, request);
     return new ResponseDto<>(SUCCESS, product);
   }
 
@@ -88,7 +84,6 @@ public class ProductController {
   @GetMapping("/count")
   public ResponseDto<Integer> getProductSize() {
     Integer productSize = productService.getProductSize();
-    log.info("{}", productSize);
     return ResponseDto.res("SUCCESS", productSize);
   }
 
@@ -105,13 +100,15 @@ public class ProductController {
   }
 
   @GetMapping("/interest/{productId}")
-  public ResponseDto<InterestProductDto> getInterestProduct(@PathVariable Long productId){
+  public ResponseDto<InterestProductDto> getInterestProduct(@PathVariable Long productId) {
     return ResponseDto.res("SUCCESS", productService.getInterestProduct(productId));
   }
 
   @GetMapping("/preference/{preferenceId}")
-  public ResponseDto<List<ProductReturnDto>> getPreferProduct(HttpServletRequest request, @PathVariable("preferenceId") Long preferenceId) {
-    List<ProductReturnDto> productReturnDtoList = productService.getPreferProduct(request, preferenceId);
+  public ResponseDto<List<ProductReturnDto>> getPreferProduct(HttpServletRequest request,
+      @PathVariable("preferenceId") Long preferenceId) {
+    List<ProductReturnDto> productReturnDtoList = productService.getPreferProduct(request,
+        preferenceId);
     return ResponseDto.res("SUCCESS", productReturnDtoList);
   }
 

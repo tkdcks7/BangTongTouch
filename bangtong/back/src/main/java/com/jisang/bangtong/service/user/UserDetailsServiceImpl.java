@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
 
   private final UserRepository userRepository;
@@ -32,6 +31,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     return new org.springframework.security.core.userdetails.User(user.getUserEmail(),
         user.getUserPassword(), authorities);
   }
-  
+
 }
 

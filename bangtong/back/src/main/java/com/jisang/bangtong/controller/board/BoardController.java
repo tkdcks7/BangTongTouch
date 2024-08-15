@@ -44,7 +44,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 @RestController
 @RequestMapping("/boards")
 public class BoardController {
@@ -56,8 +55,8 @@ public class BoardController {
   private FileService fileService;
 
   @PostMapping(value = {"/write/{regionId}", "/write"})
-  public ResponseDto<Void> write(@RequestBody BoardInputDto boardInputDto, @PathVariable(required = false) String regionId, HttpServletRequest request) {
-    log.info("boardWrite 실행 {}");
+  public ResponseDto<Void> write(@RequestBody BoardInputDto boardInputDto,
+      @PathVariable(required = false) String regionId, HttpServletRequest request) {
     boardService.save(boardInputDto, regionId, request); // BoardService의 save 메서드 호출
     return ResponseDto.res("success");
   }
@@ -65,27 +64,25 @@ public class BoardController {
   @PutMapping("/modify/{boardId}")
   public ResponseDto<BoardReturnDto> modify(@PathVariable("boardId") long boardId,
       @RequestBody BoardUpdateDto boardUpdateDto, HttpServletRequest request) {
-    log.info("modify board: {}", boardUpdateDto);
-    BoardReturnDto dto = boardService.update(boardUpdateDto, boardId,request);
+    BoardReturnDto dto = boardService.update(boardUpdateDto, boardId, request);
     return ResponseDto.res("success", dto);
   }
 
   @PutMapping("/delete/{boardId}")
-  public ResponseDto<Void> delete(@PathVariable("boardId") long boardId, HttpServletRequest request) {
-    log.info("delete board: {}", boardId);
+  public ResponseDto<Void> delete(@PathVariable("boardId") long boardId,
+      HttpServletRequest request) {
     boardService.delete(boardId, request); // BoardService의 delete 메서드 호출
     return ResponseDto.res("SUCCESS");
   }
 
   @GetMapping("/{boardId}")
   public ResponseDto<BoardReturnDto> getBoard(@PathVariable("boardId") long boardId) {
-    BoardReturnDto dto =  boardService.getBoard(boardId);
+    BoardReturnDto dto = boardService.getBoard(boardId);
     return ResponseDto.res("SUCCESS", dto);
   }
 
   @PostMapping("/list")
   public ResponseDto<Page<BoardReturnDto>> getList(@RequestBody BoardSearchDto boardSearchDto) {
-    log.info("list 출력 {}", boardSearchDto);
     if (boardSearchDto.getPageNo() == null) {
       boardSearchDto.setPageNo(0);  // 기본값 설정
     }

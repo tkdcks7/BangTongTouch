@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class JwtUtil {
 
   private final String secret = SecurityConstants.JWT_SECRET_DEFAULT_VALUE;

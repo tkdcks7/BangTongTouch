@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/regions")
-@Slf4j
 public class RegionController {
 
   private final String SUCCESS = "success";
@@ -32,20 +31,18 @@ public class RegionController {
   private RegionService regionService;
 
   @GetMapping
-  public ResponseEntity<ResponseDto<List<RegionSidoDto>>> searchSido(){
-    log.info("/regions/ 호출");
+  public ResponseEntity<ResponseDto<List<RegionSidoDto>>> searchSido() {
     List<RegionSidoDto> regions = regionService.searchSido();
 
-    if(regions == null){
+    if (regions == null) {
       return ResponseEntity.ok(ResponseDto.res(CLIENT_ERROR));
-    }else{
+    } else {
       return ResponseEntity.ok(ResponseDto.res(SUCCESS, regions));
     }
   }
 
   @GetMapping("/{sido}")
   public ResponseEntity<ResponseDto<List<RegionGugunDto>>> searchGugun(@PathVariable String sido) {
-    log.info("/regions/ 호출");
     List<RegionGugunDto> regions = regionService.searchGugun(sido);
 
     if (regions == null) {
@@ -57,21 +54,20 @@ public class RegionController {
 
   @GetMapping("/gugun/{gugun}")
   public ResponseEntity<ResponseDto<List<RegionDongDto>>> searchSido(@PathVariable String gugun) {
-    log.info("/regions/gugun 호출");
     List<RegionDongDto> regions = regionService.searchDong(gugun);
-    if(regions==null){
+    if (regions == null) {
       return ResponseEntity.ok(ResponseDto.res(CLIENT_ERROR));
-    }else{
+    } else {
       return ResponseEntity.ok(ResponseDto.res(SUCCESS, regions));
     }
   }
 
   @GetMapping("/search/{regionId}")
-  public ResponseDto<RegionReturnDto> getRegionCode(@PathVariable String regionId){
+  public ResponseDto<RegionReturnDto> getRegionCode(@PathVariable String regionId) {
     try {
       RegionReturnDto returnDto = regionService.getRegionCode(regionId);
       return ResponseDto.res("SUCCESS", returnDto);
-    }catch (IllegalArgumentException e){
+    } catch (IllegalArgumentException e) {
       String s = "데이터를 찾을 수 없습니다.";
       return ResponseDto.res("FAIL");
     }

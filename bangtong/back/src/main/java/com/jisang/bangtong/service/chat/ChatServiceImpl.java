@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-@Slf4j
 public class ChatServiceImpl implements ChatService {
 
   @Autowired
@@ -41,31 +40,29 @@ public class ChatServiceImpl implements ChatService {
   @Override
   @Transactional
   public Chat send(SendDto sendDto) {
-    log.info("ChatService Impl {}", sendDto);
-
     Chat chat = new Chat();
     //사용자 가져오기
     Long senderId = sendDto.getSender();
     User sender = userRepository.findById(senderId).orElse(null);
-    if(sender == null) {
+    if (sender == null) {
       throw new RuntimeException("ChatServiceImpl send receiver and sender is null");
-    }else{
+    } else {
       chat.setSender(sender);
     }
 
     //chatroom 가져오기
     Long chatRoomId = sendDto.getChatRoom();
     Chatroom chatroom = chatroomRepository.findById(chatRoomId).orElse(null);
-    if(chatroom == null) {
+    if (chatroom == null) {
       throw new RuntimeException("ChatServiceImpl chatroom is null");
-    }else{  //chatroom이 형성되어 있으면
+    } else {  //chatroom이 형성되어 있으면
       chat.setChatRoom(chatroom);
     }
     chat.setChatContent(sendDto.getChatMessage());
     chat.setChatTime(sendDto.getChatTime());
     chats.add(chat);
 
-    if(chats.size() > 1){
+    if (chats.size() > 1) {
       chatRepository.saveAllListChats(chats);
       chats.clear();
     }
@@ -75,16 +72,16 @@ public class ChatServiceImpl implements ChatService {
   @Override
   public List<Chat> getMessagesByRoom(Long roomId) {
     Optional<List<Chat>> chats = chatRepository.findByChatRoom_ChatroomId(roomId);
-    if(chats.isPresent()){
+    if (chats.isPresent()) {
       return chats.get();
-    }else{
+    } else {
       throw new RuntimeException("chatroom not found");
     }
   }
 
   @Override
-  public void getOutOfRoom(Long roomId){
-    if(!chats.isEmpty()) {
+  public void getOutOfRoom(Long roomId) {
+    if (!chats.isEmpty()) {
       chatRepository.saveAllListChats(chats);
       chats.clear();
     }

@@ -28,7 +28,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
 public class BoardServiceImpl implements BoardService {
 
   @Autowired
@@ -43,15 +42,14 @@ public class BoardServiceImpl implements BoardService {
   @Transactional
   @Override
   public void save(BoardInputDto boardInputDto, String regionId, HttpServletRequest request) {
-    log.info("save board {}", boardInputDto);
-    if(!isVaildUser(boardInputDto.getBoardWriter(), request)){
+    if (!isVaildUser(boardInputDto.getBoardWriter(), request)) {
       throw new NotFoundException("작성자가 일치하지 않습니다");
     }
-    if(!isValidRegion(regionId)){
+    if (!isValidRegion(regionId)) {
       throw new NotFoundException("지역 정보가 일치하지 않습니다");
     }
     Region region = null;
-    if(regionId != null){
+    if (regionId != null) {
       region = regionRepository.findById(regionId).get();
     }
     User u = userRepository.findById(boardInputDto.getBoardWriter()).orElse(null);
@@ -67,13 +65,13 @@ public class BoardServiceImpl implements BoardService {
 
   @Transactional
   @Override
-  public BoardReturnDto update(BoardUpdateDto boardUpdateDto, Long boardId,HttpServletRequest request) {
-    log.info("update board {}", boardUpdateDto);
-    if(!isValidBoard(boardId, request)){
+  public BoardReturnDto update(BoardUpdateDto boardUpdateDto, Long boardId,
+      HttpServletRequest request) {
+    if (!isValidBoard(boardId, request)) {
       throw new NotFoundException("게시물을 찾을 수 없습니다.");
     }
     Board board = boardRepository.findById(boardId).orElse(null);
-    if(!isVaildUser(board.getBoardWriter().getUserId(), request)){
+    if (!isVaildUser(board.getBoardWriter().getUserId(), request)) {
       throw new IllegalArgumentException("작성자가 아닙니다");
     }
     board.setBoardTitle(boardUpdateDto.boardTitle());
@@ -117,34 +115,41 @@ public class BoardServiceImpl implements BoardService {
   @Override
   public void delete(long id, HttpServletRequest request) {
     Board b = boardRepository.findById(id).orElse(null);
-    if(!isVaildUser(b.getBoardWriter().getUserId(), request)){
+    if (!isVaildUser(b.getBoardWriter().getUserId(), request)) {
       throw new IllegalArgumentException("작성자가 아닙니다.");
     }
     boardRepository.delete(id);
   }
 
   @Override
-  public Page<BoardReturnDto> getBoards(BoardSearchDto boardSearchDto){
-    Pageable pageable = PageRequest.of(boardSearchDto.getPageNo(), boardSearchDto.getSize(), Sort.by("boardDate"));
+  public Page<BoardReturnDto> getBoards(BoardSearchDto boardSearchDto) {
+    Pageable pageable = PageRequest.of(boardSearchDto.getPageNo(), boardSearchDto.getSize(),
+        Sort.by("boardDate"));
     return boardRepository.getBoards(pageable, boardSearchDto);
   }
 
-  private boolean isVaildUser(Long writerId ,HttpServletRequest request){
+  private boolean isVaildUser(Long writerId, HttpServletRequest request) {
     String token = jwtUtil.getAccessToken(request);
     Long userId = jwtUtil.getUserIdFromToken(token);
-    if(!writerId.equals(userId)) return false;
+    if (!writerId.equals(userId)) {
+      return false;
+    }
     User writer = userRepository.findById(writerId).orElse(null);
     return writer != null;
   }
 
-  private boolean isValidRegion(String regionId){
-    if(regionId== null) return true;
+  private boolean isValidRegion(String regionId) {
+    if (regionId == null) {
+      return true;
+    }
     Region region = regionRepository.findById(regionId).orElse(null);
-    if(region == null) return false;
+    if (region == null) {
+      return false;
+    }
     return true;
   }
 
-  private IUser getIUser(Long userId){
+  private IUser getIUser(Long userId) {
     User user = userRepository.findById(userId).orElse(null);
     IUser iUser = new IUser();
     assert user != null;
@@ -154,12 +159,16 @@ public class BoardServiceImpl implements BoardService {
     return iUser;
   }
 
-  private boolean isValidBoard(Long boardId, HttpServletRequest request){
+  private boolean isValidBoard(Long boardId, HttpServletRequest request) {
     String token = jwtUtil.getAccessToken(request);
     Long userId = jwtUtil.getUserIdFromToken(token);
     Board board = boardRepository.findById(boardId).orElse(null);
-    if(board == null) return false;
-    if(!board.getBoardWriter().getUserId().equals(userId)) return false;
+    if (board == null) {
+      return false;
+    }
+    if (!board.getBoardWriter().getUserId().equals(userId)) {
+      return false;
+    }
     return true;
   }
 
