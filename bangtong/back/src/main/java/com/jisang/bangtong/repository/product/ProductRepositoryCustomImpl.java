@@ -87,11 +87,10 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
   }
 
   public List<Product> getRecentProducts(String regionId){
-    QRegion qRegion = QRegion.region;
 
     return queryFactory.selectFrom(product)
         .where(
-            product.region.regionId.eq(qRegion.regionId)
+            product.region.regionId.eq(regionId)
         )
         .orderBy(product.productPostDate.desc())
         .limit(3)
