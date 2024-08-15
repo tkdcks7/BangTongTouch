@@ -27,7 +27,7 @@ const VideoChat: React.FC = () => {
       socketRef.current?.emit("join_room", roomName);
     };
 
-    socketRef.current = io("https://i11d206.p.ssafy.io:4000", {
+    socketRef.current = io("https://i11d206.p.ssafy.io/rtc", {
       withCredentials: true,
       transports: ["websocket"], // WebSocket을 사용하여 연결 시도
     });
