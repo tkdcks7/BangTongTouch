@@ -108,8 +108,8 @@ const LoginPage: React.FC = () => {
     );
     const state = "1234";
     const naverLoginUri = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${clientId}&state=${state}&redirect_uri=${redirectUri}`;
-    navigate(naverLoginUri);
-    // window.open(naverLoginUri, "_blank", "width=600,height=600");
+    // navigate(naverLoginUri);
+    window.open(naverLoginUri, "_blank", "width=600,height=600");
   };
 
   // 구글 로그인 함수
@@ -119,8 +119,8 @@ const LoginPage: React.FC = () => {
       process.env.REACT_APP_CALLBACK_URL_GOOGLE + "",
     );
     const googleLoginUri = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email`;
-    navigate(googleLoginUri);
-    // window.open(googleLoginUri, "_blank", "width=600,height=600");
+    // navigate(googleLoginUri);
+    window.open(googleLoginUri, "_blank", "width=600,height=600");
   };
 
   // 카카오 로그인 함수
@@ -130,8 +130,8 @@ const LoginPage: React.FC = () => {
       process.env.REACT_APP_CALLBACK_URL_KAKAOTALK + "",
     );
     const kakaotalkLoginUri = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=profile_nickname profile_image`;
-    navigate(kakaotalkLoginUri);
-    // window.open(kakaotalkLoginUri, "_blank", "width=600,height=600");
+    // navigate(kakaotalkLoginUri);
+    window.open(kakaotalkLoginUri, "_blank", "width=600,height=600");
   };
   return (
     <>
