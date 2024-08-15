@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useUserStore from "../../store/userStore";
 import { motion } from "framer-motion";
@@ -23,10 +23,6 @@ const LoginPage: React.FC = () => {
   const [errorCount, setErrorCount] = useState(0);
   const [form] = Form.useForm(); // antd
 
-  if (token) {
-    navigate("/");
-  }
-
   interface LoginInfo {
     username: string;
     password: string;
@@ -49,13 +45,19 @@ const LoginPage: React.FC = () => {
   const code = searchParams.get("code");
   const stateCode = searchParams.get("state");
 
+  useEffect(() => {
+    if (token) {
+      navigate("/");
+    }
+  }, []);
+
   if (stateCode === "1234") {
     const formData: FormData = new FormData();
     formData.append("grant_type", "code");
     formData.append("client_id", process.env.REACT_APP_CLIENT_ID_NAVER + "");
     formData.append(
       "client_secret",
-      process.env.REACT_APP_CLIENT_SECRET_NAVER + "",
+      process.env.REACT_APP_CLIENT_SECRET_NAVER + ""
     );
     formData.append("code", code + "");
     formData.append("state", stateCode);
@@ -104,7 +106,7 @@ const LoginPage: React.FC = () => {
   const handleNaverLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_NAVER;
     const redirectUri = encodeURIComponent(
-      process.env.REACT_APP_CALLBACK_URL_NAVER + "",
+      process.env.REACT_APP_CALLBACK_URL_NAVER + ""
     );
     const state = "1234";
     const naverLoginUri = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${clientId}&state=${state}&redirect_uri=${redirectUri}`;
@@ -116,7 +118,7 @@ const LoginPage: React.FC = () => {
   const handleGoogleLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_GOOGLE;
     const redirectUri = encodeURIComponent(
-      process.env.REACT_APP_CALLBACK_URL_GOOGLE + "",
+      process.env.REACT_APP_CALLBACK_URL_GOOGLE + ""
     );
     const googleLoginUri = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email`;
     // navigate(googleLoginUri);
@@ -127,7 +129,7 @@ const LoginPage: React.FC = () => {
   const handleKakaotalkLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_KAKAOTALK;
     const redirectUri = encodeURIComponent(
-      process.env.REACT_APP_CALLBACK_URL_KAKAOTALK + "",
+      process.env.REACT_APP_CALLBACK_URL_KAKAOTALK + ""
     );
     const kakaotalkLoginUri = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=profile_nickname profile_image`;
     // navigate(kakaotalkLoginUri);
