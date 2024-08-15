@@ -1,5 +1,5 @@
-import React, { ImgHTMLAttributes, PropsWithChildren } from 'react';
-import defaultHomeImage from '../../assets/defaulthome.png';
+import React from "react";
+import defaultHomeImage from "../../assets/defaulthome.png";
 
 interface ImgCardProps {
   src?: string;
@@ -9,22 +9,26 @@ interface ImgCardProps {
 }
 
 const ImgCard: React.FC<ImgCardProps> = ({
-    src,
-    borderRadius = 'rounded-xl',
-    width = 'w-36',
-    height = 'h-24',
+  src,
+  borderRadius = "rounded-xl",
+  width = "w-36",
+  height = "h-24",
 }) => {
-    const handleImageError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-        event.currentTarget.src = defaultHomeImage;
-      }
+  const handleImageError = (
+    event: React.SyntheticEvent<HTMLImageElement, Event>
+  ) => {
+    event.currentTarget.src = defaultHomeImage;
+  };
   return (
     <div className={`${borderRadius} ${width} ${height}`}>
-        <img src={src} className="object-fill" alt="대체 이미지" onError={handleImageError} />
+      <img
+        src={src}
+        className="object-fill"
+        alt="대체 이미지"
+        onError={handleImageError}
+      />
     </div>
   );
-}
+};
 
 export default ImgCard;
-
-
-

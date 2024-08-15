@@ -72,20 +72,17 @@ const ProductSearch3: React.FC<IProductSearch3Props> = ({ onPrev }) => {
       preferenceStartDate: stDate,
       preferenceEndDate: edDate,
     };
-    console.log(dataSet);
     authAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/preferences/add/${id}`,
       data: dataSet,
     })
       .then((response) => {
-        console.log(response);
         authAxios({
           method: "GET",
           url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${id}/list`,
         })
           .then((response) => {
-            console.log(response);
             setPreferUpdate(response.data.data[0]); // 기본 선호 설정을 첫번째 선호 설정으로 변경
             navigate(`/`); // 메인 화면으로 이동
           })

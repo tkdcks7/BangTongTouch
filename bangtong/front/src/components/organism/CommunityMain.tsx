@@ -94,7 +94,6 @@ const CommunityMain: React.FC = () => {
       if (communityCategory === true) {
         setIsLoaded(false);
         const temp: any = await getUserAddressKr().catch((e) => {
-          console.log(e);
           alert("해당 서비스를 이용하시려면 위치 권한을 허용해주셔야합니다.");
           window.location.replace("");
         });
@@ -117,15 +116,19 @@ const CommunityMain: React.FC = () => {
   };
 
   // Pagination 커스터마이징을 위한 itemRender 함수
-  const itemRender: PaginationProps['itemRender'] = (_, type, originalElement) => {
-    if (type === 'prev') {
+  const itemRender: PaginationProps["itemRender"] = (
+    _,
+    type,
+    originalElement
+  ) => {
+    if (type === "prev") {
       return <a className={"dark:text-white"}>Previous</a>;
     }
-    if (type === 'next') {
+    if (type === "next") {
       return <a className={"dark:text-white"}>Next</a>;
     }
     return originalElement;
-  }
+  };
 
   return (
     <>
@@ -135,7 +138,7 @@ const CommunityMain: React.FC = () => {
             <button className="text-yellow-400">
               {communityCategory ? city.current : ""}
             </button>{" "}
-            신통방통
+            신통방톡
           </h2>
           <div className="w-full md:w-4/5">
             <InputBox

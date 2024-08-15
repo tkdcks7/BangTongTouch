@@ -1,8 +1,8 @@
 import axios from "axios";
+import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useUserStore, { useUserPreferStore } from "../../store/userStore";
-import { motion } from "framer-motion";
 
 // 컴포넌트 불러오기
 import { Button, ConfigProvider, Form, Input } from "antd";
@@ -68,9 +68,7 @@ const LoginPage: React.FC = () => {
       url: "https://nid.naver.com/oauth2.0/token",
       data: formData,
     })
-      .then((response) => {
-        console.log(response.data, " 성공적");
-      })
+      .then((response) => {})
       .catch((error) => console.log("전송 실패", error));
   }
 
@@ -95,7 +93,6 @@ const LoginPage: React.FC = () => {
       data: payload,
     })
       .then((response) => {
-        console.log(response.data.data.id);
         const infoObj = response.data.data;
         infoObj.email = email; // 본인이 입력한 이메일 추가
         setInfoUpdate(infoObj);
@@ -105,8 +102,6 @@ const LoginPage: React.FC = () => {
           url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${response.data.data.id}/list`,
         })
           .then((response) => {
-            console.log(response);
-            console.log(response.data.data);
             setPreferUpdate(response.data.data[0]);
             navigate("../../");
           })

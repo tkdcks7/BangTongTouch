@@ -5,13 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { productSearchStore } from "../../store/productStore";
 
 // 컴포넌트
-import IconBtn from "../atoms/IconBtn";
 import { Card, Carousel } from "antd";
 
 // 기본 방 이미지
-import defaultRoomImg from "../../assets/defaulthome.png";
 import { HeartOutlined } from "@ant-design/icons";
-import { getOverflowOptions } from "antd/es/_util/placements";
+import defaultRoomImg from "../../assets/defaulthome.png";
 
 const ProductList: React.FC = () => {
   const { productsList } = productSearchStore();

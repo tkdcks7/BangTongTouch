@@ -137,7 +137,6 @@ const SubComment: React.FC<iSubComment> = ({
           className="w-full my-2"
           onChange={(e) => {
             reportTypeRef.current = parseInt(e);
-            console.log(reportTypeRef.current);
           }}
           options={[
             { value: 1, label: "스팸/도배" },
@@ -152,7 +151,6 @@ const SubComment: React.FC<iSubComment> = ({
         <textarea
           className="w-full border resize-none"
           onChange={(e) => {
-            console.log(e.target.value);
             reportRef.current = e.target.value;
           }}
         />

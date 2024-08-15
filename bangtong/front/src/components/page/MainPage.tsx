@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
-import authAxios from "../../utils/authAxios";
 import { useUserPreferStore } from "../../store/userStore";
+import authAxios from "../../utils/authAxios";
 
 // 컴포넌트
-import CarouselBox from "../organism/CarouselBox";
-import MainChatBox from "../organism/MainChatBox";
-import TextBox from "../atoms/TextBox";
-import Loading from "../atoms/Loading";
-import ImgCarousel from "../molecules/ImgCarousel";
 import { Carousel, ConfigProvider } from "antd";
 import { useNavigate } from "react-router-dom";
+import Loading from "../atoms/Loading";
+import TextBox from "../atoms/TextBox";
+import CarouselBox from "../organism/CarouselBox";
 
 import "../../index.css";
 
@@ -29,7 +27,6 @@ const MainPage: React.FC = () => {
         url: `${process.env.REACT_APP_BACKEND_URL}/products/preference/${preferenceId}`,
       })
         .then((res) => {
-          console.log(res);
           setProducts(res.data.data);
           setIsLoading(false);
         })

@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes } from "react";
+import React from "react";
 
 interface IconBtnProps extends React.HTMLAttributes<HTMLDivElement> {
   imgSrc: string; // 아이콘의 이미지 경로

@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes, Children, PropsWithChildren } from 'react';
+import React, { ButtonHTMLAttributes, PropsWithChildren } from "react";
 
 // 버튼 컴포넌트가 받을 수 있는 모든 속성을 정의
 interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -12,7 +12,10 @@ const TabBtn: React.FC<PropsWithChildren<IButtonProps>> = ({
   isSelected,
 }) => {
   return (
-    <button className={`mx-3 py-2 ${isSelected ? 'border-b-2 border-black' : undefined}`} onClick={onSelect}>
+    <button
+      className={`mx-3 py-2 ${isSelected ? "border-b-2 border-black" : undefined}`}
+      onClick={onSelect}
+    >
       {children}
     </button>
   );

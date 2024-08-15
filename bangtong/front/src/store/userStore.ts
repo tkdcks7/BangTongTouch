@@ -60,7 +60,6 @@ const useUserStore = create<User>()(
       },
       // 토큰 업데이트 setter
       setToken: (token) => {
-        console.log(token);
         set(() => ({ token }));
       },
       setLogOut: () => {

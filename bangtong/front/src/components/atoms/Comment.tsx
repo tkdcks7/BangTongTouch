@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
+import { Dropdown, Modal, Select } from "antd";
+import menuImg from "../../assets/Menu.png";
+import useUserStore from "../../store/userStore";
+import authAxios from "../../utils/authAxios";
 import SubComment from "./SubComment";
 import SubCommentInput from "./SubCommentInput";
-import { Dropdown, Modal, Select } from "antd";
-import authAxios from "../../utils/authAxios";
-import useUserStore from "../../store/userStore";
-import menuImg from "../../assets/Menu.png";
 /**
  *    예시   <Comment comment_id="까치" content="그건 좀;;" date={273890147923} />
  *  comment_id 작성자명 content 내용 date 시간 long long 형 milisec 단위
@@ -159,7 +159,6 @@ const Comment: React.FC<IComment> = ({
           className="w-full my-2"
           onChange={(e) => {
             reportTypeRef.current = parseInt(e);
-            console.log(reportTypeRef.current);
           }}
           options={[
             { value: 1, label: "스팸/도배" },
@@ -174,7 +173,6 @@ const Comment: React.FC<IComment> = ({
         <textarea
           className="w-full border resize-none"
           onChange={(e) => {
-            console.log(e.target.value);
             reportRef.current = e.target.value;
           }}
         />

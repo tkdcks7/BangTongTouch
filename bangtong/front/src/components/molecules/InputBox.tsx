@@ -1,17 +1,12 @@
-import React, {
-  useState,
-  InputHTMLAttributes,
-  ButtonHTMLAttributes,
-} from "react";
+import React, { InputHTMLAttributes, useState } from "react";
 import IconBtn from "../atoms/IconBtn";
 
 // 아이콘
 import Cancel from "../../assets/CancelCircle.png";
-import RedCancel from "../../assets/RedCancelCircle.png";
 import Check from "../../assets/CheckCircle.png";
 import DropDownIcon from "../../assets/DropDownIcon.png";
-import Send from "../../assets/Send.png";
 import Search from "../../assets/Search.png";
+import Send from "../../assets/Send.png";
 
 /**
  * 검증 오류가 발생하였을 경우 id 값을 "e" 검증이 되었을 경우 "q", 기본 상태 "" 처럼 빈 값 string 변수로 전달

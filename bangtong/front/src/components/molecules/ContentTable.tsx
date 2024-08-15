@@ -1,11 +1,9 @@
 import React from "react";
 
 // 게시글 데이터
-import { contents as contentsData } from "../../data.js";
 
 // 컴포넌트
 import Post from "../atoms/Post";
-import { Link } from "react-router-dom";
 
 interface iUser {
   userId: number;

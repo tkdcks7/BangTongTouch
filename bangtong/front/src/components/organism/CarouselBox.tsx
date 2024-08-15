@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from "react";
-import authAxios from "../../utils/authAxios";
+import React from "react";
 
 // 컴포넌트
-import ImgCarousel from "../molecules/ImgCarousel";
-import { Carousel } from "antd";
 
 // 이모티콘
 import { PlusSquareFilled } from "@ant-design/icons";
 
 // 데이터
-import useUserStore, { useUserPreferStore } from "../../store/userStore";
+import { useUserPreferStore } from "../../store/userStore";
 
 const CarouselBox: React.FC = () => {
   const { regionAddress } = useUserPreferStore();

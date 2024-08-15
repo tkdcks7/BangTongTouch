@@ -1,16 +1,15 @@
+import axios from "axios";
 import React, { useRef, useState } from "react";
 import useUserStore from "../../store/userStore";
-import axios from "axios";
 
 // 컴포넌트
+import { Button, ConfigProvider, Input, Modal } from "antd";
 import Btn from "../atoms/Btn";
 import ProfileImgBox from "../atoms/ProfileImgBox";
-import { Button, ConfigProvider, Input, Modal, message } from "antd";
 
 // 이미지 소스
-import defaultProfile from "../../assets/defaultprofile.jpg";
 import { UploadOutlined } from "@ant-design/icons";
-import { formDataAxios } from "../../utils/authAxios";
+import defaultProfile from "../../assets/defaultprofile.jpg";
 
 const ProfileBox: React.FC = () => {
   const { id, nickname, profileImage, setprofileUpdate } = useUserStore();
@@ -42,7 +41,6 @@ const ProfileBox: React.FC = () => {
 
   const handleNickname = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserNickname(event.target.value);
-    console.log(userNickname);
   };
 
   const profileUpdate = async () => {
@@ -60,8 +58,6 @@ const ProfileBox: React.FC = () => {
       headers: { "Content-Type": "multipart/form-data" },
     })
       .then((res: any) => {
-        console.log("출력");
-        console.log(res);
         setprofileUpdate(
           `https://bangtong-bucket.s3.ap-northeast-2.amazonaws.com/${res.data.data.profileImage}`,
           res.data.data.nickname

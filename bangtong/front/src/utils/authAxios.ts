@@ -23,7 +23,6 @@ authAxios.interceptors.request.use(
 
 authAxios.interceptors.response.use((res) => {
   if (res.headers["Authorization"]) {
-    console.log(res.headers["Authorization"]);
     useUserStore.getState().setToken(res.headers["Authorization"]);
   }
   return res;

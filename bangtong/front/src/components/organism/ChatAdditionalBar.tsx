@@ -1,16 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
 // 아이콘
-import {
-  VideoCameraOutlined,
-  PaperClipOutlined,
-  SmileOutlined,
-  CalendarOutlined,
-  WarningOutlined,
-} from "@ant-design/icons";
+import { VideoCameraOutlined, WarningOutlined } from "@ant-design/icons";
+import { Modal, Select } from "antd";
 import { useNavigate } from "react-router-dom";
 import authAxios from "../../utils/authAxios";
-import { Modal, Select } from "antd";
 
 interface ChatAdditionalBarProps {
   roomId: string;
@@ -77,7 +71,6 @@ const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
           className="w-full my-2"
           onChange={(e) => {
             reportTypeRef.current = parseInt(e);
-            console.log(reportTypeRef.current);
           }}
           options={[
             { value: 1, label: "스팸/도배" },
@@ -92,7 +85,6 @@ const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
         <textarea
           className="w-full border resize-none"
           onChange={(e) => {
-            console.log(e.target.value);
             reportRef.current = e.target.value;
           }}
         />

@@ -129,8 +129,6 @@ const ProfileModal: React.FC<ModalI> = ({
 
   // 선호 옵션을 선택할 때마다(selectedId가 변경될 때마다) 다른 전송 후 모달에서 해당 ID의 선호 옵션을 띄워줌
   useEffect(() => {
-    console.log(startDate);
-    console.log(endDate);
     setInitailize(); // 일단 productSearchStore의 값들을 초기화
 
     // 조회 및 수정이라면(selectedId가 있다면) 불러오기, 아니면(selectedId가 없다면) 빈 form을 보여주기
@@ -158,7 +156,6 @@ const ProfileModal: React.FC<ModalI> = ({
             url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${regionId}`,
           })
             .then((res) => {
-              console.log(res);
               // 받아온 상세 주소를 조립해 표시될 상세 주소를 변경한다.
               const newLocationTitle =
                 res.data.data.region.regionSido +
@@ -342,7 +339,6 @@ const ProfileModal: React.FC<ModalI> = ({
       data: dataSet,
     })
       .then((response) => {
-        console.log(response);
         const rslt = response.data.data;
         addpreferenceArr(rslt);
         closeModal();
@@ -353,48 +349,47 @@ const ProfileModal: React.FC<ModalI> = ({
       });
   };
 
-    return (
-        <>
-            <Modal
-                isOpen={modalIsOpen}
-                style={customStyle}
-                onRequestClose={closeModal}
-                contentLabel="선택된 선호 조건"
+  return (
+    <>
+      <Modal
+        isOpen={modalIsOpen}
+        style={customStyle}
+        onRequestClose={closeModal}
+        contentLabel="선택된 선호 조건"
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.5,
+            delay: 0.1,
+            ease: [0, 0.5, 0.2, 1],
+          }}
+        >
+          <div className="w-80 relative px-5 py-10 border-2 rounded-xl shadow-md max-h-[80vh] overflow-y-auto dark:bg-gray-800">
+            {/* 모달의 x버튼 */}
+            <div
+              className="absolute top-1 right-1 hover:cursor-pointer"
+              onClick={closeModal}
             >
-                <motion.div
-                    initial={{opacity: 0, scale: 0.5}}
-                    animate={{opacity: 1, scale: 1}}
-                    transition={{
-                        duration: 0.5,
-                        delay: 0.1,
-                        ease: [0, 0.5, 0.2, 1],
-                    }}
-                >
-                    <div
-                        className="w-80 relative px-5 py-10 border-2 rounded-xl shadow-md max-h-[80vh] overflow-y-auto dark:bg-gray-800">
-                        {/* 모달의 x버튼 */}
-                        <div
-                            className="absolute top-1 right-1 hover:cursor-pointer"
-                            onClick={closeModal}
-                        >
-                            <CloseSquareFilled
-                                width={40}
-                                style={{color: "red", fontSize: "24px"}}
-                            />
-                        </div>
-                        {selectedId ? (
-                            <h1 className="text-lime-500 text-center font-bold ml-3 text-xl">
-                                {preferenceName}
-                            </h1>
-                        ) : (
-                            <Input
-                                placeholder="설정 이름을 입력하세요"
-                                size="large"
-                                type="text"
-                                value={preferenceName}
-                                onChange={(e) => setPreferenceName(e.target.value)}
-                            />
-                        )}
+              <CloseSquareFilled
+                width={40}
+                style={{ color: "red", fontSize: "24px" }}
+              />
+            </div>
+            {selectedId ? (
+              <h1 className="text-lime-500 text-center font-bold ml-3 text-xl">
+                {preferenceName}
+              </h1>
+            ) : (
+              <Input
+                placeholder="설정 이름을 입력하세요"
+                size="large"
+                type="text"
+                value={preferenceName}
+                onChange={(e) => setPreferenceName(e.target.value)}
+              />
+            )}
 
             <hr className="border-2" />
             <br />

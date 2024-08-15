@@ -1,18 +1,16 @@
+import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
 
 // 컴포넌트
-import RollBackBtn from "../atoms/RollBackBtn";
-import Comment from "../atoms/Comment";
-import MenuBtn from "../atoms/MenuBtn";
 import menuImg from "../../assets/Menu.png";
+import Comment from "../atoms/Comment";
+import RollBackBtn from "../atoms/RollBackBtn";
 
 // Store
+import { Dropdown, Modal, Select } from "antd";
 import useUserStore from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
-import { Dropdown, Modal, Select } from "antd";
-import { dark } from "@mui/material/styles/createPalette";
 
 interface region {
   regionId: string;
@@ -211,7 +209,6 @@ const CommunityDetail: React.FC = () => {
           className="w-full my-2"
           onChange={(e) => {
             reportTypeRef.current = parseInt(e);
-            console.log(reportTypeRef.current);
           }}
           options={[
             { value: 1, label: "스팸/도배" },
@@ -226,7 +223,6 @@ const CommunityDetail: React.FC = () => {
         <textarea
           className="w-full border resize-none"
           onChange={(e) => {
-            console.log(e.target.value);
             reportRef.current = e.target.value;
           }}
         />
@@ -298,7 +294,6 @@ const CommunityDetail: React.FC = () => {
                   className="bg-lime-400 p-2 rounded-lg mt-3 ms-3 px-5 text-white"
                   onClick={(e) => {
                     e.preventDefault();
-                    console.log(`값은 ${commentRef.current}입니다.`); // 테스트코드
                     handleCommentCreate(Number(id), commentRef.current);
                   }}
                 >

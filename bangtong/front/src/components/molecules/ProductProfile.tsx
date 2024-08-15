@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 
 // 컴포넌트
-import Btn from "../atoms/Btn";
-import ProfileImgBox from "../atoms/ProfileImgBox";
-import authAxios from "../../utils/authAxios";
-import useUserStore from "../../store/userStore";
-import { Button } from "antd";
 import { WechatOutlined } from "@ant-design/icons";
+import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
+import useUserStore from "../../store/userStore";
+import authAxios from "../../utils/authAxios";
+import ProfileImgBox from "../atoms/ProfileImgBox";
 
 // 이미지 소스
 
@@ -45,11 +44,10 @@ const ProductProfile: React.FC<ProductProps> = ({ userinfo, productId }) => {
       },
     })
       .then((response) => {
-        console.log(response.data.data);
         navigate(`/chats/${response.data.data}`);
       })
-      .catch((response) => {
-        console.log(response);
+      .catch((error) => {
+        console.log(error);
       });
   };
   return (

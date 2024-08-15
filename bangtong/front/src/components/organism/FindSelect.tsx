@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 // 컴포넌트 불러오기
+import { Button, ConfigProvider, Form, Input, Space } from "antd";
 import TextBox from "../atoms/TextBox";
-import { Button, ConfigProvider, Input, Form, Space } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
 
 const FindSelectPage: React.FC = () => {
   const navigate = useNavigate();
@@ -46,11 +45,9 @@ const FindSelectPage: React.FC = () => {
       data: { phone }, // 전화번호를 넘겨 메일을 받아옴.
     })
       .then((response) => {
-        console.log(response);
         if (response.data.data["email"].includes("@")) {
           const sentMail: string[] = response.data.data["email"].split("@");
           setMaskedEmail(() => "***" + sentMail[0].slice(3) + sentMail[1]);
-          console.log(`받아온 메일: ${sentMail}`); // 리팩토링 시 이 줄 삭제
           setIsMailChecked(true);
         } else {
           setMaskedEmail(response.data.data["email"]);

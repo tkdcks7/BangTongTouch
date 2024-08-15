@@ -1,7 +1,7 @@
-import React, { FC } from "react";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
 import imageCompression from "browser-image-compression";
+import { FC } from "react";
 
 interface CKEditorProps {
   data: string;
@@ -77,7 +77,6 @@ const MyUploadAdapter = (loader: any, editor: any) => {
 
       try {
         const file = await loader.file;
-        console.log(file);
         if (!ALLOWED_TYPES.includes(file.type)) {
           throw new Error("Invalid file type.");
         }

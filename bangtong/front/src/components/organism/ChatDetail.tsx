@@ -1,20 +1,18 @@
-import React, { FormEvent, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 // 컴포넌트
 import RollBackBtn from "../atoms/RollBackBtn";
-import ChatMsgBox from "../atoms/ChatMsgBox";
 import ChatAdditionalBar from "./ChatAdditionalBar";
 
 // 이미지 소스
-import defaultProfile from "../../assets/defaultprofile.jpg";
-import InputBox from "../molecules/InputBox";
-import authAxios from "../../utils/authAxios";
-import { useNavigate, useParams } from "react-router-dom";
+import { LoadingOutlined } from "@ant-design/icons";
 import { Client, Stomp } from "@stomp/stompjs";
+import { useNavigate, useParams } from "react-router-dom";
 import SockJS from "sockjs-client";
 import useUserStore from "../../store/userStore";
+import authAxios from "../../utils/authAxios";
 import Chat from "../molecules/Chat";
-import { LoadingOutlined } from "@ant-design/icons";
+import InputBox from "../molecules/InputBox";
 
 interface ChatI {
   chatRoom: number;
@@ -55,13 +53,9 @@ const ChatDetail: React.FC = () => {
   const isComposing = useRef<boolean>(false); // IME 입력 상태를 저장하는 ref
 
   const addMessage = (message: string) => {
-    console.log(message);
     const parsedJson = JSON.parse(message);
-    console.log(parsedJson);
     const jsonStr = parsedJson.data.toString().replace(/^.|.$/g, "");
-    console.log(jsonStr);
     const data = JSON.parse("{" + jsonStr + "}");
-    console.log(data);
     const chat: ShowMessage = {
       chatContent: data.chatMessage,
       chatTime: data.chatTime,
@@ -84,7 +78,6 @@ const ChatDetail: React.FC = () => {
         url: `${process.env.REACT_APP_BACKEND_URL}/chatrooms/chat/${roomId}`,
       })
         .then((response) => {
-          console.log(response.data.data);
           let userData: OpponentUser;
           setIsChatLoaded(true);
           if (response.data.data.maker.userId === userId) {

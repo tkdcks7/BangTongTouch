@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 // 컴포넌트
-import ProductMap from "./ProductMap";
 
 // 데이터
-import { products } from "../../data";
 
 // 이미지 소스
-import MapExample from "../../assets/MapExample.png";
 import SearchMap from "./SearchMap";
 
 interface Pos {

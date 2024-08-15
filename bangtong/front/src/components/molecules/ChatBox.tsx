@@ -33,7 +33,6 @@ const ChatBox: React.FC = () => {
     })
       .then((response) => {
         setIsLoading(false);
-        console.log(response);
         const tempChatData: Array<ChatBoxI> = response.data.data.map(
           (item: any) => ({
             productAddress: item.productReturnDto.productAddress,
@@ -44,7 +43,6 @@ const ChatBox: React.FC = () => {
           })
         );
         setChatBoxData(tempChatData);
-        console.log(response.data.data);
       })
       .catch((err) => {
         console.log(err);

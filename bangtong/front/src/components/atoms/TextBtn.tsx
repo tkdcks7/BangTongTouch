@@ -1,5 +1,5 @@
 import { ConfigProvider, Input, Modal, Slider, SliderSingleProps } from "antd";
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { productSearchStore } from "../../store/productStore";
 
 interface TextBtnProps {

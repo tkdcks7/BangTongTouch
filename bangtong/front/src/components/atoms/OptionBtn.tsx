@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import useProductOptionStore from "../../store/productStore";
 
 // 이미지 소스
-import Fulloption from "../../assets/FullOptionIcon.svg";
-import Stove from "../../assets/Stove.png";
-import Fridge from "../../assets/Fridge.png";
-import WashingMachine from "../../assets/WashingMachine.png";
 import AirConditioner from "../../assets/Airconditioner.png";
-import Microwave from "../../assets/Microwave.png";
 import Bed from "../../assets/Bed.png";
+import Fridge from "../../assets/Fridge.png";
+import Fulloption from "../../assets/FullOptionIcon.svg";
+import Microwave from "../../assets/Microwave.png";
+import Stove from "../../assets/Stove.png";
 import Tv from "../../assets/Tv.png";
+import WashingMachine from "../../assets/WashingMachine.png";
 
 interface ProductOption {
   풀옵션: boolean;

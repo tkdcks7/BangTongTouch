@@ -13,7 +13,6 @@ const SubCommentInput: React.FC<SubCommentInputProps> = ({
   const content = useRef<string>("");
   const postSubCommentInput = () => {
     if (content.current === "") return;
-    console.log("check");
     authAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/comments/${boardId}/write`,

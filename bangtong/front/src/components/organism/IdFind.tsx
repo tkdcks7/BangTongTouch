@@ -1,16 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 // 컴포넌트 불러오기
+import Btn from "../atoms/Btn";
 import TextBox from "../atoms/TextBox";
 import InputBox from "../molecules/InputBox";
-import IconBtn from "../atoms/IconBtn";
-import Btn from "../atoms/Btn";
 
 // 이미지 소스
-import Google from "../../assets/GoogleSocial.png";
-import Kakao from "../../assets/KakaoSocial.png";
-import Naver from "../../assets/NaverSocial.png";
 
 const IdFindPage: React.FC = () => {
   return (

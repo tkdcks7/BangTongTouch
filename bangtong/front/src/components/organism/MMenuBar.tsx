@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import authAxios from "../../utils/authAxios";
 
 // 컴포넌트 불러오기
-import { Button, Dropdown, MenuProps, FloatButton, Badge } from "antd";
+import { Badge, Button, Dropdown, FloatButton, MenuProps } from "antd";
 
 // 이미지 소스
 import {
@@ -14,9 +14,9 @@ import {
 } from "@ant-design/icons";
 
 // 데이터
-import useUserStore from "../../store/userStore";
 import useAlarmInfoStore from "../../store/alarmInfoStore";
 import { preferenceStore } from "../../store/productStore";
+import useUserStore from "../../store/userStore";
 
 interface MMenuBarProps {
   dark: boolean;
@@ -44,7 +44,6 @@ const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
         navigate("/user/login");
       })
       .catch((err) => {
-        console.log(err);
         setAlarmDelete();
         reSetPreference();
         setLogOut(); // userInfo와 token을 초기화
@@ -98,9 +97,7 @@ const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
                   method: "DELETE",
                   url: `${process.env.REACT_APP_BACKEND_URL}/alarms/delete/${item.alarmMessageId}`,
                 })
-                  .then((response) => {
-                    console.log(response);
-                  })
+                  .then((response) => {})
                   .catch((error) => {
                     console.log(error);
                     alert("에러가 발생했습니다.");
@@ -118,7 +115,10 @@ const MMenuBar: React.FC<MMenuBarProps> = ({ dark, toggleDark }) => {
   }, []);
 
   const floatButtonClass =
-      location.pathname.slice(1,7) === "chats/" && !isNaN(Number(location.pathname.slice(7))) ? { insetInlineEnd: 24, bottom: 140 } : { insetInlineEnd: 24, bottom: 100 };
+    location.pathname.slice(1, 7) === "chats/" &&
+    !isNaN(Number(location.pathname.slice(7)))
+      ? { insetInlineEnd: 24, bottom: 140 }
+      : { insetInlineEnd: 24, bottom: 100 };
 
   return (
     <>

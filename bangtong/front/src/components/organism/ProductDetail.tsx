@@ -154,14 +154,12 @@ const ProductDetail: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("매물 상세정보 받아오는 중!");
         const response = await authAxios({
           method: "GET",
           url: `${process.env.REACT_APP_BACKEND_URL}/products/${id}`,
         });
         setProductInfo(response.data.data);
         setIsInterest(response.data.data.productReturnDto.productIsInterest);
-        console.log(response);
         setIsMe(userId === response.data.data.profileDto.userId); // 유저 Id
         // 관심 매물 등록이 돼있는지 조회 후, 그렇다면 관심 상태를 true로
       } catch (err) {
@@ -182,7 +180,6 @@ const ProductDetail: React.FC = () => {
         url: `${process.env.REACT_APP_BACKEND_URL}/products/delete/${id}`,
       })
         .then((response) => {
-          console.log(response);
           navigate("/product"); // 삭제 후 페이지 이동
         })
         .catch((err) => console.log(err));
@@ -201,7 +198,6 @@ const ProductDetail: React.FC = () => {
     }
     authAxios({ method, url, data })
       .then((response) => {
-        console.log("관심 매물 등록/취소됐음!");
         setIsInterest(() => !isInterest); // 관심 매물 true/false 상태를 반전
       })
       .catch((err) => console.log(err));
@@ -209,7 +205,6 @@ const ProductDetail: React.FC = () => {
 
   // 채팅방 생성
   const makeChatRoom = () => {
-    console.log(productInfo.profileDto);
     authAxios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/chatrooms/save`,
@@ -221,11 +216,10 @@ const ProductDetail: React.FC = () => {
       },
     })
       .then((response) => {
-        console.log(response.data.data);
         navigate(`/chats/${response.data.data}`);
       })
-      .catch((response) => {
-        console.log(response);
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -538,7 +532,6 @@ const ProductDetail: React.FC = () => {
                 className="w-full my-2"
                 onChange={(e) => {
                   reportTypeRef.current = parseInt(e);
-                  console.log(reportTypeRef.current);
                 }}
                 options={[
                   { value: 1, label: "스팸/도배" },
@@ -553,7 +546,6 @@ const ProductDetail: React.FC = () => {
               <textarea
                 className="w-full border resize-none"
                 onChange={(e) => {
-                  console.log(e.target.value);
                   reportRef.current = e.target.value;
                 }}
               />

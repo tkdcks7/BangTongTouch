@@ -35,7 +35,7 @@ const ProfilePwConfirm: React.FC = () => {
         if (response.data.data) {
           navigate(`/profile/${id}/update/confirmed`);
         } else {
-          console.log("비밀번호 검증에 실패했습니다.");
+          alert("비밀번호 검증에 실패했습니다.");
         }
       })
       .catch((err) => console.log(err));

@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { productSearchStore } from "../../store/productStore";
 
 // 컴포넌트
-import ProductMap from "../molecules/ProductMap";
-import InputBox from "../molecules/InputBox";
-import FilterBox from "../molecules/FilterBox";
+import type { MenuProps } from "antd";
 import {
   Button,
   ConfigProvider,
@@ -13,17 +11,13 @@ import {
   Popover,
   Radio,
   Space,
-  FloatButton,
 } from "antd";
-import type { MenuProps } from "antd";
+import FilterBox from "../molecules/FilterBox";
 import ProductList from "../molecules/ProductList";
+import ProductMap from "../molecules/ProductMap";
 
 // 아이콘
-import {
-  CalendarOutlined,
-  DownOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
+import { CalendarOutlined, DownOutlined } from "@ant-design/icons";
 
 const { RangePicker } = DatePicker;
 

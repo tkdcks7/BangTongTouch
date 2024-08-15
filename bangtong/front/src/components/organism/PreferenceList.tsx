@@ -1,10 +1,9 @@
+import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useDaumPostcodePopup } from "react-daum-postcode";
+import { useNavigate } from "react-router-dom";
 import useUserStore, { useUserPreferStore } from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
-import { productSearchStore, preferenceStore } from "../../store/productStore";
-import { motion } from "framer-motion";
-import { useDaumPostcodePopup } from "react-daum-postcode";
 
 // 컴포넌트
 import PreferenceBox from "../molecules/PreferenceBox";
@@ -58,27 +57,23 @@ const PreferenceList: React.FC = () => {
     if ((e.target as HTMLElement).tagName === "BUTTON") {
       return; // button이 클릭된 경우 div의 클릭 이벤트를 무시
     }
-    console.log("선호 상세 모달 띄우기!");
     setSelectedId(prefId);
     setModalIsOpen(true);
   };
 
   // 클릭 시 선호 생성 모달을 띄우는 핸들러
   const handlePreferenceCreate = (): void => {
-    console.log("선호 상세 모달 띄우기!");
     setSelectedId(0);
     setModalIsOpen(true);
   };
 
   // 클릭 시 삭제하는 핸들러
   const handlePreferenceDelete = (prefId: number): void => {
-    console.log("선호 설정 삭제");
     authAxios({
       method: "DELETE",
       url: `${process.env.REACT_APP_BACKEND_URL}/preferences/delete/${prefId}`,
     })
       .then((response) => {
-        console.log("삭제를 진행합니다..");
         setPreferenceArr(
           preferenceArr.filter((el) => el.preferenceId !== prefId)
         ); // preferenceId가 삭제될 prefId가 아닌 놈만 반환

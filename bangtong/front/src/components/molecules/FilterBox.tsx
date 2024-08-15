@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import authAxios from "../../utils/authAxios";
 import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import authAxios from "../../utils/authAxios";
 
 // 컴포넌트
+import { ConfigProvider, Modal } from "antd";
+import { productSearchStore } from "../../store/productStore";
+import { useUserPreferStore } from "../../store/userStore";
 import TextBtn from "../atoms/TextBtn";
 import BtnGroup from "../molecules/BtnGroup";
-import { ConfigProvider, Modal } from "antd";
-import { productSearchStore, preferenceStore } from "../../store/productStore";
-import { useUserPreferStore } from "../../store/userStore";
 
 // 이모티콘
 import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
 import { MapPinIcon } from "@heroicons/react/20/solid";
 import { getUserAddressKr2, getUserAddressNum2 } from "../../utils/services";
-import ProductList from "./ProductList";
 
 // type
 const homeCategory: string[] = ["원룸", "투룸+", "오피스텔", "빌라", "아파트"];
@@ -217,8 +215,6 @@ const FilterBox: React.FC = () => {
       endDate,
       address: undefined,
     };
-    console.log("regionId는");
-    console.log(address);
 
     if (
       searchData.regionId === "" ||
@@ -229,9 +225,7 @@ const FilterBox: React.FC = () => {
       else alert("집 유형을 선택해 주세요.");
     } else {
       await getUserAddressNum2(locationTitle).then((res1) => {
-        console.log(res1);
         getUserAddressKr2(res1[0], res1[1]).then((res2) => {
-          console.log(res2);
           authAxios({
             method: "POST",
             url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
@@ -258,7 +252,6 @@ const FilterBox: React.FC = () => {
             },
           })
             .then((response) => {
-              console.log(response);
               if (
                 response.data.data === null ||
                 response.data.data.length === 0
@@ -266,11 +259,7 @@ const FilterBox: React.FC = () => {
                 alert("검색 조건과 일치하는 매물이 없습니다.");
               } else {
                 setProductsList(response.data.data);
-                console.log(productsList);
               }
-              // response.data.data.forEach((item: any) => {
-              //   console.log(item);
-              // });
             })
             .catch((error) => {
               console.log(error);

@@ -2,12 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 // 이미지 소스
-import WhiteLogo from "../../assets/WhiteLogo.png";
 
 // 아이콘
-import StackIcon from "tech-stack-icons";
-import { color } from "framer-motion";
 import { MailFilled, PhoneFilled } from "@ant-design/icons";
+import StackIcon from "tech-stack-icons";
 
 const PcFooter: React.FC = () => {
   return (

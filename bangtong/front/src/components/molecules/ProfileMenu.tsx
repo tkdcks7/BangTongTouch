@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 import { Accordion } from "@szhsin/react-accordion";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import useUserStore from "../../store/userStore";
 
@@ -10,7 +10,6 @@ import ProfileMyPostItems from "./ProfileMyPostItems";
 
 // 아이콘
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import axios from "axios";
 
 const ProfileMenu: React.FC = () => {
   const { id } = useUserStore();

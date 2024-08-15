@@ -8,7 +8,6 @@ import MainChatCard from "../molecules/MainChatCard";
 import ToSignup from "../molecules/ToSignup";
 
 // 아이콘
-import { ChatBubbleLeftRightIcon } from "@heroicons/react/20/solid";
 
 const MainChatBox: React.FC = () => {
   const { id } = useUserStore();

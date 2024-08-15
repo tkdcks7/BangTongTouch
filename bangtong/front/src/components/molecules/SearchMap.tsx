@@ -1,9 +1,11 @@
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import { Link } from "react-router-dom";
 
 // 이미지 소스
+import { RightOutlined } from "@ant-design/icons";
+import jsonp from "jsonp";
+import defaultHome from "../../assets/defaulthome.png";
 import MapBank from "../../assets/MapBank.png"; // 은행
 import MapBusStation from "../../assets/MapBusStation.png"; // 버스정류장
 import MapConvStore from "../../assets/MapConvStore.png"; // 편의점
@@ -12,10 +14,7 @@ import MapLaundry from "../../assets/MapLaundry.png"; // 세탁소
 import MapProduct from "../../assets/MapProduct.png"; // 매물
 import { productSearchStore } from "../../store/productStore";
 import authAxios from "../../utils/authAxios";
-import jsonp from "jsonp";
 import { getUserAddressKr } from "../../utils/services";
-import defaultHome from "../../assets/defaulthome.png";
-import { RightCircleOutlined, RightOutlined } from "@ant-design/icons";
 
 interface MapProps {
   basePos: Pos; // 초기 위치(매물 좌표 or 사용자의 위치)
@@ -195,7 +194,6 @@ const SearchMap: React.FC<MapProps> = ({
       if (!map) return;
       markerDatas.length = 0;
       if (flag) {
-        console.log(basePos);
         markerDatas.push({
           productId: 0,
           lat: basePos.lat,
@@ -207,7 +205,6 @@ const SearchMap: React.FC<MapProps> = ({
         });
         for (let i = 0; i < markerDatas.length; i++) {
           const data = markerDatas[i];
-          console.log(markerDatas);
           const marker = new naver.maps.Marker({
             position: new naver.maps.LatLng(data.lat, data.lng),
             map: map,
@@ -240,7 +237,6 @@ const SearchMap: React.FC<MapProps> = ({
         }
       } else {
         await getUserAddressKr().then((res) => {
-          console.log(homeType);
           authAxios({
             method: "POST",
             url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
@@ -263,7 +259,6 @@ const SearchMap: React.FC<MapProps> = ({
           })
             .then((response) => {
               response.data.data.forEach((item: any) => {
-                console.log(item);
                 markerDatas.push({
                   productId: item.productId,
                   lat: item.lat,
@@ -309,8 +304,6 @@ const SearchMap: React.FC<MapProps> = ({
                   },
                 });
                 naver.maps.Event.addListener(marker, "click", () => {
-                  console.log(i);
-                  console.log(markerDatas);
                   openModal(i);
                 });
                 markers.push(marker);
@@ -412,7 +405,6 @@ const SearchMap: React.FC<MapProps> = ({
   function mapRender() {
     function initMap() {
       if (!mapElement.current) return;
-      console.log(basePos);
       const mapOptions = {
         center: new naver.maps.LatLng(basePos.lat, basePos.lng),
         zoom: zoomLevel,

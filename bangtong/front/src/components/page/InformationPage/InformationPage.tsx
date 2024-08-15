@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { animate, motion, useMotionValue, useTransform } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // 컴포넌트
-import ScrollToTop from "../../atoms/ScrollToTop";
 
 // css 스타일
 import "./InformationPage.css";

@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
+import axios from "axios";
+import dayjs from "dayjs";
+import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import authAxios, { formDataAxios } from "../../utils/authAxios";
+import { formDataAxios } from "../../utils/authAxios";
 import { getUserAddressNum } from "../../utils/services";
-import { motion } from "framer-motion";
-import dayjs from "dayjs";
 
 // 컴포넌트
-import InputBox from "../molecules/InputBox";
+import { CloseCircleOutlined } from "@ant-design/icons";
+import { ConfigProvider, DatePicker, Form, Input, Radio } from "antd";
+import useProductOptionStore from "../../store/productStore";
 import Attachment from "../atoms/Attachment";
 import Btn from "../atoms/Btn";
+import InputBox from "../molecules/InputBox";
 import OptionBtnGroup from "../molecules/OptionBtnGroup";
-import useProductOptionStore from "../../store/productStore";
-import { Form, Input, DatePicker, ConfigProvider, Radio } from "antd";
-import { CloseCircleOutlined } from "@ant-design/icons";
 
 // 매물 업로드에 필요한 json의 인터페이스
 interface ProductUploadDto {
@@ -102,7 +102,6 @@ const ProductUpload: React.FC = () => {
 
   // Datepicker를 위한 핸들러
   const handleValueChange = (newValue: any): void => {
-    console.log("newValue:", newValue);
     setDate(newValue);
   };
 
@@ -192,14 +191,10 @@ const ProductUpload: React.FC = () => {
   // 추가 옵션에서 제외하는 함수
   const hadleFurnitureRemove = (val: string) => {
     setFurnitureList(() => furnitureList.filter((opt) => opt !== val));
-    console.log(
-      `가구 = ${furnitureList}, 자른 값 = ${furnitureList.filter((opt) => opt !== val)}`
-    );
   };
 
   // 매물 업로드 실행 함수
   const handleUploadClick = () => {
-    console.log("매물 업로드 시작!");
     // Option 처리 부분
     let option: number = 0;
     if (optionObj["풀옵션"]) {
@@ -233,9 +228,6 @@ const ProductUpload: React.FC = () => {
       lng: coordinate[0],
     };
 
-    console.log("전송할 데이터를 출력합니다.");
-    console.log(productUploadDto);
-
     const formData = new FormData(); // formData 객체 생성
     const jsonBlob = new Blob([JSON.stringify(productUploadDto)], {
       type: "application/json",
@@ -256,16 +248,12 @@ const ProductUpload: React.FC = () => {
       sendMethod = "PUT";
       sendUrl = `${process.env.REACT_APP_BACKEND_URL}/modify/${id}`;
     }
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
     formDataAxios({
       method: sendMethod,
       url: sendUrl,
       data: formData,
     })
       .then((response) => {
-        console.log(response);
         // 수정일 경우에는 id를, 생성일 경우에는 response data에서 오는 productId를 받아 매물 상세 페이지로 이동
         if (id) {
           navigate(`/products/${id}`);

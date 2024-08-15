@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { useDaumPostcodePopup } from "react-daum-postcode";
 import { productSearchStore } from "../../store/productStore";
 
-import ProductSearchButton from "../atoms/ProductSearchButton";
 import { Input } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import ProductSearchButton from "../atoms/ProductSearchButton";
 
 interface IProductSearch2Props {
   onPrev: () => void;

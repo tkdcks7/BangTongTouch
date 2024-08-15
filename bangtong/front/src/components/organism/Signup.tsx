@@ -123,7 +123,6 @@ const SignupPage: React.FC = () => {
 
   // 이메일 인증 요청 함수
   const handleMailSend = () => {
-    console.log("이메일 인증 요청합니다");
     // 발송된 이메일이 없는 메일 혹은 존재하는 사용자이면 status 400번대 response
     setIsLoading(true);
     axios({
@@ -149,7 +148,6 @@ const SignupPage: React.FC = () => {
 
   // 메일 인증번호 확인 handler
   const handleCertificateConfirm = (e: any) => {
-    console.log("인증번호 확인 요청합니다.");
     axios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/emails/verify`,
@@ -160,7 +158,6 @@ const SignupPage: React.FC = () => {
     })
       .then((response) => {
         if (response.data.data) {
-          console.log("인증 성공!");
           setPage(page + 1);
         } else {
           alert(

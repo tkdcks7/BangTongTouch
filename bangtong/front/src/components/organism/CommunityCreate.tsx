@@ -1,26 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Params,
-  redirect,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import { contents } from "../../data";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // 컴포넌트
-import DropDown from "../molecules/DropDown";
-import IconBtn from "../atoms/IconBtn";
 import RollBackBtn from "../atoms/RollBackBtn";
+import DropDown from "../molecules/DropDown";
 
 // 이미지 소스
-import Clip from "../../assets/Clip.png";
-import TextEditor from "../molecules/TextEditor";
 import axios, { HttpStatusCode } from "axios";
-import { getCookie } from "../../utils/cookie";
-import { getUserAddressKr } from "../../utils/services";
-import authAxios from "../../utils/authAxios";
 import useUserStore from "../../store/userStore";
+import authAxios from "../../utils/authAxios";
+import { getUserAddressKr } from "../../utils/services";
+import TextEditor from "../molecules/TextEditor";
 
 const CommunityCreate: React.FC = () => {
   const [textEditorValue, setTextEditorValue] = useState("");
@@ -35,8 +25,6 @@ const CommunityCreate: React.FC = () => {
 
   const [category, setCategory] = useState<string>("게시판 종류 선택");
   const addr = useRef<number>();
-
-  console.log(category);
 
   const redirectToBoards = () => {
     navigate("../", { replace: true });
@@ -118,7 +106,6 @@ const CommunityCreate: React.FC = () => {
               data.append("boardContent", textEditorValue);
               data.append("boardWriter", userId.toString());
               if (id === null) {
-                console.log(category === "전체");
                 authAxios({
                   method: "POST",
                   headers: {

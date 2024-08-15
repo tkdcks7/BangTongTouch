@@ -22,7 +22,6 @@ const ProductDetailInterest: React.FC<ProductProps> = ({
       url: `${process.env.REACT_APP_BACKEND_URL}/products/interest/${productId}`,
     })
       .then((res) => {
-        console.log(res);
         setChatCnt(res.data.data.chatCnt);
         setInterestCnt(res.data.data.interestCnt);
       })

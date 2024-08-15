@@ -27,7 +27,6 @@ const ProfileMyPostItems: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/products/myproducts`,
     })
       .then((res) => {
-        console.log(res);
         setPostItems(res.data.data);
       })
       .catch((err) => console.log(err));

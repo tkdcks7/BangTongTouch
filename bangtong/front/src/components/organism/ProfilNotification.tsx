@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useParams } from "react-router-dom";
-import { useAlarmStore } from "../../store/userStore";
 
 // 컴포넌트
 import ToggleBox from "../molecules/ToggleBox";

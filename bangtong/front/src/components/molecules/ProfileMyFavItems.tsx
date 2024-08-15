@@ -26,7 +26,6 @@ const ProfileMyFavItems: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/interests/${id}`,
     })
       .then((res) => {
-        console.log(res);
         setFavItems(res.data.data);
       })
       .catch((err) => console.log(err));

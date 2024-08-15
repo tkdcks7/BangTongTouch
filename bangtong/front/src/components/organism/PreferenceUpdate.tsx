@@ -45,8 +45,6 @@ const PreferenceUpdate: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/regions`,
     })
       .then((res) => {
-        console.log(res);
-        console.log(`받아온 지역은 ${res} 입니다.`);
         setRegions(res.data.data);
       })
       .catch((e) => console.log(`지역을 못받아옴. ${e}`));
@@ -74,8 +72,6 @@ const PreferenceUpdate: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/regions/${regionId}`,
     })
       .then((res) => {
-        console.log(res);
-        console.log(`받아온 하위지역은 ${res.data.data} 입니다.`);
         setRegions(res.data.data);
       })
       .catch((err) => console.log(`지역을 못받아옴. ${err}`));
@@ -90,8 +86,6 @@ const PreferenceUpdate: React.FC = () => {
       url: `${process.env.REACT_APP_BACKEND_URL}/regions/gugun/${regionId}`,
     })
       .then((res) => {
-        console.log(res);
-        console.log(`받아온 최하위지역은 ${res.data.data} 입니다.`);
         setRegions(res.data.data);
       })
       .catch((err) => console.log(`지역을 못받아옴. ${err}`));
@@ -160,7 +154,6 @@ const PreferenceUpdate: React.FC = () => {
 
   // 검색을 진행하는 함수
   const handleSearch = () => {
-    console.log("검색 진행");
     const searchData = {
       order,
       minDeposit,
@@ -175,16 +168,12 @@ const PreferenceUpdate: React.FC = () => {
       startDate,
       endDate,
     };
-    console.log(`searchData는...`);
-    console.log(searchData);
     axios({
       method: "POST",
       url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
       data: searchData,
     })
       .then((response) => {
-        console.log("검색 완료!");
-        console.log(response);
         setProductsList(response.data.data);
       })
       .catch((err) => console.log(err));

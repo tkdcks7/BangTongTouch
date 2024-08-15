@@ -1,12 +1,4 @@
-import axios from "axios";
 import jsonp from "jsonp";
-
-// const getCoords = async () => {
-//   const temp: any = await getUserAddressNum("서울 광진구 군자동 98");
-//   console.log(temp);
-// };
-// getCoords();
-// 한국어 주소명을 경위도로
 
 export const getUserAddressNum = (addr: string): Promise<Array<number>> => {
   return new Promise((resolve, reject) => {
@@ -28,8 +20,6 @@ export const getUserAddressNum = (addr: string): Promise<Array<number>> => {
   });
 };
 
-//지번 주소용
-
 export const getUserAddressNum2 = (addr: string): Promise<Array<number>> => {
   return new Promise((resolve, reject) => {
     jsonp(
@@ -49,13 +39,6 @@ export const getUserAddressNum2 = (addr: string): Promise<Array<number>> => {
     );
   });
 };
-
-// const getAddress = async () => {
-//   const temp: any = await getUserAddressKr();
-//   console.log(temp);
-// };
-// getAddress();
-// ip주소를 기반으로 탐색한 경위도로 한글 주소를 반환
 
 export const getUserAddressKr = (): Promise<Array<string>> => {
   return new Promise((resolve, reject) => {
@@ -93,7 +76,6 @@ export const getUserAddressKr2 = (
   lng: number
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
-    console.log(lat, lng);
     jsonp(
       `https://api.vworld.kr/req/address?service=address&request=getAddress&version=2.0&point=${lat},${lng}&simple=false&type=BOTH&key=${process.env.REACT_APP_SEARCH_API}`,
       { param: "callback" },

@@ -1,15 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import io, { Socket } from "socket.io-client";
 import {
   AudioFilled,
   AudioMutedOutlined,
-  CameraFilled,
-  CameraOutlined,
   LogoutOutlined,
   VideoCameraFilled,
   VideoCameraOutlined,
 } from "@ant-design/icons";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import io, { Socket } from "socket.io-client";
 
 const VideoChat: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
@@ -44,16 +42,12 @@ const VideoChat: React.FC = () => {
     const handleWelcome = async () => {
       if (peerConnectionRef.current) {
         try {
-          console.log("welcome");
           const dataChannel =
             peerConnectionRef.current.createDataChannel("chat");
-          dataChannel.addEventListener("message", (event) =>
-            console.log("DataChannel message:", event.data)
-          );
+          dataChannel.addEventListener("message", (event) => {});
 
           const offer = await peerConnectionRef.current.createOffer();
           await peerConnectionRef.current.setLocalDescription(offer);
-          console.log("Sending offer:", offer);
           socketRef.current?.emit("offer", offer, roomId);
         } catch (error) {
           console.error("Error in 'welcome' event handler:", error);
@@ -65,7 +59,6 @@ const VideoChat: React.FC = () => {
       if (peerConnectionRef.current) {
         try {
           const pc = peerConnectionRef.current;
-          console.log("Handling offer:", offer);
           await pc.setRemoteDescription(new RTCSessionDescription(offer));
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
@@ -74,7 +67,6 @@ const VideoChat: React.FC = () => {
           // Process any queued ICE candidates now that the remote description is set
           iceCandidatesQueue.current.forEach(async (candidate) => {
             try {
-              console.log("Adding queued ICE candidate:", candidate);
               await pc.addIceCandidate(new RTCIceCandidate(candidate));
             } catch (error) {
               console.error("Error adding queued ICE candidate:", error);
@@ -91,13 +83,11 @@ const VideoChat: React.FC = () => {
       if (peerConnectionRef.current) {
         try {
           const pc = peerConnectionRef.current;
-          console.log("Handling answer:", answer);
           await pc.setRemoteDescription(new RTCSessionDescription(answer));
 
           // Process any queued ICE candidates now that the remote description is set
           iceCandidatesQueue.current.forEach(async (candidate) => {
             try {
-              console.log("Adding queued ICE candidate:", candidate);
               await pc.addIceCandidate(new RTCIceCandidate(candidate));
             } catch (error) {
               console.error("Error adding queued ICE candidate:", error);
@@ -123,7 +113,6 @@ const VideoChat: React.FC = () => {
             return;
           }
 
-          console.log("Handling ICE candidate:", ice);
           await pc.addIceCandidate(new RTCIceCandidate(ice));
         } catch (error) {
           console.error("Error handling ICE candidate:", error);
@@ -189,12 +178,10 @@ const VideoChat: React.FC = () => {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      console.log(stream);
       mystreamRef.current = stream;
       if (myFaceRef.current) {
         myFaceRef.current.srcObject = stream;
       }
-      console.log(myFaceRef.current?.srcObject);
       if (!deviceId) {
         await getCameras();
       }
@@ -256,20 +243,15 @@ const VideoChat: React.FC = () => {
 
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
-        console.log("ice candidate");
         socketRef.current?.emit("ice", event.candidate, roomId);
       }
     };
 
     peerConnection.ontrack = (event) => {
-      console.log("Track event:", event);
-      console.log(event.streams[0]);
       if (peerFaceRef.current) {
         peerFaceRef.current.srcObject = event.streams[0];
       }
     };
-
-    console.log(mystreamRef);
 
     if (mystreamRef.current) {
       mystreamRef.current
@@ -277,12 +259,10 @@ const VideoChat: React.FC = () => {
         .forEach((track) =>
           peerConnection.addTrack(track, mystreamRef.current!!)
         );
-      console.log(mystreamRef);
     }
 
     peerConnectionRef.current = peerConnection;
 
-    console.log("PeerConnection created:", peerConnection);
     socketRef.current?.emit("join_room", roomId);
   };
 

@@ -72,11 +72,8 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
                   method: "DELETE",
                   url: `${process.env.REACT_APP_BACKEND_URL}/alarms/delete/${item.alarmMessageId}`,
                 })
-                  .then((response) => {
-                    console.log(response);
-                  })
+                  .then((response) => {})
                   .catch((error) => {
-                    console.log(error);
                     alert("에러가 발생했습니다.");
                   });
               }}

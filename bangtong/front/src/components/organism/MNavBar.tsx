@@ -1,16 +1,16 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 // 컴포넌트 불러오기
-import TextBox from "../atoms/TextBox";
 import IconBtn from "../atoms/IconBtn";
+import TextBox from "../atoms/TextBox";
 
 // 이미지 소스
+import Community from "../../assets/Community.png";
 import Home from "../../assets/Home.png";
 import MapPin from "../../assets/MapPin.png";
 import Message from "../../assets/Message.png";
 import Profile from "../../assets/Profile.png";
-import Community from "../../assets/Community.png";
 
 // Store
 import useUserStore from "../../store/userStore";
