@@ -12,6 +12,7 @@ import MapLaundry from "../../assets/MapLaundry.png"; // 세탁소
 import MapProduct from "../../assets/MapProduct.png"; // 매물
 import { productSearchStore } from "../../store/productStore";
 import authAxios from "../../utils/authAxios";
+import jsonp from "jsonp";
 
 interface MapProps {
   basePos: Pos; // 초기 위치(매물 좌표 or 사용자의 위치)
@@ -238,48 +239,54 @@ const SearchMap: React.FC<MapProps> = ({
       // test
       const bbox = `${southWest.x},${southWest.y},${northEast.x},${northEast.y}`;
       for (let i = 0; i < subMarkerDatas.length; i++) {
-        axios({
-          method: "GET",
-          url: `https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=30&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
-        })
-          .then((response) => {
-            response.data.response.result.items.forEach((item: any) => {
-              const result = fromEPSG3857(item.point.x, item.point.y);
-              const marker = new naver.maps.Marker({
-                position: new naver.maps.LatLng(result.lat, result.lng),
-                map: map,
-                icon: {
-                  content: `
-                      <img 
-                        src=${subMarkerDatas[i].src}
-                        alt="${subMarkerDatas[i].category}" 
-                        style="
-                          margin: 0; 
-                          padding: 0; 
-                          border: 0; 
-                          display: block; 
-                          max-width: none; 
-                          max-height: none; 
-                          -webkit-user-select: none; 
-                          position: absolute; 
-                          width: 30px; 
-                          height: 40px; 
-                          left: 0; 
-                          top: 0;
-                        "
-                      />
-                    `,
-                  size: new naver.maps.Size(30, 20),
-                  anchor: new naver.maps.Point(11, 35),
-                },
+        jsonp(
+          `https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=30&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
+          { param: "callback" },
+          (err: any, data: any) => {
+            if (err) {
+              console.error("Error:", err);
+            } else {
+              console.log("vWorld API Response:", data);
+              console.log(data.response.result.items);
+              // 여기에 받은 데이터를 처리하는 코드를 추가하세요.
+              data.response.result.items.forEach((item: any) => {
+                const result = fromEPSG3857(item.point.x, item.point.y);
+                const marker = new naver.maps.Marker({
+                  position: new naver.maps.LatLng(result.lat, result.lng),
+                  map: map,
+                  icon: {
+                    content: `
+                        <img
+                          src=${subMarkerDatas[i].src}
+                          alt="${subMarkerDatas[i].category}"
+                          style="
+                            margin: 0;
+                            padding: 0;
+                            border: 0;
+                            display: block;
+                            max-width: none;
+                            max-height: none;
+                            -webkit-user-select: none;
+                            position: absolute;
+                            width: 30px;
+                            height: 40px;
+                            left: 0;
+                            top: 0;
+                          "
+                        />
+                      `,
+                    size: new naver.maps.Size(30, 20),
+                    anchor: new naver.maps.Point(11, 35),
+                  },
+                });
+                naver.maps.Event.addListener(marker, "click", () => {
+                  openSubModal(item.title);
+                });
+                markers.push(marker);
               });
-              naver.maps.Event.addListener(marker, "click", () => {
-                openSubModal(item.title);
-              });
-              markers.push(marker);
-            });
-          })
-          .catch((error) => console.log("전송 실패", error));
+            }
+          }
+        );
       }
 
       for (let i = 0; i < markerDatas.length; i++) {
