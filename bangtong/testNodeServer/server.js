@@ -1,5 +1,5 @@
 const express = require("express");
-const http = require("http");
+const https = require('https');
 const SocketIO = require("socket.io");
 
 const cors = require("cors");
@@ -14,7 +14,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const httpServer = http.createServer(app);
+const httpServer = https.createServer(app);
 const wsServer = SocketIO(httpServer, {
   cors: {
     origin: "*", // 클라이언트의 출처를 명시적으로 허용
