@@ -25,7 +25,7 @@ const MainPage: React.FC = () => {
     setIsLoading(true);
     authAxios({
       method: "GET",
-      url: `${process.env.REACT_APP_BACKEND_URL}/products/recent/${preferenceId}`,
+      url: `${process.env.REACT_APP_BACKEND_URL}/products/preference/${preferenceId}`,
     })
       .then((res) => {
         console.log(res);
