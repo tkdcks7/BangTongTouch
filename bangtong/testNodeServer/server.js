@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 
 const corsOptions = {
-  origin: "http://localhost:3000", // 클라이언트의 출처를 명시적으로 허용
+  origin: "*", // 클라이언트의 출처를 명시적으로 허용
   methods: ["GET", "POST"],
   credentials: true, // 인증된 요청을 허용합니다.
 };
@@ -17,7 +17,7 @@ app.use(cors(corsOptions));
 const httpServer = http.createServer(app);
 const wsServer = SocketIO(httpServer, {
   cors: {
-    origin: "http://localhost:3000", // 클라이언트의 출처를 명시적으로 허용
+    origin: "*", // 클라이언트의 출처를 명시적으로 허용
     methods: ["GET", "POST"],
     credentials: true,
   },
