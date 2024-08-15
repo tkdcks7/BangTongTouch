@@ -79,7 +79,7 @@ const ChatBox: React.FC = () => {
                   <img
                     src={
                       room.profileImg
-                        ? `${process.env.REACT_APP_BACKEND_SRC_URL}/${room.profileImg}`
+                        ? `${process.env.REACT_APP_BACKEND_SRC_URL}${room.profileImg}`
                         : defaultProfile
                     }
                     alt="프사"
