@@ -42,8 +42,8 @@ const BtnGroup: React.FC<BtnGroupProps> = ({
           onClick={() => onClickFtn(index)}
           className={`p-2 px-4 border font-bold hover:bg-lime-200 transition-colors duration-200 rounded-lg m-1 dark:${darkTextColor} ${
             idxArr[index]
-              ? "border-lime-400 text-lime-500 bg-lime-200"
-              : "text-gray-400 hover:border-lime-400 hover:text-lime-400"
+              ? "border-lime-400 text-lime-600 bg-lime-200"
+              : "text-gray-400 hover:border-lime-400 hover:text-lime-600"
           }`}
         >
           {item}

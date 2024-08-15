@@ -11,7 +11,7 @@ import Logo from "../../assets/GreenLogo.png";
 
 // Store
 import useAlarmInfoStore from "../../store/alarmInfoStore";
-import useUserStore from "../../store/userStore";
+import useUserStore, { useUserPreferStore } from "../../store/userStore";
 import { preferenceStore } from "../../store/productStore";
 import { BellOutlined, MoonOutlined, SunOutlined } from "@ant-design/icons";
 
@@ -22,6 +22,7 @@ interface PcNavBarProps {
 
 const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
   const { token, id, setLogOut } = useUserStore();
+  const { resetPrefer } = useUserPreferStore();
   const navigate = useNavigate();
   const { reSetPreference } = preferenceStore();
   const { alarms, setAlarmDelete } = useAlarmInfoStore();
@@ -46,6 +47,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
       .then((response) => {
         setAlarmDelete();
         reSetPreference();
+        resetPrefer();
         setLogOut(); // userInfo와 token을 초기화
         navigate("/user/login");
       })
@@ -53,6 +55,7 @@ const PcNavBar: React.FC<PcNavBarProps> = ({ dark, toggleDark }) => {
         console.log(err);
         setAlarmDelete();
         reSetPreference();
+        resetPrefer();
         setLogOut(); // userInfo와 token을 초기화
         navigate("/user/login");
       });

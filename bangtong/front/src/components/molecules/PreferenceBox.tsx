@@ -5,24 +5,26 @@ import { useUserPreferStore } from "../../store/userStore";
 import { CheckOutlined } from "@ant-design/icons";
 
 interface PreferenceBoxProps extends React.HTMLAttributes<HTMLDivElement> {
-  key: number;
+  delayOrd: number;
   preferenceId: number;
   preferenceName: string;
   preferenceDeposit: number;
   preferenceRent: number;
   regionAddress: string;
+  isAnimationCompleted: boolean;
   handlePreferenceDetail: (e: any, prefId: number) => void;
   handlePreferenceApplicate: (prefId: number) => void;
   handlePreferenceDelete: (prefId: number) => void;
 }
 
 const PreferenceBox: React.FC<PreferenceBoxProps> = ({
-  key,
+  delayOrd,
   preferenceId,
   preferenceName,
   preferenceDeposit,
   preferenceRent,
   regionAddress,
+  isAnimationCompleted,
   handlePreferenceDetail,
   handlePreferenceApplicate,
   handlePreferenceDelete,
@@ -32,7 +34,7 @@ const PreferenceBox: React.FC<PreferenceBoxProps> = ({
   const [isSelected, setIsSelected] = useState<boolean>(
     preferenceId === userPrefId
   );
-  const startTime = key + 1.5;
+  const startTime = delayOrd * 0.5;
 
   useEffect(() => {
     setIsSelected(preferenceId === userPrefId);
@@ -41,10 +43,14 @@ const PreferenceBox: React.FC<PreferenceBoxProps> = ({
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ opacity: 1, scale: 1 }}
+      animate={
+        isAnimationCompleted
+          ? { opacity: 1, scale: 1 }
+          : { opacity: 0, scale: 0.5 }
+      }
       transition={{
-        duration: 0.8,
-        delay: startTime,
+        duration: 0.4,
+        delay: isAnimationCompleted ? startTime : 0,
         ease: [0, 0.7, 0.2, 1],
       }}
       className={`mt-4 relative flex items-center justify-center 

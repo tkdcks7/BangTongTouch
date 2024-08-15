@@ -12,7 +12,7 @@ import menuImg from "../../assets/Menu.png";
 import useUserStore from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
 import { Dropdown, Modal, Select } from "antd";
-import {dark} from "@mui/material/styles/createPalette";
+import { dark } from "@mui/material/styles/createPalette";
 
 interface region {
   regionId: string;
