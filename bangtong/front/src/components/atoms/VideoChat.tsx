@@ -300,7 +300,13 @@ const VideoChat: React.FC = () => {
         </form>
       </div>
       <div id="call">
-        <video id="myFace" ref={myFaceRef} autoPlay playsInline></video>
+        <video
+          id="myFace"
+          ref={myFaceRef}
+          autoPlay
+          playsInline
+          width={350}
+        ></video>
         <button id="mute" onClick={handleMuteClick}>
           {muted ? "Unmute" : "Mute"}
         </button>
@@ -312,7 +318,13 @@ const VideoChat: React.FC = () => {
           ref={camerasSelectRef}
           onChange={handleCameraChange}
         ></select>
-        <video id="peerFace" ref={peerFaceRef} autoPlay playsInline></video>
+        <video
+          id="peerFace"
+          ref={peerFaceRef}
+          autoPlay
+          playsInline
+          width={350}
+        ></video>
       </div>
     </div>
   );
