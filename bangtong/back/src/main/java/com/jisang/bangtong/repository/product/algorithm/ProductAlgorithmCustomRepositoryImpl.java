@@ -30,11 +30,11 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
 
   private final EntityManager em;
   private final JPAQueryFactory queryfactory;
+
   public ProductAlgorithmCustomRepositoryImpl(EntityManager em, JPAQueryFactory queryfactory) {
     this.em = em;
     this.queryfactory = queryfactory;
   }
-
 
 
   public Productalgorithm getProductalgorithm(Double lat, Double lng) {
@@ -42,43 +42,76 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
     productAlgorithm.setLat(lat);
     productAlgorithm.setLng(lng);
 
-    processEntity("Busstop", QBusstopseoul.busstopseoul, QBusstopseoul.busstopseoul.lat, QBusstopseoul.busstopseoul.lng, lat, lng, productAlgorithm);
-    processEntity("Cctv", QCctvseoul.cctvseoul, QCctvseoul.cctvseoul.lat, QCctvseoul.cctvseoul.lng, lat, lng, productAlgorithm);
-    processEntity("Conv", QConvseoul.convseoul, QConvseoul.convseoul.lat, QConvseoul.convseoul.lng, lat, lng, productAlgorithm);
-    processEntity("Laundrycoin", QLaundrycoinseoul.laundrycoinseoul, QLaundrycoinseoul.laundrycoinseoul.lat, QLaundrycoinseoul.laundrycoinseoul.lng, lat, lng, productAlgorithm);
-    processEntity("Pharm", QPharmseoul.pharmseoul, QPharmseoul.pharmseoul.lat, QPharmseoul.pharmseoul.lng, lat, lng, productAlgorithm);
-    processEntity("Police", QPoliceseoul.policeseoul, QPoliceseoul.policeseoul.lat, QPoliceseoul.policeseoul.lng, lat, lng, productAlgorithm);
-    processEntity("Starbucks", QStarbuckseoul.starbuckseoul, QStarbuckseoul.starbuckseoul.lat, QStarbuckseoul.starbuckseoul.lng, lat, lng, productAlgorithm);
-    processEntity("Subway", QSubwayseoul.subwayseoul, QSubwayseoul.subwayseoul.lat, QSubwayseoul.subwayseoul.lng, lat, lng, productAlgorithm);
-    processEntity("Supermarket", QSupermarketseoul.supermarketseoul, QSupermarketseoul.supermarketseoul.lat, QSupermarketseoul.supermarketseoul.lng, lat, lng, productAlgorithm);
+    processEntity("Busstop", QBusstopseoul.busstopseoul, QBusstopseoul.busstopseoul.lat,
+        QBusstopseoul.busstopseoul.lng, lat, lng, productAlgorithm);
+    processEntity("Cctv", QCctvseoul.cctvseoul, QCctvseoul.cctvseoul.lat, QCctvseoul.cctvseoul.lng,
+        lat, lng, productAlgorithm);
+    processEntity("Conv", QConvseoul.convseoul, QConvseoul.convseoul.lat, QConvseoul.convseoul.lng,
+        lat, lng, productAlgorithm);
+    processEntity("Laundrycoin", QLaundrycoinseoul.laundrycoinseoul,
+        QLaundrycoinseoul.laundrycoinseoul.lat, QLaundrycoinseoul.laundrycoinseoul.lng, lat, lng,
+        productAlgorithm);
+    processEntity("Pharm", QPharmseoul.pharmseoul, QPharmseoul.pharmseoul.lat,
+        QPharmseoul.pharmseoul.lng, lat, lng, productAlgorithm);
+    processEntity("Police", QPoliceseoul.policeseoul, QPoliceseoul.policeseoul.lat,
+        QPoliceseoul.policeseoul.lng, lat, lng, productAlgorithm);
+    processEntity("Starbucks", QStarbuckseoul.starbuckseoul, QStarbuckseoul.starbuckseoul.lat,
+        QStarbuckseoul.starbuckseoul.lng, lat, lng, productAlgorithm);
+    processEntity("Subway", QSubwayseoul.subwayseoul, QSubwayseoul.subwayseoul.lat,
+        QSubwayseoul.subwayseoul.lng, lat, lng, productAlgorithm);
+    processEntity("Supermarket", QSupermarketseoul.supermarketseoul,
+        QSupermarketseoul.supermarketseoul.lat, QSupermarketseoul.supermarketseoul.lng, lat, lng,
+        productAlgorithm);
 
-    findSmallOriental(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findOriental(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findGeneral(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findMidWife(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findMentalHospital(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findSmallHospital(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findNursingHospital(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findUnderHospital(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findPublicHospital(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findNormalHospital(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findDental(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findSuperPublicHospital(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    findSmallDental(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
-    log.info("ProductAlgorithmCustomRepositoryImpl {}", productAlgorithm);
+    findSmallOriental(QHospitalposencoded.hospitalposencoded,
+        QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat,
+        lng, productAlgorithm);
+    findOriental(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat,
+        QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
+    findGeneral(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat,
+        QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
+    findMidWife(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat,
+        QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
+    findMentalHospital(QHospitalposencoded.hospitalposencoded,
+        QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat,
+        lng, productAlgorithm);
+    findSmallHospital(QHospitalposencoded.hospitalposencoded,
+        QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat,
+        lng, productAlgorithm);
+    findNursingHospital(QHospitalposencoded.hospitalposencoded,
+        QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat,
+        lng, productAlgorithm);
+    findUnderHospital(QHospitalposencoded.hospitalposencoded,
+        QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat,
+        lng, productAlgorithm);
+    findPublicHospital(QHospitalposencoded.hospitalposencoded,
+        QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat,
+        lng, productAlgorithm);
+    findNormalHospital(QHospitalposencoded.hospitalposencoded,
+        QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat,
+        lng, productAlgorithm);
+    findDental(QHospitalposencoded.hospitalposencoded, QHospitalposencoded.hospitalposencoded.lat,
+        QHospitalposencoded.hospitalposencoded.lng, lat, lng, productAlgorithm);
+    findSuperPublicHospital(QHospitalposencoded.hospitalposencoded,
+        QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat,
+        lng, productAlgorithm);
+    findSmallDental(QHospitalposencoded.hospitalposencoded,
+        QHospitalposencoded.hospitalposencoded.lat, QHospitalposencoded.hospitalposencoded.lng, lat,
+        lng, productAlgorithm);
 
     em.persist(productAlgorithm);
     return productAlgorithm;
   }
 
   // Refactored method to find the shortest distance
-  public <T extends EntityPathBase<?>> double findShortestDistance(T entity, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, EntityManager em) {
+  public <T extends EntityPathBase<?>> double findShortestDistance(T entity,
+      NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon,
+      EntityManager em) {
     return new JPAQuery<>(em)
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(entity)
         .fetchOne();
   }
-
 
 
   private <T extends EntityPathBase<?>> void processEntity(
@@ -139,7 +172,9 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
   }
 
   // Refactored method to count entities within radius
-  public <T extends EntityPathBase<?>> long countEntitiesWithinRadius(T entity, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, double radiusKm, EntityManager em) {
+  public <T extends EntityPathBase<?>> long countEntitiesWithinRadius(T entity,
+      NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon,
+      double radiusKm, EntityManager em) {
     return new JPAQuery<>(em)
         .select(entity.count())
         .from(entity)
@@ -148,7 +183,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
   }
 
   // Calculate distance using the Haversine formula
-  private NumberExpression<Double> calculateDistance(NumberPath<Double> targetLat, NumberPath<Double> targetLon, double refLat, double refLon) {
+  private NumberExpression<Double> calculateDistance(NumberPath<Double> targetLat,
+      NumberPath<Double> targetLon, double refLat, double refLon) {
 
     NumberTemplate<Double> distance = Expressions.numberTemplate(Double.class,
         "6371 * acos(cos(radians({0})) * cos(radians({1})) * cos(radians({2}) - radians({3})) + sin(radians({0})) * sin(radians({1})))",
@@ -159,7 +195,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
   }
 
   // Determine if the entity's location is within the specified radius
-  private BooleanExpression withinRadius(NumberPath<Double> targetLat, NumberPath<Double> targetLon, double refLat, double refLon, double radiusKm) {
+  private BooleanExpression withinRadius(NumberPath<Double> targetLat, NumberPath<Double> targetLon,
+      double refLat, double refLon, double radiusKm) {
 
     NumberTemplate<Double> distance = Expressions.numberTemplate(Double.class,
         "6371 * acos(cos(radians({0})) * cos(radians({1})) * cos(radians({2}) - radians({3})) + sin(radians({0})) * sin(radians({1})))",
@@ -169,7 +206,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
     return distance.loe(radiusKm);
   }
 
-  public void findDental(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findDental(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath,
+      NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
 
     Double shortestDentalDistance = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
@@ -190,7 +228,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
   }
 
 
-  public void findNormalHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findNormalHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath,
+      NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
     Double shortestNormalHospitalDistance = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)
@@ -208,7 +247,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
     productAlgorithm.setNormalHospitalDist(shortestNormalHospitalDistance);
   }
 
-  public void findPublicHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findPublicHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath,
+      NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
     Double shortestNormalHospitalDistance = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)
@@ -226,7 +266,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
     productAlgorithm.setPublicHealthDist(shortestNormalHospitalDistance);
   }
 
-  public void findUnderHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findUnderHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath,
+      NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
     Double underDist = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)
@@ -244,7 +285,9 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
     productAlgorithm.setPublicUnderPublicHealthCount(underCnt);
   }
 
-  public void findSuperPublicHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findSuperPublicHospital(QHospitalposencoded hospitalposencoded,
+      NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon,
+      Productalgorithm productAlgorithm) {
     Double superDist = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)
@@ -262,7 +305,9 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
     productAlgorithm.setSuperGeneralHospitalCount(superCnt);
   }
 
-  public void findNursingHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findNursingHospital(QHospitalposencoded hospitalposencoded,
+      NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon,
+      Productalgorithm productAlgorithm) {
     Double nursingDist = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)
@@ -280,7 +325,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
     productAlgorithm.setNursingHospitalCount(nursingCnt);
   }
 
-  public void findSmallHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findSmallHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath,
+      NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
     Double smallHospitalDist = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)
@@ -299,7 +345,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
   }
 
 
-  public void findMentalHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findMentalHospital(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath,
+      NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
     Double mentalDist = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)
@@ -317,7 +364,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
     productAlgorithm.setMentalHospitalCount(mentalCnt);
   }
 
-  public void findMidWife(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findMidWife(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath,
+      NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
     Double midWifeDist = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)
@@ -336,7 +384,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
   }
 
 
-  public void findGeneral(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findGeneral(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath,
+      NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
     Double generalDist = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)
@@ -354,7 +403,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
     productAlgorithm.setGeneralHospitalCount(generalCnt);
   }
 
-  public void findSmallDental(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findSmallDental(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath,
+      NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
     Double smallDentalDist = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)
@@ -372,7 +422,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
     productAlgorithm.setSmallDentalHospitalCount(smallDentalCnt);
   }
 
-  public void findSmallOriental(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findSmallOriental(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath,
+      NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
     Double smallOrientalDist = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)
@@ -390,7 +441,8 @@ public class ProductAlgorithmCustomRepositoryImpl implements ProductAlgorithmCus
     productAlgorithm.setSmallOrientalHospitalCount(smallOrientalCnt);
   }
 
-  public void findOriental(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath, NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
+  public void findOriental(QHospitalposencoded hospitalposencoded, NumberPath<Double> latPath,
+      NumberPath<Double> lonPath, double refLat, double refLon, Productalgorithm productAlgorithm) {
     Double orientalDist = queryfactory
         .select(calculateDistance(latPath, lonPath, refLat, refLon).min())
         .from(hospitalposencoded)

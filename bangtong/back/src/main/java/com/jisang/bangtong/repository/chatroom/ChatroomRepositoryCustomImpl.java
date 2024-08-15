@@ -35,8 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-@Slf4j
 public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
+
   private final JPAQueryFactory queryFactory;
   private final EntityManager entityManager;
 
@@ -78,11 +78,9 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
         .where(isMakerPresent.or(isParticipantPresent))
         .fetch();
 
-
     // Transform tuples to DTOs
     return resultTuples.stream().map(tuple -> {
 
-      log.info(tuple.toString());
       Long chatroomId = tuple.get(qChatroom.chatroomId);
       Product product = tuple.get(qProduct);
       User maker = tuple.get(qMaker);
@@ -95,13 +93,14 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
       if (userId.equals(makerId)) {
         profileDto = new ProfileDto(
             participant.getUserId(),
-            participant.getUserProfileImage() != null ? participant.getUserProfileImage().getMediaPath() : null,
+            participant.getUserProfileImage() != null ? participant.getUserProfileImage()
+                .getMediaPath() : null,
             participant.getUserNickname());
       } else {
         profileDto = new ProfileDto(maker.getUserId(),
             maker.getUserProfileImage() != null ? maker.getUserProfileImage().getMediaPath() : null,
             maker.getUserNickname()
-            );
+        );
       }
 
       // Construct ProductReturnDto
@@ -139,7 +138,6 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
       return new ChatroomReturnDto(chatroomId, productDto, profileDto, chatroomCreatedAt);
     }).collect(Collectors.toList());
   }
-
 
 
   @Override
@@ -182,7 +180,6 @@ public class ChatroomRepositoryCustomImpl implements ChatroomRepositoryCustom {
         .content(chatContents)
         .build();
   }
-
 
 
 }
