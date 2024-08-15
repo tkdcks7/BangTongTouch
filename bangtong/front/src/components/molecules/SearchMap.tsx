@@ -327,23 +327,24 @@ const SearchMap: React.FC<MapProps> = ({
       );
 
       // test
-      const bbox = `${southWest.x},${southWest.y},${northEast.x},${northEast.y}`;
-      for (let i = 0; i < subMarkerDatas.length; i++) {
-        jsonp(
-          `https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=30&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
-          { param: "callback" },
-          (err: any, data: any) => {
-            if (err) {
-              console.error("Error:", err);
-            } else {
-              if (data.response.status === "OK") {
-                data.response.result.items.forEach((item: any) => {
-                  const result = fromEPSG3857(item.point.x, item.point.y);
-                  const marker = new naver.maps.Marker({
-                    position: new naver.maps.LatLng(result.lat, result.lng),
-                    map: map,
-                    icon: {
-                      content: `
+      if (flag) {
+        const bbox = `${southWest.x},${southWest.y},${northEast.x},${northEast.y}`;
+        for (let i = 0; i < subMarkerDatas.length; i++) {
+          jsonp(
+            `https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=30&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
+            { param: "callback" },
+            (err: any, data: any) => {
+              if (err) {
+                console.error("Error:", err);
+              } else {
+                if (data.response.status === "OK") {
+                  data.response.result.items.forEach((item: any) => {
+                    const result = fromEPSG3857(item.point.x, item.point.y);
+                    const marker = new naver.maps.Marker({
+                      position: new naver.maps.LatLng(result.lat, result.lng),
+                      map: map,
+                      icon: {
+                        content: `
                         <img
                           src=${subMarkerDatas[i].src}
                           alt="${subMarkerDatas[i].category}"
@@ -363,19 +364,20 @@ const SearchMap: React.FC<MapProps> = ({
                           "
                         />
                       `,
-                      size: new naver.maps.Size(30, 20),
-                      anchor: new naver.maps.Point(11, 35),
-                    },
+                        size: new naver.maps.Size(30, 20),
+                        anchor: new naver.maps.Point(11, 35),
+                      },
+                    });
+                    naver.maps.Event.addListener(marker, "click", () => {
+                      openSubModal(item.title);
+                    });
+                    markers.push(marker);
                   });
-                  naver.maps.Event.addListener(marker, "click", () => {
-                    openSubModal(item.title);
-                  });
-                  markers.push(marker);
-                });
+                }
               }
             }
-          }
-        );
+          );
+        }
       }
 
       if (naver.maps.Event.hasListener(map, "dragend")) return;

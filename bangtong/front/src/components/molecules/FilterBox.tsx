@@ -13,6 +13,8 @@ import { useUserPreferStore } from "../../store/userStore";
 // 이모티콘
 import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
 import { MapPinIcon } from "@heroicons/react/20/solid";
+import { getUserAddressKr2, getUserAddressNum2 } from "../../utils/services";
+import ProductList from "./ProductList";
 
 // type
 const homeCategory: string[] = ["원룸", "투룸+", "오피스텔", "빌라", "아파트"];
@@ -59,6 +61,7 @@ const FilterBox: React.FC = () => {
     furnitureSupportable,
     startDate,
     endDate,
+    productsList,
     setDeposit,
     setRent,
     setHomeType,
@@ -81,6 +84,14 @@ const FilterBox: React.FC = () => {
     preferenceEndDate,
     setPreferUpdate,
   } = useUserPreferStore();
+
+  const type: Array<string> = [
+    "ONEROOM",
+    "TWOROOM",
+    "OFFICE",
+    "VILLA",
+    "APARTMENT",
+  ];
 
   // 설정된 선호 설정이 있을 시(preferenceStore의 데이터), 이 값들을 searchStore의 각 항목들에 넣어준다
   useEffect(() => {
@@ -188,7 +199,7 @@ const FilterBox: React.FC = () => {
     homeCategoryEnglish[numArr.findIndex((el) => el)]; // 1인 index(0이 아닌 index) 반환
 
   // 검색을 진행하는 함수
-  const handleSearch = () => {
+  const handleSearch = async () => {
     setIsShakeSearch(true);
     setTimeout(() => setIsShakeSearch(false), 1000); // 애니메이션 지속 시간과 동일하게
     const searchData = {
@@ -217,19 +228,55 @@ const FilterBox: React.FC = () => {
       if (searchData.regionId === "") alert("지역을 선택해 주세요.");
       else alert("집 유형을 선택해 주세요.");
     } else {
-      axios({
-        method: "POST",
-        url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
-        data: searchData,
-      })
-        .then((response) => {
-          if (response.data.data === null || response.data.data.length === 0)
-            alert("검색 결과가 없습니다.");
-          else {
-            setProductsList(response.data.data);
-          }
-        })
-        .catch((err) => console.log(err));
+      await getUserAddressNum2(locationTitle).then((res1) => {
+        console.log(res1);
+        getUserAddressKr2(res1[0], res1[1]).then((res2) => {
+          console.log(res2);
+          authAxios({
+            method: "POST",
+            url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
+            data: {
+              order,
+              minDeposit,
+              maxDeposit,
+              minRent,
+              maxRent,
+              type: type[
+                homeType[1] * 1 +
+                  homeType[2] * 2 +
+                  homeType[3] * 3 +
+                  homeType[4] * 4
+              ],
+              regionId: parseInt(res2),
+              rentSupportable,
+              furnitureSupportable,
+              infra: 0,
+              startDate: "2024-08-13",
+              endDate: "2024-08-30",
+              lat: res2[0],
+              lng: res2[1],
+            },
+          })
+            .then((response) => {
+              console.log(response);
+              if (
+                response.data.data === null ||
+                response.data.data.length === 0
+              ) {
+                alert("검색 조건과 일치하는 매물이 없습니다.");
+              } else {
+                setProductsList(response.data.data);
+                console.log(productsList);
+              }
+              // response.data.data.forEach((item: any) => {
+              //   console.log(item);
+              // });
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
+      });
     }
   };
 

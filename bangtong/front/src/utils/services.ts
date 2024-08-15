@@ -28,6 +28,28 @@ export const getUserAddressNum = (addr: string): Promise<Array<number>> => {
   });
 };
 
+//지번 주소용
+
+export const getUserAddressNum2 = (addr: string): Promise<Array<number>> => {
+  return new Promise((resolve, reject) => {
+    jsonp(
+      `https://api.vworld.kr/req/address?service=address&request=getcoord&version=2.0&address=${addr}&simple=false&type=parcel&key=${process.env.REACT_APP_SEARCH_API}`,
+      { param: "callback" },
+      (err: any, data: any) => {
+        if (err) {
+          console.error("Error:", err);
+          reject(err);
+        } else {
+          const address: Array<number> = [];
+          address.push(data.response.result.point.x);
+          address.push(data.response.result.point.y);
+          resolve(address);
+        }
+      }
+    );
+  });
+};
+
 // const getAddress = async () => {
 //   const temp: any = await getUserAddressKr();
 //   console.log(temp);
@@ -61,6 +83,27 @@ export const getUserAddressKr = (): Promise<Array<string>> => {
       },
       (error) => {
         reject(error);
+      }
+    );
+  });
+};
+
+export const getUserAddressKr2 = (
+  lat: number,
+  lng: number
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    console.log(lat, lng);
+    jsonp(
+      `https://api.vworld.kr/req/address?service=address&request=getAddress&version=2.0&point=${lat},${lng}&simple=false&type=BOTH&key=${process.env.REACT_APP_SEARCH_API}`,
+      { param: "callback" },
+      (err: any, data: any) => {
+        if (err) {
+          console.error("Error:", err);
+          reject(err);
+        } else {
+          resolve(data.response.result[0].structure.level4LC);
+        }
       }
     );
   });
