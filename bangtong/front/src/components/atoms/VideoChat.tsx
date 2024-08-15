@@ -4,11 +4,6 @@ import io, { Socket } from "socket.io-client";
 const VideoChat: React.FC = () => {
   const [roomName, setRoomName] = useState<string>("");
   const [myStream, setMyStream] = useState<MediaStream | null>(null);
-  const [myPeerConnection, setMyPeerConnection] =
-    useState<RTCPeerConnection | null>(null);
-  const [myDataChannel, setMyDataChannel] = useState<RTCDataChannel | null>(
-    null,
-  );
   const [muted, setMuted] = useState<boolean>(false);
   const [cameraOff, setCameraOff] = useState<boolean>(false);
 
@@ -16,34 +11,37 @@ const VideoChat: React.FC = () => {
   const peerFaceRef = useRef<HTMLVideoElement | null>(null);
   const camerasSelectRef = useRef<HTMLSelectElement | null>(null);
   const socketRef = useRef<Socket | null>(null);
+  const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
 
   useEffect(() => {
-    const initWebRTC = async () => {
-      if (!roomName) return;
-      await initCall();
-      if (camerasSelectRef.current) {
-        await getCameras();
-      }
-      socketRef.current?.emit("join_room", roomName);
+    if (!roomName) return; // 방 이름이 설정되지 않은 경우 실행 안 함
+
+    const initSocket = () => {
+      socketRef.current = io("https://i11d206.p.ssafy.io", {
+        path: "/rtc/socket.io/",
+        withCredentials: true,
+        transports: ["websocket"],
+      });
+
+      socketRef.current.on("welcome", handleWelcome);
+      socketRef.current.on("offer", handleOffer);
+      socketRef.current.on("answer", handleAnswer);
+      socketRef.current.on("ice", handleIce);
     };
 
-    socketRef.current = io("https://i11d206.p.ssafy.io", {
-      path: "/rtc/socket.io/",
-      withCredentials: true,
-      transports: ["websocket"], // WebSocket을 사용하여 연결 시도
-    });
-
     const handleWelcome = async () => {
-      if (myPeerConnection) {
+      if (peerConnectionRef.current) {
         try {
-          const dataChannel = myPeerConnection.createDataChannel("chat");
+          console.log("welcome");
+          const dataChannel =
+            peerConnectionRef.current.createDataChannel("chat");
           dataChannel.addEventListener("message", (event) =>
-            console.log(event.data),
+            console.log("DataChannel message:", event.data),
           );
-          setMyDataChannel(dataChannel);
 
-          const offer = await myPeerConnection.createOffer();
-          await myPeerConnection.setLocalDescription(offer);
+          const offer = await peerConnectionRef.current.createOffer();
+          await peerConnectionRef.current.setLocalDescription(offer);
+          console.log("Sending offer:", offer);
           socketRef.current?.emit("offer", offer, roomName);
         } catch (error) {
           console.error("Error in 'welcome' event handler:", error);
@@ -52,21 +50,21 @@ const VideoChat: React.FC = () => {
     };
 
     const handleOffer = async (offer: RTCSessionDescriptionInit) => {
-      if (myPeerConnection) {
-        myPeerConnection.addEventListener("datachannel", (event) => {
+      if (peerConnectionRef.current) {
+        console.log("offer");
+        peerConnectionRef.current.addEventListener("datachannel", (event) => {
           const channel = event.channel;
           if (channel) {
-            setMyDataChannel(channel);
             channel.addEventListener("message", (event) =>
-              console.log(event.data),
+              console.log("DataChannel message:", event.data),
             );
           }
         });
 
         try {
-          await myPeerConnection.setRemoteDescription(offer);
-          const answer = await myPeerConnection.createAnswer();
-          await myPeerConnection.setLocalDescription(answer);
+          await peerConnectionRef.current.setRemoteDescription(offer);
+          const answer = await peerConnectionRef.current.createAnswer();
+          await peerConnectionRef.current.setLocalDescription(answer);
           socketRef.current?.emit("answer", answer, roomName);
         } catch (error) {
           console.error("Error handling offer:", error);
@@ -75,9 +73,10 @@ const VideoChat: React.FC = () => {
     };
 
     const handleAnswer = async (answer: RTCSessionDescriptionInit) => {
-      if (myPeerConnection) {
+      if (peerConnectionRef.current) {
         try {
-          await myPeerConnection.setRemoteDescription(answer);
+          console.log("answer");
+          await peerConnectionRef.current.setRemoteDescription(answer);
         } catch (error) {
           console.error("Error handling answer:", error);
         }
@@ -85,35 +84,40 @@ const VideoChat: React.FC = () => {
     };
 
     const handleIce = async (ice: RTCIceCandidateInit) => {
-      if (myPeerConnection) {
+      if (peerConnectionRef.current) {
         try {
-          await myPeerConnection.addIceCandidate(ice);
+          console.log("handle ice");
+          await peerConnectionRef.current.addIceCandidate(ice);
         } catch (error) {
           console.error("Error handling ICE candidate:", error);
         }
       }
     };
 
-    socketRef.current.on("welcome", handleWelcome);
-    socketRef.current.on("offer", handleOffer);
-    socketRef.current.on("answer", handleAnswer);
-    socketRef.current.on("ice", handleIce);
-
-    socketRef.current.on("connect_error", (error) => {
-      console.error("Connection error:", error);
-    });
-
-    return () => {
+    const cleanupSocket = () => {
       socketRef.current?.off("welcome", handleWelcome);
       socketRef.current?.off("offer", handleOffer);
       socketRef.current?.off("answer", handleAnswer);
       socketRef.current?.off("ice", handleIce);
       socketRef.current?.disconnect();
-      if (myPeerConnection) {
-        myPeerConnection.close();
+    };
+
+    const initCall = async () => {
+      if (!roomName) return;
+      await getMedia(camerasSelectRef.current?.value);
+      makeConnection();
+    };
+
+    initSocket();
+    initCall();
+
+    return () => {
+      cleanupSocket();
+      if (peerConnectionRef.current) {
+        peerConnectionRef.current.close();
       }
     };
-  }, [roomName, myPeerConnection]);
+  }, [roomName]);
 
   const getCameras = async () => {
     if (camerasSelectRef.current) {
@@ -181,34 +185,14 @@ const VideoChat: React.FC = () => {
 
   const handleCameraChange = async () => {
     await getMedia(camerasSelectRef.current?.value);
-    if (myPeerConnection) {
+    if (peerConnectionRef.current) {
       const videoTrack = myStream?.getVideoTracks()[0];
-      const videoSender = myPeerConnection
+      const videoSender = peerConnectionRef.current
         .getSenders()
         .find((sender) => sender.track?.kind === "video");
       if (videoTrack && videoSender) {
         videoSender.replaceTrack(videoTrack);
       }
-    }
-  };
-
-  const initCall = async () => {
-    if (!roomName) return;
-    await getMedia(camerasSelectRef.current?.value);
-    makeConnection();
-  };
-
-  const handleWelcomeSubmit = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault();
-    const input = (
-      event.currentTarget.querySelector("input") as HTMLInputElement
-    )?.value;
-    if (input) {
-      setRoomName(input);
-      await initCall();
-      socketRef.current?.emit("join_room", input);
     }
   };
 
@@ -245,7 +229,22 @@ const VideoChat: React.FC = () => {
         .forEach((track) => peerConnection.addTrack(track, myStream));
     }
 
-    setMyPeerConnection(peerConnection);
+    peerConnectionRef.current = peerConnection;
+
+    console.log("PeerConnection created:", peerConnection);
+    socketRef.current?.emit("join_room", roomName);
+  };
+
+  const handleWelcomeSubmit = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+    const input = (
+      event.currentTarget.querySelector("input") as HTMLInputElement
+    )?.value;
+    if (input) {
+      setRoomName(input);
+    }
   };
 
   return (
