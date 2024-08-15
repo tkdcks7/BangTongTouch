@@ -180,6 +180,7 @@ const SearchMap: React.FC<MapProps> = ({
       if (!map) return;
       markerDatas.length = 0;
       if (flag) {
+        console.log(basePos);
         markerDatas.push({
           productId: 0,
           lat: basePos.lat,
@@ -346,9 +347,9 @@ const SearchMap: React.FC<MapProps> = ({
   function mapRender() {
     function initMap() {
       if (!mapElement.current) return;
-
+      console.log(basePos);
       const mapOptions = {
-        center: new naver.maps.LatLng(posRef.current.lat, posRef.current.lng),
+        center: new naver.maps.LatLng(basePos.lat, basePos.lng),
         zoom: zoomLevel,
       };
       map = new naver.maps.Map(mapElement.current, mapOptions);

@@ -137,10 +137,8 @@ const ProductUpload: React.FC = () => {
   const open = useDaumPostcodePopup();
 
   const handleComplete = (data: any) => {
-    const { sido, sigungu, bname2, bcode } = data;
-    const newAddress = sidoMagicTable[sido] + " " + sigungu + " " + bname2;
-    setAddress(newAddress);
-    setRegionId(bcode);
+    setAddress(data.address);
+    setRegionId(data.bcode);
   };
 
   // 주소검색 팝업 열기

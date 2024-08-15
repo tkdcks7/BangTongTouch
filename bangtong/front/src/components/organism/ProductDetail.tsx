@@ -53,6 +53,8 @@ interface ProductReturnDto {
   productPostDate: string;
   productStartDate: string;
   productEndDate: string;
+  lat: number;
+  lng: number;
   productAdditionalDetail: string;
   mediaList: string[];
 }
@@ -97,6 +99,8 @@ const ProductDetail: React.FC = () => {
       productPostDate: "2024-07-19 04:01:15.256",
       productStartDate: "2024-08-01",
       productEndDate: "2024-12-30",
+      lat: 37.5,
+      lng: 127,
       productAdditionalDetail: "",
       mediaList: [""],
     },
@@ -338,7 +342,10 @@ const ProductDetail: React.FC = () => {
               />
             </Card>
             <Card style={{ width: 280 }} className="mb-5 shadow-lg">
-              <LocationAround />
+              <LocationAround
+                lat={productInfo.productReturnDto.lng}
+                lng={productInfo.productReturnDto.lat}
+              />
             </Card>
           </div>
           <div className="ms-10 w-full">
@@ -492,7 +499,10 @@ const ProductDetail: React.FC = () => {
           />
           {/* 구분선 */}
           <Devider />
-          <LocationAround />
+          <LocationAround
+            lat={productInfo.productReturnDto.lng}
+            lng={productInfo.productReturnDto.lat}
+          />
           <div className="h-20" />
         </div>
         <button onClick={() => setIsReportModalOpen(true)}>
