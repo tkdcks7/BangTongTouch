@@ -3,7 +3,8 @@ import io, { Socket } from "socket.io-client";
 
 const VideoChat: React.FC = () => {
   const [roomName, setRoomName] = useState<string>("");
-  const [myStream, setMyStream] = useState<MediaStream | null>(null);
+  const mystreamRef = useRef<MediaStream | null>(null);
+
   const [muted, setMuted] = useState<boolean>(false);
   const [cameraOff, setCameraOff] = useState<boolean>(false);
 
@@ -13,8 +14,11 @@ const VideoChat: React.FC = () => {
   const socketRef = useRef<Socket | null>(null);
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
 
+  // Queue for storing ICE candidates until remote description is set
+  const iceCandidatesQueue = useRef<RTCIceCandidateInit[]>([]);
+
   useEffect(() => {
-    if (!roomName) return; // 방 이름이 설정되지 않은 경우 실행 안 함
+    if (!roomName) return;
 
     const initSocket = () => {
       socketRef.current = io("https://i11d206.p.ssafy.io", {
@@ -51,21 +55,24 @@ const VideoChat: React.FC = () => {
 
     const handleOffer = async (offer: RTCSessionDescriptionInit) => {
       if (peerConnectionRef.current) {
-        console.log("offer");
-        peerConnectionRef.current.addEventListener("datachannel", (event) => {
-          const channel = event.channel;
-          if (channel) {
-            channel.addEventListener("message", (event) =>
-              console.log("DataChannel message:", event.data),
-            );
-          }
-        });
-
         try {
-          await peerConnectionRef.current.setRemoteDescription(offer);
-          const answer = await peerConnectionRef.current.createAnswer();
-          await peerConnectionRef.current.setLocalDescription(answer);
+          const pc = peerConnectionRef.current;
+          console.log("Handling offer:", offer);
+          await pc.setRemoteDescription(new RTCSessionDescription(offer));
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
           socketRef.current?.emit("answer", answer, roomName);
+
+          // Process any queued ICE candidates now that the remote description is set
+          iceCandidatesQueue.current.forEach(async (candidate) => {
+            try {
+              console.log("Adding queued ICE candidate:", candidate);
+              await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            } catch (error) {
+              console.error("Error adding queued ICE candidate:", error);
+            }
+          });
+          iceCandidatesQueue.current = []; // Clear the queue
         } catch (error) {
           console.error("Error handling offer:", error);
         }
@@ -75,8 +82,20 @@ const VideoChat: React.FC = () => {
     const handleAnswer = async (answer: RTCSessionDescriptionInit) => {
       if (peerConnectionRef.current) {
         try {
-          console.log("answer");
-          await peerConnectionRef.current.setRemoteDescription(answer);
+          const pc = peerConnectionRef.current;
+          console.log("Handling answer:", answer);
+          await pc.setRemoteDescription(new RTCSessionDescription(answer));
+
+          // Process any queued ICE candidates now that the remote description is set
+          iceCandidatesQueue.current.forEach(async (candidate) => {
+            try {
+              console.log("Adding queued ICE candidate:", candidate);
+              await pc.addIceCandidate(new RTCIceCandidate(candidate));
+            } catch (error) {
+              console.error("Error adding queued ICE candidate:", error);
+            }
+          });
+          iceCandidatesQueue.current = []; // Clear the queue
         } catch (error) {
           console.error("Error handling answer:", error);
         }
@@ -86,8 +105,18 @@ const VideoChat: React.FC = () => {
     const handleIce = async (ice: RTCIceCandidateInit) => {
       if (peerConnectionRef.current) {
         try {
-          console.log("handle ice");
-          await peerConnectionRef.current.addIceCandidate(ice);
+          const pc = peerConnectionRef.current;
+          if (!pc.remoteDescription) {
+            // Queue ICE candidates if remote description is not yet set
+            console.warn(
+              "Remote description not set yet, queuing ICE candidate.",
+            );
+            iceCandidatesQueue.current.push(ice);
+            return;
+          }
+
+          console.log("Handling ICE candidate:", ice);
+          await pc.addIceCandidate(new RTCIceCandidate(ice));
         } catch (error) {
           console.error("Error handling ICE candidate:", error);
         }
@@ -126,7 +155,7 @@ const VideoChat: React.FC = () => {
         const cameras = devices.filter(
           (device) => device.kind === "videoinput",
         );
-        const currentCamera = myStream?.getVideoTracks()[0];
+        const currentCamera = mystreamRef.current?.getVideoTracks()[0];
 
         camerasSelectRef.current.innerHTML = "";
         cameras.forEach((camera) => {
@@ -153,10 +182,12 @@ const VideoChat: React.FC = () => {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      setMyStream(stream);
+      console.log(stream);
+      mystreamRef.current = stream;
       if (myFaceRef.current) {
         myFaceRef.current.srcObject = stream;
       }
+      console.log(myFaceRef.current?.srcObject);
       if (!deviceId) {
         await getCameras();
       }
@@ -166,8 +197,8 @@ const VideoChat: React.FC = () => {
   };
 
   const handleMuteClick = () => {
-    if (myStream) {
-      myStream
+    if (mystreamRef.current) {
+      mystreamRef.current
         .getAudioTracks()
         .forEach((track) => (track.enabled = !track.enabled));
       setMuted(!muted);
@@ -175,8 +206,8 @@ const VideoChat: React.FC = () => {
   };
 
   const handleCameraClick = () => {
-    if (myStream) {
-      myStream
+    if (mystreamRef.current) {
+      mystreamRef.current
         .getVideoTracks()
         .forEach((track) => (track.enabled = !track.enabled));
       setCameraOff(!cameraOff);
@@ -186,7 +217,7 @@ const VideoChat: React.FC = () => {
   const handleCameraChange = async () => {
     await getMedia(camerasSelectRef.current?.value);
     if (peerConnectionRef.current) {
-      const videoTrack = myStream?.getVideoTracks()[0];
+      const videoTrack = mystreamRef.current?.getVideoTracks()[0];
       const videoSender = peerConnectionRef.current
         .getSenders()
         .find((sender) => sender.track?.kind === "video");
@@ -197,6 +228,11 @@ const VideoChat: React.FC = () => {
   };
 
   const makeConnection = () => {
+    if (peerConnectionRef.current) {
+      console.warn("Closing existing peer connection");
+      peerConnectionRef.current.close();
+    }
+
     const peerConnection = new RTCPeerConnection({
       iceServers: [
         {
@@ -211,22 +247,30 @@ const VideoChat: React.FC = () => {
       ],
     });
 
-    peerConnection.addEventListener("icecandidate", (event) => {
+    peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
+        console.log("ice candidate");
         socketRef.current?.emit("ice", event.candidate, roomName);
       }
-    });
+    };
 
-    peerConnection.addEventListener("track", (event) => {
+    peerConnection.ontrack = (event) => {
+      console.log("Track event:", event);
+      console.log(event.streams[0]);
       if (peerFaceRef.current) {
         peerFaceRef.current.srcObject = event.streams[0];
       }
-    });
+    };
 
-    if (myStream) {
-      myStream
+    console.log(mystreamRef);
+
+    if (mystreamRef.current) {
+      mystreamRef.current
         .getTracks()
-        .forEach((track) => peerConnection.addTrack(track, myStream));
+        .forEach((track) =>
+          peerConnection.addTrack(track, mystreamRef.current!!),
+        );
+      console.log(mystreamRef);
     }
 
     peerConnectionRef.current = peerConnection;
