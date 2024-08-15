@@ -64,13 +64,13 @@ const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
   return (
     <div className="w-full bg-yellow-200 fixed md:static bottom-16 left-0 flex justify-around p-2 md:rounded-2xl">
       <Modal
-        title="댓글 신고"
+        title="사용자 신고"
         open={isModalOpen}
         onOk={reportComment}
         onCancel={changeModalStatus}
       >
         <div>
-          <div>댓글 작성자: {reportUserNickname}</div>
+          <div>채팅 작성자: {reportUserNickname}</div>
         </div>
         <Select
           defaultValue={"신고 유형"}

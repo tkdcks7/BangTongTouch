@@ -23,10 +23,10 @@ const ProfileImgBox: React.FC<ImageWithFallbackProps> = ({
   return (
     <React.Fragment>
       <img
-        src={src ? src : defaultprofile}
+        src={src ? process.env.REACT_APP_BACKEND_SRC_URL + src : defaultprofile}
         alt="프로필 이미지"
-        width={100}
-        height={100}
+        width={50}
+        height={50}
         onError={handleError}
         className="rounded-full me-10"
         style={{ display: isLoaded ? "block" : "none" }}
@@ -36,9 +36,10 @@ const ProfileImgBox: React.FC<ImageWithFallbackProps> = ({
         <img
           src={defaultprofile}
           alt="기본 프로필 이미지"
-          width={100}
-          height={100}
+          width={50}
+          height={50}
           className="rounded-full me-10"
+          style={{ display: isLoaded ? "none" : "block" }}
         />
       )}
     </React.Fragment>

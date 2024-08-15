@@ -395,7 +395,7 @@ const ProductDetail: React.FC = () => {
               />
             </Card>
           </div>
-          <div className="ms-10 w-full">
+          <div className="ms-10 w-[800px]">
             <div>
               <ImgCarousel
                 imgSrcArray={productInfo.productReturnDto.mediaList}
@@ -404,14 +404,18 @@ const ProductDetail: React.FC = () => {
                 isFromBack
               />
             </div>
-            <div className="flex justify-end items-center mt-5 text-2xl font-bold hover:cursor-pointer">
-              <button
-                onClick={() => setIsReportModalOpen(true)}
-                className="border border-red-400 text-xl text-red-400 p-2 mr-auto rounded-xl hover:bg-red-400 hover:text-white"
-              >
-                <AlertOutlined className="me-2" />
-                신고하기
-              </button>
+            <div className="flex justify-end items-center mt-5 text-2xl font-bold">
+              {isMe ? (
+                ""
+              ) : (
+                <button
+                  onClick={() => setIsReportModalOpen(true)}
+                  className="border border-red-400 text-xl text-red-400 p-2 mr-auto rounded-xl hover:bg-red-400 hover:text-white"
+                >
+                  <AlertOutlined className="me-2" />
+                  신고하기
+                </button>
+              )}
               <img
                 src={
                   productInfo.profileDto.profileImage

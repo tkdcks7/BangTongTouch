@@ -50,9 +50,12 @@ const ProductMap: React.FC<MapProps> = ({ height }) => {
   // ant design 글로벌 디자인 토큰 (노란색 버튼)
   const yellowTheme = {
     token: {
-      colorBgTextHover: "#E9FFE7",
+      colorBgTextHover: "#000000",
       colorPrimary: "#FFDB4D",
-      colorPrimaryBorder: "#FFDB4D",
+      colorPrimaryBorder: "#000000",
+      colorText: "#000000",
+      colorTextHover: "#000000",
+      colorTextLightSolid: "#000000",
     },
   };
 

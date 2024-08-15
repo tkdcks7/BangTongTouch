@@ -55,23 +55,24 @@ const ProductProfile: React.FC<ProductProps> = ({ userinfo, productId }) => {
   return (
     <div className="flex justify-between items-center mt-5">
       <ProfileImgBox src={userinfo.profileImage} profileId={userinfo.id} />
-      {/* 유저 닉네임 받아오도록 조치 (현재 데이터 내 유저 정보가 없어서 미작성) */}
-      <h2 className="text-xl font-bold">{userinfo.nickname}</h2>
-      <Button
-        className={"bg-yellow-200 hover:bg-color-400"}
-        style={buttonStyle}
-        size="large"
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-        icon={
-          <WechatOutlined
-            style={{ fontSize: "24px" }}
-            disabled={true}
-            type="primary"
-          />
-        }
-        onClick={makeChatRoom}
-      />
+      <div className="flex items-center">
+        <h2 className="text-xl font-bold me-5">{userinfo.nickname}</h2>
+        <Button
+          className={"bg-yellow-200 hover:bg-color-400"}
+          style={buttonStyle}
+          size="large"
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          icon={
+            <WechatOutlined
+              style={{ fontSize: "24px" }}
+              disabled={true}
+              type="primary"
+            />
+          }
+          onClick={makeChatRoom}
+        />
+      </div>
     </div>
   );
 };
