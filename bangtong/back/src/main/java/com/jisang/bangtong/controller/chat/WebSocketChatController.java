@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,7 @@ public class WebSocketChatController {
     try {
       chatService.send(sendDto);
       SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+      formatter.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
       JSONObject jsonObject = new JSONObject();
       jsonObject.put("chatRoom", sendDto.getChatRoom());
       jsonObject.put("sender", sendDto.getSender());
