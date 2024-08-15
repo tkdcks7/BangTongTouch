@@ -137,10 +137,8 @@ const ProductUpload: React.FC = () => {
   const open = useDaumPostcodePopup();
 
   const handleComplete = (data: any) => {
-    const { sido, sigungu, bname2, bcode } = data;
-    const newAddress = sidoMagicTable[sido] + " " + sigungu + " " + bname2;
-    setAddress(newAddress);
-    setRegionId(bcode);
+    setAddress(data.roadAddress);
+    setRegionId(data.bcode);
   };
 
   // 주소검색 팝업 열기
@@ -484,7 +482,7 @@ const ProductUpload: React.FC = () => {
               ease: [0, 0.7, 0.2, 1],
             }}
           >
-            <p className="font-bold text-lg">방 갯수</p>
+            <p className="font-bold text-lg">방 개수</p>
             <div className="flex justify-center items-center">
               <Radio.Group onChange={handleRoomOption} value={room}>
                 <Radio value={1}>1</Radio>

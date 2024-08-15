@@ -1,4 +1,5 @@
 import axios from "axios";
+import jsonp from "jsonp";
 
 // const getCoords = async () => {
 //   const temp: any = await getUserAddressNum("서울 광진구 군자동 98");
@@ -9,26 +10,21 @@ import axios from "axios";
 
 export const getUserAddressNum = (addr: string): Promise<Array<number>> => {
   return new Promise((resolve, reject) => {
-    console.log(addr);
-    axios({
-      method: "GET",
-      headers: {
-        "Content-Type": "charset=UTF-8",
-        "X-NCP-APIGW-API-KEY-ID": process.env.REACT_APP_CLIENT_ID_NAVER_MAP,
-        "X-NCP-APIGW-API-KEY": process.env.REACT_APP_CLIENT_SECRET_NAVER_MAP,
-      },
-      url: `/naver/map-geocode/v2/geocode?query=${addr}`,
-    })
-      .then((response) => {
-        console.log(response);
-        const address: Array<number> = [];
-        address.push(response.data.addresses[0].x);
-        address.push(response.data.addresses[0].y);
-        resolve(address);
-      })
-      .catch((error) => {
-        reject(error);
-      });
+    jsonp(
+      `https://api.vworld.kr/req/address?service=address&request=getcoord&version=2.0&address=${addr}&refine=false&simple=false&type=road&key=${process.env.REACT_APP_SEARCH_API}`,
+      { param: "callback" },
+      (err: any, data: any) => {
+        if (err) {
+          console.error("Error:", err);
+          reject(err);
+        } else {
+          const address: Array<number> = [];
+          address.push(data.response.result.point.x);
+          address.push(data.response.result.point.y);
+          resolve(address);
+        }
+      }
+    );
   });
 };
 
@@ -43,26 +39,25 @@ export const getUserAddressKr = (): Promise<Array<string>> => {
   return new Promise((resolve, reject) => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        axios({
-          method: "GET",
-          headers: {
-            "X-NCP-APIGW-API-KEY-ID": process.env.REACT_APP_CLIENT_ID_NAVER_MAP,
-            "X-NCP-APIGW-API-KEY":
-              process.env.REACT_APP_CLIENT_SECRET_NAVER_MAP,
-          },
-          url: `/naver/map-reversegeocode/v2/gc?coords=${position.coords.longitude},${position.coords.latitude}&orders=legalcode&output=json`,
-        })
-          .then((response) => {
-            const address: Array<string> = [];
-            address.push(response.data.results[0].region.area1.name);
-            address.push(response.data.results[0].region.area2.name);
-            address.push(response.data.results[0].region.area3.name);
-            address.push(response.data.results[0].code.id);
-            resolve(address);
-          })
-          .catch((error) => {
-            reject(error);
-          });
+        jsonp(
+          `https://api.vworld.kr/req/address?service=address&request=getAddress&version=2.0&point=${position.coords.longitude},${position.coords.latitude}&simple=false&type=BOTH&key=${process.env.REACT_APP_SEARCH_API}`,
+          { param: "callback" },
+          (err: any, data: any) => {
+            if (err) {
+              console.error("Error:", err);
+              reject(err);
+            } else {
+              const str: string = data.response.result[0].text;
+              const strArray: Array<string> = str.split(" ");
+              const returnArray: Array<string> = [];
+              returnArray.push(strArray[0]);
+              returnArray.push(strArray[1]);
+              returnArray.push(strArray[2]);
+              returnArray.push(data.response.result[0].structure.level4LC);
+              resolve(returnArray);
+            }
+          }
+        );
       },
       (error) => {
         reject(error);

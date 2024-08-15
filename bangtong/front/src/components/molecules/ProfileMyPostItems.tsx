@@ -34,15 +34,18 @@ const ProfileMyPostItems: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex flex-wrap justify-start">
+    <div className="flex flex-wrap gap-2 justify-center">
       {postItems &&
         postItems.map((item: any) => (
-          <div className="me-3" key={item?.productId}>
+          <div
+            className="me-3 flex flex-col justify-center items-center w-2/5"
+            key={item?.productId}
+          >
             <Link to={`/products/${item?.productId}`}>
               <img
                 src={
                   item?.mediaList.length !== 0
-                    ? `${process.env.REACT_APP_BACKEND_SRC_URL}/${item?.mediaList[0]?.mediaPath}`
+                    ? `${process.env.REACT_APP_BACKEND_SRC_URL}${item?.mediaList[0]?.mediaPath}`
                     : defaultRoom
                 }
                 alt="업로드한 매물 사진"
@@ -50,12 +53,12 @@ const ProfileMyPostItems: React.FC = () => {
                 className="rounded-xl h-20 w-32"
               />
             </Link>
-            <div className="text-center">
-              <p className="text-sm dark:text-white">
+            <div className="text-center text-sm font-bold">
+              <p className="dark:text-white text-lime-600">
                 {`${item?.regionReturnDto?.regionDong || "Unknown Location"} ${roomType[item?.productType] || "Unknown Type"}`}
               </p>
-              <p className="text-sm dark:text-white">
-                {`${item?.productDeposit || 0}/${item?.productRent || 0}`}
+              <p className="dark:text-white text-gray-400">
+                {`${item?.productDeposit || 0} / ${item?.productRent || 0}`}
               </p>
             </div>
           </div>

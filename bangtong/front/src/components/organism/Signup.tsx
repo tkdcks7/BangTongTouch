@@ -82,6 +82,7 @@ const SignupPage: React.FC = () => {
         infoObj.email = email; // 본인이 입력한 이메일 추가
         setInfoUpdate(infoObj);
         setToken(response.headers.authorization);
+        navigate("/search"); // 첫 선호 옵션 생성 페이지로 이동
       })
       .catch((error) => console.log("전송 실패", error));
   };
@@ -116,7 +117,6 @@ const SignupPage: React.FC = () => {
     })
       .then(() => {
         handleLogInAfterSignUp(); // 회원가입 직후 로그인
-        navigate("/search"); // 첫 선호 옵션 생성 페이지로 이동
       })
       .catch((err) => console.log(err));
   };

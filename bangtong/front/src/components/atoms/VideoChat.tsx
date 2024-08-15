@@ -48,7 +48,7 @@ const VideoChat: React.FC = () => {
           const dataChannel =
             peerConnectionRef.current.createDataChannel("chat");
           dataChannel.addEventListener("message", (event) =>
-            console.log("DataChannel message:", event.data),
+            console.log("DataChannel message:", event.data)
           );
 
           const offer = await peerConnectionRef.current.createOffer();
@@ -117,7 +117,7 @@ const VideoChat: React.FC = () => {
           if (!pc.remoteDescription) {
             // Queue ICE candidates if remote description is not yet set
             console.warn(
-              "Remote description not set yet, queuing ICE candidate.",
+              "Remote description not set yet, queuing ICE candidate."
             );
             iceCandidatesQueue.current.push(ice);
             return;
@@ -160,7 +160,7 @@ const VideoChat: React.FC = () => {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const cameras = devices.filter(
-          (device) => device.kind === "videoinput",
+          (device) => device.kind === "videoinput"
         );
         const currentCamera = mystreamRef.current?.getVideoTracks()[0];
 
@@ -275,7 +275,7 @@ const VideoChat: React.FC = () => {
       mystreamRef.current
         .getTracks()
         .forEach((track) =>
-          peerConnection.addTrack(track, mystreamRef.current!!),
+          peerConnection.addTrack(track, mystreamRef.current!!)
         );
       console.log(mystreamRef);
     }

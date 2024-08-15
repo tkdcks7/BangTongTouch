@@ -62,7 +62,7 @@ public class PreferenceService {
         preference.setPreferenceStartDate(preferenceDto.getPreferenceStartDate());
         preference.setPreferenceEndDate(preferenceDto.getPreferenceEndDate());
         preference.setPreferenceId(preferenceDto.getPreferenceId());
-
+        preference.setUser(user);   //지원 추가
         Preference savedPreference = preferenceRepository.save(preference);
 
         PreferenceDto resultDto = new PreferenceDto();

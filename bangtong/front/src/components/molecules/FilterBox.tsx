@@ -11,15 +11,40 @@ import { productSearchStore, preferenceStore } from "../../store/productStore";
 import { useUserPreferStore } from "../../store/userStore";
 
 // 이모티콘
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
 import { MapPinIcon } from "@heroicons/react/20/solid";
+
+// type
+const homeCategory: string[] = ["원룸", "투룸+", "오피스텔", "빌라", "아파트"];
+
+// 영어 type(변환해야함.)
+const homeCategoryEnglish: string[] = [
+  "ONEROOM",
+  "OFFICE",
+  "TWOROOM",
+  "VILLA",
+  "APARTMENT",
+];
+
+// infra
+const facilities: string[] = [
+  "경찰서",
+  "마트",
+  "버스 정류장",
+  "병원/약국",
+  "지하철 역",
+  "카페",
+  "코인 세탁소",
+  "편의점",
+];
 
 const FilterBox: React.FC = () => {
   const [locationTitle, setLocationTitle] = useState<string>("");
   const [open, setOpen] = useState(false); // 지역 선택 모달
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [regions, setRegions] = useState([]); // 지역 선택 모달에 뜰 버튼들 갱신
-  const [isShake, setIsShake] = useState<boolean>(false); // 검색 버튼 애니메이션 상태
+  const [isShakeSearch, setIsShakeSearch] = useState<boolean>(false); // 검색 버튼 애니메이션 상태
+  const [isShakeReset, setIsShakeReset] = useState<boolean>(false); // 검색 버튼 애니메이션 상태
 
   const {
     order,
@@ -62,7 +87,7 @@ const FilterBox: React.FC = () => {
     setInitailize();
     if (preferenceId) {
       setLocationTitle(regionAddress);
-      setAddress(address);
+      setAddress(regionAddress);
       setDeposit(0, preferenceDeposit);
       setRent(0, preferenceRent);
       setHomeType(preferenceType.indexOf("1"));
@@ -138,36 +163,6 @@ const FilterBox: React.FC = () => {
     setOpen(false); // 모달 닫기
   };
 
-  // type
-  const homeCategory: string[] = [
-    "원룸",
-    "투룸+",
-    "오피스텔",
-    "빌라",
-    "아파트",
-  ];
-
-  // 영어 type(변환해야함.)
-  const homeCategoryEnglish: string[] = [
-    "ONEROOM",
-    "OFFICE",
-    "TWOROOM",
-    "VILLA",
-    "APARTMENT",
-  ];
-
-  // infra
-  const facilities: string[] = [
-    "경찰서",
-    "마트",
-    "버스 정류장",
-    "병원/약국",
-    "지하철 역",
-    "카페",
-    "코인 세탁소",
-    "편의점",
-  ];
-
   // ant design 글로벌 디자인 토큰
   const theme = {
     token: {
@@ -194,8 +189,8 @@ const FilterBox: React.FC = () => {
 
   // 검색을 진행하는 함수
   const handleSearch = () => {
-    setIsShake(true);
-    setTimeout(() => setIsShake(false), 500); // 애니메이션 지속 시간과 동일하게
+    setIsShakeSearch(true);
+    setTimeout(() => setIsShakeSearch(false), 1000); // 애니메이션 지속 시간과 동일하게
     const searchData = {
       order,
       minDeposit,
@@ -208,16 +203,18 @@ const FilterBox: React.FC = () => {
       furnitureSupportable,
       infra: bitMaskingInfra(infra),
       startDate,
-      endDate, address: undefined
-
+      endDate,
+      address: undefined,
     };
+    console.log("regionId는");
+    console.log(address);
 
     if (
-      searchData.address === "" ||
+      searchData.regionId === "" ||
       searchData.type === undefined ||
       searchData.type === null
     ) {
-      if (searchData.address === "") alert("지역을 선택해 주세요.");
+      if (searchData.regionId === "") alert("지역을 선택해 주세요.");
       else alert("집 유형을 선택해 주세요.");
     } else {
       axios({
@@ -236,14 +233,21 @@ const FilterBox: React.FC = () => {
     }
   };
 
+  const handleSearchInitialize = () => {
+    setIsShakeReset(true);
+    setInitailize();
+    setLocationTitle("");
+    setTimeout(() => setIsShakeSearch(false), 1000); // 애니메이션 지속 시간과 동일하게
+  };
+
   return (
     <div className="w-80 px-5 py-10 border-2 rounded-xl shadow-md">
       {preferenceId ? (
-        <p className="text-sm">
-          <span className="font-bold text-lime-600 text-lg">
+        <p className="text-lg mb-3">
+          현재 선호 검색 조건:
+          <span className="font-bold text-lime-600 text-lg ms-3">
             {preferenceName}
           </span>{" "}
-          검색 옵션을 사용하고 있습니다
         </p>
       ) : null}
       <button
@@ -300,17 +304,29 @@ const FilterBox: React.FC = () => {
           </div>
         </Modal>
       </ConfigProvider>
-      <TextBtn title="보증금" text={`${minDeposit}만~${maxDeposit}만`} />
-      <TextBtn title="월세 (관리비 포함)" text={`${minRent}만~${maxRent}만`} />
+      <TextBtn title="보증금" text={`${minDeposit}만 ~ ${maxDeposit}만`} />
+      <TextBtn
+        title="월세 (관리비 포함)"
+        text={`${minRent}만 ~ ${maxRent}만`}
+      />
       <BtnGroup title="집 유형" itemsArray={homeCategory} />
       <BtnGroup title="편의시설" itemsArray={facilities} />
       <BtnGroup title="지원 여부" itemsArray={["월세 지원", "가구도 승계"]} />
       <div className="text-end mr-2">
         <motion.button
-          className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg"
+          className={`mt-5 p-2 bg-red-400 w-14 h-14 rounded-xl text-2xl text-center text-black shadow-lg hover:scale-110 transition-colors hover:bg-red-300 duration-200`}
+          onClick={handleSearchInitialize}
+          animate={isShakeReset ? { y: [0, -5, 5, -5, 5, 0] } : {}}
+          transition={{ duration: 1 }}
+        >
+          <UndoOutlined className="my-auto mx-auto" />
+        </motion.button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <motion.button
+          className="mt-5 p-2 bg-lime-500 w-14 h-14 rounded-xl text-2xl text-center text-white shadow-lg hover:scale-110 transition-colors hover:bg-lime-300 duration-200"
           onClick={handleSearch}
-          animate={isShake ? { y: [0, -5, 5, -5, 5, 0] } : {}}
-          transition={{ duration: 0.5 }}
+          animate={isShakeSearch ? { y: [0, -5, 5, -5, 5, 0] } : {}}
+          transition={{ duration: 1 }}
         >
           <SearchOutlined className="my-auto mx-auto" />
         </motion.button>

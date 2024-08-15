@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useUserStore from "../../store/userStore";
+import { motion } from "framer-motion";
 
 // 컴포넌트 불러오기
 import { Button, ConfigProvider, Form, Input } from "antd";
@@ -19,6 +20,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const { token, setInfoUpdate, setToken } = useUserStore(); // store
   const navigate = useNavigate();
+  const [errorCount, setErrorCount] = useState(0);
   const [form] = Form.useForm(); // antd
 
   if (token) {
@@ -95,7 +97,7 @@ const LoginPage: React.FC = () => {
         setToken(response.headers.authorization);
         navigate("../../");
       })
-      .catch((error) => console.log("전송 실패", error));
+      .catch(() => setErrorCount((state) => state + 1));
   };
 
   // 네이버 로그인 함수
@@ -195,7 +197,30 @@ const LoginPage: React.FC = () => {
               <IconBtn imgSrc={Naver} size={40} onClick={handleNaverLogin} />
             </div>
           </div>
-          <div className="flex justify-center mt-10">
+          {errorCount ? (
+            <motion.div
+              className="flex justify-center mt-8 rounded-md items-center mx-auto bg-red-300 w-full h-16 shadow-md text-center"
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "auto" }}
+              transition={{
+                duration: 0.5,
+                delay: 0.5,
+                ease: "easeOut",
+              }}
+            >
+              <motion.span
+                className="font-bold text-gray-500"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 1.1,
+                  ease: "easeOut",
+                }}
+              >{`입력 정보가 올바르지 않습니다 (${errorCount}회 오류).`}</motion.span>
+            </motion.div>
+          ) : null}
+          <div className="flex justify-center mt-8">
             <Button
               type="primary"
               onClick={handleLogIn}

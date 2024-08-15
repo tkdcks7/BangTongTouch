@@ -53,6 +53,7 @@ interface ProductSearchParams {
   infra: number[]; // 비트마스킹용 array
   startDate: string;
   endDate: string;
+  regionId: string;
 }
 
 // 검색 store 인터페이스
@@ -70,6 +71,7 @@ interface ProductSearchParams {
   infra: number[]; // 비트마스킹용 array
   startDate: string;
   endDate: string;
+  regionId: string;
   setProductsList: (data: any) => void; // 매물 목록 갱신
   setOrder: (idx: number) => void; // 검색 방법 setter
   setDeposit: (min: number, max: number) => void; // 보증금 setter
@@ -80,6 +82,7 @@ interface ProductSearchParams {
   setFurnitureSupportable: () => void; // 가구 지원 여부 setter
   setInfra: (index: number) => void; // 주변 편의시설 setter
   setDate: (st: any, ed: any) => void; // 날짜 start, end setter
+  setRegionId: (rid: string) => void; // regionId setter
   setInitailize: () => void; // 옵션을 초기화하는 함수
 }
 
@@ -96,6 +99,7 @@ type ProductSearchParamsInitialI = Omit<
   | "setFurnitureSupportable"
   | "setInfra"
   | "setDate"
+  | "setRegionId"
   | "setInitailize"
 >;
 
@@ -114,6 +118,7 @@ const productSearchInitialState: ProductSearchParamsInitialI = {
   infra: [0, 0, 0, 0, 0, 0, 0, 0],
   startDate: "0000-00-00",
   endDate: "0000-00-00",
+  regionId: "0000000000",
 };
 
 // 검색 옵션 store
@@ -158,6 +163,7 @@ export const productSearchStore = create<ProductSearchParams>((set) => ({
       startDate: dayjs(st).format("YYYY-MM-DD"),
       endDate: dayjs(ed).format("YYYY-MM-DD"),
     })),
+  setRegionId: (rid: string) => set(() => ({ regionId: rid })),
   setInitailize: () =>
     set((state) => ({ ...state, ...productSearchInitialState })),
 }));
@@ -187,8 +193,8 @@ const preferenceDefault: Omit<
   preferenceId: 0,
   preferenceName: "선호 설정 제목",
   userId: 0,
-  regionId: "1150010400",
-  regionAddress: "서울특별시 강서구 가양동",
+  regionId: "1165010100",
+  regionAddress: "서울특별시 서초구 방배동",
   preferenceDeposit: 10000,
   preferenceRent: 1000,
   preferenceType: "10000",

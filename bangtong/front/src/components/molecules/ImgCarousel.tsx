@@ -55,7 +55,7 @@ const ImgCarousel: React.FC<imgSrcProps> = ({
         components: {
           Carousel: {
             arrowOffset: 20,
-            arrowSize: 30,
+            arrowSize: 20,
           },
         },
       }}
@@ -72,9 +72,7 @@ const ImgCarousel: React.FC<imgSrcProps> = ({
                 key={img}
                 src={
                   isFromBack
-                    ? process.env.REACT_APP_BACKEND_SRC_URL +
-                      "/" +
-                      img.mediaPath
+                    ? process.env.REACT_APP_BACKEND_SRC_URL + img.mediaPath
                     : img
                 }
                 alt="1"

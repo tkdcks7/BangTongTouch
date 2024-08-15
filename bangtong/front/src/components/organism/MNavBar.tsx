@@ -24,7 +24,11 @@ const MNavBar: React.FC = () => {
         {({ isActive }) => (
           <>
             <IconBtn imgSrc={Home} size={20} />
-            <TextBox text="홈" size="sm" color={isActive ? "black" : "white"} />
+            <TextBox
+              text="홈"
+              size="sm"
+              color={isActive ? "white font-bold" : "black"}
+            />
           </>
         )}
       </NavLink>
@@ -36,7 +40,7 @@ const MNavBar: React.FC = () => {
             <TextBox
               text="지도"
               size="sm"
-              color={isActive ? "black" : "white"}
+              color={isActive ? "white font-bold" : "black"}
             />
           </>
         )}
@@ -49,7 +53,7 @@ const MNavBar: React.FC = () => {
             <TextBox
               text="채팅"
               size="sm"
-              color={isActive ? "black" : "white"}
+              color={isActive ? "white font-bold" : "black"}
             />
           </>
         )}
@@ -65,7 +69,7 @@ const MNavBar: React.FC = () => {
             <TextBox
               text="나의 방통"
               size="sm"
-              color={isActive ? "black" : "white"}
+              color={isActive ? "white font-bold" : "black"}
             />
           </>
         )}
@@ -78,13 +82,12 @@ const MNavBar: React.FC = () => {
             <TextBox
               text="커뮤니티"
               size="sm"
-              color={isActive ? "black" : "white"}
+              color={isActive ? "white font-bold" : "black"}
             />
           </>
         )}
       </NavLink>
     </div>
-
   );
 };
 
