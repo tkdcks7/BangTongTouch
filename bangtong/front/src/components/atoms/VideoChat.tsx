@@ -1,6 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import io, { Socket } from "socket.io-client";
+import {
+  AudioFilled,
+  AudioMutedOutlined,
+  CameraFilled,
+  CameraOutlined,
+  LogoutOutlined,
+  VideoCameraFilled,
+  VideoCameraOutlined,
+} from "@ant-design/icons";
 
 const VideoChat: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
@@ -277,34 +286,58 @@ const VideoChat: React.FC = () => {
     socketRef.current?.emit("join_room", roomId);
   };
 
+  const navigate = useNavigate();
+
   return (
-    <div>
+    <div className={"w-screen h-screen bg-black fixed top-0 left-0 z-10"}>
       <div id="call">
-        <video
-          id="myFace"
-          ref={myFaceRef}
-          autoPlay
-          playsInline
-          width={350}
-        ></video>
-        <button id="mute" onClick={handleMuteClick}>
-          {muted ? "Unmute" : "Mute"}
-        </button>
-        <button id="camera" onClick={handleCameraClick}>
-          {cameraOff ? "Turn Camera On" : "Turn Camera Off"}
-        </button>
-        <select
-          id="cameras"
-          ref={camerasSelectRef}
-          onChange={handleCameraChange}
-        ></select>
         <video
           id="peerFace"
           ref={peerFaceRef}
           autoPlay
           playsInline
-          width={350}
+          className={"w-full h-full fixed top-0 left-0 -scale-x-100"}
         ></video>
+        <video
+          id="myFace"
+          ref={myFaceRef}
+          autoPlay
+          playsInline
+          className={`w-1/6 fixed top-5 right-5 -scale-x-100 ${cameraOff ? "hidden" : ""}`}
+        ></video>
+        <div
+          className={
+            "fixed bottom-20 flex flex-row justify-center items-center w-full gap-3"
+          }
+        >
+          <button
+            id="mute"
+            onClick={handleMuteClick}
+            className={`text-white size-14  rounded-full ${muted ? "  bg-red-600" : "bg-green-500"}`}
+          >
+            {muted ? <AudioMutedOutlined /> : <AudioFilled />}
+          </button>
+          <button
+            id="camera"
+            onClick={handleCameraClick}
+            className={`text-white size-14 rounded-full  ${cameraOff ? "bg-red-600" : "bg-green-500"}`}
+          >
+            {cameraOff ? <VideoCameraOutlined /> : <VideoCameraFilled />}
+          </button>
+          <button
+            className={"bg-red-600 size-14 text-white rounded-full"}
+            onClick={() => {
+              navigate("/chats");
+            }}
+          >
+            <LogoutOutlined />
+          </button>
+        </div>
+        {/*<select*/}
+        {/*  id="cameras"*/}
+        {/*  ref={camerasSelectRef}*/}
+        {/*  onChange={handleCameraChange}*/}
+        {/*></select>*/}
       </div>
     </div>
   );
