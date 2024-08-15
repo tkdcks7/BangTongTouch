@@ -9,6 +9,7 @@ import com.jisang.bangtong.dto.user.ProfileModificationDto;
 import com.jisang.bangtong.dto.user.RegisterRequestDto;
 import com.jisang.bangtong.dto.user.UserDto;
 import com.jisang.bangtong.dto.user.UserInformationDto;
+import com.jisang.bangtong.dto.user.UserVerificationDto;
 import com.jisang.bangtong.model.user.User;
 import com.jisang.bangtong.service.user.UserService;
 import com.jisang.bangtong.util.JwtUtil;
@@ -158,11 +159,9 @@ public class UserController {
 
   // 비밀번호 확인
   @PostMapping("/password")
-  public ResponseDto<Boolean> verifyPassword(@RequestBody Map<String, String> map) {
-    Long userId = Long.valueOf(map.get("userId"));
-    String password = map.get("password");
-
-    boolean result = userService.verifyPassword(userId, password);
+  public ResponseDto<Boolean> verifyPassword(@RequestBody UserVerificationDto userVerificationDto) {
+    boolean result = userService.verifyPassword(userVerificationDto.getUserId(),
+        userVerificationDto.getPassword());
 
     return ResponseDto.res(ResponseMessageConstants.SUCCESS, result);
   }

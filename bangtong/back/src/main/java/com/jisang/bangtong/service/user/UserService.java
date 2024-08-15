@@ -215,6 +215,6 @@ public class UserService {
       return false;
     }
 
-    return password.equals(passwordEncoder.encode(user.getUserPassword()));
+    return passwordEncoder.matches(password, user.getUserPassword());
   }
 }
