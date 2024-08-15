@@ -14,6 +14,8 @@ import { productSearchStore } from "../../store/productStore";
 import authAxios from "../../utils/authAxios";
 import jsonp from "jsonp";
 import { getUserAddressKr } from "../../utils/services";
+import defaultHome from "../../assets/defaulthome.png";
+import { RightCircleOutlined, RightOutlined } from "@ant-design/icons";
 
 interface MapProps {
   basePos: Pos; // 초기 위치(매물 좌표 or 사용자의 위치)
@@ -29,6 +31,8 @@ interface MarkerData {
   lng: number;
   title: number;
   src: string;
+  rent: number;
+  deposit: number;
 }
 
 interface SubMarkerData {
@@ -145,6 +149,8 @@ const SearchMap: React.FC<MapProps> = ({
       lng: markerDatas[i].lng,
       productId: markerDatas[i].productId,
       src: markerDatas[i].src,
+      rent: markerDatas[i].rent,
+      deposit: markerDatas[i].deposit,
     });
     setIsOpen(true);
   };
@@ -196,6 +202,8 @@ const SearchMap: React.FC<MapProps> = ({
           lng: basePos.lng,
           title: 0,
           src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
+          rent: 0,
+          deposit: 0,
         });
         for (let i = 0; i < markerDatas.length; i++) {
           const data = markerDatas[i];
@@ -232,6 +240,7 @@ const SearchMap: React.FC<MapProps> = ({
         }
       } else {
         await getUserAddressKr().then((res) => {
+          console.log(homeType);
           authAxios({
             method: "POST",
             url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
@@ -241,12 +250,7 @@ const SearchMap: React.FC<MapProps> = ({
               maxDeposit,
               minRent,
               maxRent,
-              type: type[
-                homeType[1] * 1 +
-                  homeType[2] * 2 +
-                  homeType[3] * 3 +
-                  homeType[4] * 4
-              ],
+              type: "ONEROOM",
               regionId: parseInt(res[3]),
               rentSupportable,
               furnitureSupportable,
@@ -265,10 +269,11 @@ const SearchMap: React.FC<MapProps> = ({
                   lat: item.lat,
                   lng: item.lng,
                   title: item.productAddress,
+                  rent: item.productRent,
+                  deposit: item.productDeposit,
                   src:
                     item.mediaList.length > 0
                       ? process.env.REACT_APP_BACKEND_SRC_URL +
-                        "/" +
                         item.mediaList[0].mediaPath
                       : MapProduct,
                 });
@@ -446,13 +451,22 @@ const SearchMap: React.FC<MapProps> = ({
         onRequestClose={closeModal}
         contentLabel="Marker Info Modal"
       >
-        <img src={selectedMarkerData?.src} alt="" />
-        <div>{selectedMarkerData?.title}</div>
-        <div>{selectedMarkerData?.lat}</div>
-        <div>{selectedMarkerData?.lng}</div>
-        <div>
+        <img
+          src={selectedMarkerData?.src ? selectedMarkerData?.src : defaultHome}
+          alt="매물 사진"
+          className="w-4/5 h-72 mx-auto"
+        />
+        <div className="flex items-center justify-between mt-5">
+          <p className="text-xl font-bold">
+            주소 : {selectedMarkerData?.title}
+          </p>
+          <p className="text-xl text-lime-500 font-bold">
+            {selectedMarkerData?.deposit} / {selectedMarkerData?.rent}
+          </p>
+        </div>
+        <div className="flex justify-center items-center mt-3 p-2 bg-lime-300">
           <Link to={`/products/${selectedMarkerData?.productId}`}>
-            <button>자세히 보기</button>
+            <RightOutlined />
           </Link>
         </div>
       </Modal>
