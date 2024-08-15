@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useUserStore from "../../store/userStore";
-import axios from "axios";
 import authAxios from "../../utils/authAxios";
 
 // 컴포넌트
@@ -390,21 +389,21 @@ const ProductDetail: React.FC = () => {
             </div>
             <div className="p-10 pt-20 mt-10 rounded-2xl border border-slate-200">
               <Row>
-                <Col span={8} className="text-2xl">
+                <Col span={12} className="text-2xl">
                   <span className="font-bold">관리비 | </span>
                   {productInfo.productReturnDto.productMaintenance} 원
                 </Col>
-                <Col span={8} offset={6} className="text-2xl">
+                <Col span={12} className="text-2xl">
                   <span className="font-bold">집 유형 | </span>
                   {homeTypeNameTable[productInfo.productReturnDto.productType]}
                 </Col>
               </Row>
               <Row className="mt-20">
-                <Col span={8} className="text-2xl">
+                <Col span={12} className="text-2xl">
                   <span className="font-bold">관리비 포함 | </span>
                   {productInfo.productReturnDto.productMaintenanceInfo}
                 </Col>
-                <Col span={8} offset={6} className="text-2xl">
+                <Col span={12} className="text-2xl">
                   <span className="font-bold">면적 | </span>
                   {productInfo.productReturnDto.productSquare} m² (
                   {Math.round(
@@ -414,19 +413,23 @@ const ProductDetail: React.FC = () => {
                 </Col>
               </Row>
               <Row className="items-center mt-20">
-                <Col span={12} className="text-2xl flex items-center">
-                  <span className="font-bold">기본 옵션 | </span>
-                  <ProductOptions options={options} isPc dark />
-                </Col>
-                <Col span={8} offset={2} className="text-2xl">
+                <Col span={24} className="text-2xl">
                   <span className="font-bold">방 개수 | </span>
                   {productInfo.productReturnDto.productRoom} 개
+                </Col>
+              </Row>
+              <Row className="items-center mt-20">
+                <Col span={24} className="text-2xl flex items-center">
+                  <span className="font-bold">기본 옵션 | </span>
+                  <ProductOptions options={options} isPc dark />
                 </Col>
               </Row>
               <Row className="mt-20">
                 <Col span={24} className="text-2xl">
                   <span className="font-bold">추가 옵션 | </span>
-                  {productInfo.productReturnDto.productAdditionalOption}
+                  {productInfo.productReturnDto.productAdditionalOption.join(
+                    ", "
+                  )}
                 </Col>
               </Row>
               {isMe ? (
