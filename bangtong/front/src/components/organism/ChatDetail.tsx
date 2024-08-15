@@ -183,8 +183,7 @@ const ChatDetail: React.FC = () => {
                   item.writerId === userId
                     ? undefined
                     : process.env.REACT_APP_BACKEND_SRC_URL +
-                      "" +
-                      opponentUser?.profileImage
+                      String(opponentUser?.profileImage)
                 }
                 flag={item.writerId === userId}
               />
