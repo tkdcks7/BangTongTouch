@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequestMapping("/comments")
 public class CommentController {
@@ -36,7 +35,6 @@ public class CommentController {
   @PostMapping("/{boardId}/write")
   public ResponseEntity<ResponseDto<Void>> writeComment(@PathVariable long boardId,
       @RequestBody CommentDto commentDto, HttpServletRequest request) {
-    log.info("comment write {}, {}", commentDto, boardId);
     commentService.writeComment(boardId, commentDto, request);
 
     return ResponseEntity.ok(ResponseDto.res(SUCCESS));
@@ -46,9 +44,8 @@ public class CommentController {
   @PutMapping("/modify/{commentId}")
   public ResponseDto<IComment> modifyComment(@PathVariable long commentId,
       @RequestBody Map<String, String> map, HttpServletRequest request) {
-    log.info("map {}", map);
     IComment iComment = commentService.modifyComment(commentId, map.get("content"), request);
-    return ResponseDto.res(SUCCESS,iComment);
+    return ResponseDto.res(SUCCESS, iComment);
   }
 
   //  댓글 삭제
@@ -64,7 +61,6 @@ public class CommentController {
   @GetMapping("/{boardId}")
   public ResponseDto<List<IComment>> getComments(@PathVariable long boardId) {
     List<IComment> dtos = commentService.getComments(boardId);
-    //log.info("getComments {}", dtos);
     return ResponseDto.res(SUCCESS, dtos);
   }
 

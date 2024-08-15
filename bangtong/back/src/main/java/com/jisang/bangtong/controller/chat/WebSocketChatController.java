@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.HtmlUtils;
 
 @RestController
-@Slf4j
 public class WebSocketChatController {
 
   private final SimpMessagingTemplate messagingTemplate;
@@ -32,11 +31,8 @@ public class WebSocketChatController {
   @MessageMapping("/hello/{ChatroomId}")  //받는 데
   @SendTo("/topic/greetings/{ChatroomId}")    //보내는곳
   public ResponseDto<String> greeting(@RequestBody Map<String, Object> chatdto) {
-    log.info("greeting {}", chatdto);
-
     Map<String, String> chat = (Map<String, String>) chatdto.get("chat");
 
-    log.info("greeting {}", chat);
     SendDto sendDto = new SendDto();
     sendDto.setSender(Long.valueOf(String.valueOf(chat.get("sender"))));
     sendDto.setChatRoom(Long.valueOf(String.valueOf(chat.get("chatRoom"))));

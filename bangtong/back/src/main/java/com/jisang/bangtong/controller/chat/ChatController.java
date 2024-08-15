@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/chats")
-@Slf4j
 public class ChatController {
 
   private final String SUCCESS = "success";
@@ -33,11 +32,10 @@ public class ChatController {
 
   @PostMapping("/save")
   public ResponseDto<Void> sendMessage(@RequestBody SendDto chat) {
-    log.info("ChatController 호출{}", chat.toString());
     try {
       chatService.send(chat);
       return ResponseDto.res(SUCCESS);
-    }catch(RuntimeException e) {
+    } catch (RuntimeException e) {
       return ResponseDto.res("NETWORK ERROR");
     }
 
