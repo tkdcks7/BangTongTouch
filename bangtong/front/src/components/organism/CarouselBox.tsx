@@ -9,25 +9,10 @@ import { Carousel } from "antd";
 import { PlusSquareFilled } from "@ant-design/icons";
 
 // 데이터
-import useUserStore from "../../store/userStore";
+import useUserStore, { useUserPreferStore } from "../../store/userStore";
 
-interface regionDto {
-  regionSido: string;
-  regionGugun: string;
-  regionDong: string;
-  regionId: number;
-}
-
-interface CarouselBoxProps {
-  product: {
-    regionReturnDto: regionDto;
-    mediaList: string[];
-    productId: number;
-  };
-}
-
-const CarouselBox: React.FC<CarouselBoxProps> = ({ product }) => {
-  const { id } = useUserStore();
+const CarouselBox: React.FC = () => {
+  const { regionAddress } = useUserPreferStore();
 
   return (
     <div className="mt-10">
@@ -35,11 +20,8 @@ const CarouselBox: React.FC<CarouselBoxProps> = ({ product }) => {
         <PlusSquareFilled className="text-2xl hidden md:block" />
       </div>
       <p className="mb-3 md:text-xl md:text-center">
-        <span className="font-bold">
-          {product?.regionReturnDto?.regionGugun}{" "}
-          {product?.regionReturnDto?.regionDong}
-        </span>
-        에 새로 올라온 승계 원룸입니다.
+        <span className="font-bold">{regionAddress}</span>에 새로 올라온 승계
+        원룸입니다.
       </p>
     </div>
   );

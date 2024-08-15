@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // 컴포넌트
+import ScrollToTop from "../../atoms/ScrollToTop";
 
 // css 스타일
 import "./InformationPage.css";

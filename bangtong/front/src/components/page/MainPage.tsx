@@ -44,15 +44,14 @@ const MainPage: React.FC = () => {
               weight="bold"
             />
           </div>
-          <CarouselBox key={products[0].productId} product={products[0]} />
+          <CarouselBox />
           <Carousel arrows autoplay draggable>
             {products.length > 0 ? (
               products.map((product: any) => (
-                <div className="">
+                <div>
                   <img
                     src={
                       process.env.REACT_APP_BACKEND_SRC_URL +
-                      "/" +
                       product.mediaList[0].mediaPath
                     }
                     alt="매물 사진"
@@ -61,7 +60,11 @@ const MainPage: React.FC = () => {
                 </div>
               ))
             ) : (
-              <p>1111</p>
+              <div className="h-[350px] bg-gray-50 flex content-center">
+                <p className="text-center my-auto text-xl font-bold">
+                  등록된 매물이 없습니다.
+                </p>
+              </div>
             )}
           </Carousel>
 
