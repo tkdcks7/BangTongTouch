@@ -55,7 +55,7 @@ const LoginPage: React.FC = () => {
     formData.append("client_id", process.env.REACT_APP_CLIENT_ID_NAVER + "");
     formData.append(
       "client_secret",
-      process.env.REACT_APP_CLIENT_SECRET_NAVER + ""
+      process.env.REACT_APP_CLIENT_SECRET_NAVER + "",
     );
     formData.append("code", code + "");
     formData.append("state", stateCode);
@@ -104,31 +104,34 @@ const LoginPage: React.FC = () => {
   const handleNaverLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_NAVER;
     const redirectUri = encodeURIComponent(
-      process.env.REACT_APP_CALLBACK_URL_NAVER + ""
+      process.env.REACT_APP_CALLBACK_URL_NAVER + "",
     );
     const state = "1234";
     const naverLoginUri = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${clientId}&state=${state}&redirect_uri=${redirectUri}`;
-    window.open(naverLoginUri, "_blank", "width=600,height=600");
+    navigate(naverLoginUri);
+    // window.open(naverLoginUri, "_blank", "width=600,height=600");
   };
 
   // 구글 로그인 함수
   const handleGoogleLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_GOOGLE;
     const redirectUri = encodeURIComponent(
-      process.env.REACT_APP_CALLBACK_URL_GOOGLE + ""
+      process.env.REACT_APP_CALLBACK_URL_GOOGLE + "",
     );
     const googleLoginUri = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email`;
-    window.open(googleLoginUri, "_blank", "width=600,height=600");
+    navigate(googleLoginUri);
+    // window.open(googleLoginUri, "_blank", "width=600,height=600");
   };
 
   // 카카오 로그인 함수
   const handleKakaotalkLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_KAKAOTALK;
     const redirectUri = encodeURIComponent(
-      process.env.REACT_APP_CALLBACK_URL_KAKAOTALK + ""
+      process.env.REACT_APP_CALLBACK_URL_KAKAOTALK + "",
     );
     const kakaotalkLoginUri = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=profile_nickname profile_image`;
-    window.open(kakaotalkLoginUri, "_blank", "width=600,height=600");
+    navigate(kakaotalkLoginUri);
+    // window.open(kakaotalkLoginUri, "_blank", "width=600,height=600");
   };
   return (
     <>
