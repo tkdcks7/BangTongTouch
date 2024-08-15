@@ -12,6 +12,8 @@ import MapLaundry from "../../assets/MapLaundry.png"; // 세탁소
 import MapProduct from "../../assets/MapProduct.png"; // 매물
 import { productSearchStore } from "../../store/productStore";
 import authAxios from "../../utils/authAxios";
+import jsonp from "jsonp";
+import { getUserAddressKr } from "../../utils/services";
 
 interface MapProps {
   basePos: Pos; // 초기 위치(매물 좌표 or 사용자의 위치)
@@ -54,7 +56,7 @@ const SearchMap: React.FC<MapProps> = ({
   const [selectedMarkerData, setSelectedMarkerData] = useState<MarkerData>();
   const [subModalIsOpen, setSubModalIsOpen] = useState(false);
   const [selectedSubModalData, setSelectedSubModalData] = useState<string>("");
-  const [zoomLevel, setZoomLevel] = useState<number>(13);
+  const [zoomLevel, setZoomLevel] = useState<number>(flag ? 16 : 15);
   const {
     order,
     minDeposit,
@@ -69,6 +71,13 @@ const SearchMap: React.FC<MapProps> = ({
     startDate,
     endDate,
   } = productSearchStore();
+  const type: Array<string> = [
+    "ONEROOM",
+    "TWOROOM",
+    "OFFICE",
+    "VILLA",
+    "APARTMENT",
+  ];
   let map: any;
   let markers: naver.maps.Marker[] = [];
 
@@ -180,6 +189,7 @@ const SearchMap: React.FC<MapProps> = ({
       if (!map) return;
       markerDatas.length = 0;
       if (flag) {
+        console.log(basePos);
         markerDatas.push({
           productId: 0,
           lat: basePos.lat,
@@ -187,42 +197,124 @@ const SearchMap: React.FC<MapProps> = ({
           title: 0,
           src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
         });
-      } else {
-        await authAxios({
-          method: "POST",
-          url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
-          data: {
-            order,
-            minDeposit,
-            maxDeposit,
-            minRent,
-            maxRent,
-            type: "TWOROOM",
-            regionId: "" + 1129012500,
-            rentSupportable,
-            furnitureSupportable,
-            infra: 0,
-            startDate: "2024-08-13",
-            endDate: "2024-08-30",
-            lat: posRef.current.lat,
-            lng: posRef.current.lng,
-          },
-        })
-          .then((response) => {
-            response.data.data.forEach((item: any) => {
-              console.log(item.lat + " " + item.lng);
-              markerDatas.push({
-                productId: item.productId,
-                lat: item.lng,
-                lng: item.lat,
-                title: item.productAddress,
-                src: "https://i.namu.wiki/i/qKxcAi_HHGm1iaFqOWf8mrp5xAPjPDTOkxTtNBy5s6qpFXrL16tWL0SiYD0Z57_tLcd_EycaAerp4WtT-rtn9Q.webp",
-              });
-            });
-          })
-          .catch((error) => {
-            console.log(error);
+        for (let i = 0; i < markerDatas.length; i++) {
+          const data = markerDatas[i];
+          console.log(markerDatas);
+          const marker = new naver.maps.Marker({
+            position: new naver.maps.LatLng(data.lat, data.lng),
+            map: map,
+            icon: {
+              content: `
+                  <img 
+                    src=${MapProduct}
+                    alt="맵 마커" 
+                    style="
+                      margin: 0; 
+                      padding: 0; 
+                      border: 0; 
+                      display: block; 
+                      max-width: none; 
+                      max-height: none; 
+                      -webkit-user-select: none; 
+                      position: absolute; 
+                      width: 30px; 
+                      height: 40px; 
+                      left: 0; 
+                      top: 0;
+                    "
+                  />
+                `,
+              size: new naver.maps.Size(30, 20),
+              anchor: new naver.maps.Point(11, 35),
+            },
           });
+          markers.push(marker);
+        }
+      } else {
+        await getUserAddressKr().then((res) => {
+          authAxios({
+            method: "POST",
+            url: `${process.env.REACT_APP_BACKEND_URL}/products/search`,
+            data: {
+              order,
+              minDeposit,
+              maxDeposit,
+              minRent,
+              maxRent,
+              type: type[
+                homeType[1] * 1 +
+                  homeType[2] * 2 +
+                  homeType[3] * 3 +
+                  homeType[4] * 4
+              ],
+              regionId: parseInt(res[3]),
+              rentSupportable,
+              furnitureSupportable,
+              infra: 0,
+              startDate: "2024-08-13",
+              endDate: "2024-08-30",
+              lat: posRef.current.lat,
+              lng: posRef.current.lng,
+            },
+          })
+            .then((response) => {
+              response.data.data.forEach((item: any) => {
+                console.log(item);
+                markerDatas.push({
+                  productId: item.productId,
+                  lat: item.lat,
+                  lng: item.lng,
+                  title: item.productAddress,
+                  src:
+                    item.mediaList.length > 0
+                      ? process.env.REACT_APP_BACKEND_SRC_URL +
+                        "/" +
+                        item.mediaList[0].mediaPath
+                      : MapProduct,
+                });
+              });
+              for (let i = 0; i < markerDatas.length; i++) {
+                const data = markerDatas[i];
+                const marker = new naver.maps.Marker({
+                  position: new naver.maps.LatLng(data.lat, data.lng),
+                  map: map,
+                  icon: {
+                    content: `
+                        <img 
+                          src=${MapProduct}
+                          alt="맵 마커" 
+                          style="
+                            margin: 0; 
+                            padding: 0; 
+                            border: 0; 
+                            display: block; 
+                            max-width: none; 
+                            max-height: none; 
+                            -webkit-user-select: none; 
+                            position: absolute; 
+                            width: 30px; 
+                            height: 40px; 
+                            left: 0; 
+                            top: 0;
+                          "
+                        />
+                      `,
+                    size: new naver.maps.Size(30, 20),
+                    anchor: new naver.maps.Point(11, 35),
+                  },
+                });
+                naver.maps.Event.addListener(marker, "click", () => {
+                  console.log(i);
+                  console.log(markerDatas);
+                  openModal(i);
+                });
+                markers.push(marker);
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
       }
 
       const southWest = toEPSG3857(
@@ -235,88 +327,57 @@ const SearchMap: React.FC<MapProps> = ({
       );
 
       // test
-      const bbox = `${southWest.x},${southWest.y},${northEast.x},${northEast.y}`;
-      for (let i = 0; i < subMarkerDatas.length; i++) {
-        axios({
-          method: "GET",
-          url: `/vworld/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=30&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
-        })
-          .then((response) => {
-            response.data.response.result.items.forEach((item: any) => {
-              const result = fromEPSG3857(item.point.x, item.point.y);
-              const marker = new naver.maps.Marker({
-                position: new naver.maps.LatLng(result.lat, result.lng),
-                map: map,
-                icon: {
-                  content: `
-                      <img 
-                        src=${subMarkerDatas[i].src}
-                        alt="${subMarkerDatas[i].category}" 
-                        style="
-                          margin: 0; 
-                          padding: 0; 
-                          border: 0; 
-                          display: block; 
-                          max-width: none; 
-                          max-height: none; 
-                          -webkit-user-select: none; 
-                          position: absolute; 
-                          width: 30px; 
-                          height: 40px; 
-                          left: 0; 
-                          top: 0;
-                        "
-                      />
-                    `,
-                  size: new naver.maps.Size(30, 20),
-                  anchor: new naver.maps.Point(11, 35),
-                },
-              });
-              naver.maps.Event.addListener(marker, "click", () => {
-                openSubModal(item.title);
-              });
-              markers.push(marker);
-            });
-          })
-          .catch((error) => console.log("전송 실패", error));
-      }
-
-      for (let i = 0; i < markerDatas.length; i++) {
-        const data = markerDatas[i];
-        const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(data.lat, data.lng),
-          map: map,
-          icon: {
-            content: `
-                <img 
-                  src=${MapProduct}
-                  alt="맵 마커" 
-                  style="
-                    margin: 0; 
-                    padding: 0; 
-                    border: 0; 
-                    display: block; 
-                    max-width: none; 
-                    max-height: none; 
-                    -webkit-user-select: none; 
-                    position: absolute; 
-                    width: 30px; 
-                    height: 40px; 
-                    left: 0; 
-                    top: 0;
-                  "
-                />
-              `,
-            size: new naver.maps.Size(30, 20),
-            anchor: new naver.maps.Point(11, 35),
-          },
-        });
-        naver.maps.Event.addListener(marker, "click", () => {
-          console.log(i);
-          console.log(markerDatas);
-          openModal(i);
-        });
-        markers.push(marker);
+      if (flag) {
+        const bbox = `${southWest.x},${southWest.y},${northEast.x},${northEast.y}`;
+        for (let i = 0; i < subMarkerDatas.length; i++) {
+          jsonp(
+            `https://api.vworld.kr/req/search?service=search&request=search&version=2.0&crs=EPSG:900913&bbox=${bbox}&size=30&page=1&query=${subMarkerDatas[i].category}&type=place&category=${subMarkerDatas[i].type}&format=json&errorformat=json&key=${process.env.REACT_APP_SEARCH_API}`,
+            { param: "callback" },
+            (err: any, data: any) => {
+              if (err) {
+                console.error("Error:", err);
+              } else {
+                if (data.response.status === "OK") {
+                  data.response.result.items.forEach((item: any) => {
+                    const result = fromEPSG3857(item.point.x, item.point.y);
+                    const marker = new naver.maps.Marker({
+                      position: new naver.maps.LatLng(result.lat, result.lng),
+                      map: map,
+                      icon: {
+                        content: `
+                        <img
+                          src=${subMarkerDatas[i].src}
+                          alt="${subMarkerDatas[i].category}"
+                          style="
+                            margin: 0;
+                            padding: 0;
+                            border: 0;
+                            display: block;
+                            max-width: none;
+                            max-height: none;
+                            -webkit-user-select: none;
+                            position: absolute;
+                            width: 30px;
+                            height: 40px;
+                            left: 0;
+                            top: 0;
+                          "
+                        />
+                      `,
+                        size: new naver.maps.Size(30, 20),
+                        anchor: new naver.maps.Point(11, 35),
+                      },
+                    });
+                    naver.maps.Event.addListener(marker, "click", () => {
+                      openSubModal(item.title);
+                    });
+                    markers.push(marker);
+                  });
+                }
+              }
+            }
+          );
+        }
       }
 
       if (naver.maps.Event.hasListener(map, "dragend")) return;
@@ -346,9 +407,9 @@ const SearchMap: React.FC<MapProps> = ({
   function mapRender() {
     function initMap() {
       if (!mapElement.current) return;
-
+      console.log(basePos);
       const mapOptions = {
-        center: new naver.maps.LatLng(posRef.current.lat, posRef.current.lng),
+        center: new naver.maps.LatLng(basePos.lat, basePos.lng),
         zoom: zoomLevel,
       };
       map = new naver.maps.Map(mapElement.current, mapOptions);

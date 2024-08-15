@@ -103,24 +103,35 @@ interface PreferenceI {
   preferenceInfra: string;
   preferenceStartDate: string;
   preferenceEndDate: string;
+  regionId: string;
   setPreferUpdate: (payload: Partial<PreferenceI>) => void;
+  resetPrefer: () => void;
 }
+
+const preferStoreDefault: Omit<PreferenceI, "setPreferUpdate" | "resetPrefer"> =
+  {
+    preferenceId: 0,
+    preferenceName: "",
+    regionAddress: "",
+    preferenceDeposit: 0,
+    preferenceRent: 0,
+    preferenceType: "",
+    preferenceInfra: "",
+    preferenceStartDate: "",
+    preferenceEndDate: "",
+    regionId: "",
+  };
 
 // 유저 선호 설정 store
 export const useUserPreferStore = create<PreferenceI>()(
   persist(
     (set) => ({
-      preferenceId: 0,
-      preferenceName: "",
-      regionAddress: "",
-      preferenceDeposit: 0,
-      preferenceRent: 0,
-      preferenceType: "",
-      preferenceInfra: "",
-      preferenceStartDate: "",
-      preferenceEndDate: "",
+      ...preferStoreDefault,
       setPreferUpdate: (payload: Partial<PreferenceI>) => {
         set((state) => ({ ...state, ...payload }));
+      },
+      resetPrefer: () => {
+        set((state) => ({ ...state, ...preferStoreDefault }));
       },
     }),
     {

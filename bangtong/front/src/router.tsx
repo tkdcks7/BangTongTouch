@@ -117,8 +117,8 @@ const AppRoutes: React.FC = () => {
               element={<PreferenceUpdate />}
             />
             <Route path="update" element={<ProfileUpdate />}>
-              <Route path="" element={<ProfilePwConfirm />} />
               <Route path="confirmed" element={<ProfileEdit />} />
+              <Route path="" element={<ProfilePwConfirm />} />
             </Route>
             <Route path="notification" element={<ProfileNotification />} />
           </Route>

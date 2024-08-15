@@ -33,4 +33,6 @@ public interface ProductService {
   InterestProductDto getInterestProduct(Long productId);
 
   List<ProductReturnDto> getProductsByMaker(HttpServletRequest request);
+
+  List<ProductReturnDto> getPreferProduct(HttpServletRequest request, Long preferProductId);
 }

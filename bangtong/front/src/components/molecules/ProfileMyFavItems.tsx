@@ -42,7 +42,6 @@ const ProfileMyFavItems: React.FC = () => {
                 src={
                   item?.productReturnDto?.mediaList.length !== 0
                     ? process.env.REACT_APP_BACKEND_SRC_URL +
-                      "/" +
                       item?.productReturnDto?.mediaList[0].mediaPath
                     : defaultRoom
                 }
@@ -51,16 +50,21 @@ const ProfileMyFavItems: React.FC = () => {
                 className="rounded-xl h-20 w-32"
               />
             </Link>
-            <div className="text-center">
-              <p className="text-sm dark:text-white">
+            <div className="text-center text-sm font-bold">
+              <p className="dark:text-white text-lime-600">
                 {`${item?.productReturnDto?.regionReturnDto?.regionDong || "Unknown Location"} ${roomType[item?.productReturnDto?.productType] || "Unknown Type"}`}
               </p>
-              <p className="text-sm dark:text-white">
+              <p className="dark:text-white text-gray-400">
                 {`${item?.productReturnDto?.productDeposit || 0}/${item?.productReturnDto?.productRent || 0}`}
               </p>
             </div>
           </div>
         ))}
+      {favItems?.length ? null : (
+        <span className="text-lg text-red-300 font-bold">
+          관심 등록한 매물이 없습니다.
+        </span>
+      )}
     </div>
   );
 };

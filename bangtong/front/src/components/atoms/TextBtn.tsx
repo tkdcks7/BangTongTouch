@@ -80,7 +80,10 @@ const TextBtn: React.FC<TextBtnProps> = ({ title, text }) => {
   return (
     <div className="flex justify-between mt-7">
       <p className="text-lime-600 font-bold">{title}</p>
-      <button className={"dark:text-white"} onClick={() => setModalOpen(true)}>
+      <button
+        className={"dark:text-white font-bold text-gray-400"}
+        onClick={() => setModalOpen(true)}
+      >
         {text}
       </button>
       <ConfigProvider theme={theme}>

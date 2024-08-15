@@ -21,6 +21,7 @@ import jakarta.persistence.TemporalType;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -72,6 +73,7 @@ public class Chat {
     if (chatTime != null) {
       Calendar calendar = Calendar.getInstance();
       calendar.setTime(chatTime);
+      calendar.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
       calendar.set(Calendar.SECOND, 0);
       calendar.set(Calendar.MILLISECOND, 0);
       this.chatTime = calendar.getTime();

@@ -1,7 +1,8 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import useUserStore from "../../store/userStore";
+import useUserStore, { useUserPreferStore } from "../../store/userStore";
+import { motion } from "framer-motion";
 
 // 컴포넌트 불러오기
 import { Button, ConfigProvider, Form, Input } from "antd";
@@ -13,17 +14,16 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import Google from "../../assets/GoogleSocial.png";
 import Kakao from "../../assets/KakaoSocial.png";
 import Naver from "../../assets/NaverSocial.png";
+import authAxios from "../../utils/authAxios";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { token, setInfoUpdate, setToken } = useUserStore(); // store
+  const { setPreferUpdate } = useUserPreferStore();
   const navigate = useNavigate();
+  const [errorCount, setErrorCount] = useState(0);
   const [form] = Form.useForm(); // antd
-
-  if (token) {
-    navigate("/");
-  }
 
   interface LoginInfo {
     username: string;
@@ -47,13 +47,19 @@ const LoginPage: React.FC = () => {
   const code = searchParams.get("code");
   const stateCode = searchParams.get("state");
 
+  useEffect(() => {
+    if (token) {
+      navigate("/");
+    }
+  }, []);
+
   if (stateCode === "1234") {
     const formData: FormData = new FormData();
     formData.append("grant_type", "code");
     formData.append("client_id", process.env.REACT_APP_CLIENT_ID_NAVER + "");
     formData.append(
       "client_secret",
-      process.env.REACT_APP_CLIENT_SECRET_NAVER + "",
+      process.env.REACT_APP_CLIENT_SECRET_NAVER + ""
     );
     formData.append("code", code + "");
     formData.append("state", stateCode);
@@ -89,20 +95,33 @@ const LoginPage: React.FC = () => {
       data: payload,
     })
       .then((response) => {
+        console.log(response.data.data.id);
         const infoObj = response.data.data;
         infoObj.email = email; // 본인이 입력한 이메일 추가
         setInfoUpdate(infoObj);
         setToken(response.headers.authorization);
-        navigate("../../");
+        authAxios({
+          method: "GET",
+          url: `${process.env.REACT_APP_BACKEND_URL}/preferences/${response.data.data.id}/list`,
+        })
+          .then((response) => {
+            console.log(response);
+            console.log(response.data.data);
+            setPreferUpdate(response.data.data[0]);
+            navigate("../../");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       })
-      .catch((error) => console.log("전송 실패", error));
+      .catch(() => setErrorCount((state) => state + 1));
   };
 
   // 네이버 로그인 함수
   const handleNaverLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_NAVER;
     const redirectUri = encodeURIComponent(
-      process.env.REACT_APP_CALLBACK_URL_NAVER + "",
+      process.env.REACT_APP_CALLBACK_URL_NAVER + ""
     );
     const state = "1234";
     const naverLoginUri = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${clientId}&state=${state}&redirect_uri=${redirectUri}`;
@@ -114,7 +133,7 @@ const LoginPage: React.FC = () => {
   const handleGoogleLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_GOOGLE;
     const redirectUri = encodeURIComponent(
-      process.env.REACT_APP_CALLBACK_URL_GOOGLE + "",
+      process.env.REACT_APP_CALLBACK_URL_GOOGLE + ""
     );
     const googleLoginUri = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email`;
     // navigate(googleLoginUri);
@@ -125,7 +144,7 @@ const LoginPage: React.FC = () => {
   const handleKakaotalkLogin = () => {
     const clientId = process.env.REACT_APP_CLIENT_ID_KAKAOTALK;
     const redirectUri = encodeURIComponent(
-      process.env.REACT_APP_CALLBACK_URL_KAKAOTALK + "",
+      process.env.REACT_APP_CALLBACK_URL_KAKAOTALK + ""
     );
     const kakaotalkLoginUri = `https://kauth.kakao.com/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=profile_nickname profile_image`;
     // navigate(kakaotalkLoginUri);
@@ -198,7 +217,30 @@ const LoginPage: React.FC = () => {
               <IconBtn imgSrc={Naver} size={40} onClick={handleNaverLogin} />
             </div>
           </div>
-          <div className="flex justify-center mt-10">
+          {errorCount ? (
+            <motion.div
+              className="flex justify-center mt-8 rounded-md items-center mx-auto bg-red-300 w-full h-16 shadow-md text-center"
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "auto" }}
+              transition={{
+                duration: 0.5,
+                delay: 0.5,
+                ease: "easeOut",
+              }}
+            >
+              <motion.span
+                className="font-bold text-gray-500"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 1.1,
+                  ease: "easeOut",
+                }}
+              >{`입력 정보가 올바르지 않습니다 (${errorCount}회 오류).`}</motion.span>
+            </motion.div>
+          ) : null}
+          <div className="flex justify-center mt-8">
             <Button
               type="primary"
               onClick={handleLogIn}
