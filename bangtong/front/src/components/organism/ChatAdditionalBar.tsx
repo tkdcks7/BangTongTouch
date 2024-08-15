@@ -107,18 +107,6 @@ const ChatAdditionalBar: React.FC<ChatAdditionalBarProps> = ({
         <VideoCameraOutlined />
         <p>라이브 시작</p>
       </button>
-      <button className="text-center">
-        <PaperClipOutlined />
-        <p>파일 첨부</p>
-      </button>
-      <button className="text-center">
-        <SmileOutlined />
-        <p>이모티콘</p>
-      </button>
-      <button className="text-center">
-        <CalendarOutlined />
-        <p>일정 잡기</p>
-      </button>
       <button className="text-center" type="button" onClick={changeModalStatus}>
         <WarningOutlined />
         <p>신고하기</p>
