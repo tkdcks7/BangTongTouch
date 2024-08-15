@@ -7,11 +7,16 @@ import MainChatBox from "../organism/MainChatBox";
 import TextBox from "../atoms/TextBox";
 import Loading from "../atoms/Loading";
 import ImgCarousel from "../molecules/ImgCarousel";
-import { Carousel } from "antd";
+import { Carousel, ConfigProvider } from "antd";
+import { useNavigate } from "react-router-dom";
+
+import "../../index.css";
 
 const MainPage: React.FC = () => {
   const [products, setProducts] = useState<any>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isHover, setIsHover] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsLoading(true);
@@ -45,30 +50,59 @@ const MainPage: React.FC = () => {
             />
           </div>
           <CarouselBox />
-          <Carousel arrows autoplay draggable>
-            {products.length > 0 ? (
-              products.map((product: any) => (
-                <div>
-                  <img
-                    src={
-                      process.env.REACT_APP_BACKEND_SRC_URL +
-                      product.mediaList[0].mediaPath
-                    }
-                    alt="매물 사진"
-                    className="hover:cursor-pointer object-fill w-full h-[350px]"
-                  />
+          <ConfigProvider
+            theme={{
+              components: {
+                Carousel: {
+                  arrowSize: 30,
+                },
+              },
+            }}
+          >
+            <Carousel arrows autoplay draggable dots={false}>
+              {products.length > 0 ? (
+                products.map((product: any) => (
+                  <div className="relative">
+                    <img
+                      src={
+                        process.env.REACT_APP_BACKEND_SRC_URL +
+                        product.mediaList[0].mediaPath
+                      }
+                      alt="매물 사진"
+                      className="hover:cursor-pointer object-fill w-full h-[350px] hover:brightness-50"
+                      onClick={() => navigate(`products/${product.productId}`)}
+                      onMouseEnter={() => setIsHover(true)}
+                      onMouseLeave={() => setIsHover(false)}
+                    />
+                    <div
+                      className={
+                        isHover
+                          ? "absolute w-full bottom-0 left-0 text-gray-100 text-3xl font-bold mb-5 px-5"
+                          : "hidden"
+                      }
+                    >
+                      <div>
+                        <p className="text-4xl font-bold text-lime-300">
+                          {product.productDeposit} / {product.productRent}
+                        </p>
+                        <p>
+                          면적: {product.productSquare}m² (
+                          {Math.round(product.productSquare * 0.3025)}평)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="h-[350px] bg-gray-50 flex content-center">
+                  <p className="text-center my-auto text-xl font-bold">
+                    등록된 매물이 없습니다.
+                  </p>
                 </div>
-              ))
-            ) : (
-              <div className="h-[350px] bg-gray-50 flex content-center">
-                <p className="text-center my-auto text-xl font-bold">
-                  등록된 매물이 없습니다.
-                </p>
-              </div>
-            )}
-          </Carousel>
+              )}
+            </Carousel>
+          </ConfigProvider>
 
-          <MainChatBox />
           <div className="h-24" />
         </div>
       )}

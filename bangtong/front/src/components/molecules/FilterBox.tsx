@@ -208,8 +208,8 @@ const FilterBox: React.FC = () => {
       furnitureSupportable,
       infra: bitMaskingInfra(infra),
       startDate,
-      endDate, address: undefined
-
+      endDate,
+      address: undefined,
     };
 
     if (
@@ -239,11 +239,11 @@ const FilterBox: React.FC = () => {
   return (
     <div className="w-80 px-5 py-10 border-2 rounded-xl shadow-md">
       {preferenceId ? (
-        <p className="text-sm">
-          <span className="font-bold text-lime-600 text-lg">
+        <p className="text-lg mb-3">
+          현재 선호 검색 조건:
+          <span className="font-bold text-lime-600 text-lg ms-3">
             {preferenceName}
           </span>{" "}
-          검색 옵션을 사용하고 있습니다
         </p>
       ) : null}
       <button

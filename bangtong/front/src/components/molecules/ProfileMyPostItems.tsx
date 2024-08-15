@@ -42,7 +42,7 @@ const ProfileMyPostItems: React.FC = () => {
               <img
                 src={
                   item?.mediaList.length !== 0
-                    ? `${process.env.REACT_APP_BACKEND_SRC_URL}/${item?.mediaList[0]?.mediaPath}`
+                    ? `${process.env.REACT_APP_BACKEND_SRC_URL}${item?.mediaList[0]?.mediaPath}`
                     : defaultRoom
                 }
                 alt="업로드한 매물 사진"

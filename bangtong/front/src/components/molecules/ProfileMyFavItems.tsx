@@ -42,7 +42,6 @@ const ProfileMyFavItems: React.FC = () => {
                 src={
                   item?.productReturnDto?.mediaList.length !== 0
                     ? process.env.REACT_APP_BACKEND_SRC_URL +
-                      "/" +
                       item?.productReturnDto?.mediaList[0].mediaPath
                     : defaultRoom
                 }

@@ -12,7 +12,7 @@ import menuImg from "../../assets/Menu.png";
 import useUserStore from "../../store/userStore";
 import authAxios from "../../utils/authAxios";
 import { Dropdown, Modal, Select } from "antd";
-import {dark} from "@mui/material/styles/createPalette";
+import { dark } from "@mui/material/styles/createPalette";
 
 interface region {
   regionId: string;
@@ -237,7 +237,7 @@ const CommunityDetail: React.FC = () => {
             <div className="flex justify-between">
               <RollBackBtn />
               <Dropdown
-                className="w-10 rounded-xl mb-3 dark:text-white"
+                className="w-10 rounded-xl mb-3 dark:text-white hover:cursor-pointer"
                 trigger={["click"]}
                 menu={{
                   items:
